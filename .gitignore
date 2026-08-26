@@ -1,50 +1,8 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-*.so.*
-
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Build directories
-build/
-Build/
-build-*/
-
-# CMake generated files
+# Build output
+/build/
+/Build/
+/build-*/
+/out/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
@@ -52,18 +10,59 @@ Makefile
 install_manifest.txt
 compile_commands.json
 
-# Temporary files
-*.tmp
-*.log
-*.bak
-*.swp
-
-# vcpkg
-vcpkg_installed/
-
-# debug information files
+# Compiled objects / libraries / executables
+*.d
+*.o
+*.obj
+*.slo
+*.lo
+*.gch
+*.pch
+*.ilk
+*.pdb
+*.so
+*.so.*
+*.dylib
+*.dll
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.app
 *.dwo
 
-# test output & cache
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.vcxproj*
+*.sln
+
+# CUDA generated output
+*.cubin
+*.ptx
+*.fatbin
+
+# Quantum-chemistry data: do not accidentally commit large job files
+*.chk
+*.fchk
+*.cube
+*.cub
+*.wfn
+*.wfx
+*.gbw
+*.molden
+!examples/*.molden
+*.log
+*.out
+
+# Temporary/cache
+*.tmp
+*.bak
+*.swp
 Testing/
 .cache/
+vcpkg_installed/
