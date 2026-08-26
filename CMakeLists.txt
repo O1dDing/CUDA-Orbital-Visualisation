@@ -29,9 +29,9 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
     include(FetchContent)
     FetchContent_Declare(
         imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.90.9
-        GIT_SHALLOW TRUE
+        URL https://codeload.github.com/ocornut/imgui/zip/refs/tags/v1.90.9
+        URL_HASH SHA256=4fa247c7abbb00fc255631479004de549b86a41f49fddd7d44cd2cf8d647c5a7
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
     FetchContent_MakeAvailable(imgui)
 
@@ -87,9 +87,9 @@ if(COV_ENABLE_CUDA)
     set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         glfw
-        GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG 3.4
-        GIT_SHALLOW TRUE
+        URL https://codeload.github.com/glfw/glfw/zip/refs/tags/3.4
+        URL_HASH SHA256=a133ddc3d3c66143eba9035621db8e0bcf34dba1ee9514a9e23e96afd39fd57a
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
     FetchContent_MakeAvailable(glfw)
 
@@ -124,6 +124,7 @@ if(COV_ENABLE_CUDA)
     )
     set_target_properties(cov_gpu PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON
         POSITION_INDEPENDENT_CODE ON
     )
     target_compile_options(cov_gpu PRIVATE

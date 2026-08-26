@@ -2,15 +2,23 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <string_view>
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cerr << "usage: cov_parser_smoke <file.molden>\n";
+    if (argc < 2 || argc > 3) {
+        std::cerr << "usage: cov_parser_smoke <file.molden> [--inspect]\n";
         return EXIT_FAILURE;
     }
 
     try {
         const auto wf = cov::parse_molden(argv[1]);
+        std::cout << "atoms=" << wf.atoms.size()
+                  << " shells=" << wf.shells.size()
+                  << " basis=" << wf.basis_count
+                  << " orbitals=" << wf.orbitals.size() << '\n';
+        if (argc == 3 && std::string_view(argv[2]) == "--inspect") {
+            return EXIT_SUCCESS;
+        }
         if (wf.atoms.size() != 2) {
             std::cerr << "expected 2 atoms, got " << wf.atoms.size() << '\n';
             return EXIT_FAILURE;

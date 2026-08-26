@@ -357,7 +357,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
             finalise_mo(current_mo, have_mo, coefficient_count, wf, true);
             current_mo = MolecularOrbital{};
             current_mo.coefficients.assign(wf.basis_count, 0.0f);
-            std::fill(coefficient_seen.begin(), coefficient_seen.end(), 0u);
+            std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
             current_mo.symmetry = value_after_equals(t);
             have_mo = true;
             continue;
@@ -368,7 +368,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
             if (starts_with_ci(t, "ene=") || starts_with_ci(t, "spin=") ||
                 starts_with_ci(t, "occup=")) {
                 current_mo.coefficients.assign(wf.basis_count, 0.0f);
-                std::fill(coefficient_seen.begin(), coefficient_seen.end(), 0u);
+                std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
                 coefficient_count = 0;
                 have_mo = true;
             } else {

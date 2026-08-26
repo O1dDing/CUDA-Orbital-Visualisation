@@ -1,4 +1,5 @@
 #include "cov/cuda_orbital.hpp"
+#include "cov/gl_api.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/ui.hpp"
 #include "cov/volume_renderer.hpp"

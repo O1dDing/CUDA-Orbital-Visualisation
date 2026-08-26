@@ -1,12 +1,18 @@
 #include "cov/cuda_orbital.hpp"
 
-#include <cuda_gl_interop.h>
-#include <cuda_runtime.h>
-
 #ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <Windows.h>
 #endif
 #include <GL/gl.h>
+
+#include <cuda_gl_interop.h>
+#include <cuda_runtime.h>
 
 #include <cmath>
 #include <cstring>
@@ -88,70 +94,71 @@ __device__ __forceinline__ float spherical_primitive_norm(const float alpha, con
     return sqrtf(2.0f * power / gamma_l_plus_three_halves(l));
 }
 
-__device__ __forceinline__ int factorial_small(int n) {
-    int r = 1;
-    for (int i = 2; i <= n; ++i) r *= i;
-    return r;
-}
+__device__ __forceinline__ float real_solid_harmonic(
+    const int l, const int index, const float x, const float y, const float z) {
+    const float x2 = x * x;
+    const float y2 = y * y;
+    const float z2 = z * z;
+    const float r2 = x * x + y * y + z * z;
+    if (l == 0) return 0.28209479177387814f;
 
-__device__ float associated_legendre(const int l, const int m, const float x) {
-    float pmm = 1.0f;
-    if (m > 0) {
-        const float somx2 = sqrtf(fmaxf(0.0f, 1.0f - x * x));
-        float fact = 1.0f;
-        for (int i = 1; i <= m; ++i) {
-            pmm *= -fact * somx2;
-            fact += 2.0f;
+    // Normalised real solid harmonics in Molden order:
+    // m = 0, +1, -1, +2, -2, ... .  Keeping the explicit l <= 4
+    // polynomials avoids transcendental functions in the inner grid loop.
+    if (l == 1) {
+        switch (index) {
+            case 0: return  0.4886025119029199f * z;
+            case 1: return -0.4886025119029199f * x;
+            default:return -0.4886025119029199f * y;
         }
     }
-    if (l == m) return pmm;
 
-    float pmmp1 = x * static_cast<float>(2 * m + 1) * pmm;
-    if (l == m + 1) return pmmp1;
-
-    float pll = 0.0f;
-    for (int ll = m + 2; ll <= l; ++ll) {
-        pll = (static_cast<float>(2 * ll - 1) * x * pmmp1 -
-               static_cast<float>(ll + m - 1) * pmm) /
-              static_cast<float>(ll - m);
-        pmm = pmmp1;
-        pmmp1 = pll;
-    }
-    return pll;
-}
-
-__device__ float real_solid_harmonic(
-    const int l, const int index, const float x, const float y, const float z) {
-    if (l == 0) {
-        return 0.28209479177387814f;
+    if (l == 2) {
+        switch (index) {
+            case 0: return  0.31539156525252005f * (3.0f * z2 - r2);
+            case 1: return -1.0925484305920792f * x * z;
+            case 2: return -1.0925484305920792f * y * z;
+            case 3: return  0.5462742152960396f * (x2 - y2);
+            default:return  1.0925484305920792f * x * y;
+        }
     }
 
-    const float r2 = x * x + y * y + z * z;
-    if (r2 < 1.0e-20f) return 0.0f;
-    const float r = sqrtf(r2);
-    const float costheta = fminf(1.0f, fmaxf(-1.0f, z / r));
-    const float phi = atan2f(y, x);
-
-    int m = 0;
-    bool sine = false;
-    if (index > 0) {
-        m = (index + 1) / 2;
-        sine = (index % 2 == 0);
+    if (l == 3) {
+        switch (index) {
+            case 0: return  0.3731763325901154f * z * (5.0f * z2 - 3.0f * r2);
+            case 1: return -0.4570457994644658f * x * (5.0f * z2 - r2);
+            case 2: return -0.4570457994644658f * y * (5.0f * z2 - r2);
+            case 3: return  1.445305721320277f * z * (x2 - y2);
+            case 4: return  2.890611442640554f * x * y * z;
+            case 5: return -0.5900435899266435f * x * (x2 - 3.0f * y2);
+            default:return -0.5900435899266435f * y * (3.0f * x2 - y2);
+        }
     }
 
-    const float p = associated_legendre(l, m, costheta);
-    const float n = sqrtf(
-        (static_cast<float>(2 * l + 1) / (4.0f * kPi)) *
-        (static_cast<float>(factorial_small(l - m)) /
-         static_cast<float>(factorial_small(l + m))));
-
-    float angular = n * p;
-    if (m > 0) {
-        angular *= sqrtf(2.0f);
-        angular *= sine ? sinf(static_cast<float>(m) * phi)
-                        : cosf(static_cast<float>(m) * phi);
+    const float z4 = z2 * z2;
+    const float r4 = r2 * r2;
+    switch (index) {
+        case 0:
+            return 0.10578554691520431f *
+                   (35.0f * z4 - 30.0f * z2 * r2 + 3.0f * r4);
+        case 1:
+            return -0.6690465435572892f * x * z * (7.0f * z2 - 3.0f * r2);
+        case 2:
+            return -0.6690465435572892f * y * z * (7.0f * z2 - 3.0f * r2);
+        case 3:
+            return 0.47308734787878004f * (x2 - y2) * (7.0f * z2 - r2);
+        case 4:
+            return 0.9461746957575601f * x * y * (7.0f * z2 - r2);
+        case 5:
+            return -1.7701307697799304f * x * z * (x2 - 3.0f * y2);
+        case 6:
+            return -1.7701307697799304f * y * z * (3.0f * x2 - y2);
+        case 7:
+            return 0.6258357354491761f *
+                   (x2 * x2 - 6.0f * x2 * y2 + y2 * y2);
+        default:
+            return 2.5033429417967046f * x * y * (x2 - y2);
     }
-    return powi(r, l) * angular;
 }
 
 __device__ __forceinline__ void cartesian_exponents(
