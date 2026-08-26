@@ -368,13 +368,24 @@ bool configure_fonts(const float pixel_size) {
     });
 #endif
 
+    ImFontGlyphRangesBuilder latin_builder;
+    latin_builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
+    for (std::size_t i = 0; i < kTextCount; ++i) {
+        latin_builder.AddText(kStrings[static_cast<std::size_t>(Language::English)][i]);
+        latin_builder.AddText(kStrings[static_cast<std::size_t>(Language::French)][i]);
+    }
+    latin_builder.AddText(language_name(Language::French));
+    latin_builder.AddText("● · ³");
+    ImVector<ImWchar> latin_ranges;
+    latin_builder.BuildRanges(&latin_ranges);
+
     ImFont* primary = nullptr;
     if (!base.empty()) {
         ImFontConfig cfg{};
         cfg.OversampleH = 2;
         cfg.OversampleV = 1;
         primary = io.Fonts->AddFontFromFileTTF(base.c_str(), pixel_size, &cfg,
-                                               io.Fonts->GetGlyphRangesDefault());
+                                               latin_ranges.Data);
     }
     if (!primary) primary = io.Fonts->AddFontDefault();
 
