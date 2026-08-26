@@ -23,6 +23,9 @@ The current MVP parses Molden wavefunctions on the CPU, uploads basis data to CU
 - [x] Basic atom/bond overlay
 - [x] 64³ / 128³ / 256³ / 512³ grids
 - [x] Interactive MO, isovalue, camera and grid controls
+- [x] Compact viewport-first `COV Slate` Dear ImGui interface
+- [x] Runtime localisation: English / 简体中文 / 日本語 / Français
+- [x] System-font CJK fallback without redistributing font binaries
 - [x] CPU-only parser CI
 - [ ] Gaussian FCHK
 - [ ] CHK → `formchk`
@@ -77,6 +80,19 @@ display
 ```
 
 Changing the isovalue does **not** recompute the CUDA grid or rebuild a mesh.
+
+## UI and localisation
+
+The control surface is a compact dark inspector over the full-window molecular viewport. Information is grouped into File, Wavefunction, Orbital, Rendering and Performance cards, while scientific values remain visible rather than being hidden behind decorative controls.
+
+The language selector switches instantly between:
+
+- English
+- 简体中文
+- 日本語
+- Français
+
+No font files are committed to the repository. The application loads local system fonts at startup and builds only the CJK glyph ranges required by the bundled translations. On Windows it prefers Segoe UI + Microsoft YaHei + Yu Gothic/Meiryo. See [`docs/UI.md`](docs/UI.md) for design references, localisation architecture and font policy.
 
 ## Requirements
 
@@ -137,7 +153,7 @@ cov calculation.molden
 or launch the application and either:
 
 - enter a `.molden` path in the UI; or
-- drag a Molden file onto the window.
+- drag a Molden file onto the viewport.
 
 Controls:
 
@@ -146,6 +162,7 @@ Controls:
 - **MO slider:** select orbital
 - **Isovalue:** changes the GPU raymarch threshold immediately
 - **Grid:** 64³, 128³, 256³ or 512³; changing this recomputes the CUDA scalar field
+- **Language:** English / 简体中文 / 日本語 / Français without restarting the application
 
 Positive and negative orbital phases are rendered simultaneously with different colours.
 
@@ -196,8 +213,10 @@ include/cov/              public C++ interfaces
 src/parser/               Molden parser
 src/cuda/                 CUDA orbital evaluator
 src/render/               OpenGL loader + volume raymarch renderer
-src/main.cpp              GLFW + Dear ImGui application
-tests/                    CPU parser tests
+src/ui/                   UI theme, localisation and system-font setup
+src/main.cpp              GLFW + Dear ImGui application shell
+docs/UI.md                UI/localisation design notes
+ tests/                    CPU parser tests
 examples/                 tiny checked-in examples only
 .github/workflows/        CPU parser CI
 ```
