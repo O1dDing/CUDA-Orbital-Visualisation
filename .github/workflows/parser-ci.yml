@@ -1,17 +1,17 @@
-name: parser-ci
+name: core-ci
 
 on:
   push:
   pull_request:
 
 jobs:
-  parser:
+  cpu-core:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Configure CPU parser build
+      - name: Configure CPU core build
         run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
-      - name: Build
+      - name: Build parser and UI smoke targets
         run: cmake --build build --parallel
-      - name: Test
+      - name: Test parser and localisation/UI
         run: ctest --test-dir build --output-on-failure
