@@ -1,0 +1,17 @@
+name: core-ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cpu-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure CPU core build
+        run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
+      - name: Build parser and UI smoke targets
+        run: cmake --build build --parallel
+      - name: Test parser and localisation/UI
+        run: ctest --test-dir build --output-on-failure
