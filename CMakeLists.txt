@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 project(CUDAOrbitalVisualisation VERSION 0.1.0 LANGUAGES CXX)
 
 option(COV_ENABLE_CUDA "Build the CUDA/OpenGL viewer" ON)
-option(COV_BUILD_TESTS "Build parser tests" ON)
+option(COV_BUILD_TESTS "Build parser and UI smoke tests" ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -21,6 +21,42 @@ if(MSVC)
     target_compile_options(cov_parser PRIVATE /W4 /permissive-)
 else()
     target_compile_options(cov_parser PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+# The localisation/theme layer is also compiled in CPU-only CI, so UI source
+# compatibility does not depend on having a CUDA runner available.
+if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
+    include(FetchContent)
+    FetchContent_Declare(
+        imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG v1.90.9
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(imgui)
+
+    add_library(cov_imgui_core STATIC
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    )
+    target_include_directories(cov_imgui_core PUBLIC
+        ${imgui_SOURCE_DIR}
+    )
+
+    add_library(cov_ui STATIC
+        src/ui/ui.cpp
+    )
+    target_include_directories(cov_ui PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${imgui_SOURCE_DIR}
+    )
+    target_link_libraries(cov_ui PUBLIC cov_imgui_core)
+    target_compile_features(cov_ui PUBLIC cxx_std_20)
+    target_compile_options(cov_ui PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
+    )
 endif()
 
 if(COV_ENABLE_CUDA)
@@ -45,8 +81,6 @@ if(COV_ENABLE_CUDA)
     find_package(CUDAToolkit 12.8 REQUIRED)
     find_package(OpenGL REQUIRED)
 
-    include(FetchContent)
-
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -59,27 +93,19 @@ if(COV_ENABLE_CUDA)
     )
     FetchContent_MakeAvailable(glfw)
 
-    FetchContent_Declare(
-        imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.90.9
-        GIT_SHALLOW TRUE
-    )
-    FetchContent_MakeAvailable(imgui)
-
-    add_library(cov_imgui STATIC
-        ${imgui_SOURCE_DIR}/imgui.cpp
-        ${imgui_SOURCE_DIR}/imgui_draw.cpp
-        ${imgui_SOURCE_DIR}/imgui_tables.cpp
-        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    add_library(cov_imgui_backends STATIC
         ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp
     )
-    target_include_directories(cov_imgui PUBLIC
+    target_include_directories(cov_imgui_backends PUBLIC
         ${imgui_SOURCE_DIR}
         ${imgui_SOURCE_DIR}/backends
     )
-    target_link_libraries(cov_imgui PUBLIC glfw OpenGL::GL)
+    target_link_libraries(cov_imgui_backends PUBLIC
+        cov_imgui_core
+        glfw
+        OpenGL::GL
+    )
 
     add_library(cov_gpu
         src/cuda/orbital.cu
@@ -106,14 +132,14 @@ if(COV_ENABLE_CUDA)
 
     add_executable(cov
         src/main.cpp
-        src/ui/ui.cpp
     )
     target_include_directories(cov PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
     target_link_libraries(cov PRIVATE
         cov_gpu
-        cov_imgui
+        cov_ui
+        cov_imgui_backends
     )
 
     # Keep source and localisation strings explicitly UTF-8 on MSVC.
@@ -138,5 +164,18 @@ if(COV_BUILD_TESTS)
     add_test(
         NAME parser_smoke
         COMMAND cov_parser_smoke ${CMAKE_CURRENT_SOURCE_DIR}/examples/h2.molden
+    )
+
+    add_executable(cov_ui_smoke
+        tests/ui_smoke.cpp
+    )
+    target_link_libraries(cov_ui_smoke PRIVATE cov_ui)
+    target_compile_options(cov_ui_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
+    )
+
+    add_test(
+        NAME ui_smoke
+        COMMAND cov_ui_smoke
     )
 endif()
