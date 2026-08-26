@@ -106,10 +106,19 @@ if(COV_ENABLE_CUDA)
 
     add_executable(cov
         src/main.cpp
+        src/ui/ui.cpp
+    )
+    target_include_directories(cov PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
     target_link_libraries(cov PRIVATE
         cov_gpu
         cov_imgui
+    )
+
+    # Keep source and localisation strings explicitly UTF-8 on MSVC.
+    target_compile_options(cov PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
 
     if(WIN32)
