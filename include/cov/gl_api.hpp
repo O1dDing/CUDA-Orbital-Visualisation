@@ -5,6 +5,10 @@
 #endif
 #include <GL/gl.h>
 
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+
 namespace cov::gl {
 
 bool load();
