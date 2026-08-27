@@ -57,7 +57,9 @@ int main() {
         return 1;
     }
     if (data.mode != cov::MODiagramMode::ValenceCentral || data.levels.size() != 3) {
-        std::cerr << "valence-central selection failed\n";
+        std::cerr << "valence-central selection failed: levels=" << data.levels.size()
+                  << " included=" << data.selection.included_indices.size()
+                  << " hidden=" << data.selection.hidden_count << '\n';
         return 2;
     }
     if (data.selection.hidden_count != 2 || data.selection.valence_occupied_count != 1 ||

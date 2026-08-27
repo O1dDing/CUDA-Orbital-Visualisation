@@ -8,8 +8,6 @@
 #include <cctype>
 #include <cmath>
 #include <cstdio>
-#include <map>
-#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -168,10 +166,34 @@ struct DiagramPoint {
 float map_energy_y(const double energy,
                    const double e_min,
                    const double e_max,
+                   const double centre,
+                   const double threshold,
+                   const EnergyAxisMode mode,
                    const float top,
                    const float bottom) {
-    const double t = (energy - e_min) / std::max(1.0e-12, e_max - e_min);
+    if (mode == EnergyAxisMode::Linear) {
+        const double t = (energy - e_min) / std::max(1.0e-12, e_max - e_min);
+        return bottom - static_cast<float>(t) * (bottom - top);
+    }
+    const double warped_min = std::asinh((e_min - centre) / threshold);
+    const double warped_max = std::asinh((e_max - centre) / threshold);
+    const double warped = std::asinh((energy - centre) / threshold);
+    const double t = (warped - warped_min) /
+                     std::max(1.0e-12, warped_max - warped_min);
     return bottom - static_cast<float>(t) * (bottom - top);
+}
+
+double energy_at_warp_fraction(const double fraction,
+                               const double e_min,
+                               const double e_max,
+                               const double centre,
+                               const double threshold,
+                               const EnergyAxisMode mode) {
+    if (mode == EnergyAxisMode::Linear) return e_min + fraction * (e_max - e_min);
+    const double warped_min = std::asinh((e_min - centre) / threshold);
+    const double warped_max = std::asinh((e_max - centre) / threshold);
+    return centre + threshold *
+                        std::sinh(warped_min + fraction * (warped_max - warped_min));
 }
 
 int suffix_offset(const std::string& label, const std::size_t group_size) {
@@ -181,7 +203,7 @@ int suffix_offset(const std::string& label, const std::size_t group_size) {
     if (suffix < 'a' || suffix > 'z') return 0;
     return static_cast<int>(std::lround(
         (static_cast<int>(suffix - 'a') -
-         (static_cast<int>(group_size) - 1) * 0.5) * 12.0));
+         (static_cast<int>(group_size) - 1) * 0.5) * 90.0));
 }
 
 void draw_arrow(ImDrawList* draw,
@@ -383,6 +405,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
 
     MODiagramOptions options;
     options.energy_unit = state.energy_unit;
+    options.energy_axis_mode = state.energy_axis_mode;
     options.degeneracy = state.degeneracy;
     options.filter = state.filter;
     options.selected_index = selected_index;
@@ -390,14 +413,21 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     const MODiagramData data = build_mo_diagram_data(wavefunction, options);
 
     const char* plan_label = tr(Text::SimpleDiagram, language);
-    if (data.plan.classification == DiagramClassification::SymmetryGrouped) {
-        plan_label = tr(Text::SymmetryGrouped, language);
-    } else if (data.plan.classification == DiagramClassification::SalcUnavailable) {
-        plan_label = tr(Text::SALCUnavailable, language);
-    }
     ImGui::TextDisabled("%s", plan_label);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("%s", data.plan.machine_reason.c_str());
+    }
+
+    ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
+    ImGui::SameLine();
+    if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language),
+                           state.energy_axis_mode == EnergyAxisMode::Linear)) {
+        state.energy_axis_mode = EnergyAxisMode::Linear;
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton(tr(Text::NonlinearFocus, language),
+                           state.energy_axis_mode == EnergyAxisMode::NonlinearFocus)) {
+        state.energy_axis_mode = EnergyAxisMode::NonlinearFocus;
     }
 
     ImGui::SetNextItemWidth(155.0f * ui_scale);
@@ -430,45 +460,61 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
             e_min -= pad;
             e_max += pad;
         }
-
-        std::vector<std::string> lanes{"MO"};
-        if (data.plan.classification == DiagramClassification::SymmetryGrouped) {
-            std::set<std::string> sym;
-            for (const auto& level : data.levels) {
-                sym.insert(level.metadata.symmetry.empty() ? "?" : level.metadata.symmetry);
+        double energy_centre = (e_min + e_max) * 0.5;
+        for (const auto& level : data.levels) {
+            if (level.metadata.selected) {
+                energy_centre = level.metadata.energy_hartree;
+                break;
             }
-            if (!sym.empty() && sym.size() <= 8) lanes.assign(sym.begin(), sym.end());
         }
-        std::map<std::string, std::size_t> lane_index;
-        for (std::size_t i = 0; i < lanes.size(); ++i) lane_index[lanes[i]] = i;
+        const double energy_threshold = std::max(1.0e-5, (e_max - e_min) * 0.04);
 
-        const float top = p0.y + 24.0f * ui_scale;
+        const float top = p0.y + 30.0f * ui_scale;
         const float bottom = p1.y - 20.0f * ui_scale;
-        const float left = p0.x + 34.0f * ui_scale;
+        const float left = p0.x + 48.0f * ui_scale;
         const float right = p1.x - 42.0f * ui_scale;
-        const float lane_span = (right - left) / static_cast<float>(std::max<std::size_t>(1, lanes.size()));
-
-        if (lanes.size() > 1) {
-            for (std::size_t i = 0; i < lanes.size(); ++i) {
-                const float x = left + (static_cast<float>(i) + 0.5f) * lane_span;
-                const ImVec2 text_size = ImGui::CalcTextSize(lanes[i].c_str());
-                draw->AddText(ImVec2(x - text_size.x * 0.5f, p0.y + 5.0f * ui_scale),
-                              IM_COL32(129, 148, 171, 255), lanes[i].c_str());
-            }
+        const float lane_span = right - left;
+        const float axis_x = left - 22.0f * ui_scale;
+        draw->AddLine(ImVec2(axis_x, bottom), ImVec2(axis_x, top),
+                      IM_COL32(129, 148, 171, 255), 1.4f * ui_scale);
+        draw->AddTriangleFilled(ImVec2(axis_x, top - 5.0f * ui_scale),
+                                ImVec2(axis_x - 4.0f * ui_scale, top + 3.0f * ui_scale),
+                                ImVec2(axis_x + 4.0f * ui_scale, top + 3.0f * ui_scale),
+                                IM_COL32(129, 148, 171, 255));
+        draw->AddText(ImVec2(p0.x + 6.0f * ui_scale, p0.y + 6.0f * ui_scale),
+                      IM_COL32(129, 148, 171, 255), tr(Text::Energy, language));
+        draw->AddText(ImVec2(p0.x + 62.0f * ui_scale, p0.y + 6.0f * ui_scale),
+                      IM_COL32(100, 118, 140, 255),
+                      state.energy_axis_mode == EnergyAxisMode::Linear
+                          ? tr(Text::LinearEnergyScale, language)
+                          : tr(Text::NonlinearEnergyScale, language));
+        for (const double fraction : {0.0, 0.5, 1.0}) {
+            const double tick_energy = energy_at_warp_fraction(
+                fraction, e_min, e_max, energy_centre, energy_threshold,
+                state.energy_axis_mode);
+            const float tick_y = map_energy_y(tick_energy, e_min, e_max,
+                                              energy_centre, energy_threshold,
+                                              state.energy_axis_mode,
+                                              top, bottom);
+            draw->AddLine(ImVec2(axis_x - 4.0f * ui_scale, tick_y),
+                          ImVec2(axis_x + 4.0f * ui_scale, tick_y),
+                          IM_COL32(100, 118, 140, 255), 1.0f);
+            const std::string tick = format_energy(tick_energy, state.energy_unit, 3);
+            draw->AddText(ImVec2(axis_x + 6.0f * ui_scale,
+                                 tick_y - ImGui::GetTextLineHeight() * 0.5f),
+                          IM_COL32(100, 118, 140, 255), tick.c_str());
         }
 
         std::vector<DiagramPoint> points;
         points.reserve(data.levels.size());
         for (const auto& level : data.levels) {
-            std::string lane = "MO";
-            if (lanes.size() > 1) lane = level.metadata.symmetry.empty() ? "?" : level.metadata.symmetry;
-            const auto lane_it = lane_index.find(lane);
-            const std::size_t li = lane_it == lane_index.end() ? 0 : lane_it->second;
-            float cx = left + (static_cast<float>(li) + 0.5f) * lane_span;
+            float cx = left + 0.5f * lane_span;
             cx += static_cast<float>(suffix_offset(level.metadata.display_label,
                                                    level.metadata.degeneracy_size)) * ui_scale;
             const float y = map_energy_y(level.metadata.energy_hartree,
-                                         e_min, e_max, top, bottom);
+                                         e_min, e_max, energy_centre,
+                                         energy_threshold, state.energy_axis_mode,
+                                         top, bottom);
             const float half = std::min(32.0f * ui_scale, lane_span * 0.30f);
 
             ImU32 colour = IM_COL32(196, 210, 227, 255);
@@ -536,6 +582,14 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                                                             : level.metadata.symmetry.c_str());
                 ImGui::Text("%s: %zu", tr(Text::DegenerateSet, language),
                             level.metadata.degeneracy_size);
+                ImGui::Text("%s: %s", tr(Text::OrbitalFamily, language),
+                            level.annotation.family == "unavailable"
+                                ? tr(Text::NoneValue, language)
+                                : level.annotation.family.c_str());
+                ImGui::Text("%s: %s", tr(Text::BondingClassLabel, language),
+                            level.annotation.bonding_class == BondingClass::Unclassified
+                                ? tr(Text::NoneValue, language)
+                                : bonding_class_name(level.annotation.bonding_class));
                 ImGui::EndTooltip();
                 if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
                     actions.select_orbital = level.metadata.orbital_index;

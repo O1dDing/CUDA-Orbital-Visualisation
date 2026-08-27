@@ -483,6 +483,7 @@ int main(int argc, char** argv) {
             if (export_requested && wavefunction) {
                 cov::MODiagramOptions options;
                 options.energy_unit = orbital_ui.energy_unit;
+                options.energy_axis_mode = orbital_ui.energy_axis_mode;
                 options.degeneracy = orbital_ui.degeneracy;
                 options.filter = orbital_ui.filter;
                 options.selected_index = mo_index;

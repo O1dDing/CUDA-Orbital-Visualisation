@@ -7,12 +7,35 @@
 #include <fstream>
 #include <iomanip>
 #include <map>
+#include <numeric>
 #include <set>
 #include <sstream>
 #include <string_view>
 #include <vector>
 
 namespace cov {
+
+const char* energy_axis_mode_name(const EnergyAxisMode mode) noexcept {
+    return mode == EnergyAxisMode::Linear ? "linear" : "nonlinear-focus";
+}
+
+const char* energy_transform_name(const EnergyAxisMode mode) noexcept {
+    return mode == EnergyAxisMode::Linear ? "identity" : "asinh-focus-v1";
+}
+
+double energy_display_coordinate(const double energy_hartree,
+                                 const EnergyTransform& transform) noexcept {
+    if (transform.mode == EnergyAxisMode::Linear) return energy_hartree;
+    const double scale = std::max(1.0e-12, std::abs(transform.scale_hartree));
+    return std::asinh((energy_hartree - transform.focus_hartree) / scale);
+}
+
+double energy_from_display_coordinate(const double coordinate,
+                                      const EnergyTransform& transform) noexcept {
+    if (transform.mode == EnergyAxisMode::Linear) return coordinate;
+    const double scale = std::max(1.0e-12, std::abs(transform.scale_hartree));
+    return transform.focus_hartree + scale * std::sinh(coordinate);
+}
 namespace {
 
 bool occupied(const MolecularOrbital& orbital, const double threshold) noexcept {
@@ -135,6 +158,41 @@ struct EnergyRange {
     double max = 1.0;
 };
 
+struct EnergyScale {
+    EnergyRange range;
+    EnergyTransform transform;
+    double warped_min = 0.0;
+    double warped_max = 1.0;
+};
+
+double warp_energy(const double energy, const EnergyScale& scale) noexcept {
+    return energy_display_coordinate(energy, scale.transform);
+}
+
+EnergyScale energy_scale(const MODiagramData& data,
+                         const EnergyRange& range,
+                         const MODiagramOptions& options) {
+    EnergyScale scale;
+    scale.range = range;
+    scale.transform.mode = options.energy_axis_mode;
+    scale.transform.focus_hartree = (range.min + range.max) * 0.5;
+    for (const auto& level : data.levels) {
+        if (level.metadata.selected) {
+            scale.transform.focus_hartree = level.metadata.energy_hartree;
+            break;
+        }
+    }
+    scale.transform.scale_hartree = std::max(1.0e-5, (range.max - range.min) * 0.04);
+    scale.warped_min = warp_energy(range.min, scale);
+    scale.warped_max = warp_energy(range.max, scale);
+    return scale;
+}
+
+double energy_at_fraction(const double fraction, const EnergyScale& scale) noexcept {
+    const double warped = scale.warped_min + fraction * (scale.warped_max - scale.warped_min);
+    return energy_from_display_coordinate(warped, scale.transform);
+}
+
 EnergyRange energy_range(const MODiagramData& data) {
     EnergyRange range;
     if (data.levels.empty()) return range;
@@ -156,12 +214,12 @@ EnergyRange energy_range(const MODiagramData& data) {
 }
 
 double map_energy_y(const double energy,
-                    const EnergyRange& range,
+                    const EnergyScale& scale,
                     const int height,
                     const int top = 105,
                     const int bottom = 70) {
-    const double t = (energy - range.min) /
-                     std::max(1.0e-12, range.max - range.min);
+    const double t = (warp_energy(energy, scale) - scale.warped_min) /
+                     std::max(1.0e-12, scale.warped_max - scale.warped_min);
     return static_cast<double>(height - bottom) -
            t * static_cast<double>(height - top - bottom);
 }
@@ -175,11 +233,13 @@ int group_member_index(const std::string& label) noexcept {
 }
 
 std::vector<PositionedLevel> position_levels(const MODiagramData& data,
+                                             const MODiagramOptions& options,
                                              const int width,
                                              const int height) {
     std::vector<PositionedLevel> positioned;
     positioned.reserve(data.levels.size());
     const EnergyRange range = energy_range(data);
+    const EnergyScale scale = energy_scale(data, range, options);
     const double centre = static_cast<double>(width) * 0.50;
 
     for (const auto& level : data.levels) {
@@ -190,28 +250,37 @@ std::vector<PositionedLevel> position_levels(const MODiagramData& data,
                                   ? 0.0
                                   : (static_cast<double>(member) -
                                      (static_cast<double>(n) - 1.0) * 0.5) * spacing;
-        const double y = map_energy_y(level.metadata.energy_hartree, range, height);
+        const double y = map_energy_y(level.metadata.energy_hartree, scale, height);
         positioned.push_back({&level, centre + offset, y, y - 7.0});
     }
 
-    // Keep physical level y quantitative; only move text labels to avoid collisions.
-    std::map<int, std::vector<std::size_t>> lanes;
-    for (std::size_t i = 0; i < positioned.size(); ++i) {
-        lanes[static_cast<int>(std::lround(positioned[i].x / 75.0))].push_back(i);
-    }
-    for (auto& [_, ids] : lanes) {
-        std::sort(ids.begin(), ids.end(), [&](const std::size_t a, const std::size_t b) {
+    // Keep physical level y quantitative. Labels share a dedicated outer
+    // column and are spaced globally, so labels can never collide with a
+    // neighbouring degeneracy lane or masquerade as shifted energy levels.
+    std::vector<std::size_t> ids(positioned.size());
+    std::iota(ids.begin(), ids.end(), 0);
+    std::sort(ids.begin(), ids.end(), [&](const std::size_t a, const std::size_t b) {
+        if (positioned[a].label_y != positioned[b].label_y) {
             return positioned[a].label_y < positioned[b].label_y;
-        });
-        double previous = 92.0;
-        for (const std::size_t id : ids) {
-            positioned[id].label_y = std::max(positioned[id].label_y, previous + 22.0);
-            previous = positioned[id].label_y;
         }
-        const double overflow = previous - static_cast<double>(height - 48);
-        if (overflow > 0.0) {
-            for (const std::size_t id : ids) positioned[id].label_y -= overflow;
-        }
+        return positioned[a].x < positioned[b].x;
+    });
+    constexpr double kLabelSpacing = 32.0;
+    constexpr double kTopLabel = 104.0;
+    const double bottom_label = static_cast<double>(height - 48);
+    double previous = kTopLabel - kLabelSpacing;
+    for (const std::size_t id : ids) {
+        positioned[id].label_y = std::max(positioned[id].label_y, previous + kLabelSpacing);
+        previous = positioned[id].label_y;
+    }
+    const double overflow = previous - bottom_label;
+    if (overflow > 0.0) {
+        for (const std::size_t id : ids) positioned[id].label_y -= overflow;
+    }
+    double next = bottom_label + kLabelSpacing;
+    for (auto it = ids.rbegin(); it != ids.rend(); ++it) {
+        positioned[*it].label_y = std::min(positioned[*it].label_y, next - kLabelSpacing);
+        next = positioned[*it].label_y;
     }
     return positioned;
 }
@@ -642,7 +711,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
     const int width = std::max(760, options.width);
     const int height = std::max(620, options.height);
     const EnergyRange range = energy_range(data);
-    const auto positioned = position_levels(data, width, height);
+    const EnergyScale scale = energy_scale(data, range, options);
+    const auto positioned = position_levels(data, options, width, height);
 
     out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     out << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" << width
@@ -658,12 +728,14 @@ bool write_mo_diagram_svg(const MODiagramData& data,
     out << "<line x1=\"" << axis_x << "\" y1=\"105\" x2=\"" << axis_x
         << "\" y2=\"" << height - 62 << "\" stroke=\"#2d3745\" stroke-width=\"2\"/>\n";
     out << "<path d=\"M " << axis_x << " 96 l -5 10 h 10 z\" fill=\"#2d3745\"/>\n";
-    out << "<text x=\"24\" y=\"120\" fill=\"#4d5a6c\" font-family=\"sans-serif\" font-size=\"12\" transform=\"rotate(-90 24 120)\">Energy ("
+    out << "<text x=\"24\" y=\"120\" fill=\"#4d5a6c\" font-family=\"sans-serif\" font-size=\"12\" transform=\"rotate(-90 24 120)\">Energy · "
+        << (options.energy_axis_mode == EnergyAxisMode::Linear ? "linear" : "nonlinear focus (asinh)")
+        << " ("
         << xml_escape(energy_unit_symbol(options.energy_unit)) << ")</text>\n";
 
     for (const double fraction : {0.0, 0.5, 1.0}) {
-        const double e = range.min + fraction * (range.max - range.min);
-        const double y = map_energy_y(e, range, height);
+        const double e = energy_at_fraction(fraction, scale);
+        const double y = map_energy_y(e, scale, height);
         out << "<line x1=\"64\" y1=\"" << y << "\" x2=\"76\" y2=\"" << y
             << "\" stroke=\"#7c8795\" stroke-width=\"1\"/>\n";
         out << "<text x=\"80\" y=\"" << y + 4 << "\" fill=\"#7c8795\" font-family=\"sans-serif\" font-size=\"10\">"
@@ -693,7 +765,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
                 << "\" fill=\"#151d28\" font-family=\"sans-serif\" font-size=\"19\">↓</text>\n";
         }
 
-        const double label_x = item.x + 56.0;
+        const double label_x = static_cast<double>(width) * 0.72;
         if (std::abs(item.label_y - item.y) > 5.0) {
             out << "<line x1=\"" << x1 + 2 << "\" y1=\"" << item.y << "\" x2=\""
                 << label_x - 6 << "\" y2=\"" << item.label_y << "\" stroke=\"#b6c0cc\" stroke-width=\"1\"/>\n";
@@ -741,7 +813,8 @@ bool write_mo_diagram_png(const MODiagramData& data,
     const int height = std::max(620, options.height);
     Canvas canvas(width, height);
     const EnergyRange range = energy_range(data);
-    const auto positioned = position_levels(data, width, height);
+    const EnergyScale scale = energy_scale(data, range, options);
+    const auto positioned = position_levels(data, options, width, height);
 
     draw_text(canvas, 28, 22, "VALENCE MO DIAGRAM", 24, 34, 49, 3);
     draw_text(canvas, 28, 50,
@@ -753,7 +826,17 @@ bool write_mo_diagram_png(const MODiagramData& data,
     canvas.line(axis_x, 96, axis_x, height - 60, 45, 55, 70, 2);
     canvas.line(axis_x, 96, axis_x - 5, 106, 45, 55, 70, 2);
     canvas.line(axis_x, 96, axis_x + 5, 106, 45, 55, 70, 2);
-    draw_text(canvas, 18, 96, "E", 45, 55, 70, 2);
+    draw_text(canvas, 18, 96,
+              options.energy_axis_mode == EnergyAxisMode::Linear ? "E LINEAR" : "E FOCUS ASINH",
+              45, 55, 70, 2);
+
+    for (const double fraction : {0.0, 0.5, 1.0}) {
+        const double e = energy_at_fraction(fraction, scale);
+        const int y = static_cast<int>(std::lround(map_energy_y(e, scale, height)));
+        canvas.line(axis_x - 5, y, axis_x + 5, y, 124, 135, 149, 1);
+        draw_text(canvas, 80, y - 5, format_energy(e, options.energy_unit, 3),
+                  101, 116, 136, 1);
+    }
 
     for (const auto& item : positioned) {
         const auto& level = *item.level;
@@ -770,10 +853,11 @@ bool write_mo_diagram_png(const MODiagramData& data,
         if (level.electrons.beta > 0) draw_electron(canvas, x + 9, y - 2, false);
 
         const int label_y = static_cast<int>(std::lround(item.label_y));
-        if (std::abs(label_y - y) > 5) {
-            canvas.line(x + 47, y, x + 54, label_y, 184, 194, 206, 1);
+        const int label_x = static_cast<int>(std::lround(static_cast<double>(width) * 0.72));
+        if (std::abs(label_y - y) > 5 || label_x > x + 58) {
+            canvas.line(x + 47, y, label_x - 8, label_y, 184, 194, 206, 1);
         }
-        draw_text(canvas, x + 58, label_y - 7, level.metadata.display_label,
+        draw_text(canvas, label_x, label_y - 7, level.metadata.display_label,
                   colour[0], colour[1], colour[2], 2);
         const std::string annotation = annotation_summary(level.annotation);
         if (!annotation.empty()) {
@@ -794,9 +878,15 @@ bool write_mo_diagram_json(const MODiagramData& data,
     }
     const std::set<std::size_t> included(data.selection.included_indices.begin(),
                                          data.selection.included_indices.end());
+    const EnergyScale axis = energy_scale(data, energy_range(data), options);
     out << "{\n";
     out << "  \"schema\": \"cov.mo-diagram.v2\",\n";
     out << "  \"mode\": \"valence-central\",\n";
+    out << "  \"energy_axis_mode\": \"" << energy_axis_mode_name(options.energy_axis_mode) << "\",\n";
+    out << "  \"transform_name\": \"" << energy_transform_name(options.energy_axis_mode) << "\",\n";
+    out << "  \"transform_parameters\": {\"focus_hartree\": " << std::setprecision(15)
+        << axis.transform.focus_hartree << ", \"scale_hartree\": "
+        << axis.transform.scale_hartree << "},\n";
     out << "  \"selection_summary\": \"" << json_escape(data.selection.summary) << "\",\n";
     out << "  \"shown_orbitals\": " << data.selection.included_indices.size() << ",\n";
     out << "  \"hidden_orbitals\": " << data.selection.hidden_count << ",\n";
@@ -811,8 +901,11 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << "    {\"index\": " << item.orbital_index
             << ", \"raw_mo\": " << item.raw_mo_number
             << ", \"label\": \"" << json_escape(item.display_label) << "\""
-            << ", \"energy_hartree\": " << std::setprecision(15) << item.energy_hartree
+            << ", \"source_energy_hartree\": " << std::setprecision(15) << item.energy_hartree
+            << ", \"energy_hartree\": " << item.energy_hartree
             << ", \"energy_display\": " << convert_hartree(item.energy_hartree, options.energy_unit)
+            << ", \"display_coordinate\": "
+            << energy_display_coordinate(item.energy_hartree, axis.transform)
             << ", \"occupation\": " << item.occupation
             << ", \"spin\": \"" << spin_name(item.spin) << "\""
             << ", \"symmetry\": \"" << json_escape(item.symmetry) << "\""
@@ -850,7 +943,9 @@ bool write_mo_diagram_csv(const MODiagramData& data,
     }
     const std::set<std::size_t> included(data.selection.included_indices.begin(),
                                          data.selection.included_indices.end());
-    out << "internal_index,raw_mo,display_label,energy_hartree,energy_display,energy_unit,"
+    const EnergyScale axis = energy_scale(data, energy_range(data), options);
+    out << "internal_index,raw_mo,display_label,source_energy_hartree,energy_display,energy_unit,"
+           "energy_axis_mode,transform_name,focus_hartree,scale_hartree,display_coordinate,"
            "occupation,spin,symmetry,degeneracy_size,region,included_in_diagram,visible,selected,"
            "orbital_family,family_source,family_confidence,bonding_class,bonding_class_source,"
            "bonding_confidence,heuristic\n";
@@ -861,7 +956,12 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             << csv_escape(item.display_label) << ',' << std::setprecision(15)
             << item.energy_hartree << ','
             << convert_hartree(item.energy_hartree, options.energy_unit) << ','
-            << energy_unit_symbol(options.energy_unit) << ',' << item.occupation << ','
+            << energy_unit_symbol(options.energy_unit) << ','
+            << energy_axis_mode_name(options.energy_axis_mode) << ','
+            << energy_transform_name(options.energy_axis_mode) << ','
+            << axis.transform.focus_hartree << ',' << axis.transform.scale_hartree << ','
+            << energy_display_coordinate(item.energy_hartree, axis.transform) << ','
+            << item.occupation << ','
             << spin_name(item.spin) << ',' << csv_escape(item.symmetry) << ','
             << item.degeneracy_size << ',' << region_name(item.region) << ','
             << (included.count(i) ? "true" : "false") << ','

@@ -14,6 +14,24 @@ enum class MODiagramMode {
     ValenceCentral = 0,
 };
 
+enum class EnergyAxisMode {
+    Linear = 0,
+    NonlinearFocus,
+};
+
+struct EnergyTransform {
+    EnergyAxisMode mode = EnergyAxisMode::NonlinearFocus;
+    double focus_hartree = 0.0;
+    double scale_hartree = 1.0e-4;
+};
+
+[[nodiscard]] const char* energy_axis_mode_name(EnergyAxisMode mode) noexcept;
+[[nodiscard]] const char* energy_transform_name(EnergyAxisMode mode) noexcept;
+[[nodiscard]] double energy_display_coordinate(double energy_hartree,
+                                               const EnergyTransform& transform) noexcept;
+[[nodiscard]] double energy_from_display_coordinate(double coordinate,
+                                                    const EnergyTransform& transform) noexcept;
+
 enum class AnnotationSource {
     Direct,
     ParsedLabel,
@@ -50,6 +68,7 @@ struct DiagramSelectionPlan {
 struct MODiagramOptions {
     MODiagramMode mode = MODiagramMode::ValenceCentral;
     EnergyUnit energy_unit = EnergyUnit::Hartree;
+    EnergyAxisMode energy_axis_mode = EnergyAxisMode::NonlinearFocus;
     DegeneracySettings degeneracy{};
     OrbitalFilterSettings filter{};
     std::size_t selected_index = 0;

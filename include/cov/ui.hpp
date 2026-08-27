@@ -104,6 +104,12 @@ enum class Text {
     OpenDialogUnsupported,
     CopyMetadata,
     NoOrbitals,
+    NonlinearEnergyScale,
+    EnergyScale,
+    LinearEnergyScale,
+    NonlinearFocus,
+    OrbitalFamily,
+    BondingClassLabel,
     Count,
 };
 

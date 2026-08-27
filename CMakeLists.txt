@@ -159,8 +159,10 @@ if(COV_ENABLE_CUDA)
             glfw
     )
     set_target_properties(cov_gpu PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON
-        CUDA_RESOLVE_DEVICE_SYMBOLS ON
+        # One CUDA translation unit needs no RDC/device-link pass. Keeping the
+        # fatbin in the object preserves both the native cubin and PTX fallback.
+        CUDA_SEPARABLE_COMPILATION OFF
+        CUDA_RESOLVE_DEVICE_SYMBOLS OFF
         POSITION_INDEPENDENT_CODE ON
     )
     target_compile_options(cov_gpu PRIVATE
@@ -207,6 +209,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_mo_diagram_smoke tests/mo_diagram_smoke.cpp)
     target_link_libraries(cov_mo_diagram_smoke PRIVATE cov_orbitals)
     add_test(NAME mo_diagram_smoke COMMAND cov_mo_diagram_smoke)
+
+    add_executable(cov_energy_axis_smoke tests/energy_axis_smoke.cpp)
+    target_link_libraries(cov_energy_axis_smoke PRIVATE cov_orbitals)
+    add_test(NAME energy_axis_smoke COMMAND cov_energy_axis_smoke)
 
     add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
     target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule)

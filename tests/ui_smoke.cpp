@@ -61,6 +61,19 @@ int main() {
         ImGui::DestroyContext();
         return 6;
     }
+    if (std::strcmp(cov::ui::tr(cov::ui::Text::MediumBallStick,
+                                cov::ui::Language::English),
+                    "Enhanced ball-and-stick") != 0 ||
+        std::strcmp(cov::ui::tr(cov::ui::Text::AroundSelected,
+                                cov::ui::Language::ChineseSimplified),
+                    "价电子 MO 图范围") != 0 ||
+        std::strcmp(cov::ui::tr(cov::ui::Text::SimpleDiagram,
+                                cov::ui::Language::French),
+                    "Diagramme MO de valence") != 0) {
+        std::cerr << "valence diagram localisation mismatch\n";
+        ImGui::DestroyContext();
+        return 7;
+    }
 
     ImGui::DestroyContext();
     std::cout << "ui_smoke ok\n";

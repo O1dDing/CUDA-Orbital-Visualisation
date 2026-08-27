@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/model.hpp"
+#include "cov/mo_diagram.hpp"
 #include "cov/orbital_view.hpp"
 #include "cov/ui.hpp"
 
@@ -12,6 +13,7 @@ namespace cov::ui {
 
 struct OrbitalUIState {
     EnergyUnit energy_unit = EnergyUnit::Hartree;
+    EnergyAxisMode energy_axis_mode = EnergyAxisMode::NonlinearFocus;
     DegeneracySettings degeneracy{};
     OrbitalFilterSettings filter{};
     bool grouped_labels = true;
