@@ -257,6 +257,8 @@ Vec3 atom_colour(const int z) {
         case 15: return {0.95f,0.55f,0.10f};
         case 16: return {0.95f,0.85f,0.12f};
         case 17: return {0.15f,0.80f,0.22f};
+        case 35: return {0.65f,0.16f,0.16f};
+        case 53: return {0.45f,0.18f,0.62f};
         default: return {0.65f,0.65f,0.70f};
     }
 }
@@ -439,7 +441,10 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     glLoadIdentity();
 
     const float opacity = std::clamp(settings.molecule_opacity, 0.05f, 1.0f);
-    const float line_width = (settings.style == MoleculeStyle::MediumBallAndStick ? 1.55f : 1.15f) *
+    // Manual 4K validation showed the original 1.55/1.15 pixel baselines still
+    // looked like hairlines. Use a GaussView-like screen weight while keeping
+    // the user scale controls intact.
+    const float line_width = (settings.style == MoleculeStyle::MediumBallAndStick ? 2.40f : 1.80f) *
                              std::clamp(settings.bond_scale, 0.35f, 3.0f);
     glLineWidth(line_width);
 
@@ -475,10 +480,10 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
             const float radius = static_cast<float>(covalent_radius_angstrom(atom.atomic_number));
             const float perspective = std::clamp(1.7f / std::max(0.45f, depth), 0.70f, 1.65f);
             const float point_size = std::clamp(
-                (11.0f + 9.0f * radius) * settings.atom_scale * perspective,
-                6.0f, 34.0f);
+                (15.0f + 13.0f * radius) * settings.atom_scale * perspective,
+                10.0f, 52.0f);
 
-            glPointSize(point_size + 3.0f);
+            glPointSize(point_size + 4.5f);
             glColor4f(0.025f, 0.031f, 0.043f, opacity * 0.95f);
             glBegin(GL_POINTS);
             glVertex2f(x, y);
