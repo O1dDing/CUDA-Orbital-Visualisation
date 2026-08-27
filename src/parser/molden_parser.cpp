@@ -337,6 +337,14 @@ Wavefunction parse_molden(const std::filesystem::path& path,
     std::uint32_t coefficient_count = 0;
     std::vector<std::uint8_t> coefficient_seen(wf.basis_count, 0u);
 
+    const auto begin_mo = [&]() {
+        current_mo = MolecularOrbital{};
+        current_mo.coefficients.assign(wf.basis_count, 0.0f);
+        std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
+        coefficient_count = 0;
+        have_mo = true;
+    };
+
     while (std::getline(input, line)) {
         const std::string t = trim(line);
         if (t.empty()) {
@@ -354,31 +362,41 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         }
 
         if (starts_with_ci(t, "sym=")) {
-            finalise_mo(current_mo, have_mo, coefficient_count, wf, true);
-            current_mo = MolecularOrbital{};
-            current_mo.coefficients.assign(wf.basis_count, 0.0f);
-            std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
+            // Sym= is the traditional Molden MO delimiter. Some writers put
+            // Ene= first, so only close an existing MO after coefficients have
+            // actually been read; otherwise this metadata belongs to the same MO.
+            if (have_mo && coefficient_count > 0) {
+                finalise_mo(current_mo, have_mo, coefficient_count, wf, true);
+            }
+            if (!have_mo) begin_mo();
             current_mo.symmetry = value_after_equals(t);
-            have_mo = true;
+            continue;
+        }
+
+        if (starts_with_ci(t, "ene=")) {
+            // Multiwfn and other valid Molden writers may omit Sym= entirely.
+            // In that dialect each new Ene= after a complete coefficient block
+            // is the next MO boundary. Without this boundary, coefficient index
+            // 1 from the next orbital was falsely reported as a duplicate.
+            if (have_mo && coefficient_count > 0) {
+                finalise_mo(current_mo, have_mo, coefficient_count, wf, true);
+            }
+            if (!have_mo) begin_mo();
+            current_mo.energy_hartree = parse_fortran_double(value_after_equals(t));
             continue;
         }
 
         if (!have_mo) {
-            // Some writers omit Sym=. Start an MO when any metadata appears.
-            if (starts_with_ci(t, "ene=") || starts_with_ci(t, "spin=") ||
-                starts_with_ci(t, "occup=")) {
-                current_mo.coefficients.assign(wf.basis_count, 0.0f);
-                std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
-                coefficient_count = 0;
-                have_mo = true;
+            // Be permissive about metadata ordering while remaining strict about
+            // coefficient completeness and duplicate indices inside one MO.
+            if (starts_with_ci(t, "spin=") || starts_with_ci(t, "occup=")) {
+                begin_mo();
             } else {
                 continue;
             }
         }
 
-        if (starts_with_ci(t, "ene=")) {
-            current_mo.energy_hartree = parse_fortran_double(value_after_equals(t));
-        } else if (starts_with_ci(t, "spin=")) {
+        if (starts_with_ci(t, "spin=")) {
             const auto spin = lower(value_after_equals(t));
             current_mo.spin = (spin.find("beta") != std::string::npos)
                                   ? Spin::Beta
