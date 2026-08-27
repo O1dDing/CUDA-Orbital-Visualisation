@@ -5,8 +5,8 @@
 
 int main() {
     const cov::MoleculeRenderSettings defaults;
-    if (defaults.atom_scale < 1.25f || defaults.bond_scale < 1.30f ||
-        defaults.molecule_opacity < 0.90f) {
+    if (defaults.atom_scale < 1.75f || defaults.bond_scale < 1.95f ||
+        defaults.molecule_opacity < 0.95f) {
         std::cerr << "enhanced ball-and-stick defaults regressed\n";
         return 1;
     }
