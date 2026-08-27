@@ -262,9 +262,12 @@ bool configure_fonts(const float pixel_size) {
     io.Fonts->Clear();
     io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
 #ifdef _WIN32
-    const std::string base = first_existing({"C:/Windows/Fonts/segoeui.ttf", "C:/Windows/Fonts/arial.ttf"});
+    // Windows 11: prefer Segoe UI Variable Text for cleaner high-DPI UI; keep
+    // classic Segoe UI as the Windows 10 fallback. CJK glyphs are merged from
+    // the OS-provided UI faces, so the downloadable cov.exe ships no font files.
+    const std::string base = first_existing({"C:/Windows/Fonts/SegUIVar.ttf", "C:/Windows/Fonts/segoeui.ttf", "C:/Windows/Fonts/arial.ttf"});
     const std::string chinese = first_existing({"C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/msyh.ttf", "C:/Windows/Fonts/simhei.ttf"});
-    const std::string japanese = first_existing({"C:/Windows/Fonts/YuGothR.ttc", "C:/Windows/Fonts/meiryo.ttc", "C:/Windows/Fonts/msgothic.ttc"});
+    const std::string japanese = first_existing({"C:/Windows/Fonts/YuGothM.ttc", "C:/Windows/Fonts/YuGothR.ttc", "C:/Windows/Fonts/meiryo.ttc", "C:/Windows/Fonts/msgothic.ttc"});
 #elif defined(__APPLE__)
     const std::string base = first_existing({"/System/Library/Fonts/SFNS.ttf", "/System/Library/Fonts/Supplemental/Arial.ttf"});
     const std::string chinese = first_existing({"/System/Library/Fonts/PingFang.ttc", "/Library/Fonts/NotoSansCJK-Regular.ttc"});
@@ -286,7 +289,7 @@ bool configure_fonts(const float pixel_size) {
     ImFont* primary = nullptr;
     if (!base.empty()) {
         ImFontConfig cfg{};
-        cfg.OversampleH = 2;
+        cfg.OversampleH = 3;
         cfg.OversampleV = 1;
         primary = io.Fonts->AddFontFromFileTTF(base.c_str(), pixel_size, &cfg, latin_ranges.Data);
     }
