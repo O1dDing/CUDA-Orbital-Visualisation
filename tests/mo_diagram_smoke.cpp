@@ -110,7 +110,7 @@ int main() {
     if (svg.find("Valence MO diagram") == std::string::npos ||
         svg.find("3-a") == std::string::npos ||
         svg.find("3-b") == std::string::npos ||
-        svg.find("strict SALC reconstruction is not claimed") == std::string::npos) {
+        svg.find("Molden-derived MO energies/occupations/symmetry") == std::string::npos) {
         std::cerr << "valence SVG markers missing\n";
         return 10;
     }
