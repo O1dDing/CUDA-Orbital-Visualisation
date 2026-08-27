@@ -26,3 +26,56 @@ jobs:
           name: mo-visual-${{ matrix.os }}
           path: build/visual_artifacts/
           if-no-files-found: warn
+
+  windows-cuda-viewer:
+    name: prebuilt Windows CUDA viewer
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install CUDA 12.8.2 build toolkit
+        uses: Jimver/cuda-toolkit@v0.2.36
+        id: cuda-toolkit
+        with:
+          cuda: '12.8.2'
+          method: network
+          sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
+
+      - name: Show CUDA compiler
+        shell: pwsh
+        run: |
+          nvcc --version
+          Write-Host "CUDA_PATH=$env:CUDA_PATH"
+
+      - name: Configure Blackwell Release viewer
+        shell: pwsh
+        run: >-
+          cmake -S . -B build-cuda
+          -G "Visual Studio 17 2022" -A x64
+          -DCOV_ENABLE_CUDA=ON
+          -DCOV_BUILD_TESTS=OFF
+          -DCMAKE_CUDA_ARCHITECTURES="120-real;120-virtual"
+
+      - name: Build cov.exe
+        shell: pwsh
+        run: cmake --build build-cuda --config Release --parallel
+
+      - name: Verify standalone binary and sm_120 payload
+        shell: pwsh
+        run: |
+          $exe = "build-cuda/Release/cov.exe"
+          if (-not (Test-Path $exe)) { throw "cov.exe was not produced" }
+          & "$env:CUDA_PATH/bin/cuobjdump.exe" --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
+          if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) {
+            throw "sm_120 native cubin was not found in cov.exe"
+          }
+          Get-Item $exe | Format-List FullName,Length,LastWriteTime
+
+      - name: Upload ready-to-run cov.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: cov-windows-sm120
+          path: build-cuda/Release/cov.exe
+          if-no-files-found: error
+          retention-days: 30
