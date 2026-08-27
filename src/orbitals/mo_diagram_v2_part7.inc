@@ -60,7 +60,7 @@ void draw_symmetry_png(Canvas& canvas,
                   baseline_y, na, 91, 105, 124, 1);
         return;
     }
-    const int base_scale = 2;
+    const int base_scale = 1;
     const int base_w = bitmap_text_width(notation.base, base_scale);
     const int sub_w = static_cast<int>(notation.subscript.size()) * 6;
     int prime_count = 0;
@@ -74,7 +74,7 @@ void draw_symmetry_png(Canvas& canvas,
     draw_text(canvas, x, baseline_y, notation.base, 91, 105, 124, base_scale);
     x += base_w;
     if (!notation.subscript.empty()) {
-        draw_small_subscript(canvas, x, baseline_y + 8, notation.subscript);
+        draw_small_subscript(canvas, x, baseline_y + 5, notation.subscript);
     }
     if (!notation.superscript.empty()) {
         draw_prime_marks(canvas, x + std::max(0, sub_w - 2), baseline_y - 4, raw);
@@ -131,11 +131,13 @@ bool write_mo_diagram_png(const MODiagramData& data,
         if (level.electrons.beta > 0) draw_electron(canvas, static_cast<int>(item.x) + 10, y - 2, false);
 
         // Human-facing export: orbital type directly below each level; MO
-        // identifiers intentionally stay out of the figure.
-        const std::string type = orbital_type_plain(level.annotation);
+        // identifiers intentionally stay out of the figure. Collapse the
+        // fully-unavailable pair to a single N/A to reduce visual noise.
+        std::string type = orbital_type_plain(level.annotation);
+        if (type == "N/A | N/A") type = "N/A";
         const int type_x = static_cast<int>(item.x) - bitmap_text_width(type, 1) / 2;
-        draw_text(canvas, type_x, y + 8, type, 67, 81, 102, 1);
-        draw_symmetry_png(canvas, static_cast<int>(item.x), y + 20,
+        draw_text(canvas, type_x, y + 13, type, 67, 81, 102, 1);
+        draw_symmetry_png(canvas, static_cast<int>(item.x), y + 24,
                           level.metadata.symmetry);
 
         if (level.annotation.delocalised_pi.available) {
@@ -151,7 +153,7 @@ bool write_mo_diagram_png(const MODiagramData& data,
             const std::string value = pi.str();
             draw_text(canvas,
                       static_cast<int>(item.x) - bitmap_text_width(value, 1) / 2,
-                      y + 31, value, 91, 101, 117, 1);
+                      y + 34, value, 91, 101, 117, 1);
         }
     }
 
