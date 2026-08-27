@@ -79,6 +79,10 @@ enum class OrbitalRegion {
 struct DegeneracySettings {
     double tolerance_hartree = 1.0e-5;
     bool require_same_spin = true;
+    // If both producer symmetry labels are meaningful, different labels are
+    // not automatically collapsed into one set merely because the printed
+    // energies happen to coincide.
+    bool require_compatible_symmetry = true;
 };
 
 struct OrbitalLabel {
