@@ -29,10 +29,10 @@ jobs:
 
   windows-cuda-viewer:
     name: prebuilt Windows CUDA viewer
-    # CUDA 12.8 is validated with the VS2022 host compiler. windows-latest has
-    # moved to a VS2026 image, so pin this packaging job to the VS2022 runner.
     runs-on: windows-2022
     timeout-minutes: 45
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -42,7 +42,7 @@ jobs:
         with:
           cuda: '12.8.2'
           method: network
-          sub-packages: '["nvcc", "cudart", "visual_studio_integration"]'
+          sub-packages: '["nvcc", "cudart", "cuobjdump", "visual_studio_integration"]'
 
       - name: Show CUDA compiler
         shell: pwsh
@@ -68,11 +68,13 @@ jobs:
         run: |
           $exe = "build-cuda/Release/cov.exe"
           if (-not (Test-Path $exe)) { throw "cov.exe was not produced" }
-          & "$env:CUDA_PATH/bin/cuobjdump.exe" --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
+          $cuobjdump = Join-Path $env:CUDA_PATH "bin/cuobjdump.exe"
+          if (-not (Test-Path $cuobjdump)) { throw "cuobjdump.exe is missing from the CUDA build environment" }
+          & $cuobjdump --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
           if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) {
             throw "sm_120 native cubin was not found in cov.exe"
           }
-          & "$env:CUDA_PATH/bin/cuobjdump.exe" --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
+          & $cuobjdump --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
           if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) {
             throw "compute_120 PTX fallback was not found in cov.exe"
           }
@@ -85,3 +87,17 @@ jobs:
           path: build-cuda/Release/cov.exe
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish v0.2.0-pre.1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/vibe/orbital-browser-and-file-dialog'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = "build-cuda/Release/cov.exe"
+          gh release create "v0.2.0-pre.1" $exe `
+            --repo "$env:GITHUB_REPOSITORY" `
+            --target "$env:GITHUB_SHA" `
+            --title "CUDA Orbital Visualisation v0.2.0-pre.1" `
+            --notes "First downloadable Windows Blackwell pre-release for manual validation. Built with CUDA 12.8.2 for sm_120 native code plus compute_120 PTX. This remains a pre-release and PR #2 remains Draft pending the outstanding manual/scientific validation gates." `
+            --prerelease
