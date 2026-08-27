@@ -225,12 +225,19 @@ void infer_omitted_basis_markers(const std::filesystem::path& path,
         return;
     }
 
+    const bool has_d = std::any_of(raw_shells.begin(), raw_shells.end(),
+                                   [](const RawShell& shell) { return shell.type == "d"; });
+    const bool has_f = std::any_of(raw_shells.begin(), raw_shells.end(),
+                                   [](const RawShell& shell) { return shell.type == "f"; });
+    const bool has_g = std::any_of(raw_shells.begin(), raw_shells.end(),
+                                   [](const RawShell& shell) { return shell.type == "g"; });
+
     std::vector<BasisConvention> matches;
     for (int mask = 0; mask < 8; ++mask) {
         const BasisConvention candidate{
-            seen.d_declared ? wf.pure_d : ((mask & 1) != 0),
-            seen.f_declared ? wf.pure_f : ((mask & 2) != 0),
-            seen.g_declared ? wf.pure_g : ((mask & 4) != 0),
+            (seen.d_declared || !has_d) ? wf.pure_d : ((mask & 1) != 0),
+            (seen.f_declared || !has_f) ? wf.pure_f : ((mask & 2) != 0),
+            (seen.g_declared || !has_g) ? wf.pure_g : ((mask & 4) != 0),
         };
 
         const auto duplicate = std::find_if(matches.begin(), matches.end(),
@@ -250,8 +257,9 @@ void infer_omitted_basis_markers(const std::filesystem::path& path,
     // Some writers (observed with Multiwfn-generated Gaussian/def2 Molden files)
     // emit [5D] while omitting [7F], even though their MO vector length proves
     // that the f shell is pure spherical. Infer only when coefficient dimension
-    // yields one unique convention while respecting every explicit marker.
-    // Ambiguous or inconsistent files remain strict and fail later as before.
+    // yields one unique convention for shell families that actually exist,
+    // while respecting every explicit marker. Ambiguous/inconsistent files
+    // remain strict and fail later as before.
     if (matches.size() == 1u) {
         wf.pure_d = matches.front().pure_d;
         wf.pure_f = matches.front().pure_f;
