@@ -81,6 +81,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
 
     add_library(cov_ui STATIC
         src/ui/ui.cpp
+        src/ui/orbital_ui.cpp
     )
     target_include_directories(cov_ui PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
