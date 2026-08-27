@@ -5,8 +5,8 @@
 #include <imgui.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
-#include <cstdio>
 #include <map>
 #include <optional>
 #include <sstream>
@@ -24,14 +24,6 @@ const char* filter_name(const OrbitalFilterMode mode, const Language language) {
         case OrbitalFilterMode::Core: return tr(Text::FilterCore, language);
         case OrbitalFilterMode::Valence: return tr(Text::FilterValence, language);
         default: return tr(Text::FilterAuto, language);
-    }
-}
-
-const char* region_name_ui(const OrbitalRegion region, const Language language) {
-    switch (region) {
-        case OrbitalRegion::Core: return tr(Text::Core, language);
-        case OrbitalRegion::Valence: return tr(Text::Valence, language);
-        default: return tr(Text::Virtual, language);
     }
 }
 
@@ -54,6 +46,27 @@ const char* bonding_ui(const BondingClass value) {
         case BondingClass::Antibonding: return "antibonding";
         default: return "N/A";
     }
+}
+
+std::string lower_ascii(std::string value) {
+    std::transform(value.begin(), value.end(), value.begin(), [](const unsigned char c) {
+        return static_cast<char>(std::tolower(c));
+    });
+    return value;
+}
+
+bool search_matches(const OrbitalMetadata& item, const char* query) {
+    if (!query || !*query) return true;
+    std::ostringstream haystack;
+    haystack << item.raw_mo_number << ' ' << item.display_label << ' '
+             << item.symmetry << ' '
+             << (item.spin == Spin::Beta ? "beta" : "alpha") << ' ';
+    switch (item.region) {
+        case OrbitalRegion::Core: haystack << "core"; break;
+        case OrbitalRegion::Valence: haystack << "valence"; break;
+        default: haystack << "virtual"; break;
+    }
+    return lower_ascii(haystack.str()).find(lower_ascii(query)) != std::string::npos;
 }
 
 std::optional<std::size_t> previous_occupied(const std::vector<MolecularOrbital>& orbitals,
@@ -115,8 +128,7 @@ void energy_unit_combo(OrbitalUIState& state) {
     }
 }
 
-bool filter_combo(OrbitalUIState& state, const Language language) {
-    bool changed = false;
+void filter_combo(OrbitalUIState& state, const Language language) {
     if (ImGui::BeginCombo("##orbital_filter", filter_name(state.filter.mode, language))) {
         constexpr OrbitalFilterMode modes[] = {
             OrbitalFilterMode::AutoReasonable, OrbitalFilterMode::All,
@@ -125,29 +137,23 @@ bool filter_combo(OrbitalUIState& state, const Language language) {
         };
         for (const auto mode : modes) {
             const bool selected = state.filter.mode == mode;
-            if (ImGui::Selectable(filter_name(mode, language), selected)) {
-                state.filter.mode = mode;
-                changed = true;
-            }
+            if (ImGui::Selectable(filter_name(mode, language), selected)) state.filter.mode = mode;
             if (selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
     }
-    return changed;
 }
 
-float rich_symmetry_width(const SymmetryNotation& notation, const float font_size) {
+float rich_symmetry_width(const SymmetryNotation& notation) {
     if (notation.base.empty()) return ImGui::CalcTextSize("N/A").x;
     const float base = ImGui::CalcTextSize(notation.base.c_str()).x;
-    const float sub = notation.subscript.empty() ? 0.0f :
-        ImGui::CalcTextSize(notation.subscript.c_str()).x * 0.72f;
-    const float sup = notation.superscript.empty() ? 0.0f :
-        ImGui::CalcTextSize(notation.superscript.c_str()).x * 0.72f;
-    (void)font_size;
+    const float sub = notation.subscript.empty() ? 0.0f : ImGui::CalcTextSize(notation.subscript.c_str()).x * 0.72f;
+    const float sup = notation.superscript.empty() ? 0.0f : ImGui::CalcTextSize(notation.superscript.c_str()).x * 0.72f;
     return base + std::max(sub, sup);
 }
 
-void draw_rich_symmetry(const std::string& raw, const ImU32 colour = IM_COL32(220,228,240,255)) {
+void draw_rich_symmetry(const std::string& raw,
+                        const ImU32 colour = IM_COL32(220, 228, 240, 255)) {
     const SymmetryNotation notation = parse_symmetry_notation(raw);
     if (notation.base.empty()) {
         ImGui::TextUnformatted("N/A");
@@ -158,7 +164,7 @@ void draw_rich_symmetry(const std::string& raw, const ImU32 colour = IM_COL32(22
     ImFont* font = ImGui::GetFont();
     const float size = ImGui::GetFontSize();
     draw->AddText(font, size, pos, colour, notation.base.c_str());
-    float x = pos.x + ImGui::CalcTextSize(notation.base.c_str()).x;
+    const float x = pos.x + ImGui::CalcTextSize(notation.base.c_str()).x;
     if (!notation.subscript.empty()) {
         draw->AddText(font, size * 0.72f, ImVec2(x, pos.y + size * 0.36f),
                       colour, notation.subscript.c_str());
@@ -167,7 +173,7 @@ void draw_rich_symmetry(const std::string& raw, const ImU32 colour = IM_COL32(22
         draw->AddText(font, size * 0.72f, ImVec2(x, pos.y - size * 0.08f),
                       colour, notation.superscript.c_str());
     }
-    ImGui::Dummy(ImVec2(rich_symmetry_width(notation, size), size * 1.08f));
+    ImGui::Dummy(ImVec2(rich_symmetry_width(notation), size * 1.08f));
 }
 
 int group_member_index(const std::string& label) {
@@ -207,7 +213,9 @@ void draw_level_tooltip(const MODiagramData& data,
                 format_energy(level.metadata.energy_hartree, state.energy_unit, 6).c_str());
     ImGui::Text("Ha: %.10f", level.metadata.energy_hartree);
     ImGui::Text("eV: %.8f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::ElectronVolt));
+    ImGui::Text("J/mol: %.2f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::JoulePerMol));
     ImGui::Text("kJ/mol: %.5f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilojoulePerMol));
+    ImGui::Text("cal/mol: %.3f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::CaloriePerMol));
     ImGui::Text("kcal/mol: %.5f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilocaloriePerMol));
     ImGui::Text("%s: %.3f", tr(Text::Occupation, language), level.metadata.occupation);
     ImGui::Text("%s: %s", tr(Text::Spin, language), spin_name_ui(level.metadata.spin, language));
@@ -231,35 +239,26 @@ void draw_level_tooltip(const MODiagramData& data,
 
     ImGui::Separator();
     ImGui::Text("%s: %s", tr(Text::OrbitalFamily, language), family_symbol_ui(level.annotation.family));
-    tooltip_source_confidence(level.annotation.family_source,
-                              level.annotation.family_confidence,
-                              level.annotation.family_source == AnnotationSource::Heuristic,
-                              language);
-    ImGui::Text("%s: %s", tr(Text::BondingClassLabel, language),
-                bonding_ui(level.annotation.bonding_class));
-    tooltip_source_confidence(level.annotation.bonding_source,
-                              level.annotation.bonding_confidence,
-                              level.annotation.bonding_source == AnnotationSource::Heuristic,
-                              language);
+    tooltip_source_confidence(level.annotation.family_source, level.annotation.family_confidence,
+                              level.annotation.family_source == AnnotationSource::Heuristic, language);
+    ImGui::Text("%s: %s", tr(Text::BondingClassLabel, language), bonding_ui(level.annotation.bonding_class));
+    tooltip_source_confidence(level.annotation.bonding_source, level.annotation.bonding_confidence,
+                              level.annotation.bonding_source == AnnotationSource::Heuristic, language);
 
     ImGui::Text("%s: %s", tr(Text::MulticentreBond, language),
-                level.annotation.multicentre.available
-                    ? level.annotation.multicentre.label.c_str() : "N/A");
+                level.annotation.multicentre.available ? level.annotation.multicentre.label.c_str() : "N/A");
     if (level.annotation.multicentre.available) {
         tooltip_source_confidence(level.annotation.multicentre.source,
                                   level.annotation.multicentre.confidence,
-                                  level.annotation.multicentre.heuristic,
-                                  language);
+                                  level.annotation.multicentre.heuristic, language);
     }
-
     if (level.annotation.delocalised_pi.available) {
         ImGui::Text("%s: Π^%zu_%d", tr(Text::DelocalisedPiSystem, language),
                     level.annotation.delocalised_pi.participating_atoms,
                     static_cast<int>(std::lround(level.annotation.delocalised_pi.participating_electrons)));
         tooltip_source_confidence(level.annotation.delocalised_pi.source,
                                   level.annotation.delocalised_pi.confidence,
-                                  level.annotation.delocalised_pi.heuristic,
-                                  language);
+                                  level.annotation.delocalised_pi.heuristic, language);
     } else {
         ImGui::Text("%s: N/A", tr(Text::DelocalisedPiSystem, language));
     }
@@ -301,6 +300,17 @@ void draw_arrow(ImDrawList* draw, const ImVec2 start, const bool up, const ImU32
                             ImVec2(tip.x + 3.5f, tip.y + head), colour);
 }
 
+std::string compact_metadata(const OrbitalMetadata& item, const EnergyUnit unit) {
+    std::ostringstream out;
+    out << "label=" << item.display_label << "; raw_mo=" << item.raw_mo_number
+        << "; internal_index=" << item.orbital_index
+        << "; energy_hartree=" << item.energy_hartree
+        << "; energy_display=" << convert_hartree(item.energy_hartree, unit)
+        << ' ' << energy_unit_symbol(unit)
+        << "; occupation=" << item.occupation << "; symmetry=" << item.symmetry;
+    return out.str();
+}
+
 } // namespace
 
 void draw_orbital_browser(const Wavefunction& wavefunction,
@@ -334,12 +344,26 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     quick_nav_button(tr(Text::LUMO, language), lumo, actions, bw); ImGui::SameLine();
     quick_nav_button(tr(Text::LUMOPlus1, language), lp1, actions, bw);
 
+    ImGui::TextDisabled("%s", tr(Text::Search, language));
+    ImGui::SetNextItemWidth(-1.0f);
+    ImGui::InputTextWithHint("##orbital_search", tr(Text::Search, language),
+                             state.search.data(), state.search.size());
+
     if (ImGui::BeginTable("##filter_controls", 2, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_NoSavedSettings)) {
         ImGui::TableNextColumn(); ImGui::TextDisabled("%s", tr(Text::Filter, language));
         ImGui::SetNextItemWidth(-1.0f); filter_combo(state, language);
         ImGui::TableNextColumn(); ImGui::TextDisabled("%s", tr(Text::EnergyUnit, language));
         ImGui::SetNextItemWidth(-1.0f); energy_unit_combo(state);
         ImGui::EndTable();
+    }
+
+    if (state.filter.mode == OrbitalFilterMode::AutoReasonable) {
+        float window = static_cast<float>(state.filter.virtual_window_hartree);
+        ImGui::TextDisabled("%s (Ha)", tr(Text::HighVirtualWindow, language));
+        ImGui::SetNextItemWidth(-1.0f);
+        if (ImGui::SliderFloat("##virtual_window", &window, 0.05f, 5.0f, "%.2f")) {
+            state.filter.virtual_window_hartree = window;
+        }
     }
 
     double tolerance = state.degeneracy.tolerance_hartree;
@@ -351,7 +375,9 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     ImGui::Checkbox(tr(Text::GroupedLabels, language), &state.grouped_labels);
 
     std::vector<std::size_t> candidates;
-    for (std::size_t i = 0; i < metadata.size(); ++i) if (metadata[i].visible) candidates.push_back(i);
+    for (std::size_t i = 0; i < metadata.size(); ++i) {
+        if (metadata[i].visible && search_matches(metadata[i], state.search.data())) candidates.push_back(i);
+    }
     ImGui::SameLine();
     ImGui::TextDisabled("%s: %zu / %zu", tr(Text::VisibleOrbitals, language), candidates.size(), metadata.size());
 
@@ -386,6 +412,11 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
             }
         }
         ImGui::EndTable();
+    }
+
+    if (selected_index < metadata.size() && ImGui::Button(tr(Text::CopyMetadata, language))) {
+        const std::string text = compact_metadata(metadata[selected_index], state.energy_unit);
+        ImGui::SetClipboardText(text.c_str());
     }
 }
 
