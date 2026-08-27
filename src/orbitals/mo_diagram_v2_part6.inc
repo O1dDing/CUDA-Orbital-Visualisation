@@ -114,19 +114,31 @@ void write_svg_symmetry(std::ostream& out,
             << "\">N/A</text>\n";
         return;
     }
-    out << "<text x=\"" << x << "\" y=\"" << y
-        << "\" text-anchor=\"middle\" fill=\"" << colour
-        << "\" font-family=\"sans-serif\" font-size=\"" << font_size << "\">"
-        << xml_escape(notation.base);
+
+    const double suffix_size = std::max(6.0, static_cast<double>(font_size) * 0.70);
+    const double base_width = std::max(1.0, static_cast<double>(notation.base.size())) *
+                              static_cast<double>(font_size) * 0.58;
+    const double suffix_width = std::max(notation.subscript.size(), notation.superscript.size()) *
+                                suffix_size * 0.55;
+    const double start_x = x - (base_width + suffix_width) * 0.5;
+    const double suffix_x = start_x + base_width + 0.5;
+
+    // Use separate text nodes instead of SVG baseline-shift. This renders
+    // consistently in browsers, CairoSVG and print/PDF pipelines while still
+    // giving textbook subscript/superscript placement.
+    out << "<text x=\"" << start_x << "\" y=\"" << y
+        << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\""
+        << font_size << "\">" << xml_escape(notation.base) << "</text>\n";
     if (!notation.subscript.empty()) {
-        out << "<tspan baseline-shift=\"sub\" font-size=\"70%\">"
-            << xml_escape(notation.subscript) << "</tspan>";
+        out << "<text x=\"" << suffix_x << "\" y=\"" << y + 3.5
+            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\""
+            << suffix_size << "\">" << xml_escape(notation.subscript) << "</text>\n";
     }
     if (!notation.superscript.empty()) {
-        out << "<tspan baseline-shift=\"super\" font-size=\"70%\">"
-            << xml_escape(notation.superscript) << "</tspan>";
+        out << "<text x=\"" << suffix_x << "\" y=\"" << y - 5.0
+            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\""
+            << suffix_size << "\">" << xml_escape(notation.superscript) << "</text>\n";
     }
-    out << "</text>\n";
 }
 
 void write_svg_electron(std::ostream& out,
@@ -155,18 +167,19 @@ void write_svg_delocalised_pi(std::ostream& out,
                               const DelocalisedPiDescriptor& pi,
                               const char* colour) {
     if (!pi.available) return;
-    out << "<text x=\"" << x << "\" y=\"" << y
-        << "\" text-anchor=\"middle\" fill=\"" << colour
-        << "\" font-family=\"sans-serif\" font-size=\"10\">Π";
+    const double base_x = x - 4.0;
+    out << "<text x=\"" << base_x << "\" y=\"" << y
+        << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\"10\">Π</text>\n";
     if (pi.participating_atoms > 0) {
-        out << "<tspan baseline-shift=\"super\" font-size=\"70%\">"
-            << pi.participating_atoms << "</tspan>";
+        out << "<text x=\"" << base_x + 7.0 << "\" y=\"" << y - 5.0
+            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\"7\">"
+            << pi.participating_atoms << "</text>\n";
     }
     if (pi.participating_electrons > 0.0) {
-        out << "<tspan baseline-shift=\"sub\" font-size=\"70%\">"
-            << static_cast<int>(std::lround(pi.participating_electrons)) << "</tspan>";
+        out << "<text x=\"" << base_x + 7.0 << "\" y=\"" << y + 4.0
+            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\"7\">"
+            << static_cast<int>(std::lround(pi.participating_electrons)) << "</text>\n";
     }
-    out << "</text>\n";
 }
 
 } // namespace
