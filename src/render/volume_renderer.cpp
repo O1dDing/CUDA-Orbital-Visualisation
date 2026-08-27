@@ -51,6 +51,8 @@ namespace cov {
 namespace {
 
 constexpr float kPi = 3.14159265358979323846f;
+constexpr float kNearPlane = 0.03f;
+constexpr float kFarPlane = 8.0f;
 
 struct Vec3 {
     float x, y, z;
@@ -59,12 +61,15 @@ struct Vec3 {
 Vec3 operator+(const Vec3 a, const Vec3 b) { return {a.x+b.x,a.y+b.y,a.z+b.z}; }
 Vec3 operator-(const Vec3 a, const Vec3 b) { return {a.x-b.x,a.y-b.y,a.z-b.z}; }
 Vec3 operator*(const Vec3 a, const float s) { return {a.x*s,a.y*s,a.z*s}; }
+Vec3 operator/(const Vec3 a, const float s) { return {a.x/s,a.y/s,a.z/s}; }
 
 float dot(const Vec3 a, const Vec3 b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
 
 Vec3 cross(const Vec3 a, const Vec3 b) {
     return {a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x};
 }
+
+float length(const Vec3 v) { return std::sqrt(std::max(0.0f, dot(v, v))); }
 
 Vec3 normalise(const Vec3 v) {
     const float n = std::sqrt(std::max(1.0e-20f, dot(v,v)));
@@ -91,9 +96,7 @@ CameraBasis camera_basis(const OrbitCamera& camera) {
     b.forward = normalise(centre - b.position);
 
     Vec3 world_up{0.0f, 1.0f, 0.0f};
-    if (std::abs(dot(b.forward, world_up)) > 0.98f) {
-        world_up = {0.0f, 0.0f, 1.0f};
-    }
+    if (std::abs(dot(b.forward, world_up)) > 0.98f) world_up = {0.0f, 0.0f, 1.0f};
     b.right = normalise(cross(b.forward, world_up));
     b.up = normalise(cross(b.right, b.forward));
     return b;
@@ -128,6 +131,10 @@ void main() {
 }
 )GLSL";
 
+    // The ray marcher now writes the real isosurface depth into the shared
+    // OpenGL depth buffer. Geometry rendered afterwards is therefore hidden by
+    // an orbital lobe when the lobe is physically closer to the camera, while
+    // atoms/bonds that genuinely sit in front remain visible.
     static constexpr const char* kFragment = R"GLSL(
 #version 120
 uniform sampler3D uVolume;
@@ -143,6 +150,8 @@ uniform vec3 uTexel;
 varying vec2 vUV;
 
 const vec3 kBackground = vec3(0.025, 0.031, 0.043);
+const float kNear = 0.03;
+const float kFar = 8.0;
 
 bool rayBox(vec3 ro, vec3 rd, out float tNear, out float tFar) {
     vec3 inv = 1.0 / rd;
@@ -166,6 +175,13 @@ vec3 gradient(vec3 p) {
     return normalize(vec3(gx,gy,gz));
 }
 
+float depthFromViewDistance(float viewDepth) {
+    float z = max(viewDepth, kNear + 0.0001);
+    float ndc = (kFar + kNear) / (kFar - kNear)
+              - (2.0 * kFar * kNear) / ((kFar - kNear) * z);
+    return clamp(0.5 * ndc + 0.5, 0.0, 1.0);
+}
+
 void main() {
     vec2 ndc = vUV * 2.0 - 1.0;
     vec3 ro = uCameraPos;
@@ -175,10 +191,7 @@ void main() {
         ndc.y * uTanHalfFov * uCameraUp);
 
     float t0, t1;
-    if (!rayBox(ro, rd, t0, t1)) {
-        gl_FragColor = vec4(kBackground, 1.0);
-        return;
-    }
+    if (!rayBox(ro, rd, t0, t1)) discard;
 
     float startT = max(t0, 0.0);
     float travel = max(0.0001, t1 - startT);
@@ -204,6 +217,8 @@ void main() {
             vec3 negative = vec3(0.16, 0.38, 0.95);
             vec3 base = cur >= 0.0 ? positive : negative;
             vec3 shaded = base * diffuse;
+            float viewDepth = dot(hit - uCameraPos, uCameraForward);
+            gl_FragDepth = depthFromViewDistance(viewDepth);
             gl_FragColor = vec4(mix(kBackground, shaded, clamp(uOpacity, 0.08, 1.0)), 1.0);
             return;
         }
@@ -211,13 +226,12 @@ void main() {
         prevF = curF;
     }
 
-    gl_FragColor = vec4(kBackground, 1.0);
+    discard;
 }
 )GLSL";
 
     const GLuint vs = compile_shader(GL_VERTEX_SHADER, kVertex);
     const GLuint fs = compile_shader(GL_FRAGMENT_SHADER, kFragment);
-
     const GLuint program = gl::CreateProgram();
     gl::AttachShader(program, vs);
     gl::AttachShader(program, fs);
@@ -260,15 +274,19 @@ Vec3 atom_colour(const int z) {
     }
 }
 
-Vec3 to_texture(const Atom& atom, const GridBox& box) {
+Vec3 to_texture_point(const double x, const double y, const double z, const GridBox& box) {
     const float dx = std::max(1.0e-8f, box.max_x - box.min_x);
     const float dy = std::max(1.0e-8f, box.max_y - box.min_y);
     const float dz = std::max(1.0e-8f, box.max_z - box.min_z);
     return {
-        (static_cast<float>(atom.x) - box.min_x) / dx,
-        (static_cast<float>(atom.y) - box.min_y) / dy,
-        (static_cast<float>(atom.z) - box.min_z) / dz
+        (static_cast<float>(x) - box.min_x) / dx,
+        (static_cast<float>(y) - box.min_y) / dy,
+        (static_cast<float>(z) - box.min_z) / dz
     };
+}
+
+Vec3 to_texture(const Atom& atom, const GridBox& box) {
+    return to_texture_point(atom.x, atom.y, atom.z, box);
 }
 
 Vec3 shaded_colour(const Vec3 base,
@@ -291,14 +309,12 @@ Vec3 shaded_colour(const Vec3 base,
 void load_3d_camera(const CameraBasis& b,
                     const float aspect,
                     const float tan_half_fov) {
-    constexpr double near_plane = 0.03;
-    constexpr double far_plane = 8.0;
-    const double top = near_plane * static_cast<double>(tan_half_fov);
+    const double top = static_cast<double>(kNearPlane) * static_cast<double>(tan_half_fov);
     const double right = top * static_cast<double>(std::max(0.01f, aspect));
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-right, right, -top, top, near_plane, far_plane);
+    glFrustum(-right, right, -top, top, kNearPlane, kFarPlane);
 
     const GLfloat view[16] = {
         b.right.x, b.up.x, -b.forward.x, 0.0f,
@@ -358,9 +374,9 @@ void draw_cylinder(const Vec3 a,
                    const float alpha,
                    const CameraBasis& camera) {
     const Vec3 axis_vector = b - a;
-    const float length = std::sqrt(std::max(1.0e-20f, dot(axis_vector, axis_vector)));
-    if (length <= 1.0e-6f) return;
-    const Vec3 axis = axis_vector * (1.0f / length);
+    const float axis_length = std::sqrt(std::max(1.0e-20f, dot(axis_vector, axis_vector)));
+    if (axis_length <= 1.0e-6f) return;
+    const Vec3 axis = axis_vector * (1.0f / axis_length);
     const Vec3 helper = std::abs(axis.y) < 0.90f ? Vec3{0.0f, 1.0f, 0.0f}
                                                   : Vec3{1.0f, 0.0f, 0.0f};
     const Vec3 u = normalise(cross(axis, helper));
@@ -411,16 +427,43 @@ void draw_dashed_cylinder(const Vec3 a,
                           const Vec3 colour,
                           const float alpha,
                           const CameraBasis& camera) {
-    constexpr int dash_count = 7;
-    constexpr float dash_fraction = 0.58f;
+    constexpr int dash_count = 8;
+    constexpr float dash_fraction = 0.55f;
     const Vec3 delta = b - a;
     for (int i = 0; i < dash_count; ++i) {
         const float t0 = static_cast<float>(i) / static_cast<float>(dash_count);
-        const float t1 = std::min(1.0f,
-                                  t0 + dash_fraction / static_cast<float>(dash_count));
+        const float t1 = std::min(1.0f, t0 + dash_fraction / static_cast<float>(dash_count));
         draw_cylinder(a + delta * t0, a + delta * t1,
                       radius, colour, alpha, camera);
     }
+}
+
+Vec3 heavy_atom_centroid(const Wavefunction& wavefunction,
+                         const std::vector<Vec3>& points) {
+    Vec3 sum{0.0f, 0.0f, 0.0f};
+    std::size_t count = 0;
+    for (std::size_t i = 0; i < wavefunction.atoms.size(); ++i) {
+        if (wavefunction.atoms[i].atomic_number == 1) continue;
+        sum = sum + points[i];
+        ++count;
+    }
+    if (count == 0) {
+        for (const Vec3 p : points) sum = sum + p;
+        count = points.size();
+    }
+    return count ? sum / static_cast<float>(count) : Vec3{0.5f, 0.5f, 0.5f};
+}
+
+Vec3 inward_delocalisation_offset(const Vec3 a,
+                                  const Vec3 b,
+                                  const Vec3 centre,
+                                  const float distance) {
+    const Vec3 axis = normalise(b - a);
+    const Vec3 midpoint = (a + b) * 0.5f;
+    Vec3 inward = centre - midpoint;
+    inward = inward - axis * dot(inward, axis);
+    if (length(inward) <= 1.0e-6f) return {0.0f, 0.0f, 0.0f};
+    return normalise(inward) * distance;
 }
 
 } // namespace
@@ -473,10 +516,11 @@ void VolumeRenderer::render_volume(const int framebuffer_width,
                              ? static_cast<float>(framebuffer_width) /
                                    static_cast<float>(framebuffer_height)
                              : 1.0f;
-    const float tan_half_fov =
-        std::tan(camera.fov_degrees * kPi / 360.0f);
+    const float tan_half_fov = std::tan(camera.fov_degrees * kPi / 360.0f);
 
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
     gl::UseProgram(program_);
 
@@ -502,12 +546,24 @@ void VolumeRenderer::render_volume(const int framebuffer_width,
     gl::ActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, texture_);
 
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f, -1.0f);
     glTexCoord2f(1.0f, 0.0f); glVertex2f( 1.0f, -1.0f);
     glTexCoord2f(1.0f, 1.0f); glVertex2f( 1.0f,  1.0f);
     glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.0f,  1.0f);
     glEnd();
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 
     glBindTexture(GL_TEXTURE_3D, 0);
     gl::UseProgram(0);
@@ -530,20 +586,16 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
 
     std::vector<Vec3> points;
     points.reserve(wavefunction.atoms.size());
-    for (const Atom& atom : wavefunction.atoms) {
-        points.push_back(to_texture(atom, box));
-    }
+    for (const Atom& atom : wavefunction.atoms) points.push_back(to_texture(atom, box));
     const auto bonds = analyse_bonds(wavefunction);
+    const Vec3 molecular_centre = heavy_atom_centroid(wavefunction, points);
 
-    // Molecular geometry is real 3D now: it shares the orbital camera, writes a
-    // depth buffer, and is lit in world/texture space.  The volume raymarch
-    // remains GPU-resident and unchanged; the molecular model is simply drawn
-    // afterwards as a depth-correct overlay rather than as projected 2D points
-    // and lines.
+    // Do not clear the depth buffer here: the orbital raymarch has already
+    // written its true surface depth. Geometry behind a lobe must therefore be
+    // occluded by that lobe instead of being painted over it as an overlay.
     gl::UseProgram(0);
-    glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -556,7 +608,10 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     load_3d_camera(b, aspect, tan_half_fov);
 
     const float opacity = std::clamp(settings.molecule_opacity, 0.05f, 1.0f);
-    const float bond_radius = (settings.style == MoleculeStyle::MediumBallAndStick ? 0.0047f : 0.0036f) *
+    // The accepted pre.2 screenshot used Atom=1.25 and Bond=1.15. Those
+    // proportions are now calibrated into the base radii so the user-facing
+    // reference value 1.0 reproduces the same size.
+    const float bond_radius = (settings.style == MoleculeStyle::MediumBallAndStick ? 0.00540f : 0.00415f) *
                               std::clamp(settings.bond_scale, 0.35f, 3.0f);
     const Vec3 bond_colour{0.73f, 0.76f, 0.81f};
     const Vec3 delocalised_colour{0.46f, 0.69f, 0.98f};
@@ -569,12 +624,24 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
             continue;
         }
 
+        const Vec3 a = points[bond.atom_a];
+        const Vec3 c = points[bond.atom_b];
+
+        // Standard Molden does not carry authoritative bond orders. Therefore
+        // the base structural graph remains a chemically neutral single bond;
+        // no double/triple bond is fabricated from distance alone.
+        draw_cylinder(a, c, bond_radius, bond_colour, opacity * 0.94f, b);
+
         if (settings.style == MoleculeStyle::StickDelocalisation && bond.delocalised) {
-            draw_dashed_cylinder(points[bond.atom_a], points[bond.atom_b],
-                                 bond_radius, delocalised_colour, opacity, b);
-        } else {
-            draw_cylinder(points[bond.atom_a], points[bond.atom_b],
-                          bond_radius, bond_colour, opacity * 0.94f, b);
+            // Delocalisation is a visual heuristic: retain the full 3D single
+            // bond and add a thinner 3D dashed tube displaced toward the heavy-
+            // atom centre. This reads like an inner aromatic/delocalised line
+            // rather than replacing the molecular skeleton with floating dashes.
+            const Vec3 inward = inward_delocalisation_offset(
+                a, c, molecular_centre, bond_radius * 2.35f);
+            draw_dashed_cylinder(a + inward, c + inward,
+                                 bond_radius * 0.58f,
+                                 delocalised_colour, opacity * 0.96f, b);
         }
     }
 
@@ -585,8 +652,8 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
 
             const float covalent = static_cast<float>(covalent_radius_angstrom(atom.atomic_number));
             const float sphere_radius = std::clamp(
-                (0.022f + 0.016f * covalent) * settings.atom_scale,
-                0.028f, 0.086f);
+                (0.0275f + 0.0200f * covalent) * settings.atom_scale,
+                0.030f, 0.108f);
             draw_sphere(points[i], sphere_radius, atom_colour(atom.atomic_number), opacity, b);
         }
     }
