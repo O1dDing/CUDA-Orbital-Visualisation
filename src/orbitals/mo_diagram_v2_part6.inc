@@ -76,18 +76,26 @@ std::string bonding_plain(const BondingClass value) {
 }
 
 std::string orbital_type_plain(const OrbitalAnnotation& annotation) {
-    std::string out = family_plain(annotation.family) + " | " + bonding_plain(annotation.bonding_class);
+    const std::string family = family_plain(annotation.family);
+    const std::string bonding = bonding_plain(annotation.bonding_class);
+    std::string out = family == "N/A" && bonding == "N/A"
+                          ? "N/A"
+                          : family + " | " + bonding;
     if (annotation.multicentre.available) out += " | " + annotation.multicentre.label;
     if (annotation.delocalised_pi.available) out += " | LARGE-PI";
     return out;
 }
 
 std::string orbital_type_svg(const OrbitalAnnotation& annotation) {
-    std::string out = family_symbol_svg(annotation.family);
-    out += " · ";
-    out += bonding_class_name(annotation.bonding_class);
+    const std::string family = family_symbol_svg(annotation.family);
+    const std::string bonding = annotation.bonding_class == BondingClass::Unclassified
+                                    ? "N/A"
+                                    : bonding_class_name(annotation.bonding_class);
+    std::string out = family == "N/A" && bonding == "N/A"
+                          ? "N/A"
+                          : family + " · " + bonding;
     if (annotation.multicentre.available) {
-        out += " · " + xml_escape(annotation.multicentre.label);
+        out += " · " + annotation.multicentre.label;
     }
     return out;
 }
@@ -119,6 +127,26 @@ void write_svg_symmetry(std::ostream& out,
             << xml_escape(notation.superscript) << "</tspan>";
     }
     out << "</text>\n";
+}
+
+void write_svg_electron(std::ostream& out,
+                        const double x,
+                        const double y,
+                        const bool up) {
+    constexpr double length = 11.0;
+    constexpr double head_dx = 3.2;
+    constexpr double head_dy = 3.5;
+    const double tip = up ? y - length : y + length;
+    const double wing_y = up ? tip + head_dy : tip - head_dy;
+    out << "<line x1=\"" << x << "\" y1=\"" << y
+        << "\" x2=\"" << x << "\" y2=\"" << tip
+        << "\" stroke=\"#151d28\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n";
+    out << "<line x1=\"" << x << "\" y1=\"" << tip
+        << "\" x2=\"" << x - head_dx << "\" y2=\"" << wing_y
+        << "\" stroke=\"#151d28\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n";
+    out << "<line x1=\"" << x << "\" y1=\"" << tip
+        << "\" x2=\"" << x + head_dx << "\" y2=\"" << wing_y
+        << "\" stroke=\"#151d28\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n";
 }
 
 void write_svg_delocalised_pi(std::ostream& out,
@@ -206,14 +234,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
             << "\" x2=\"" << x1 << "\" y2=\"" << item.y
             << "\" stroke=\"" << colour << "\" stroke-width=\""
             << (level.metadata.selected ? 4 : 2.2) << "\"/>\n";
-        if (level.electrons.alpha > 0) {
-            out << "<text x=\"" << item.x - 14 << "\" y=\"" << item.y - 5
-                << "\" fill=\"#151d28\" font-family=\"sans-serif\" font-size=\"19\">↑</text>\n";
-        }
-        if (level.electrons.beta > 0) {
-            out << "<text x=\"" << item.x + 3 << "\" y=\"" << item.y - 5
-                << "\" fill=\"#151d28\" font-family=\"sans-serif\" font-size=\"19\">↓</text>\n";
-        }
+        if (level.electrons.alpha > 0) write_svg_electron(out, item.x - 10.0, item.y - 2.0, true);
+        if (level.electrons.beta > 0) write_svg_electron(out, item.x + 10.0, item.y - 2.0, false);
 
         // Export deliberately omits MO numbers. Human-readable orbital type is
         // attached directly below the physical level; raw numbering remains in
