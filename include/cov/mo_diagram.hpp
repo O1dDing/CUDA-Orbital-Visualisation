@@ -33,6 +33,15 @@ struct MODiagramData {
     FrontierOrbitals frontier;
     std::vector<MODiagramLevel> levels;
     std::vector<OrbitalMetadata> metadata;
+
+    // Human-facing presentation metadata. `textbook_diatomic` means the
+    // exporter may draw a qualitative AO -> MO interaction diagram while the
+    // molecular-orbital energies remain the quantitative values read from the
+    // wavefunction. This does not claim that isolated-atom AO energies were
+    // present in the Molden file.
+    bool textbook_diatomic = false;
+    bool textbook_h2 = false;
+    std::string species_label;
 };
 
 [[nodiscard]] MODiagramData build_mo_diagram_data(
