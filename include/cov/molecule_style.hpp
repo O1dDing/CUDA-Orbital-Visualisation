@@ -14,12 +14,11 @@ enum class MoleculeStyle {
 
 struct MoleculeRenderSettings {
     MoleculeStyle style = MoleculeStyle::MediumBallAndStick;
-    // Manual validation showed the previous 1.35/1.45 defaults still read as
-    // pinpoints and hairlines on a large viewport. Start at the top of the
-    // current UI ranges so the default silhouette is much closer to the
-    // familiar GaussView ball-and-stick weight while the MO remains dominant.
-    float atom_scale = 1.80f;
-    float bond_scale = 2.00f;
+    // 1.0 is the human-facing reference size. The renderer's base sphere and
+    // cylinder radii are calibrated so 1.0 reproduces the proportions that
+    // were manually accepted during pre.2 validation.
+    float atom_scale = 1.00f;
+    float bond_scale = 1.00f;
     float molecule_opacity = 1.00f;
     float orbital_opacity = 0.92f;
     bool show_hydrogens = true;
