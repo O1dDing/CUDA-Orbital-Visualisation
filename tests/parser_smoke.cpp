@@ -63,6 +63,57 @@ bool test_no_sym_mo_boundaries() {
     }
 }
 
+bool test_omitted_7f_marker_inference() {
+    const auto path = std::filesystem::temp_directory_path() /
+                      "cov_molden_omitted_7f_regression.molden";
+    {
+        std::ofstream out(path, std::ios::binary);
+        if (!out) {
+            std::cerr << "unable to create temporary omitted-7F Molden fixture\n";
+            return false;
+        }
+        out << "[Molden Format]\n"
+               "[Atoms] AU\n"
+               "C 1 6 0.0 0.0 0.0\n"
+               "[GTO]\n"
+               "1 0\n"
+               "d 1 1.0\n"
+               "1.0 1.0\n"
+               "f 1 1.0\n"
+               "1.0 1.0\n"
+               "[5D]\n"
+               "[MO]\n"
+               "Ene= -0.100000\n"
+               "Spin= Alpha\n"
+               "Occup= 2.0\n";
+        for (int i = 1; i <= 12; ++i) {
+            out << i << " " << (i == 1 ? 1.0 : 0.0) << "\n";
+        }
+    }
+
+    try {
+        const auto wf = cov::parse_molden(path);
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        if (wf.basis_count != 12u || !wf.pure_d || !wf.pure_f) {
+            std::cerr << "omitted-7F regression: expected 5D+7F = 12 basis, got basis="
+                      << wf.basis_count << " pure_d=" << wf.pure_d
+                      << " pure_f=" << wf.pure_f << '\n';
+            return false;
+        }
+        if (wf.orbitals.size() != 1u || wf.orbitals[0].coefficients.size() != 12u) {
+            std::cerr << "omitted-7F regression: MO dimension mismatch\n";
+            return false;
+        }
+        return true;
+    } catch (const std::exception& e) {
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        std::cerr << "omitted-7F inference failed: " << e.what() << '\n';
+        return false;
+    }
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -97,6 +148,9 @@ int main(int argc, char** argv) {
             return EXIT_FAILURE;
         }
         if (!test_no_sym_mo_boundaries()) {
+            return EXIT_FAILURE;
+        }
+        if (!test_omitted_7f_marker_inference()) {
             return EXIT_FAILURE;
         }
         std::cout << "parser smoke test passed\n";
