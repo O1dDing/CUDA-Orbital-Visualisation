@@ -1,6 +1,3 @@
-    }
-}
-
 OrbitalAnnotation annotate_orbital(const MolecularOrbital& orbital) {
     OrbitalAnnotation result;
     const std::string label = lower_ascii(orbital.symmetry);
@@ -69,8 +66,9 @@ OrbitalAnnotation annotate_orbital(const MolecularOrbital& orbital) {
         result.delocalised_pi.label = descriptor.str();
     }
 
-    // Deliberately do not infer family, bonding class, multi-centre bonding or
-    // delocalised pi character from energy/occupation alone.
+    // No Cp-, benzene, occupancy or energy special cases. If producer text
+    // does not support a classification, the UI deliberately shows N/A and
+    // machine metadata records an unavailable source.
     result.heuristic =
         result.family_source == AnnotationSource::Heuristic ||
         result.bonding_source == AnnotationSource::Heuristic ||
@@ -102,40 +100,31 @@ DiagramSelectionPlan build_valence_selection_plan(
     for (std::size_t i = 0; i < wavefunction.orbitals.size(); ++i) {
         const auto& mo = wavefunction.orbitals[i];
         if (occupied(mo, options.filter.occupation_threshold)) {
-            if (metadata[i].region == OrbitalRegion::Valence) {
-                occupied_valence.push_back(i);
-            }
+            if (metadata[i].region == OrbitalRegion::Valence) occupied_valence.push_back(i);
             continue;
         }
         if (metadata[i].region != OrbitalRegion::Virtual) continue;
         if (frontier.lumo && *frontier.lumo < wavefunction.orbitals.size()) {
-            const double cutoff =
-                wavefunction.orbitals[*frontier.lumo].energy_hartree +
-                options.filter.virtual_window_hartree;
+            const double cutoff = wavefunction.orbitals[*frontier.lumo].energy_hartree +
+                                  options.filter.virtual_window_hartree;
             if (mo.energy_hartree <= cutoff) frontier_virtual.push_back(i);
         } else {
             frontier_virtual.push_back(i);
         }
     }
 
-    const std::size_t virtual_keep =
-        std::min(max_virtual, frontier_virtual.size());
-    const std::size_t occupied_budget =
-        max_levels > virtual_keep ? max_levels - virtual_keep : 1;
-    const std::size_t occ_begin =
-        occupied_valence.size() > occupied_budget
-            ? occupied_valence.size() - occupied_budget
-            : 0;
+    const std::size_t virtual_keep = std::min(max_virtual, frontier_virtual.size());
+    const std::size_t occupied_budget = max_levels > virtual_keep ? max_levels - virtual_keep : 1;
+    const std::size_t occ_begin = occupied_valence.size() > occupied_budget
+                                      ? occupied_valence.size() - occupied_budget
+                                      : 0;
 
     std::vector<std::size_t> chosen;
-    chosen.insert(
-        chosen.end(),
-        occupied_valence.begin() + static_cast<std::ptrdiff_t>(occ_begin),
-        occupied_valence.end());
-    chosen.insert(
-        chosen.end(),
-        frontier_virtual.begin(),
-        frontier_virtual.begin() + static_cast<std::ptrdiff_t>(virtual_keep));
+    chosen.insert(chosen.end(),
+                  occupied_valence.begin() + static_cast<std::ptrdiff_t>(occ_begin),
+                  occupied_valence.end());
+    chosen.insert(chosen.end(), frontier_virtual.begin(),
+                  frontier_virtual.begin() + static_cast<std::ptrdiff_t>(virtual_keep));
 
     if (options.selected_index < wavefunction.orbitals.size() &&
         metadata[options.selected_index].region != OrbitalRegion::Core) {
@@ -144,20 +133,17 @@ DiagramSelectionPlan build_valence_selection_plan(
 
     std::sort(chosen.begin(), chosen.end());
     chosen.erase(std::unique(chosen.begin(), chosen.end()), chosen.end());
-    const auto labels =
-        build_orbital_labels(wavefunction.orbitals, options.degeneracy);
+    const auto labels = build_orbital_labels(wavefunction.orbitals, options.degeneracy);
     chosen = expand_degenerate_sets(chosen, labels);
 
     plan.included_indices = std::move(chosen);
-    plan.hidden_count =
-        metadata.size() > plan.included_indices.size()
-            ? metadata.size() - plan.included_indices.size()
-            : 0;
+    plan.hidden_count = metadata.size() > plan.included_indices.size()
+                            ? metadata.size() - plan.included_indices.size()
+                            : 0;
     for (const std::size_t index : plan.included_indices) {
         if (index >= metadata.size()) continue;
         if (metadata[index].region == OrbitalRegion::Valence &&
-            occupied(wavefunction.orbitals[index],
-                     options.filter.occupation_threshold)) {
+            occupied(wavefunction.orbitals[index], options.filter.occupation_threshold)) {
             ++plan.valence_occupied_count;
         } else if (metadata[index].region == OrbitalRegion::Virtual) {
             ++plan.frontier_virtual_count;
@@ -165,8 +151,7 @@ DiagramSelectionPlan build_valence_selection_plan(
     }
 
     std::ostringstream summary;
-    summary << "valence-auto: " << plan.included_indices.size()
-            << '/' << metadata.size()
+    summary << "valence-auto: " << plan.included_indices.size() << '/' << metadata.size()
             << " levels; occupied-valence=" << plan.valence_occupied_count
             << "; frontier-virtual=" << plan.frontier_virtual_count
             << "; core/high-virtual hidden non-destructively";

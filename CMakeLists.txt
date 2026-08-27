@@ -19,7 +19,7 @@ target_compile_features(cov_parser PUBLIC cxx_std_20)
 
 add_library(cov_orbitals
     src/orbitals/orbital_view.cpp
-    src/orbitals/mo_diagram.cpp
+    src/orbitals/mo_diagram_v2.cpp
 )
 target_include_directories(cov_orbitals PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -81,7 +81,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
 
     add_library(cov_ui STATIC
         src/ui/ui.cpp
-        src/ui/orbital_ui.cpp
+        src/ui/orbital_ui_v2.cpp
     )
     target_include_directories(cov_ui PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -101,9 +101,6 @@ if(COV_ENABLE_CUDA)
         message(FATAL_ERROR "COV_ENABLE_CUDA=ON but no CUDA compiler was found.")
     endif()
 
-    # RTX 5090 / Blackwell first: native sm_120 cubin plus compute_120 PTX.
-    # Override at configure time for another CUDA GPU, e.g.
-    # -DCMAKE_CUDA_ARCHITECTURES=89
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
         set(CMAKE_CUDA_ARCHITECTURES "120-real;120-virtual" CACHE STRING
             "CUDA architectures (default: Blackwell sm_120 + PTX)" FORCE)
@@ -159,8 +156,6 @@ if(COV_ENABLE_CUDA)
             glfw
     )
     set_target_properties(cov_gpu PROPERTIES
-        # One CUDA translation unit needs no RDC/device-link pass. Keeping the
-        # fatbin in the object preserves both the native cubin and PTX fallback.
         CUDA_SEPARABLE_COMPILATION OFF
         CUDA_RESOLVE_DEVICE_SYMBOLS OFF
         POSITION_INDEPENDENT_CODE ON
@@ -183,11 +178,9 @@ if(COV_ENABLE_CUDA)
         cov_ui
         cov_imgui_backends
     )
-
     target_compile_options(cov PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
-
     if(WIN32)
         set_property(TARGET cov PROPERTY WIN32_EXECUTABLE FALSE)
     endif()
@@ -213,6 +206,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_energy_axis_smoke tests/energy_axis_smoke.cpp)
     target_link_libraries(cov_energy_axis_smoke PRIVATE cov_orbitals)
     add_test(NAME energy_axis_smoke COMMAND cov_energy_axis_smoke)
+
+    add_executable(cov_cp_reference_layout_smoke tests/cp_reference_layout_smoke.cpp)
+    target_link_libraries(cov_cp_reference_layout_smoke PRIVATE cov_orbitals)
+    add_test(NAME cp_reference_layout_smoke COMMAND cov_cp_reference_layout_smoke)
 
     add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
     target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule)

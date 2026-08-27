@@ -17,5 +17,12 @@ jobs:
         run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
       - name: Build parser, orbital, diagram and UI smoke targets
         run: cmake --build build --config Release --parallel
-      - name: Test parser, orbital semantics, exports and localisation
+      - name: Test parser, orbital semantics, adaptive layout, exports and localisation
         run: ctest --test-dir build -C Release --output-on-failure
+      - name: Upload deterministic MO visual-regression artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mo-visual-${{ matrix.os }}
+          path: build/visual_artifacts/
+          if-no-files-found: warn

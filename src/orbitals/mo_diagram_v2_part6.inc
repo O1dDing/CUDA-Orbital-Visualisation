@@ -48,6 +48,101 @@
     return data;
 }
 
+namespace {
+
+std::string family_symbol_svg(const std::string& family) {
+    if (family == "sigma") return "σ";
+    if (family == "pi") return "π";
+    if (family == "delta") return "δ";
+    if (family == "phi") return "φ";
+    return "N/A";
+}
+
+std::string family_plain(const std::string& family) {
+    if (family == "sigma") return "SIGMA";
+    if (family == "pi") return "PI";
+    if (family == "delta") return "DELTA";
+    if (family == "phi") return "PHI";
+    return "N/A";
+}
+
+std::string bonding_plain(const BondingClass value) {
+    switch (value) {
+        case BondingClass::Bonding: return "BONDING";
+        case BondingClass::Nonbonding: return "NONBONDING";
+        case BondingClass::Antibonding: return "ANTIBONDING";
+        default: return "N/A";
+    }
+}
+
+std::string orbital_type_plain(const OrbitalAnnotation& annotation) {
+    std::string out = family_plain(annotation.family) + " | " + bonding_plain(annotation.bonding_class);
+    if (annotation.multicentre.available) out += " | " + annotation.multicentre.label;
+    if (annotation.delocalised_pi.available) out += " | LARGE-PI";
+    return out;
+}
+
+std::string orbital_type_svg(const OrbitalAnnotation& annotation) {
+    std::string out = family_symbol_svg(annotation.family);
+    out += " · ";
+    out += bonding_class_name(annotation.bonding_class);
+    if (annotation.multicentre.available) {
+        out += " · " + xml_escape(annotation.multicentre.label);
+    }
+    return out;
+}
+
+void write_svg_symmetry(std::ostream& out,
+                        const double x,
+                        const double y,
+                        const std::string& raw,
+                        const char* colour,
+                        const int font_size = 10) {
+    const SymmetryNotation notation = parse_symmetry_notation(raw);
+    if (notation.base.empty()) {
+        out << "<text x=\"" << x << "\" y=\"" << y
+            << "\" text-anchor=\"middle\" fill=\"" << colour
+            << "\" font-family=\"sans-serif\" font-size=\"" << font_size
+            << "\">N/A</text>\n";
+        return;
+    }
+    out << "<text x=\"" << x << "\" y=\"" << y
+        << "\" text-anchor=\"middle\" fill=\"" << colour
+        << "\" font-family=\"sans-serif\" font-size=\"" << font_size << "\">"
+        << xml_escape(notation.base);
+    if (!notation.subscript.empty()) {
+        out << "<tspan baseline-shift=\"sub\" font-size=\"70%\">"
+            << xml_escape(notation.subscript) << "</tspan>";
+    }
+    if (!notation.superscript.empty()) {
+        out << "<tspan baseline-shift=\"super\" font-size=\"70%\">"
+            << xml_escape(notation.superscript) << "</tspan>";
+    }
+    out << "</text>\n";
+}
+
+void write_svg_delocalised_pi(std::ostream& out,
+                              const double x,
+                              const double y,
+                              const DelocalisedPiDescriptor& pi,
+                              const char* colour) {
+    if (!pi.available) return;
+    out << "<text x=\"" << x << "\" y=\"" << y
+        << "\" text-anchor=\"middle\" fill=\"" << colour
+        << "\" font-family=\"sans-serif\" font-size=\"10\">Π";
+    if (pi.participating_atoms > 0) {
+        out << "<tspan baseline-shift=\"super\" font-size=\"70%\">"
+            << pi.participating_atoms << "</tspan>";
+    }
+    if (pi.participating_electrons > 0.0) {
+        out << "<tspan baseline-shift=\"sub\" font-size=\"70%\">"
+            << static_cast<int>(std::lround(pi.participating_electrons)) << "</tspan>";
+    }
+    out << "</text>\n";
+}
+
+} // namespace
+
 bool write_mo_diagram_svg(const MODiagramData& data,
                           const MODiagramOptions& options,
                           const std::filesystem::path& path,
@@ -59,7 +154,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
     }
 
     const int width = std::max(760, options.width);
-    const int height = std::max(620, options.height);
+    const int height = std::max(720, options.height);
     const auto positioned = position_levels(data, width, height);
 
     out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -67,114 +162,79 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         << "\" height=\"" << height << "\" viewBox=\"0 0 "
         << width << ' ' << height << "\">\n";
     out << "<rect width=\"100%\" height=\"100%\" fill=\"#fbfcfe\"/>\n";
-    out << "<text x=\"36\" y=\"40\" fill=\"#182231\" "
-           "font-family=\"sans-serif\" font-size=\"24\" font-weight=\"600\">"
-           "Valence MO diagram</text>\n";
-    out << "<text x=\"36\" y=\"64\" fill=\"#68778b\" "
-           "font-family=\"sans-serif\" font-size=\"12\">"
-        << xml_escape(data.selection.summary) << "</text>\n";
-    out << "<text x=\"36\" y=\"82\" fill=\"#7f8c9c\" "
-           "font-family=\"sans-serif\" font-size=\"11\">"
-           "Molden-derived MO energies/occupations/symmetry; classification "
-           "is shown only when explicitly supported by producer text.</text>\n";
+    out << "<text x=\"36\" y=\"40\" fill=\"#182231\" font-family=\"sans-serif\" "
+           "font-size=\"24\" font-weight=\"600\">Valence MO diagram</text>\n";
+    out << "<text x=\"36\" y=\"64\" fill=\"#68778b\" font-family=\"sans-serif\" "
+           "font-size=\"12\">" << xml_escape(data.selection.summary) << "</text>\n";
+    out << "<text x=\"36\" y=\"82\" fill=\"#7f8c9c\" font-family=\"sans-serif\" "
+           "font-size=\"11\">Molden-derived MO energies/occupations/symmetry; type/class is N/A unless supported by source data.</text>\n";
 
     const int axis_x = 70;
     out << "<line x1=\"" << axis_x << "\" y1=\"110\" x2=\"" << axis_x
-        << "\" y2=\"" << height - 62
-        << "\" stroke=\"#2d3745\" stroke-width=\"2\"/>\n";
-    out << "<path d=\"M " << axis_x
-        << " 98 l -5 10 h 10 z\" fill=\"#2d3745\"/>\n";
-    out << "<text x=\"24\" y=\"124\" fill=\"#4d5a6c\" "
-           "font-family=\"sans-serif\" font-size=\"12\" "
-           "transform=\"rotate(-90 24 124)\">Energy · "
-        << (options.energy_axis_mode == EnergyAxisMode::Linear
-                ? "linear"
-                : "adaptive nonlinear (log-gap)")
-        << " (" << xml_escape(energy_unit_symbol(options.energy_unit))
-        << ")</text>\n";
-
+        << "\" y2=\"" << height - 62 << "\" stroke=\"#2d3745\" stroke-width=\"2\"/>\n";
+    out << "<path d=\"M " << axis_x << " 98 l -5 10 h 10 z\" fill=\"#2d3745\"/>\n";
+    out << "<text x=\"24\" y=\"124\" fill=\"#4d5a6c\" font-family=\"sans-serif\" "
+           "font-size=\"12\" transform=\"rotate(-90 24 124)\">Energy · "
+        << (options.energy_axis_mode == EnergyAxisMode::Linear ? "linear" : "adaptive nonlinear (log-gap v3)")
+        << " (" << xml_escape(energy_unit_symbol(options.energy_unit)) << ")</text>\n";
     if (options.energy_axis_mode == EnergyAxisMode::NonlinearFocus) {
-        out << "<text x=\"82\" y=\"102\" fill=\"#8b6173\" "
-               "font-family=\"sans-serif\" font-size=\"10\">"
-               "nonlinear axis · ticks show exact physical energy</text>\n";
+        out << "<text x=\"82\" y=\"102\" fill=\"#8b6173\" font-family=\"sans-serif\" "
+               "font-size=\"10\">nonlinear axis · ticks show exact physical energy</text>\n";
     }
 
     for (const double fraction : {0.0, 0.25, 0.5, 0.75, 1.0}) {
-        const double energy =
-            energy_at_axis_fraction(fraction, data.energy_transform);
-        const double y =
-            map_energy_y(energy, data.energy_transform, height);
+        const double energy = energy_at_axis_fraction(fraction, data.energy_transform);
+        const double y = map_energy_y(energy, data.energy_transform, height);
         out << "<line x1=\"64\" y1=\"" << y << "\" x2=\"76\" y2=\"" << y
             << "\" stroke=\"#7c8795\" stroke-width=\"1\"/>\n";
         out << "<text x=\"80\" y=\"" << y + 4
-            << "\" fill=\"#7c8795\" font-family=\"sans-serif\" "
-               "font-size=\"10\">"
-            << xml_escape(format_energy(
-                   energy,
-                   options.energy_unit,
+            << "\" fill=\"#7c8795\" font-family=\"sans-serif\" font-size=\"10\">"
+            << xml_escape(format_energy(energy, options.energy_unit,
                    options.energy_unit == EnergyUnit::JoulePerMol ? 0 : 4))
             << "</text>\n";
     }
 
     for (const auto& item : positioned) {
         const auto& level = *item.level;
-        const char* colour =
-            level.metadata.selected ? "#286de0" :
-            level.homo ? "#138a62" :
-            level.lumo ? "#b56a00" :
-            level.metadata.region == OrbitalRegion::Virtual
-                ? "#778496" : "#29384c";
+        const char* colour = level.metadata.selected ? "#286de0" :
+                             level.homo ? "#138a62" :
+                             level.lumo ? "#b56a00" :
+                             level.metadata.region == OrbitalRegion::Virtual ? "#778496" : "#29384c";
         const double x0 = item.x - 45.0;
         const double x1 = item.x + 45.0;
         out << "<line x1=\"" << x0 << "\" y1=\"" << item.y
             << "\" x2=\"" << x1 << "\" y2=\"" << item.y
             << "\" stroke=\"" << colour << "\" stroke-width=\""
             << (level.metadata.selected ? 4 : 2.2) << "\"/>\n";
-
         if (level.electrons.alpha > 0) {
             out << "<text x=\"" << item.x - 14 << "\" y=\"" << item.y - 5
-                << "\" fill=\"#151d28\" font-family=\"sans-serif\" "
-                   "font-size=\"19\">↑</text>\n";
+                << "\" fill=\"#151d28\" font-family=\"sans-serif\" font-size=\"19\">↑</text>\n";
         }
         if (level.electrons.beta > 0) {
             out << "<text x=\"" << item.x + 3 << "\" y=\"" << item.y - 5
-                << "\" fill=\"#151d28\" font-family=\"sans-serif\" "
-                   "font-size=\"19\">↓</text>\n";
+                << "\" fill=\"#151d28\" font-family=\"sans-serif\" font-size=\"19\">↓</text>\n";
         }
 
-        const double label_x = static_cast<double>(width) * 0.72;
-        if (std::abs(item.label_y - item.y) > 5.0) {
-            out << "<line x1=\"" << x1 + 2 << "\" y1=\"" << item.y
-                << "\" x2=\"" << label_x - 6 << "\" y2=\"" << item.label_y
-                << "\" stroke=\"#b6c0cc\" stroke-width=\"1\"/>\n";
+        // Export deliberately omits MO numbers. Human-readable orbital type is
+        // attached directly below the physical level; raw numbering remains in
+        // hover/JSON/CSV where it is useful without cluttering the figure.
+        out << "<text x=\"" << item.x << "\" y=\"" << item.y + 16
+            << "\" text-anchor=\"middle\" fill=\"#435166\" font-family=\"sans-serif\" "
+               "font-size=\"10\">" << xml_escape(orbital_type_svg(level.annotation)) << "</text>\n";
+        write_svg_symmetry(out, item.x, item.y + 29, level.metadata.symmetry, "#68778b", 9);
+        if (level.annotation.delocalised_pi.available) {
+            write_svg_delocalised_pi(out, item.x, item.y + 42,
+                                     level.annotation.delocalised_pi, "#5b6575");
         }
+    }
 
-        out << "<text x=\"" << label_x << "\" y=\"" << item.label_y
-            << "\" fill=\"" << colour
-            << "\" font-family=\"sans-serif\" font-size=\"12\" "
-               "font-weight=\"600\">"
-            << xml_escape(level.metadata.display_label)
-            << "</text>\n";
-
-        std::ostringstream secondary;
-        if (!level.metadata.symmetry.empty()) secondary << level.metadata.symmetry;
-        const std::string summary = annotation_summary(level.annotation);
-        if (!summary.empty()) {
-            if (secondary.tellp() > 0) secondary << " · ";
-            secondary << summary;
-        }
-        if (secondary.tellp() > 0) {
-            out << "<text x=\"" << label_x + 48 << "\" y=\"" << item.label_y
-                << "\" fill=\"#667588\" font-family=\"sans-serif\" "
-                   "font-size=\"10\">"
-                << xml_escape(secondary.str()) << "</text>\n";
-        }
-
-        out << "<text x=\"" << label_x << "\" y=\"" << item.label_y + 14
-            << "\" fill=\"#7c8795\" font-family=\"sans-serif\" "
-               "font-size=\"10\">"
-            << xml_escape(format_energy(
-                   level.metadata.energy_hartree,
-                   options.energy_unit,
-                   options.energy_unit == EnergyUnit::JoulePerMol ? 0 : 5))
-            << "</text>\n";
+    out << "<text x=\"36\" y=\"" << height - 24
+        << "\" fill=\"#8793a3\" font-family=\"sans-serif\" font-size=\"10\">"
+           "MO numbering is intentionally omitted from the figure; exact/raw identifiers remain in interactive hover and machine metadata.</text>\n";
+    out << "</svg>\n";
+    if (!out) {
+        if (error) *error = "Failed while writing SVG";
+        return false;
+    }
+    return true;
+}

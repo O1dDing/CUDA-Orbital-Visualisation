@@ -114,12 +114,18 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Native Open File is unavailable on this platform.", "当前平台不支持原生“打开文件”。", "このプラットフォームではネイティブのファイル選択を利用できません。", "La boîte de dialogue native n’est pas disponible sur cette plateforme."},
     {"Copy metadata", "复制元数据", "メタデータをコピー", "Copier les métadonnées"},
     {"No orbitals", "无轨道", "軌道がありません", "Aucune orbitale"},
-    {"Nonlinear energy scale (asinh)", "非线性能量轴（asinh）", "非線形エネルギー軸（asinh）", "Échelle d’énergie non linéaire (asinh)"},
+    {"Adaptive nonlinear energy scale (log-gap v3)", "自适应非线性能量轴（log-gap v3）", "適応型非線形エネルギー軸（log-gap v3）", "Échelle d’énergie non linéaire adaptative (log-gap v3)"},
     {"Energy scale", "能量轴", "エネルギー軸", "Échelle d’énergie"},
     {"Linear", "线性", "線形", "Linéaire"},
-    {"Nonlinear focus", "非线性聚焦", "非線形フォーカス", "Focalisation non linéaire"},
+    {"Adaptive nonlinear", "自适应非线性", "適応型非線形", "Non linéaire adaptative"},
     {"Orbital family", "轨道类型", "軌道タイプ", "Famille orbitale"},
     {"Bonding class", "成键类别", "結合分類", "Classe de liaison"},
+    {"Exact energy", "精确能量", "正確なエネルギー", "Énergie exacte"},
+    {"Multicentre bond", "多中心键", "多中心結合", "Liaison multicentrique"},
+    {"Delocalised π system", "离域 π 体系", "非局在化 π 系", "Système π délocalisé"},
+    {"Classification source", "分类来源", "分類の出典", "Source de classification"},
+    {"Confidence", "置信度", "信頼度", "Confiance"},
+    {"Degenerate members", "简并成员", "縮退メンバー", "Membres dégénérés"},
 }};
 
 std::string g_font_status = "Dear ImGui default";
@@ -127,9 +133,7 @@ std::string g_font_status = "Dear ImGui default";
 std::string first_existing(std::initializer_list<const char*> candidates) {
     std::error_code ec;
     for (const char* candidate : candidates) {
-        if (candidate && std::filesystem::exists(candidate, ec) && !ec) {
-            return candidate;
-        }
+        if (candidate && std::filesystem::exists(candidate, ec) && !ec) return candidate;
         ec.clear();
     }
     return {};
@@ -152,9 +156,7 @@ void merge_font_if_available(const std::string& path,
     cfg.PixelSnapH = true;
     cfg.OversampleH = 1;
     cfg.OversampleV = 1;
-    if (ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), pixel_size, &cfg, ranges)) {
-        loaded = true;
-    }
+    if (ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), pixel_size, &cfg, ranges)) loaded = true;
 }
 
 const char* localised(const LocalisedString& value, const Language language) noexcept {
@@ -186,7 +188,6 @@ const char* language_name(const Language language) noexcept {
 void apply_theme(const float scale) {
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
-
     style.WindowPadding = ImVec2(14.0f, 14.0f);
     style.FramePadding = ImVec2(10.0f, 6.0f);
     style.CellPadding = ImVec2(8.0f, 5.0f);
@@ -195,7 +196,6 @@ void apply_theme(const float scale) {
     style.IndentSpacing = 18.0f;
     style.ScrollbarSize = 11.0f;
     style.GrabMinSize = 10.0f;
-
     style.WindowRounding = 10.0f;
     style.ChildRounding = 8.0f;
     style.FrameRounding = 7.0f;
@@ -203,7 +203,6 @@ void apply_theme(const float scale) {
     style.ScrollbarRounding = 10.0f;
     style.GrabRounding = 6.0f;
     style.TabRounding = 6.0f;
-
     style.WindowBorderSize = 1.0f;
     style.ChildBorderSize = 1.0f;
     style.FrameBorderSize = 0.0f;
@@ -255,7 +254,6 @@ void apply_theme(const float scale) {
     c[ImGuiCol_DragDropTarget] = ImVec4(0.31f, 0.82f, 0.65f, 0.95f);
     c[ImGuiCol_NavHighlight] = ImVec4(0.36f, 0.56f, 0.98f, 0.90f);
     c[ImGuiCol_ModalWindowDimBg] = ImVec4(0.02f, 0.03f, 0.05f, 0.70f);
-
     style.ScaleAllSizes(std::clamp(scale, 0.85f, 2.0f));
 }
 
@@ -263,58 +261,25 @@ bool configure_fonts(const float pixel_size) {
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
     io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
-
 #ifdef _WIN32
-    const std::string base = first_existing({
-        "C:/Windows/Fonts/segoeui.ttf",
-        "C:/Windows/Fonts/arial.ttf",
-    });
-    const std::string chinese = first_existing({
-        "C:/Windows/Fonts/msyh.ttc",
-        "C:/Windows/Fonts/msyh.ttf",
-        "C:/Windows/Fonts/simhei.ttf",
-    });
-    const std::string japanese = first_existing({
-        "C:/Windows/Fonts/YuGothR.ttc",
-        "C:/Windows/Fonts/meiryo.ttc",
-        "C:/Windows/Fonts/msgothic.ttc",
-    });
+    const std::string base = first_existing({"C:/Windows/Fonts/segoeui.ttf", "C:/Windows/Fonts/arial.ttf"});
+    const std::string chinese = first_existing({"C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/msyh.ttf", "C:/Windows/Fonts/simhei.ttf"});
+    const std::string japanese = first_existing({"C:/Windows/Fonts/YuGothR.ttc", "C:/Windows/Fonts/meiryo.ttc", "C:/Windows/Fonts/msgothic.ttc"});
 #elif defined(__APPLE__)
-    const std::string base = first_existing({
-        "/System/Library/Fonts/SFNS.ttf",
-        "/System/Library/Fonts/Supplemental/Arial.ttf",
-    });
-    const std::string chinese = first_existing({
-        "/System/Library/Fonts/PingFang.ttc",
-        "/Library/Fonts/NotoSansCJK-Regular.ttc",
-    });
-    const std::string japanese = first_existing({
-        "/Library/Fonts/NotoSansCJK-Regular.ttc",
-        "/System/Library/Fonts/AppleGothic.ttf",
-    });
+    const std::string base = first_existing({"/System/Library/Fonts/SFNS.ttf", "/System/Library/Fonts/Supplemental/Arial.ttf"});
+    const std::string chinese = first_existing({"/System/Library/Fonts/PingFang.ttc", "/Library/Fonts/NotoSansCJK-Regular.ttc"});
+    const std::string japanese = first_existing({"/Library/Fonts/NotoSansCJK-Regular.ttc", "/System/Library/Fonts/AppleGothic.ttf"});
 #else
-    const std::string base = first_existing({
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
-    });
-    const std::string chinese = first_existing({
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
-    });
-    const std::string japanese = first_existing({
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/opentype/noto/NotoSansCJKjp-Regular.otf",
-    });
+    const std::string base = first_existing({"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf"});
+    const std::string chinese = first_existing({"/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf"});
+    const std::string japanese = first_existing({"/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/usr/share/fonts/opentype/noto/NotoSansCJKjp-Regular.otf"});
 #endif
 
     ImFontGlyphRangesBuilder latin_builder;
     latin_builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
-    for (const auto& row : kStrings) {
-        latin_builder.AddText(row.en);
-        latin_builder.AddText(row.fr);
-    }
+    for (const auto& row : kStrings) { latin_builder.AddText(row.en); latin_builder.AddText(row.fr); }
     latin_builder.AddText(language_name(Language::French));
-    latin_builder.AddText("● · ³ ↑ ↓");
+    latin_builder.AddText("● · ³ ↑ ↓ σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
     ImVector<ImWchar> latin_ranges;
     latin_builder.BuildRanges(&latin_ranges);
 
@@ -323,20 +288,17 @@ bool configure_fonts(const float pixel_size) {
         ImFontConfig cfg{};
         cfg.OversampleH = 2;
         cfg.OversampleV = 1;
-        primary = io.Fonts->AddFontFromFileTTF(base.c_str(), pixel_size, &cfg,
-                                               latin_ranges.Data);
+        primary = io.Fonts->AddFontFromFileTTF(base.c_str(), pixel_size, &cfg, latin_ranges.Data);
     }
     if (!primary) primary = io.Fonts->AddFontDefault();
 
     ImFontGlyphRangesBuilder zh_builder;
     ImFontGlyphRangesBuilder ja_builder;
-    for (const auto& row : kStrings) {
-        zh_builder.AddText(row.zh);
-        ja_builder.AddText(row.ja);
-    }
+    for (const auto& row : kStrings) { zh_builder.AddText(row.zh); ja_builder.AddText(row.ja); }
     zh_builder.AddText(language_name(Language::ChineseSimplified));
     ja_builder.AddText(language_name(Language::Japanese));
-
+    zh_builder.AddText("σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
+    ja_builder.AddText("σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
     ImVector<ImWchar> zh_ranges;
     ImVector<ImWchar> ja_ranges;
     zh_builder.BuildRanges(&zh_ranges);
@@ -346,7 +308,6 @@ bool configure_fonts(const float pixel_size) {
     bool ja_loaded = false;
     merge_font_if_available(chinese, pixel_size, zh_ranges.Data, zh_loaded);
     merge_font_if_available(japanese, pixel_size, ja_ranges.Data, ja_loaded);
-
     const bool built = io.Fonts->Build();
     g_font_status = file_name_or_default(base, "ImGui default");
     g_font_status += " + ";
@@ -356,9 +317,7 @@ bool configure_fonts(const float pixel_size) {
     return built;
 }
 
-const char* font_status() noexcept {
-    return g_font_status.c_str();
-}
+const char* font_status() noexcept { return g_font_status.c_str(); }
 
 void section_title(const char* label) {
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.68f, 0.82f, 1.0f));

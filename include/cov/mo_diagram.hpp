@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <filesystem>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace cov {
@@ -19,18 +20,35 @@ enum class EnergyAxisMode {
     NonlinearFocus,
 };
 
+struct EnergyAxisKnot {
+    double energy_hartree = 0.0;
+    double coordinate = 0.0;
+};
+
 struct EnergyTransform {
     EnergyAxisMode mode = EnergyAxisMode::NonlinearFocus;
     double focus_hartree = 0.0;
     double scale_hartree = 1.0e-4;
+    // In adaptive mode this is the minimum normalized share of the drawable
+    // axis reserved for every non-zero, non-degenerate adjacent energy gap.
+    // 0.055 gives about 40 px on the default 900 px export and deliberately
+    // makes the crowded Cp- valence region roughly twice as legible as v2.
+    double minimum_gap_weight = 0.055;
+    std::vector<EnergyAxisKnot> knots;
 };
 
 [[nodiscard]] const char* energy_axis_mode_name(EnergyAxisMode mode) noexcept;
 [[nodiscard]] const char* energy_transform_name(EnergyAxisMode mode) noexcept;
-[[nodiscard]] double energy_display_coordinate(double energy_hartree,
-                                               const EnergyTransform& transform) noexcept;
-[[nodiscard]] double energy_from_display_coordinate(double coordinate,
-                                                    const EnergyTransform& transform) noexcept;
+[[nodiscard]] EnergyTransform build_energy_transform(
+    const std::vector<double>& energies_hartree,
+    EnergyAxisMode mode,
+    double minimum_gap_weight = 0.055);
+[[nodiscard]] double energy_display_coordinate(
+    double energy_hartree,
+    const EnergyTransform& transform) noexcept;
+[[nodiscard]] double energy_from_display_coordinate(
+    double coordinate,
+    const EnergyTransform& transform) noexcept;
 
 enum class AnnotationSource {
     Direct,
@@ -46,6 +64,28 @@ enum class BondingClass {
     Antibonding,
 };
 
+struct MulticentreDescriptor {
+    bool available = false;
+    std::size_t centres = 0;
+    double electrons = 0.0;
+    std::vector<std::size_t> atom_indices;
+    std::string label;
+    AnnotationSource source = AnnotationSource::Unavailable;
+    double confidence = 0.0;
+    bool heuristic = false;
+};
+
+struct DelocalisedPiDescriptor {
+    bool available = false;
+    std::size_t participating_atoms = 0;
+    double participating_electrons = 0.0;
+    std::vector<std::size_t> atom_indices;
+    std::string label;
+    AnnotationSource source = AnnotationSource::Unavailable;
+    double confidence = 0.0;
+    bool heuristic = false;
+};
+
 struct OrbitalAnnotation {
     // Machine-friendly canonical family names: sigma / pi / delta / phi / unavailable.
     std::string family = "unavailable";
@@ -54,8 +94,20 @@ struct OrbitalAnnotation {
     AnnotationSource bonding_source = AnnotationSource::Unavailable;
     double family_confidence = 0.0;
     double bonding_confidence = 0.0;
+    MulticentreDescriptor multicentre;
+    DelocalisedPiDescriptor delocalised_pi;
     bool heuristic = false;
 };
+
+struct SymmetryNotation {
+    std::string base;
+    std::string subscript;
+    std::string superscript;
+    std::string raw;
+};
+
+[[nodiscard]] SymmetryNotation parse_symmetry_notation(std::string_view raw);
+[[nodiscard]] std::string format_symmetry_unicode(std::string_view raw);
 
 struct DiagramSelectionPlan {
     std::vector<std::size_t> included_indices;
@@ -73,11 +125,15 @@ struct MODiagramOptions {
     OrbitalFilterSettings filter{};
     std::size_t selected_index = 0;
 
-    // Kept as a compact UI control. In ValenceCentral mode it determines the
-    // approximate diagram capacity rather than an arbitrary index window.
+    // In ValenceCentral mode this controls approximate diagram capacity.
     std::size_t neighbourhood = 12;
     std::size_t max_levels = 0;          // 0 => derive from neighbourhood
     std::size_t max_virtual_levels = 10;
+
+    // Adaptive nonlinear axis: minimum normalized vertical share allocated to
+    // each distinct adjacent energy gap. The default intentionally spreads the
+    // dense Cp- 11..27 region about 2x relative to the previous adaptive build.
+    double nonlinear_minimum_gap_weight = 0.055;
 
     int width = 1200;
     int height = 900;
@@ -90,11 +146,12 @@ struct MODiagramLevel {
     ElectronGlyphs electrons;
     bool homo = false;
     bool lumo = false;
+    // Degenerate members share the group-average layout energy so they remain
+    // exactly co-linear vertically even when producer print rounding differs.
+    double layout_energy_hartree = 0.0;
 };
 
 struct MODiagramData {
-    // Retained for API compatibility with the existing UI. The valence-central
-    // diagram does not claim strict SALC reconstruction.
     DiagramPlan plan;
     FrontierOrbitals frontier;
     DiagramSelectionPlan selection;
@@ -102,6 +159,7 @@ struct MODiagramData {
     std::vector<OrbitalMetadata> metadata;
     std::vector<OrbitalAnnotation> annotations; // aligned with metadata
     MODiagramMode mode = MODiagramMode::ValenceCentral;
+    EnergyTransform energy_transform;
 };
 
 [[nodiscard]] const char* annotation_source_name(AnnotationSource source) noexcept;
@@ -111,7 +169,6 @@ struct MODiagramData {
     const Wavefunction& wavefunction,
     const MODiagramOptions& options,
     const std::vector<OrbitalMetadata>& metadata);
-
 [[nodiscard]] MODiagramData build_mo_diagram_data(
     const Wavefunction& wavefunction,
     const MODiagramOptions& options);
@@ -128,25 +185,21 @@ struct MODiagramExportResult {
     const Wavefunction& wavefunction,
     const MODiagramOptions& options,
     const std::filesystem::path& base_path);
-
 [[nodiscard]] bool write_mo_diagram_svg(
     const MODiagramData& data,
     const MODiagramOptions& options,
     const std::filesystem::path& path,
     std::string* error = nullptr);
-
 [[nodiscard]] bool write_mo_diagram_png(
     const MODiagramData& data,
     const MODiagramOptions& options,
     const std::filesystem::path& path,
     std::string* error = nullptr);
-
 [[nodiscard]] bool write_mo_diagram_json(
     const MODiagramData& data,
     const MODiagramOptions& options,
     const std::filesystem::path& path,
     std::string* error = nullptr);
-
 [[nodiscard]] bool write_mo_diagram_csv(
     const MODiagramData& data,
     const MODiagramOptions& options,

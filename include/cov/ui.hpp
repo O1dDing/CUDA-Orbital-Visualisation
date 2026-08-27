@@ -110,6 +110,12 @@ enum class Text {
     NonlinearFocus,
     OrbitalFamily,
     BondingClassLabel,
+    ExactEnergy,
+    MulticentreBond,
+    DelocalisedPiSystem,
+    ClassificationSource,
+    Confidence,
+    DegenerateMembers,
     Count,
 };
 
