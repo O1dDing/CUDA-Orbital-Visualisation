@@ -1,6 +1,10 @@
 #include "cov/cuda_orbital.hpp"
+#include "cov/file_dialog.hpp"
 #include "cov/gl_api.hpp"
+#include "cov/mo_diagram.hpp"
 #include "cov/molden_parser.hpp"
+#include "cov/molecule_style.hpp"
+#include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
 #include "cov/volume_renderer.hpp"
 
@@ -20,6 +24,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -30,6 +35,7 @@ enum class StatusKind {
     Parsing,
     Loaded,
     GridUpdated,
+    Exported,
     Error,
 };
 
@@ -81,6 +87,7 @@ const char* status_label(const StatusKind status, const cov::ui::Language langua
         case StatusKind::Parsing: return cov::ui::tr(Text::Parsing, language);
         case StatusKind::Loaded: return cov::ui::tr(Text::Loaded, language);
         case StatusKind::GridUpdated: return cov::ui::tr(Text::GridUpdated, language);
+        case StatusKind::Exported: return cov::ui::tr(Text::Exported, language);
         case StatusKind::Error: return cov::ui::tr(Text::Error, language);
         default: return cov::ui::tr(Text::Ready, language);
     }
@@ -89,7 +96,8 @@ const char* status_label(const StatusKind status, const cov::ui::Language langua
 cov::ui::Tone status_tone(const StatusKind status) {
     switch (status) {
         case StatusKind::Loaded:
-        case StatusKind::GridUpdated: return cov::ui::Tone::Success;
+        case StatusKind::GridUpdated:
+        case StatusKind::Exported: return cov::ui::Tone::Success;
         case StatusKind::Error: return cov::ui::Tone::Danger;
         case StatusKind::Parsing: return cov::ui::Tone::Accent;
         default: return cov::ui::Tone::Neutral;
@@ -104,12 +112,45 @@ std::filesystem::path path_from_utf8(const std::string& value) {
 #endif
 }
 
+std::string path_to_utf8(const std::filesystem::path& path) {
+#if defined(__cpp_lib_char8_t)
+    const auto value = path.u8string();
+    return std::string(reinterpret_cast<const char*>(value.data()), value.size());
+#else
+    return path.u8string();
+#endif
+}
+
+void copy_path_to_buffer(const std::filesystem::path& path,
+                         std::array<char, 2048>& buffer) {
+    const std::string value = path_to_utf8(path);
+    std::snprintf(buffer.data(), buffer.size(), "%s", value.c_str());
+}
+
 void metric_row(const char* label, const char* value) {
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
     ImGui::TextDisabled("%s", label);
     ImGui::TableNextColumn();
     ImGui::TextUnformatted(value);
+}
+
+void push_recent(std::vector<std::filesystem::path>& recent,
+                 const std::filesystem::path& path) {
+    const auto normalized = path.lexically_normal();
+    recent.erase(std::remove_if(recent.begin(), recent.end(), [&](const auto& existing) {
+        return existing.lexically_normal() == normalized;
+    }), recent.end());
+    recent.insert(recent.begin(), normalized);
+    if (recent.size() > 8) recent.resize(8);
+}
+
+const char* molecule_style_name(const cov::MoleculeStyle style,
+                                const cov::ui::Language language) {
+    return cov::ui::tr(style == cov::MoleculeStyle::StickDelocalisation
+                           ? cov::ui::Text::StickDelocalisation
+                           : cov::ui::Text::MediumBallStick,
+                       language);
 }
 
 } // namespace
@@ -125,7 +166,7 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
     GLFWwindow* window = glfwCreateWindow(
-        1440, 900, "CUDA Orbital Visualisation", nullptr, nullptr);
+        1500, 940, "CUDA Orbital Visualisation", nullptr, nullptr);
     if (!window) {
         std::fprintf(stderr, "Unable to create OpenGL window\n");
         glfwTerminate();
@@ -160,13 +201,18 @@ int main(int argc, char** argv) {
         cov::GridBox grid_box;
 
         cov::ui::Language language = cov::ui::Language::English;
+        cov::ui::OrbitalUIState orbital_ui;
+        cov::MoleculeRenderSettings molecule_render;
         StatusKind status = StatusKind::Ready;
         std::string status_detail;
 
         std::size_t mo_index = 0;
+        std::optional<std::size_t> pending_mo_index;
         float isovalue = 0.03f;
         int resolution = 128;
-        std::array<char, 1024> path_buffer{};
+        std::array<char, 2048> path_buffer{};
+        std::filesystem::path current_file;
+        std::vector<std::filesystem::path> recent_files;
 
         bool recompute = false;
         bool resize_and_recompute = false;
@@ -189,7 +235,7 @@ int main(int argc, char** argv) {
         auto load_file = [&](const std::filesystem::path& path) {
             try {
                 status = StatusKind::Parsing;
-                status_detail = path.string();
+                status_detail = path_to_utf8(path);
 
                 cov::MoldenParseOptions options;
                 options.max_atoms = 100;
@@ -203,14 +249,18 @@ int main(int argc, char** argv) {
                 wavefunction = std::move(wf);
                 evaluator = std::make_unique<cov::CudaOrbitalEvaluator>(*wavefunction);
                 mo_index = new_mo;
+                pending_mo_index.reset();
                 grid_box = new_box;
 
                 renderer.resize_volume(resolution, resolution, resolution);
                 evaluator->attach_gl_texture(renderer.volume_texture());
                 evaluator->evaluate(mo_index, grid_box,
                                     resolution, resolution, resolution);
+                current_file = path;
+                copy_path_to_buffer(path, path_buffer);
+                push_recent(recent_files, path);
                 status = StatusKind::Loaded;
-                status_detail = path.filename().string();
+                status_detail = path_to_utf8(path.filename());
             } catch (const std::exception& e) {
                 status = StatusKind::Error;
                 status_detail = e.what();
@@ -231,8 +281,6 @@ int main(int argc, char** argv) {
             glfwPollEvents();
 
             if (!g_dropped_path.empty()) {
-                std::snprintf(path_buffer.data(), path_buffer.size(), "%s",
-                              g_dropped_path.c_str());
                 load_file(path_from_utf8(g_dropped_path));
                 g_dropped_path.clear();
             }
@@ -244,8 +292,10 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (wavefunction) {
-                renderer.render_volume(fb_w, fb_h, isovalue, camera);
-                renderer.render_geometry(*wavefunction, grid_box, fb_w, fb_h, camera);
+                renderer.render_volume(fb_w, fb_h, isovalue, camera,
+                                       molecule_render.orbital_opacity);
+                renderer.render_geometry(*wavefunction, grid_box, fb_w, fb_h, camera,
+                                         molecule_render);
             }
 
             ImGui_ImplOpenGL2_NewFrame();
@@ -255,7 +305,8 @@ int main(int argc, char** argv) {
             ImGuiIO& io = ImGui::GetIO();
             double mx = 0.0, my = 0.0;
             glfwGetCursorPos(window, &mx, &my);
-            if (!io.WantCaptureMouse && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            if (!io.WantCaptureMouse &&
+                glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
                 camera.yaw += static_cast<float>((mx - last_x) * 0.007);
                 camera.pitch += static_cast<float>((my - last_y) * 0.007);
                 camera.pitch = std::clamp(camera.pitch, -1.45f, 1.45f);
@@ -268,9 +319,9 @@ int main(int argc, char** argv) {
             last_y = my;
 
             const float margin = 14.0f * ui_scale;
-            const float panel_width = std::min(430.0f * ui_scale,
-                                               std::max(320.0f, io.DisplaySize.x * 0.42f));
-            const float panel_height = std::max(300.0f, io.DisplaySize.y - margin * 2.0f);
+            const float panel_width = std::min(540.0f * ui_scale,
+                                               std::max(370.0f, io.DisplaySize.x * 0.46f));
+            const float panel_height = std::max(320.0f, io.DisplaySize.y - margin * 2.0f);
 
             ImGui::SetNextWindowPos(ImVec2(margin, margin), ImGuiCond_Always);
             ImGui::SetNextWindowSize(ImVec2(panel_width, panel_height), ImGuiCond_Always);
@@ -322,22 +373,60 @@ int main(int argc, char** argv) {
             ImGui::BeginChild("##cov_panel_scroll", ImVec2(0, 0), false,
                               ImGuiWindowFlags_None);
 
-            cov::ui::begin_card("##file_card", 126.0f * ui_scale);
+            cov::ui::begin_card("##file_card", 192.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::FileSection, language));
+            std::optional<std::filesystem::path> recent_to_load;
+            if (ImGui::Button(cov::ui::tr(cov::ui::Text::OpenFile, language),
+                              ImVec2(150.0f * ui_scale, 0.0f))) {
+                const cov::FileDialogResult dialog = cov::open_molden_file_dialog();
+                if (dialog.selected()) {
+                    load_file(dialog.path);
+                } else if (!dialog.cancelled && !dialog.error.empty()) {
+                    status = StatusKind::Error;
+                    status_detail = dialog.supported
+                                        ? dialog.error
+                                        : cov::ui::tr(cov::ui::Text::OpenDialogUnsupported, language);
+                }
+            }
+            if (!current_file.empty()) {
+                ImGui::SameLine();
+                ImGui::TextDisabled("%s: %s",
+                    cov::ui::tr(cov::ui::Text::CurrentFile, language),
+                    path_to_utf8(current_file.filename()).c_str());
+            }
+
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoldenPath, language));
             const float load_width = 76.0f * ui_scale;
-            ImGui::SetNextItemWidth(std::max(80.0f, ImGui::GetContentRegionAvail().x - load_width - 8.0f));
+            ImGui::SetNextItemWidth(std::max(100.0f,
+                ImGui::GetContentRegionAvail().x - load_width - 8.0f));
             ImGui::InputText("##molden_path", path_buffer.data(), path_buffer.size());
             ImGui::SameLine();
             if (ImGui::Button(cov::ui::tr(cov::ui::Text::Load, language),
                               ImVec2(load_width, 0.0f))) {
                 load_file(path_from_utf8(path_buffer.data()));
             }
-            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::IdleHint, language));
+
+            if (!recent_files.empty()) {
+                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::RecentFiles, language));
+                const std::string preview = path_to_utf8(recent_files.front().filename());
+                ImGui::SetNextItemWidth(-1.0f);
+                if (ImGui::BeginCombo("##recent_files", preview.c_str())) {
+                    for (std::size_t i = 0; i < recent_files.size(); ++i) {
+                        ImGui::PushID(static_cast<int>(i));
+                        const std::string label = path_to_utf8(recent_files[i].filename());
+                        if (ImGui::Selectable(label.c_str(), i == 0)) {
+                            recent_to_load = recent_files[i];
+                        }
+                        ImGui::PopID();
+                    }
+                    ImGui::EndCombo();
+                }
+            }
             cov::ui::end_card();
+            if (recent_to_load) load_file(*recent_to_load);
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
-            cov::ui::begin_card("##wavefunction_card", 176.0f * ui_scale);
+            cov::ui::begin_card("##wavefunction_card", 174.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::WavefunctionSection, language));
             if (wavefunction) {
                 if (ImGui::BeginTable("##wavefunction_metrics", 2,
@@ -364,46 +453,92 @@ int main(int argc, char** argv) {
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
-            cov::ui::begin_card("##orbital_card", 214.0f * ui_scale);
-            cov::ui::section_title(cov::ui::tr(cov::ui::Text::OrbitalSection, language));
+            cov::ui::begin_card("##orbital_browser_card", 620.0f * ui_scale);
+            cov::ui::section_title(cov::ui::tr(cov::ui::Text::OrbitalBrowser, language));
+            cov::ui::OrbitalUIActions orbital_actions;
             if (wavefunction && evaluator && !wavefunction->orbitals.empty()) {
-                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoldenMO, language));
-                int mo_ui = static_cast<int>(mo_index) + 1;
-                if (ImGui::SliderInt("##molden_mo", &mo_ui, 1,
-                                     static_cast<int>(wavefunction->orbitals.size()))) {
-                    mo_index = static_cast<std::size_t>(mo_ui - 1);
-                    recompute = true;
-                }
-
-                const auto& mo = wavefunction->orbitals[mo_index];
-                if (ImGui::BeginTable("##orbital_metrics", 2,
-                                      ImGuiTableFlags_SizingStretchProp |
-                                      ImGuiTableFlags_NoSavedSettings)) {
-                    const std::string index = std::to_string(mo_index);
-                    char energy[64]{};
-                    char occupation[64]{};
-                    std::snprintf(energy, sizeof(energy), "%.8f Ha", mo.energy_hartree);
-                    std::snprintf(occupation, sizeof(occupation), "%.3f", mo.occupation);
-                    metric_row(cov::ui::tr(cov::ui::Text::InternalIndex, language), index.c_str());
-                    metric_row(cov::ui::tr(cov::ui::Text::Energy, language), energy);
-                    metric_row(cov::ui::tr(cov::ui::Text::Occupation, language), occupation);
-                    metric_row(cov::ui::tr(cov::ui::Text::Spin, language),
-                               cov::ui::tr(mo.spin == cov::Spin::Beta ? cov::ui::Text::Beta
-                                                                      : cov::ui::Text::Alpha,
-                                           language));
-                    metric_row(cov::ui::tr(cov::ui::Text::Symmetry, language),
-                               mo.symmetry.empty() ? cov::ui::tr(cov::ui::Text::NoneValue, language)
-                                                   : mo.symmetry.c_str());
-                    ImGui::EndTable();
-                }
+                cov::ui::draw_orbital_browser(*wavefunction, mo_index, orbital_ui,
+                                              language, ui_scale, orbital_actions);
             } else {
                 ImGui::TextDisabled("—");
             }
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
-            cov::ui::begin_card("##render_card", 192.0f * ui_scale);
+            cov::ui::begin_card("##energy_diagram_card", 430.0f * ui_scale);
+            cov::ui::section_title(cov::ui::tr(cov::ui::Text::EnergyDiagram, language));
+            cov::ui::OrbitalUIActions diagram_actions;
+            if (wavefunction && evaluator && !wavefunction->orbitals.empty()) {
+                cov::ui::draw_energy_diagram(*wavefunction, mo_index, orbital_ui,
+                                             language, ui_scale, diagram_actions);
+            } else {
+                ImGui::TextDisabled("—");
+            }
+            cov::ui::end_card();
+            ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
+
+            if (orbital_actions.select_orbital) pending_mo_index = orbital_actions.select_orbital;
+            if (diagram_actions.select_orbital) pending_mo_index = diagram_actions.select_orbital;
+            const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
+            if (export_requested && wavefunction) {
+                cov::MODiagramOptions options;
+                options.energy_unit = orbital_ui.energy_unit;
+                options.degeneracy = orbital_ui.degeneracy;
+                options.filter = orbital_ui.filter;
+                options.selected_index = mo_index;
+                options.neighbourhood = static_cast<std::size_t>(std::max(2, orbital_ui.diagram_neighbourhood));
+                std::filesystem::path base = current_file.empty()
+                                                 ? std::filesystem::current_path() / "mo_diagram"
+                                                 : current_file;
+                const auto result = cov::export_mo_diagram_bundle(*wavefunction, options, base);
+                if (result.svg && result.png && result.json && result.csv) {
+                    status = StatusKind::Exported;
+                    if (base.has_extension()) base.replace_extension();
+                    status_detail = path_to_utf8(base) + ".mo.{png,svg,json,csv}";
+                } else {
+                    status = StatusKind::Error;
+                    status_detail = result.error.empty()
+                                        ? cov::ui::tr(cov::ui::Text::ExportFailed, language)
+                                        : result.error;
+                }
+            }
+
+            cov::ui::begin_card("##render_card", 370.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::RenderingSection, language));
+            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoleculeStyle, language));
+            ImGui::SetNextItemWidth(-1.0f);
+            if (ImGui::BeginCombo("##molecule_style",
+                                  molecule_style_name(molecule_render.style, language))) {
+                for (const cov::MoleculeStyle style : {
+                         cov::MoleculeStyle::MediumBallAndStick,
+                         cov::MoleculeStyle::StickDelocalisation}) {
+                    const bool selected = molecule_render.style == style;
+                    if (ImGui::Selectable(molecule_style_name(style, language), selected)) {
+                        molecule_render.style = style;
+                    }
+                    if (selected) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+            if (molecule_render.style == cov::MoleculeStyle::StickDelocalisation) {
+                ImGui::TextDisabled("%s",
+                    cov::ui::tr(cov::ui::Text::DelocalisationHeuristic, language));
+            }
+
+            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::AtomSize, language));
+            ImGui::SliderFloat("##atom_size", &molecule_render.atom_scale, 0.55f, 1.8f, "%.2f");
+            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::BondSize, language));
+            ImGui::SliderFloat("##bond_size", &molecule_render.bond_scale, 0.5f, 2.0f, "%.2f");
+            ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowHydrogens, language),
+                            &molecule_render.show_hydrogens);
+
+            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoleculeOpacity, language));
+            ImGui::SliderFloat("##molecule_opacity", &molecule_render.molecule_opacity,
+                               0.15f, 1.0f, "%.2f");
+            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::OrbitalOpacity, language));
+            ImGui::SliderFloat("##orbital_opacity", &molecule_render.orbital_opacity,
+                               0.20f, 1.0f, "%.2f");
+
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::Isovalue, language));
             ImGui::SliderFloat("##isovalue", &isovalue, 0.002f, 0.12f, "%.4f",
                                ImGuiSliderFlags_Logarithmic);
@@ -457,6 +592,17 @@ int main(int argc, char** argv) {
 
             ImGui::EndChild();
             ImGui::End();
+
+            // Selection debounce: at most the latest requested orbital is evaluated
+            // once at the end of this frame. Browser hover/filtering never launches CUDA.
+            if (pending_mo_index && wavefunction &&
+                *pending_mo_index < wavefunction->orbitals.size()) {
+                if (*pending_mo_index != mo_index) {
+                    mo_index = *pending_mo_index;
+                    recompute = true;
+                }
+                pending_mo_index.reset();
+            }
 
             if (recompute) {
                 try {
