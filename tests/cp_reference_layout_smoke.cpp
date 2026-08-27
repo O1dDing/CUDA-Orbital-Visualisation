@@ -48,7 +48,7 @@ int main() {
     options.max_levels = 23;
     options.max_virtual_levels = 10;
     options.energy_axis_mode = cov::EnergyAxisMode::NonlinearFocus;
-    options.nonlinear_minimum_gap_weight = 0.055;
+    options.nonlinear_minimum_gap_weight = 0.070;
     options.width = 1200;
     options.height = 900;
 
@@ -99,13 +99,34 @@ int main() {
         return 7;
     }
 
+    // For the default 1200x900 export, every distinct non-degenerate level in
+    // this 6..27 Cp window must receive at least ~50 px vertical separation.
+    // Degenerate members remain exactly co-linear by sharing display_coordinate.
+    std::vector<double> distinct_coordinates;
+    for (const auto& level : data.levels) {
+        const double c = cov::energy_display_coordinate(level.layout_energy_hartree,
+                                                        data.energy_transform);
+        if (distinct_coordinates.empty() ||
+            std::abs(c - distinct_coordinates.back()) > 1.0e-12) {
+            distinct_coordinates.push_back(c);
+        }
+    }
+    for (std::size_t i = 1; i < distinct_coordinates.size(); ++i) {
+        const double pixel_gap = (distinct_coordinates[i] - distinct_coordinates[i - 1]) * 720.0;
+        if (pixel_gap < 49.0) {
+            std::cerr << "crowded Cp level gap below doubled readability target: "
+                      << pixel_gap << " px\n";
+            return 8;
+        }
+    }
+
     const auto out_dir = std::filesystem::current_path() / "visual_artifacts";
     std::filesystem::create_directories(out_dir);
     const auto base = out_dir / "cp_reference_adaptive_v3";
     const auto result = cov::export_mo_diagram_bundle(wf, options, base);
     if (!result.svg || !result.png || !result.json || !result.csv) {
         std::cerr << "Cp visual export failed: " << result.error << '\n';
-        return 8;
+        return 9;
     }
 
     std::ifstream svg_file(base.string() + ".mo.svg", std::ios::binary);
@@ -116,21 +137,21 @@ int main() {
         svg.find("font-size=\"6.3\"") == std::string::npos ||
         svg.find("baseline-shift=") != std::string::npos) {
         std::cerr << "adaptive/explicit-position symmetry SVG markers missing\n";
-        return 9;
+        return 10;
     }
     if (svg.find(">17-a<") != std::string::npos || svg.find(">17-b<") != std::string::npos) {
         std::cerr << "MO numbering leaked into exported figure\n";
-        return 10;
+        return 11;
     }
     if (svg.find("font-size=\"10\">N/A</text>") == std::string::npos) {
         std::cerr << "compact orbital type / bonding fallback was not rendered below levels\n";
-        return 11;
+        return 12;
     }
     if (svg.find(">↑</text>") != std::string::npos ||
         svg.find(">↓</text>") != std::string::npos ||
         svg.find("stroke-linecap=\"round\"") == std::string::npos) {
         std::cerr << "SVG electron arrows must be vector primitives, not font glyphs\n";
-        return 12;
+        return 13;
     }
 
     std::ifstream json_file(base.string() + ".mo.json", std::ios::binary);
@@ -142,7 +163,7 @@ int main() {
         json.find("\"orbital_family\": \"unavailable\"") == std::string::npos ||
         json.find("\"bonding_class\": \"unclassified\"") == std::string::npos) {
         std::cerr << "Cp machine metadata markers missing\n";
-        return 13;
+        return 14;
     }
 
     std::cout << "cp_reference_layout_smoke ok; shown=22 hidden=5; artifacts="
