@@ -53,7 +53,9 @@ int main() {
     options.filter.core_energy_cutoff_hartree = -1.5;
     options.filter.virtual_window_hartree = 1.5;
     options.degeneracy.tolerance_hartree = 1.0e-5;
-    options.max_levels = 5;
+    // Keep all three low-lying virtuals so the explicit producer 3c2e fixture
+    // participates in the human and machine export checks.
+    options.max_levels = 7;
 
     const auto data = cov::build_mo_diagram_data(wf, options);
     if (!data.frontier.homo || !data.frontier.lumo) return 1;
