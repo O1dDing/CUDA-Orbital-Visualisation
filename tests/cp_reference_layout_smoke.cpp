@@ -122,9 +122,15 @@ int main() {
         std::cerr << "MO numbering leaked into exported figure\n";
         return 10;
     }
-    if (svg.find("N/A · N/A") == std::string::npos) {
-        std::cerr << "orbital type / bonding fallback was not rendered below levels\n";
+    if (svg.find("font-size=\"10\">N/A</text>") == std::string::npos) {
+        std::cerr << "compact orbital type / bonding fallback was not rendered below levels\n";
         return 11;
+    }
+    if (svg.find(">↑</text>") != std::string::npos ||
+        svg.find(">↓</text>") != std::string::npos ||
+        svg.find("stroke-linecap=\"round\"") == std::string::npos) {
+        std::cerr << "SVG electron arrows must be vector primitives, not font glyphs\n";
+        return 12;
     }
 
     std::ifstream json_file(base.string() + ".mo.json", std::ios::binary);
@@ -136,7 +142,7 @@ int main() {
         json.find("\"orbital_family\": \"unavailable\"") == std::string::npos ||
         json.find("\"bonding_class\": \"unclassified\"") == std::string::npos) {
         std::cerr << "Cp machine metadata markers missing\n";
-        return 12;
+        return 13;
     }
 
     std::cout << "cp_reference_layout_smoke ok; shown=22 hidden=5; artifacts="
