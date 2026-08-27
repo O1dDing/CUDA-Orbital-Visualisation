@@ -6,6 +6,49 @@ int bitmap_text_width(const std::string& text, const int scale) {
     return width;
 }
 
+void draw_small_lowercase(Canvas& canvas, const int x, const int y, const char c,
+                          const std::uint8_t r, const std::uint8_t g,
+                          const std::uint8_t b) {
+    std::array<std::uint8_t, 7> rows{};
+    if (c == 'g') rows = {0,14,17,17,15,1,14};
+    else if (c == 'u') rows = {0,0,17,17,17,19,13};
+    else return;
+    for (int row = 0; row < 7; ++row) {
+        for (int col = 0; col < 5; ++col) {
+            if ((rows[static_cast<std::size_t>(row)] & (1u << (4 - col))) != 0) {
+                canvas.pixel(x + col, y + row, r, g, b);
+            }
+        }
+    }
+}
+
+void draw_small_subscript(Canvas& canvas, int x, const int y,
+                          const std::string& value) {
+    for (const char c : value) {
+        if (c == 'g' || c == 'u') {
+            draw_small_lowercase(canvas, x, y, c, 91, 105, 124);
+        } else {
+            draw_text(canvas, x, y, std::string(1, c), 91, 105, 124, 1);
+        }
+        x += 6;
+    }
+}
+
+void draw_prime_marks(Canvas& canvas, int x, const int y,
+                      const std::string& raw) {
+    int count = 0;
+    for (const char c : raw) {
+        if (c == '\'') ++count;
+        else if (c == '"') count += 2;
+    }
+    for (int i = 0; i < count; ++i) {
+        canvas.line(x + i * 4, y, x + i * 4 - 2, y + 5, 91, 105, 124, 1);
+    }
+    if (raw.find('*') != std::string::npos) {
+        draw_text(canvas, x + count * 4 + 1, y - 1, "*", 91, 105, 124, 1);
+    }
+}
+
 void draw_symmetry_png(Canvas& canvas,
                        const int centre_x,
                        const int baseline_y,
@@ -18,25 +61,23 @@ void draw_symmetry_png(Canvas& canvas,
         return;
     }
     const int base_scale = 2;
-    const int sub_scale = 1;
     const int base_w = bitmap_text_width(notation.base, base_scale);
-    const int sub_w = bitmap_text_width(notation.subscript, sub_scale);
-    const int sup_w = bitmap_text_width(notation.superscript, sub_scale);
+    const int sub_w = static_cast<int>(notation.subscript.size()) * 6;
+    int prime_count = 0;
+    for (const char c : raw) {
+        if (c == '\'') ++prime_count;
+        else if (c == '"') prime_count += 2;
+    }
+    const int sup_w = prime_count * 4 + (raw.find('*') != std::string::npos ? 7 : 0);
     const int total = base_w + std::max(sub_w, sup_w);
     int x = centre_x - total / 2;
     draw_text(canvas, x, baseline_y, notation.base, 91, 105, 124, base_scale);
     x += base_w;
     if (!notation.subscript.empty()) {
-        draw_text(canvas, x, baseline_y + 8, notation.subscript, 91, 105, 124, sub_scale);
+        draw_small_subscript(canvas, x, baseline_y + 8, notation.subscript);
     }
     if (!notation.superscript.empty()) {
-        // Bitmap export uses ASCII prime/star fallback while preserving the
-        // vertical superscript position. SVG carries the exact Unicode glyph.
-        std::string sup = notation.superscript;
-        for (char& c : sup) {
-            if (static_cast<unsigned char>(c) >= 0x80) c = '\'';
-        }
-        draw_text(canvas, x, baseline_y - 4, sup, 91, 105, 124, sub_scale);
+        draw_prime_marks(canvas, x + std::max(0, sub_w - 2), baseline_y - 4, raw);
     }
 }
 
@@ -89,6 +130,8 @@ bool write_mo_diagram_png(const MODiagramData& data,
         if (level.electrons.alpha > 0) draw_electron(canvas, static_cast<int>(item.x) - 10, y - 2, true);
         if (level.electrons.beta > 0) draw_electron(canvas, static_cast<int>(item.x) + 10, y - 2, false);
 
+        // Human-facing export: orbital type directly below each level; MO
+        // identifiers intentionally stay out of the figure.
         const std::string type = orbital_type_plain(level.annotation);
         const int type_x = static_cast<int>(item.x) - bitmap_text_width(type, 1) / 2;
         draw_text(canvas, type_x, y + 8, type, 67, 81, 102, 1);
