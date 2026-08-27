@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/model.hpp"
+#include "cov/molecule_style.hpp"
 
 #include <cstdint>
 
@@ -31,13 +32,15 @@ public:
     void render_volume(int framebuffer_width,
                        int framebuffer_height,
                        float isovalue,
-                       const OrbitCamera& camera);
+                       const OrbitCamera& camera,
+                       float opacity = 1.0f);
 
     void render_geometry(const Wavefunction& wavefunction,
                          const GridBox& box,
                          int framebuffer_width,
                          int framebuffer_height,
-                         const OrbitCamera& camera);
+                         const OrbitCamera& camera,
+                         const MoleculeRenderSettings& settings = {});
 
 private:
     unsigned int texture_ = 0;
