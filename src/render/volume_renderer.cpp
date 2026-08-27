@@ -46,9 +46,6 @@
 #ifndef GL_INFO_LOG_LENGTH
 #define GL_INFO_LOG_LENGTH 0x8B84
 #endif
-#ifndef GL_POINT_SMOOTH
-#define GL_POINT_SMOOTH 0x0B10
-#endif
 
 namespace cov {
 namespace {
@@ -274,46 +271,156 @@ Vec3 to_texture(const Atom& atom, const GridBox& box) {
     };
 }
 
-bool project(const Vec3 p,
-             const CameraBasis& b,
-             const float aspect,
-             const float tan_half_fov,
-             float& x_ndc,
-             float& y_ndc,
-             float* view_depth = nullptr) {
-    const Vec3 q = p - b.position;
-    const float z = dot(q, b.forward);
-    if (z <= 0.02f) return false;
-    x_ndc = dot(q, b.right) / (z * tan_half_fov * aspect);
-    y_ndc = dot(q, b.up) / (z * tan_half_fov);
-    if (view_depth) *view_depth = z;
-    return true;
+Vec3 shaded_colour(const Vec3 base,
+                   const Vec3 normal,
+                   const Vec3 point,
+                   const CameraBasis& camera) {
+    const Vec3 light = normalise(camera.right * -0.35f + camera.up * 0.58f + camera.forward * -0.74f);
+    const Vec3 view = normalise(camera.position - point);
+    const Vec3 half_vector = normalise(light + view);
+    const float diffuse = std::max(0.0f, dot(normal, light));
+    const float specular = std::pow(std::max(0.0f, dot(normal, half_vector)), 30.0f);
+    const float illumination = 0.28f + 0.72f * diffuse;
+    return {
+        std::clamp(base.x * illumination + 0.34f * specular, 0.0f, 1.0f),
+        std::clamp(base.y * illumination + 0.34f * specular, 0.0f, 1.0f),
+        std::clamp(base.z * illumination + 0.34f * specular, 0.0f, 1.0f)
+    };
 }
 
-void draw_segment(const float x0, const float y0,
-                  const float x1, const float y1,
-                  const float alpha) {
-    glColor4f(0.70f, 0.74f, 0.80f, alpha);
-    glBegin(GL_LINES);
-    glVertex2f(x0, y0);
-    glVertex2f(x1, y1);
-    glEnd();
+void load_3d_camera(const CameraBasis& b,
+                    const float aspect,
+                    const float tan_half_fov) {
+    constexpr double near_plane = 0.03;
+    constexpr double far_plane = 8.0;
+    const double top = near_plane * static_cast<double>(tan_half_fov);
+    const double right = top * static_cast<double>(std::max(0.01f, aspect));
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-right, right, -top, top, near_plane, far_plane);
+
+    const GLfloat view[16] = {
+        b.right.x, b.up.x, -b.forward.x, 0.0f,
+        b.right.y, b.up.y, -b.forward.y, 0.0f,
+        b.right.z, b.up.z, -b.forward.z, 0.0f,
+        -dot(b.right, b.position), -dot(b.up, b.position), dot(b.forward, b.position), 1.0f
+    };
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(view);
 }
 
-void draw_dashed_segment(const float x0, const float y0,
-                         const float x1, const float y1,
-                         const float alpha) {
-    constexpr int segments = 13;
-    glColor4f(0.46f, 0.69f, 0.98f, alpha);
-    glBegin(GL_LINES);
-    for (int s = 0; s < segments; ++s) {
-        if ((s % 2) != 0) continue;
-        const float ta = static_cast<float>(s) / static_cast<float>(segments);
-        const float tb = static_cast<float>(s + 1) / static_cast<float>(segments);
-        glVertex2f(x0 + (x1 - x0) * ta, y0 + (y1 - y0) * ta);
-        glVertex2f(x0 + (x1 - x0) * tb, y0 + (y1 - y0) * tb);
+void draw_sphere(const Vec3 centre,
+                 const float radius,
+                 const Vec3 base_colour,
+                 const float alpha,
+                 const CameraBasis& camera) {
+    constexpr int latitude_segments = 18;
+    constexpr int longitude_segments = 28;
+
+    for (int lat = 0; lat < latitude_segments; ++lat) {
+        const float phi0 = -0.5f * kPi + kPi * static_cast<float>(lat) /
+                                             static_cast<float>(latitude_segments);
+        const float phi1 = -0.5f * kPi + kPi * static_cast<float>(lat + 1) /
+                                             static_cast<float>(latitude_segments);
+        const float y0 = std::sin(phi0);
+        const float y1 = std::sin(phi1);
+        const float r0 = std::cos(phi0);
+        const float r1 = std::cos(phi1);
+
+        glBegin(GL_TRIANGLE_STRIP);
+        for (int lon = 0; lon <= longitude_segments; ++lon) {
+            const float theta = 2.0f * kPi * static_cast<float>(lon) /
+                                                static_cast<float>(longitude_segments);
+            const float ct = std::cos(theta);
+            const float st = std::sin(theta);
+
+            const Vec3 n0{r0 * ct, y0, r0 * st};
+            const Vec3 p0 = centre + n0 * radius;
+            const Vec3 c0 = shaded_colour(base_colour, n0, p0, camera);
+            glColor4f(c0.x, c0.y, c0.z, alpha);
+            glVertex3f(p0.x, p0.y, p0.z);
+
+            const Vec3 n1{r1 * ct, y1, r1 * st};
+            const Vec3 p1 = centre + n1 * radius;
+            const Vec3 c1 = shaded_colour(base_colour, n1, p1, camera);
+            glColor4f(c1.x, c1.y, c1.z, alpha);
+            glVertex3f(p1.x, p1.y, p1.z);
+        }
+        glEnd();
+    }
+}
+
+void draw_cylinder(const Vec3 a,
+                   const Vec3 b,
+                   const float radius,
+                   const Vec3 base_colour,
+                   const float alpha,
+                   const CameraBasis& camera) {
+    const Vec3 axis_vector = b - a;
+    const float length = std::sqrt(std::max(1.0e-20f, dot(axis_vector, axis_vector)));
+    if (length <= 1.0e-6f) return;
+    const Vec3 axis = axis_vector * (1.0f / length);
+    const Vec3 helper = std::abs(axis.y) < 0.90f ? Vec3{0.0f, 1.0f, 0.0f}
+                                                  : Vec3{1.0f, 0.0f, 0.0f};
+    const Vec3 u = normalise(cross(axis, helper));
+    const Vec3 v = normalise(cross(axis, u));
+    constexpr int slices = 18;
+
+    glBegin(GL_TRIANGLE_STRIP);
+    for (int i = 0; i <= slices; ++i) {
+        const float theta = 2.0f * kPi * static_cast<float>(i) / static_cast<float>(slices);
+        const Vec3 normal = u * std::cos(theta) + v * std::sin(theta);
+        const Vec3 pa = a + normal * radius;
+        const Vec3 pb = b + normal * radius;
+        const Vec3 ca = shaded_colour(base_colour, normal, pa, camera);
+        const Vec3 cb = shaded_colour(base_colour, normal, pb, camera);
+        glColor4f(ca.x, ca.y, ca.z, alpha);
+        glVertex3f(pa.x, pa.y, pa.z);
+        glColor4f(cb.x, cb.y, cb.z, alpha);
+        glVertex3f(pb.x, pb.y, pb.z);
     }
     glEnd();
+
+    const Vec3 cap_a_colour = shaded_colour(base_colour, axis * -1.0f, a, camera);
+    glColor4f(cap_a_colour.x, cap_a_colour.y, cap_a_colour.z, alpha);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(a.x, a.y, a.z);
+    for (int i = 0; i <= slices; ++i) {
+        const float theta = -2.0f * kPi * static_cast<float>(i) / static_cast<float>(slices);
+        const Vec3 rim = a + (u * std::cos(theta) + v * std::sin(theta)) * radius;
+        glVertex3f(rim.x, rim.y, rim.z);
+    }
+    glEnd();
+
+    const Vec3 cap_b_colour = shaded_colour(base_colour, axis, b, camera);
+    glColor4f(cap_b_colour.x, cap_b_colour.y, cap_b_colour.z, alpha);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(b.x, b.y, b.z);
+    for (int i = 0; i <= slices; ++i) {
+        const float theta = 2.0f * kPi * static_cast<float>(i) / static_cast<float>(slices);
+        const Vec3 rim = b + (u * std::cos(theta) + v * std::sin(theta)) * radius;
+        glVertex3f(rim.x, rim.y, rim.z);
+    }
+    glEnd();
+}
+
+void draw_dashed_cylinder(const Vec3 a,
+                          const Vec3 b,
+                          const float radius,
+                          const Vec3 colour,
+                          const float alpha,
+                          const CameraBasis& camera) {
+    constexpr int dash_count = 7;
+    constexpr float dash_fraction = 0.58f;
+    const Vec3 delta = b - a;
+    for (int i = 0; i < dash_count; ++i) {
+        const float t0 = static_cast<float>(i) / static_cast<float>(dash_count);
+        const float t1 = std::min(1.0f,
+                                  t0 + dash_fraction / static_cast<float>(dash_count));
+        draw_cylinder(a + delta * t0, a + delta * t1,
+                      radius, colour, alpha, camera);
+    }
 }
 
 } // namespace
@@ -419,8 +526,7 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
                              ? static_cast<float>(framebuffer_width) /
                                    static_cast<float>(framebuffer_height)
                              : 1.0f;
-    const float tan_half_fov =
-        std::tan(camera.fov_degrees * kPi / 360.0f);
+    const float tan_half_fov = std::tan(camera.fov_degrees * kPi / 360.0f);
 
     std::vector<Vec3> points;
     points.reserve(wavefunction.atoms.size());
@@ -429,25 +535,31 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     }
     const auto bonds = analyse_bonds(wavefunction);
 
-    glDisable(GL_DEPTH_TEST);
+    // Molecular geometry is real 3D now: it shares the orbital camera, writes a
+    // depth buffer, and is lit in world/texture space.  The volume raymarch
+    // remains GPU-resident and unchanged; the molecular model is simply drawn
+    // afterwards as a depth-correct overlay rather than as projected 2D points
+    // and lines.
+    gl::UseProgram(0);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_TRUE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glShadeModel(GL_SMOOTH);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadIdentity();
+    load_3d_camera(b, aspect, tan_half_fov);
 
     const float opacity = std::clamp(settings.molecule_opacity, 0.05f, 1.0f);
-    // The user's manual Cp- comparison against a conventional Gaussian-style
-    // ball-and-stick reference showed that the prior 4.8 px default still read
-    // as a wire overlay. Raise the actual screen-space bond weight, not just the
-    // UI slider value, while leaving the MO lobes as the visual subject.
-    const float line_width = (settings.style == MoleculeStyle::MediumBallAndStick ? 4.20f : 3.00f) *
-                             std::clamp(settings.bond_scale, 0.35f, 3.0f);
-    glLineWidth(line_width);
+    const float bond_radius = (settings.style == MoleculeStyle::MediumBallAndStick ? 0.0047f : 0.0036f) *
+                              std::clamp(settings.bond_scale, 0.35f, 3.0f);
+    const Vec3 bond_colour{0.73f, 0.76f, 0.81f};
+    const Vec3 delocalised_colour{0.46f, 0.69f, 0.98f};
 
     for (const auto& bond : bonds) {
         const Atom& atom_a = wavefunction.atoms[bond.atom_a];
@@ -457,56 +569,36 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
             continue;
         }
 
-        float x0 = 0.0f, y0 = 0.0f, x1 = 0.0f, y1 = 0.0f;
-        if (!project(points[bond.atom_a], b, aspect, tan_half_fov, x0, y0) ||
-            !project(points[bond.atom_b], b, aspect, tan_half_fov, x1, y1)) {
-            continue;
-        }
-
         if (settings.style == MoleculeStyle::StickDelocalisation && bond.delocalised) {
-            draw_dashed_segment(x0, y0, x1, y1, opacity);
+            draw_dashed_cylinder(points[bond.atom_a], points[bond.atom_b],
+                                 bond_radius, delocalised_colour, opacity, b);
         } else {
-            draw_segment(x0, y0, x1, y1, opacity * 0.92f);
+            draw_cylinder(points[bond.atom_a], points[bond.atom_b],
+                          bond_radius, bond_colour, opacity * 0.94f, b);
         }
     }
 
     if (settings.style == MoleculeStyle::MediumBallAndStick) {
-        glEnable(GL_POINT_SMOOTH);
         for (std::size_t i = 0; i < wavefunction.atoms.size(); ++i) {
             const Atom& atom = wavefunction.atoms[i];
             if (!settings.show_hydrogens && atom.atomic_number == 1) continue;
-            float x = 0.0f, y = 0.0f, depth = 1.0f;
-            if (!project(points[i], b, aspect, tan_half_fov, x, y, &depth)) continue;
 
-            const float radius = static_cast<float>(covalent_radius_angstrom(atom.atomic_number));
-            const float perspective = std::clamp(1.7f / std::max(0.45f, depth), 0.70f, 1.65f);
-            const float point_size = std::clamp(
-                (22.0f + 18.0f * radius) * settings.atom_scale * perspective,
-                18.0f, 82.0f);
-
-            glPointSize(point_size + 8.0f);
-            glColor4f(0.025f, 0.031f, 0.043f, opacity * 0.95f);
-            glBegin(GL_POINTS);
-            glVertex2f(x, y);
-            glEnd();
-
-            const Vec3 colour = atom_colour(atom.atomic_number);
-            glPointSize(point_size);
-            glColor4f(colour.x, colour.y, colour.z, opacity);
-            glBegin(GL_POINTS);
-            glVertex2f(x, y);
-            glEnd();
+            const float covalent = static_cast<float>(covalent_radius_angstrom(atom.atomic_number));
+            const float sphere_radius = std::clamp(
+                (0.022f + 0.016f * covalent) * settings.atom_scale,
+                0.028f, 0.086f);
+            draw_sphere(points[i], sphere_radius, atom_colour(atom.atomic_number), opacity, b);
         }
-        glDisable(GL_POINT_SMOOTH);
     }
-
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glDisable(GL_BLEND);
 
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
+
+    glDisable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 } // namespace cov
