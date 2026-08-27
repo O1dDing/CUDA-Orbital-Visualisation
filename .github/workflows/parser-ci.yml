@@ -29,7 +29,9 @@ jobs:
 
   windows-cuda-viewer:
     name: prebuilt Windows CUDA viewer
-    runs-on: windows-latest
+    # CUDA 12.8 is validated with the VS2022 host compiler. windows-latest has
+    # moved to a VS2026 image, so pin this packaging job to the VS2022 runner.
+    runs-on: windows-2022
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +63,7 @@ jobs:
         shell: pwsh
         run: cmake --build build-cuda --config Release --parallel
 
-      - name: Verify standalone binary and sm_120 payload
+      - name: Verify standalone binary and Blackwell payload
         shell: pwsh
         run: |
           $exe = "build-cuda/Release/cov.exe"
@@ -69,6 +71,10 @@ jobs:
           & "$env:CUDA_PATH/bin/cuobjdump.exe" --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
           if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) {
             throw "sm_120 native cubin was not found in cov.exe"
+          }
+          & "$env:CUDA_PATH/bin/cuobjdump.exe" --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
+          if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) {
+            throw "compute_120 PTX fallback was not found in cov.exe"
           }
           Get-Item $exe | Format-List FullName,Length,LastWriteTime
 
