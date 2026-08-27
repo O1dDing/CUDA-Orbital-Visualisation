@@ -31,9 +31,9 @@ struct EnergyTransform {
     double scale_hartree = 1.0e-4;
     // In adaptive mode this is the minimum normalized share of the drawable
     // axis reserved for every non-zero, non-degenerate adjacent energy gap.
-    // 0.055 gives about 40 px on the default 900 px export and deliberately
-    // makes the crowded Cp- valence region roughly twice as legible as v2.
-    double minimum_gap_weight = 0.055;
+    // 0.070 reaches the transform's 90%-floor safety cap for the default Cp-
+    // valence set, yielding about 50 px minimum separation on a 900 px export.
+    double minimum_gap_weight = 0.070;
     std::vector<EnergyAxisKnot> knots;
 };
 
@@ -42,7 +42,7 @@ struct EnergyTransform {
 [[nodiscard]] EnergyTransform build_energy_transform(
     const std::vector<double>& energies_hartree,
     EnergyAxisMode mode,
-    double minimum_gap_weight = 0.055);
+    double minimum_gap_weight = 0.070);
 [[nodiscard]] double energy_display_coordinate(
     double energy_hartree,
     const EnergyTransform& transform) noexcept;
@@ -132,8 +132,8 @@ struct MODiagramOptions {
 
     // Adaptive nonlinear axis: minimum normalized vertical share allocated to
     // each distinct adjacent energy gap. The default intentionally spreads the
-    // dense Cp- 11..27 region about 2x relative to the previous adaptive build.
-    double nonlinear_minimum_gap_weight = 0.055;
+    // dense Cp- 11..27 region to roughly twice the original crowded spacing.
+    double nonlinear_minimum_gap_weight = 0.070;
 
     int width = 1200;
     int height = 900;
