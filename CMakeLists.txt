@@ -17,9 +17,19 @@ target_include_directories(cov_parser PUBLIC
 )
 target_compile_features(cov_parser PUBLIC cxx_std_20)
 
+# The original diagram model/metadata implementation remains compiled as a
+# private legacy layer. Public SVG/PNG presentation is supplied by the
+# textbook renderer so machine-readable JSON/CSV semantics stay stable while
+# the human-facing diagram can evolve independently.
+set_source_files_properties(src/orbitals/mo_diagram.cpp PROPERTIES
+    COMPILE_DEFINITIONS
+        "build_mo_diagram_data=cov_legacy_build_mo_diagram_data;write_mo_diagram_svg=cov_legacy_write_mo_diagram_svg;write_mo_diagram_png=cov_legacy_write_mo_diagram_png;write_mo_diagram_json=cov_legacy_write_mo_diagram_json;write_mo_diagram_csv=cov_legacy_write_mo_diagram_csv;export_mo_diagram_bundle=cov_legacy_export_mo_diagram_bundle"
+)
+
 add_library(cov_orbitals
     src/orbitals/orbital_view.cpp
     src/orbitals/mo_diagram.cpp
+    src/orbitals/mo_diagram_textbook.cpp
 )
 target_include_directories(cov_orbitals PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -47,7 +57,7 @@ endif()
 
 if(MSVC)
     target_compile_options(cov_parser PRIVATE /W4 /permissive-)
-    target_compile_options(cov_orbitals PRIVATE /W4 /permissive-)
+    target_compile_options(cov_orbitals PRIVATE /W4 /permissive- /utf-8)
     target_compile_options(cov_molecule PRIVATE /W4 /permissive-)
     target_compile_options(cov_platform PRIVATE /W4 /permissive- /utf-8)
 else()
@@ -182,7 +192,6 @@ if(COV_ENABLE_CUDA)
         cov_imgui_backends
     )
 
-    # Keep source and localisation strings explicitly UTF-8 on MSVC.
     target_compile_options(cov PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
@@ -196,51 +205,27 @@ if(COV_BUILD_TESTS)
     include(CTest)
     enable_testing()
 
-    add_executable(cov_parser_smoke
-        tests/parser_smoke.cpp
-    )
+    add_executable(cov_parser_smoke tests/parser_smoke.cpp)
     target_link_libraries(cov_parser_smoke PRIVATE cov_parser)
-    add_test(
-        NAME parser_smoke
-        COMMAND cov_parser_smoke ${CMAKE_CURRENT_SOURCE_DIR}/examples/h2.molden
-    )
+    add_test(NAME parser_smoke
+        COMMAND cov_parser_smoke ${CMAKE_CURRENT_SOURCE_DIR}/examples/h2.molden)
 
-    add_executable(cov_orbital_view_smoke
-        tests/orbital_view_smoke.cpp
-    )
+    add_executable(cov_orbital_view_smoke tests/orbital_view_smoke.cpp)
     target_link_libraries(cov_orbital_view_smoke PRIVATE cov_orbitals)
-    add_test(
-        NAME orbital_view_smoke
-        COMMAND cov_orbital_view_smoke
-    )
+    add_test(NAME orbital_view_smoke COMMAND cov_orbital_view_smoke)
 
-    add_executable(cov_mo_diagram_smoke
-        tests/mo_diagram_smoke.cpp
-    )
+    add_executable(cov_mo_diagram_smoke tests/mo_diagram_smoke.cpp)
     target_link_libraries(cov_mo_diagram_smoke PRIVATE cov_orbitals)
-    add_test(
-        NAME mo_diagram_smoke
-        COMMAND cov_mo_diagram_smoke
-    )
+    add_test(NAME mo_diagram_smoke COMMAND cov_mo_diagram_smoke)
 
-    add_executable(cov_molecule_style_smoke
-        tests/molecule_style_smoke.cpp
-    )
+    add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
     target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule)
-    add_test(
-        NAME molecule_style_smoke
-        COMMAND cov_molecule_style_smoke
-    )
+    add_test(NAME molecule_style_smoke COMMAND cov_molecule_style_smoke)
 
-    add_executable(cov_ui_smoke
-        tests/ui_smoke.cpp
-    )
+    add_executable(cov_ui_smoke tests/ui_smoke.cpp)
     target_link_libraries(cov_ui_smoke PRIVATE cov_ui)
     target_compile_options(cov_ui_smoke PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
-    add_test(
-        NAME ui_smoke
-        COMMAND cov_ui_smoke
-    )
+    add_test(NAME ui_smoke COMMAND cov_ui_smoke)
 endif()
