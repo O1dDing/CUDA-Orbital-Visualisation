@@ -46,6 +46,9 @@
 #ifndef GL_INFO_LOG_LENGTH
 #define GL_INFO_LOG_LENGTH 0x8B84
 #endif
+#ifndef GL_POINT_SMOOTH
+#define GL_POINT_SMOOTH 0x0B10
+#endif
 
 namespace cov {
 namespace {
@@ -132,6 +135,7 @@ void main() {
 #version 120
 uniform sampler3D uVolume;
 uniform float uIso;
+uniform float uOpacity;
 uniform vec3 uCameraPos;
 uniform vec3 uCameraForward;
 uniform vec3 uCameraRight;
@@ -140,6 +144,8 @@ uniform float uAspect;
 uniform float uTanHalfFov;
 uniform vec3 uTexel;
 varying vec2 vUV;
+
+const vec3 kBackground = vec3(0.025, 0.031, 0.043);
 
 bool rayBox(vec3 ro, vec3 rd, out float tNear, out float tFar) {
     vec3 inv = 1.0 / rd;
@@ -173,7 +179,7 @@ void main() {
 
     float t0, t1;
     if (!rayBox(ro, rd, t0, t1)) {
-        gl_FragColor = vec4(0.025, 0.028, 0.035, 1.0);
+        gl_FragColor = vec4(kBackground, 1.0);
         return;
     }
 
@@ -200,14 +206,15 @@ void main() {
             vec3 positive = vec3(0.92, 0.20, 0.17);
             vec3 negative = vec3(0.16, 0.38, 0.95);
             vec3 base = cur >= 0.0 ? positive : negative;
-            gl_FragColor = vec4(base * diffuse, 1.0);
+            vec3 shaded = base * diffuse;
+            gl_FragColor = vec4(mix(kBackground, shaded, clamp(uOpacity, 0.08, 1.0)), 1.0);
             return;
         }
         prev = cur;
         prevF = curF;
     }
 
-    gl_FragColor = vec4(0.025, 0.028, 0.035, 1.0);
+    gl_FragColor = vec4(kBackground, 1.0);
 }
 )GLSL";
 
@@ -238,31 +245,15 @@ void main() {
     return program;
 }
 
-float covalent_radius_angstrom(const int z) {
-    switch (z) {
-        case 1: return 0.31f;
-        case 5: return 0.84f;
-        case 6: return 0.76f;
-        case 7: return 0.71f;
-        case 8: return 0.66f;
-        case 9: return 0.57f;
-        case 14: return 1.11f;
-        case 15: return 1.07f;
-        case 16: return 1.05f;
-        case 17: return 1.02f;
-        case 35: return 1.20f;
-        case 53: return 1.39f;
-        default: return 0.85f;
-    }
-}
-
 Vec3 atom_colour(const int z) {
     switch (z) {
         case 1: return {0.95f,0.95f,0.95f};
-        case 6: return {0.30f,0.30f,0.32f};
+        case 5: return {0.93f,0.62f,0.62f};
+        case 6: return {0.30f,0.31f,0.34f};
         case 7: return {0.20f,0.35f,0.95f};
         case 8: return {0.92f,0.12f,0.12f};
         case 9: return {0.20f,0.85f,0.30f};
+        case 14: return {0.62f,0.64f,0.67f};
         case 15: return {0.95f,0.55f,0.10f};
         case 16: return {0.95f,0.85f,0.12f};
         case 17: return {0.15f,0.80f,0.22f};
@@ -286,13 +277,41 @@ bool project(const Vec3 p,
              const float aspect,
              const float tan_half_fov,
              float& x_ndc,
-             float& y_ndc) {
+             float& y_ndc,
+             float* view_depth = nullptr) {
     const Vec3 q = p - b.position;
     const float z = dot(q, b.forward);
     if (z <= 0.02f) return false;
     x_ndc = dot(q, b.right) / (z * tan_half_fov * aspect);
     y_ndc = dot(q, b.up) / (z * tan_half_fov);
+    if (view_depth) *view_depth = z;
     return true;
+}
+
+void draw_segment(const float x0, const float y0,
+                  const float x1, const float y1,
+                  const float alpha) {
+    glColor4f(0.70f, 0.74f, 0.80f, alpha);
+    glBegin(GL_LINES);
+    glVertex2f(x0, y0);
+    glVertex2f(x1, y1);
+    glEnd();
+}
+
+void draw_dashed_segment(const float x0, const float y0,
+                         const float x1, const float y1,
+                         const float alpha) {
+    constexpr int segments = 13;
+    glColor4f(0.46f, 0.69f, 0.98f, alpha);
+    glBegin(GL_LINES);
+    for (int s = 0; s < segments; ++s) {
+        if ((s % 2) != 0) continue;
+        const float ta = static_cast<float>(s) / static_cast<float>(segments);
+        const float tb = static_cast<float>(s + 1) / static_cast<float>(segments);
+        glVertex2f(x0 + (x1 - x0) * ta, y0 + (y1 - y0) * ta);
+        glVertex2f(x0 + (x1 - x0) * tb, y0 + (y1 - y0) * tb);
+    }
+    glEnd();
 }
 
 } // namespace
@@ -336,7 +355,8 @@ void VolumeRenderer::resize_volume(const int nx, const int ny, const int nz) {
 void VolumeRenderer::render_volume(const int framebuffer_width,
                                    const int framebuffer_height,
                                    const float isovalue,
-                                   const OrbitCamera& camera) {
+                                   const OrbitCamera& camera,
+                                   const float opacity) {
     if (nx_ <= 0 || ny_ <= 0 || nz_ <= 0) return;
 
     const CameraBasis b = camera_basis(camera);
@@ -353,6 +373,8 @@ void VolumeRenderer::render_volume(const int framebuffer_width,
 
     gl::Uniform1i(gl::GetUniformLocation(program_, "uVolume"), 0);
     gl::Uniform1f(gl::GetUniformLocation(program_, "uIso"), isovalue);
+    gl::Uniform1f(gl::GetUniformLocation(program_, "uOpacity"),
+                  std::clamp(opacity, 0.08f, 1.0f));
     gl::Uniform3f(gl::GetUniformLocation(program_, "uCameraPos"),
                   b.position.x, b.position.y, b.position.z);
     gl::Uniform3f(gl::GetUniformLocation(program_, "uCameraForward"),
@@ -386,7 +408,8 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
                                      const GridBox& box,
                                      const int framebuffer_width,
                                      const int framebuffer_height,
-                                     const OrbitCamera& camera) {
+                                     const OrbitCamera& camera,
+                                     const MoleculeRenderSettings& settings) {
     if (wavefunction.atoms.empty()) return;
 
     const CameraBasis b = camera_basis(camera);
@@ -402,8 +425,11 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     for (const Atom& atom : wavefunction.atoms) {
         points.push_back(to_texture(atom, box));
     }
+    const auto bonds = analyse_bonds(wavefunction);
 
     glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -412,44 +438,64 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     glPushMatrix();
     glLoadIdentity();
 
-    glLineWidth(2.0f);
-    glColor3f(0.72f, 0.72f, 0.76f);
-    glBegin(GL_LINES);
-    for (std::size_t i = 0; i < wavefunction.atoms.size(); ++i) {
-        for (std::size_t j = i + 1; j < wavefunction.atoms.size(); ++j) {
-            const Atom& a = wavefunction.atoms[i];
-            const Atom& c = wavefunction.atoms[j];
-            const double dx = a.x - c.x;
-            const double dy = a.y - c.y;
-            const double dz = a.z - c.z;
-            const double distance_bohr = std::sqrt(dx*dx + dy*dy + dz*dz);
-            const double cutoff_bohr =
-                1.25 * (covalent_radius_angstrom(a.atomic_number) +
-                        covalent_radius_angstrom(c.atomic_number)) *
-                kAngstromToBohr;
-            if (distance_bohr > cutoff_bohr) continue;
+    const float opacity = std::clamp(settings.molecule_opacity, 0.05f, 1.0f);
+    const float line_width = (settings.style == MoleculeStyle::MediumBallAndStick ? 1.55f : 1.15f) *
+                             std::clamp(settings.bond_scale, 0.35f, 3.0f);
+    glLineWidth(line_width);
 
-            float x0,y0,x1,y1;
-            if (project(points[i], b, aspect, tan_half_fov, x0, y0) &&
-                project(points[j], b, aspect, tan_half_fov, x1, y1)) {
-                glVertex2f(x0,y0);
-                glVertex2f(x1,y1);
-            }
+    for (const auto& bond : bonds) {
+        const Atom& atom_a = wavefunction.atoms[bond.atom_a];
+        const Atom& atom_b = wavefunction.atoms[bond.atom_b];
+        if (!settings.show_hydrogens &&
+            (atom_a.atomic_number == 1 || atom_b.atomic_number == 1)) {
+            continue;
+        }
+
+        float x0 = 0.0f, y0 = 0.0f, x1 = 0.0f, y1 = 0.0f;
+        if (!project(points[bond.atom_a], b, aspect, tan_half_fov, x0, y0) ||
+            !project(points[bond.atom_b], b, aspect, tan_half_fov, x1, y1)) {
+            continue;
+        }
+
+        if (settings.style == MoleculeStyle::StickDelocalisation && bond.delocalised) {
+            draw_dashed_segment(x0, y0, x1, y1, opacity);
+        } else {
+            draw_segment(x0, y0, x1, y1, opacity * 0.92f);
         }
     }
-    glEnd();
 
-    glPointSize(9.0f);
-    glBegin(GL_POINTS);
-    for (std::size_t i = 0; i < wavefunction.atoms.size(); ++i) {
-        float x,y;
-        if (!project(points[i], b, aspect, tan_half_fov, x, y)) continue;
-        const Vec3 colour = atom_colour(wavefunction.atoms[i].atomic_number);
-        glColor3f(colour.x, colour.y, colour.z);
-        glVertex2f(x,y);
+    if (settings.style == MoleculeStyle::MediumBallAndStick) {
+        glEnable(GL_POINT_SMOOTH);
+        for (std::size_t i = 0; i < wavefunction.atoms.size(); ++i) {
+            const Atom& atom = wavefunction.atoms[i];
+            if (!settings.show_hydrogens && atom.atomic_number == 1) continue;
+            float x = 0.0f, y = 0.0f, depth = 1.0f;
+            if (!project(points[i], b, aspect, tan_half_fov, x, y, &depth)) continue;
+
+            const float radius = static_cast<float>(covalent_radius_angstrom(atom.atomic_number));
+            const float perspective = std::clamp(1.7f / std::max(0.45f, depth), 0.70f, 1.65f);
+            const float point_size = std::clamp(
+                (11.0f + 9.0f * radius) * settings.atom_scale * perspective,
+                6.0f, 34.0f);
+
+            glPointSize(point_size + 3.0f);
+            glColor4f(0.025f, 0.031f, 0.043f, opacity * 0.95f);
+            glBegin(GL_POINTS);
+            glVertex2f(x, y);
+            glEnd();
+
+            const Vec3 colour = atom_colour(atom.atomic_number);
+            glPointSize(point_size);
+            glColor4f(colour.x, colour.y, colour.z, opacity);
+            glBegin(GL_POINTS);
+            glVertex2f(x, y);
+            glEnd();
+        }
+        glDisable(GL_POINT_SMOOTH);
     }
-    glEnd();
-    glColor3f(1.0f,1.0f,1.0f);
+
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glDisable(GL_BLEND);
 
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
