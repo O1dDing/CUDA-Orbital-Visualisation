@@ -21,13 +21,13 @@ The viewer parses Molden wavefunctions on the CPU, uploads basis data to CUDA, e
 - [x] English / 简体中文 / 日本語 / Français
 - [x] Native Windows Open File workflow + drag/drop/manual path
 - [x] Orbital browser, search, HOMO/LUMO navigation and filters
-- [x] Degeneracy-aware human labels such as `17-a`, `17-b` while retaining raw MO numbers
+- [x] Degeneracy-aware labels such as `17-a`, `17-b` while retaining raw MO numbers
 - [x] Ha / eV / J mol⁻¹ / kJ mol⁻¹ / cal mol⁻¹ / kcal mol⁻¹ display
 - [x] Enhanced ball-and-stick defaults plus stick/delocalisation display mode
 - [x] Interactive energy-level diagram with electron occupancy
-- [x] Print-friendly MO diagram export: PNG + SVG + JSON + CSV
-- [x] Textbook-style homonuclear-diatomic AO → MO presentation
-- [x] Symmetry-grouped complex-system fallback without fabricating strict SALCs
+- [x] **Valence-focused central MO diagram** export: PNG + SVG + JSON + CSV
+- [x] Non-destructive valence/core/high-virtual filtering for readable diagrams
+- [x] Machine-readable annotation provenance for orbital-family/bonding labels
 - [ ] Universal strict SALC construction
 - [ ] Gaussian FCHK
 - [ ] CHK → `formchk`
@@ -59,8 +59,6 @@ Changing the isovalue does **not** recompute the CUDA grid or rebuild a mesh.
 
 ## Human-facing orbital workflow
 
-The UI is designed around the sequence:
-
 ```text
 Open calculation
 → inspect wavefunction
@@ -68,34 +66,51 @@ Open calculation
 → select MO
 → inspect energy / occupation / spin / symmetry
 → view orbital
-→ generate/export an MO diagram
+→ generate/export a valence MO diagram
 ```
 
-The orbital browser keeps raw one-based Molden numbering for machine/scientific traceability while optionally presenting compact degeneracy groups. With the default `1e-5 Ha` tolerance, a compatible two-level degenerate set may be presented as `17-a` and `17-b`; the raw source MO numbers remain available in tooltips and exported metadata.
+The orbital browser keeps raw one-based Molden numbering for machine/scientific traceability while optionally presenting compact degeneracy groups. With the default `1e-5 Ha` tolerance, a compatible two-level degenerate set may be presented as `17-a` and `17-b`; raw source MO numbers remain available in tooltips and exported metadata.
 
-High virtual orbitals are never deleted. The default `Auto · reasonable` view is a non-destructive filter; `All` restores the complete parsed orbital list. `Core`, `Valence`, and high-virtual hiding are human-facing heuristics rather than new quantum-chemical assignments.
+High virtual orbitals are never deleted. The default `Auto · reasonable` view and the diagram's valence selection are non-destructive filters. `All` restores the complete parsed orbital list. `Core`, `Valence`, and high-virtual hiding are human-facing selection heuristics rather than new quantum-chemical assignments.
 
 ## Molecular display
 
 The default skeleton is deliberately stronger than the first MVP: larger atoms and thicker bonds make the molecule immediately legible while retaining orbital surfaces as the visual subject. A second `Stick + delocalisation` mode uses a conservative geometric ring heuristic for dashed bonds. Those dashed bonds are a visual aid and **do not claim an ab-initio bond order**.
 
-The renderer uses conventional chemical element colours for common atoms (e.g. H white, C graphite, N blue, O red, halogens green where defined, P orange, S yellow) and will continue to expand its CPK/Jmol-style palette.
+The renderer uses conventional chemical element colours for common atoms (H white, C graphite, N blue, O red, common halogens green where defined, P orange, S yellow) and will continue to expand its CPK/Jmol-style palette.
 
-## MO diagrams and SALC boundary
+## Valence-focused central MO diagram
 
-There are deliberately different presentation levels rather than one diagram claiming to solve every symmetry problem.
+The automatic diagram is intentionally designed around what ordinary Molden data reliably contain. It does **not** try to reconstruct missing fragment AOs or fabricate strict SALCs.
 
-### Textbook diatomic presentation
+The default diagram:
 
-For small homonuclear diatomics, the exporter can render a textbook-style AO → MO diagram: atomic-orbital levels on the sides, molecular-orbital levels in the centre, interaction lines, an energy axis, and electron arrows. For H₂ this gives the familiar `1s + 1s → σ1s / σ*1s` presentation.
+- shows only the central molecule's molecular orbitals;
+- uses a vertical energy axis, low energy at the bottom and high energy at the top;
+- keeps truly/near-degenerate orbitals at the same quantitative energy and expands them horizontally around the centre;
+- shows electron occupancy directly on each level;
+- keeps symmetry labels where the producer supplied them;
+- focuses on occupied valence orbitals plus a bounded frontier-virtual window;
+- hides deep core and very high virtual orbitals non-destructively;
+- keeps the complete raw orbital set in JSON/CSV metadata.
 
-The side AO level is explicitly **qualitative** unless an actual isolated-atom AO reference energy is available. Molecular-orbital energies shown next to the central levels are quantitative values from the parsed wavefunction.
+### Valence selection
 
-### Complex systems
+`ValenceCentral` selection keeps the highest occupied orbitals classified as valence and a limited number of low-lying virtual orbitals inside the configured frontier window. A diagram capacity is derived from the UI window control and complete degeneracy sets are preserved when a boundary would otherwise cut through one.
 
-If a complex calculation carries sufficiently useful producer symmetry labels, the program may render a **symmetry-grouped MO diagram**. If the data are insufficient for a rigorous SALC derivation, the program explicitly reports **`SALC not confidently available`** and falls back to reliable energy/occupation/degeneracy/symmetry information.
+The exported selection summary reports how many orbitals were shown, how many remained hidden, and how many occupied-valence/frontier-virtual levels were included.
 
-A strict universal SALC builder requires point-group operations plus basis-function transformation information that ordinary Molden data do not generally provide. The project therefore does not fabricate SALCs from energies alone.
+### Orbital type / bonding annotations
+
+The program distinguishes **direct data** from **derived presentation**.
+
+Reliable direct/producer data include raw MO number, energy, occupation, spin, producer symmetry, and energy-tolerance degeneracy grouping.
+
+Orbital family labels such as `σ`, `π`, `δ`, or `φ` are shown only when the producer label explicitly supports a mapping (for example a symmetry/label string containing `sigma` or `pi`). The program does not infer `π` merely because an energy happens to belong to a familiar molecule.
+
+`bonding / nonbonding / antibonding` is even stricter: the current implementation only classifies it when the producer text explicitly carries such a label. **Energy and occupancy alone are never used to invent bonding character.** Otherwise the machine-readable value is `unclassified`.
+
+Every JSON/CSV orbital row therefore includes provenance fields such as `family_source`, `bonding_class_source`, confidence, and a heuristic flag.
 
 ### Export
 
@@ -108,7 +123,9 @@ calculation.mo.json
 calculation.mo.csv
 ```
 
-PNG/SVG are light-background, report/textbook-oriented views. JSON/CSV retain machine-readable raw MO number, internal index, grouped label, Hartree energy, selected display-unit energy, occupation, spin, symmetry, degeneracy size, orbital-region heuristic, visibility and selection state.
+PNG/SVG use a light report-friendly central energy layout. JSON/CSV retain raw MO number, internal index, grouped label, Hartree energy, selected display-unit energy, occupation, spin, symmetry, degeneracy size, region/filter state, whether the orbital was included in the diagram, optional orbital-family/bonding annotation, annotation source/confidence, visibility and selection state.
+
+The project does **not** claim universal AO→MO textbook reconstruction or universal strict SALC generation from ordinary Molden files.
 
 ## Requirements
 
