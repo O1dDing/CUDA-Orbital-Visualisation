@@ -9,6 +9,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Keep the downloadable Windows viewer self-contained with respect to the
+# Microsoft C/C++ runtime. OpenGL and the NVIDIA display driver remain normal
+# operating-system/driver dependencies.
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 add_library(cov_parser
     src/parser/molden_parser.cpp
 )
@@ -151,7 +158,7 @@ if(COV_ENABLE_CUDA)
         PUBLIC
             cov_parser
             cov_molecule
-            CUDA::cudart
+            CUDA::cudart_static
             OpenGL::GL
             glfw
     )
