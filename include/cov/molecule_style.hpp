@@ -8,7 +8,7 @@
 namespace cov {
 
 enum class MoleculeStyle {
-    MediumBallAndStick = 0,
+    MediumBallAndStick = 0, // UI: Enhanced Ball-and-Stick
     StickDelocalisation,
 };
 
