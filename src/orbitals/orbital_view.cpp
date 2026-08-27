@@ -54,6 +54,14 @@ bool is_meaningful_symmetry(const std::string& value) {
     return true;
 }
 
+bool compatible_symmetry(const MolecularOrbital& a,
+                         const MolecularOrbital& b,
+                         const DegeneracySettings& settings) {
+    if (!settings.require_compatible_symmetry) return true;
+    if (!is_meaningful_symmetry(a.symmetry) || !is_meaningful_symmetry(b.symmetry)) return true;
+    return a.symmetry == b.symmetry;
+}
+
 } // namespace
 
 double convert_hartree(const double energy_hartree, const EnergyUnit unit) noexcept {
@@ -207,6 +215,7 @@ std::vector<OrbitalLabel> build_orbital_labels(
             const auto& first = orbitals[begin];
             const auto& current = orbitals[end];
             if (settings.require_same_spin && current.spin != first.spin) break;
+            if (!compatible_symmetry(first, current, settings)) break;
             if (std::abs(current.energy_hartree - first.energy_hartree) > tolerance) break;
             ++end;
         }
