@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(CUDAOrbitalVisualisation VERSION 0.1.0 LANGUAGES CXX)
+project(CUDAOrbitalVisualisation VERSION 0.2.0 LANGUAGES CXX)
 
 option(COV_ENABLE_CUDA "Build the CUDA/OpenGL viewer" ON)
-option(COV_BUILD_TESTS "Build parser and UI smoke tests" ON)
+option(COV_BUILD_TESTS "Build parser, orbital and UI smoke tests" ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,10 +17,20 @@ target_include_directories(cov_parser PUBLIC
 )
 target_compile_features(cov_parser PUBLIC cxx_std_20)
 
+add_library(cov_orbitals
+    src/orbitals/orbital_view.cpp
+)
+target_include_directories(cov_orbitals PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_compile_features(cov_orbitals PUBLIC cxx_std_20)
+
 if(MSVC)
     target_compile_options(cov_parser PRIVATE /W4 /permissive-)
+    target_compile_options(cov_orbitals PRIVATE /W4 /permissive-)
 else()
     target_compile_options(cov_parser PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(cov_orbitals PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 # The localisation/theme layer is also compiled in CPU-only CI, so UI source
@@ -52,7 +62,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${imgui_SOURCE_DIR}
     )
-    target_link_libraries(cov_ui PUBLIC cov_imgui_core)
+    target_link_libraries(cov_ui PUBLIC cov_imgui_core cov_orbitals)
     target_compile_features(cov_ui PUBLIC cxx_std_20)
     target_compile_options(cov_ui PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
@@ -139,6 +149,7 @@ if(COV_ENABLE_CUDA)
     )
     target_link_libraries(cov PRIVATE
         cov_gpu
+        cov_orbitals
         cov_ui
         cov_imgui_backends
     )
@@ -165,6 +176,15 @@ if(COV_BUILD_TESTS)
     add_test(
         NAME parser_smoke
         COMMAND cov_parser_smoke ${CMAKE_CURRENT_SOURCE_DIR}/examples/h2.molden
+    )
+
+    add_executable(cov_orbital_view_smoke
+        tests/orbital_view_smoke.cpp
+    )
+    target_link_libraries(cov_orbital_view_smoke PRIVATE cov_orbitals)
+    add_test(
+        NAME orbital_view_smoke
+        COMMAND cov_orbital_view_smoke
     )
 
     add_executable(cov_ui_smoke
