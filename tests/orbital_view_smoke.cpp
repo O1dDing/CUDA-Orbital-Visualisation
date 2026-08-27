@@ -69,10 +69,28 @@ int main() {
         return 7;
     }
 
+    const std::vector<cov::MolecularOrbital> accidental = {
+        mo(-0.1, 2.0f, cov::Spin::Alpha, "a1"),
+        mo(-0.100000001, 2.0f, cov::Spin::Alpha, "b2"),
+    };
+    const auto accidental_labels = cov::build_orbital_labels(accidental, degeneracy);
+    if (accidental_labels[0].group_size != 1 || accidental_labels[1].group_size != 1) {
+        std::cerr << "different producer symmetry labels were incorrectly grouped\n";
+        return 8;
+    }
+    degeneracy.require_compatible_symmetry = false;
+    const auto energy_only_labels = cov::build_orbital_labels(accidental, degeneracy);
+    if (energy_only_labels[0].display_label != "1-a" ||
+        energy_only_labels[1].display_label != "1-b") {
+        std::cerr << "explicit energy-only degeneracy mode failed\n";
+        return 9;
+    }
+    degeneracy.require_compatible_symmetry = true;
+
     const auto frontier = cov::find_frontier_orbitals(orbitals);
     if (!frontier.homo || *frontier.homo != 3 || !frontier.lumo || *frontier.lumo != 4) {
         std::cerr << "frontier detection failed\n";
-        return 8;
+        return 10;
     }
 
     cov::OrbitalFilterSettings filter;
@@ -81,14 +99,14 @@ int main() {
     const auto visible = cov::visible_orbital_indices(orbitals, frontier, filter);
     if (visible.size() != 6 || visible.back() != 5) {
         std::cerr << "high-energy virtual filter failed\n";
-        return 9;
+        return 11;
     }
 
     if (cov::classify_orbital_region(orbitals[0], filter) != cov::OrbitalRegion::Core ||
         cov::classify_orbital_region(orbitals[2], filter) != cov::OrbitalRegion::Valence ||
         cov::classify_orbital_region(orbitals[4], filter) != cov::OrbitalRegion::Virtual) {
         std::cerr << "region classification failed\n";
-        return 10;
+        return 12;
     }
 
     cov::Wavefunction wf;
@@ -98,7 +116,7 @@ int main() {
     if (plan.classification != cov::DiagramClassification::SymmetryGrouped ||
         plan.strict_salc_available) {
         std::cerr << "complex symmetry grouping plan failed\n";
-        return 11;
+        return 13;
     }
 
     wf.orbitals[0].symmetry.clear();
@@ -110,20 +128,20 @@ int main() {
     if (fallback.classification != cov::DiagramClassification::SalcUnavailable ||
         fallback.strict_salc_available) {
         std::cerr << "SALC honesty fallback failed\n";
-        return 12;
+        return 14;
     }
 
     const auto restricted_pair = cov::electron_glyphs_for_orbital(mo(-0.5, 2.0f), false);
     if (restricted_pair.alpha != 1 || restricted_pair.beta != 1) {
         std::cerr << "restricted electron glyph failed\n";
-        return 13;
+        return 15;
     }
 
     const auto alpha = cov::electron_glyphs_for_orbital(mo(-0.5, 1.0f, cov::Spin::Alpha), true);
     const auto beta = cov::electron_glyphs_for_orbital(mo(-0.5, 1.0f, cov::Spin::Beta), true);
     if (alpha.alpha != 1 || alpha.beta != 0 || beta.alpha != 0 || beta.beta != 1) {
         std::cerr << "spin-resolved electron glyph failed\n";
-        return 14;
+        return 16;
     }
 
     std::cout << "orbital_view_smoke ok\n";
