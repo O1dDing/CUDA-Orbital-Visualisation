@@ -43,16 +43,7 @@ High virtual levels are hidden only through non-destructive filters. `Auto · re
 
 ## Energy units
 
-The scientific source of truth remains Hartree. UI presentation may be switched consistently between:
-
-- Ha
-- eV
-- J/mol
-- kJ/mol
-- cal/mol
-- kcal/mol
-
-Changing presentation units does not launch a CUDA orbital calculation.
+The scientific source of truth remains Hartree. UI presentation may be switched consistently between Ha, eV, J/mol, kJ/mol, cal/mol and kcal/mol. Changing presentation units does not launch a CUDA orbital calculation.
 
 ## MO diagram presentation
 
@@ -60,16 +51,7 @@ The interactive energy-level diagram and exported report diagrams serve differen
 
 ### Textbook diatomic mode
 
-For a small homonuclear diatomic such as H₂, the exported figure uses the familiar textbook structure:
-
-```text
-atomic orbital       molecular orbitals       atomic orbital
-       ─────        ─────  antibonding        ─────
-          ╲           ↑ energy ↑              ╱
-           ╲
-           ╱        ─────  bonding             ╲
-       ─────                                  ─────
-```
+For a small homonuclear diatomic such as H₂, the exported figure uses the familiar textbook structure: atomic-orbital levels on the sides, molecular-orbital levels in the centre, interaction lines, an energy axis and direct electron occupancy.
 
 H₂ therefore shows side `H 1s` levels, central `σ1s` and `σ*1s`, AO→MO interaction lines, an energy axis and electron arrows. The side AO position is explicitly qualitative unless isolated-atom AO energies are actually available; central MO energies come from the parsed wavefunction.
 
