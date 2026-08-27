@@ -1,21 +1,14 @@
-# UI, orbital semantics and localisation
+# UI and localisation
 
-The UI is deliberately **human-first, machine-readable underneath**. The molecular-orbital viewport remains the dominant visual surface; controls expose scientific state without turning the application into a raw debug panel.
+The interface keeps the molecular-orbital viewport dominant and treats controls as a compact scientific inspector rather than a desktop form.
 
 ## COV Slate
 
-`COV Slate` is the project's own Dear ImGui theme. It uses a neutral graphite/slate hierarchy so the red/blue orbital phases remain visually dominant, a single cool-blue interaction accent, restrained rounding/borders, and green/red only for healthy/error state.
+`COV Slate` uses a neutral graphite/slate hierarchy so red/blue orbital phase colours remain visually dominant, with a restrained cool-blue interaction accent and explicit success/error states. The panel overlays the viewport rather than shrinking it.
 
-The design was synthesised after reviewing open-source UI conventions rather than copying a theme implementation or asset:
+Open-source UI references remain Dear ImGui, ImThemes, dear-imgui-styles and the Blender Human Interface Guidelines. No third-party theme source, icons or font binaries are copied into the repository.
 
-- Dear ImGui — <https://github.com/ocornut/imgui>
-- ImThemes — <https://github.com/Patitotective/ImThemes>
-- dear-imgui-styles — <https://github.com/GraphicsProgramming/dear-imgui-styles>
-- Blender Human Interface Guidelines — <https://developer.blender.org/docs/features/interface/human_interface_guidelines/>
-
-No third-party theme source, icons or font binaries are copied into this repository.
-
-## Locales and stable IDs
+## Locales and fonts
 
 Runtime locales:
 
@@ -26,95 +19,31 @@ Runtime locales:
 | `ja` | 日本語 |
 | `fr` | Français |
 
-User-facing strings are strongly enumerated in `include/cov/ui.hpp` and stored as four-language rows in `src/ui/ui.cpp`. Internal ImGui identities use stable `##...` IDs, so changing language does not reset MO selection, filter state, sliders or path input.
+English is the fallback. User-visible strings must remain in the localisation table; widget state uses stable `##` identifiers so a language switch does not change orbital selection or control state.
 
-MSVC compiles the application/UI sources as UTF-8.
+The repository does not redistribute fonts. Windows prefers Segoe UI, Microsoft YaHei and Yu Gothic/Meiryo; Linux/macOS use suitable system/Noto fallbacks. The font atlas contains only glyphs required by bundled UI strings.
 
-## Font policy
+## Molecular representation
 
-The repository does **not** redistribute fonts. The application uses system fonts at runtime:
+The default molecular skeleton is an **enhanced ball-and-stick** presentation: atoms and bonds are intentionally larger than the initial MVP so the molecular framework reads immediately, but the MO surface remains the subject.
 
-- Windows Latin: Segoe UI / Arial
-- Simplified Chinese: Microsoft YaHei / SimHei fallback
-- Japanese: Yu Gothic / Meiryo / MS Gothic fallback
-- Linux/macOS: Noto/system fallbacks where available
+Common elements use conventional chemical colours (H white with a dark visual outline, C graphite, N blue, O red, halogens green where defined, P orange, S yellow). The palette should continue towards CPK/Jmol conventions rather than decorative application-specific colours.
 
-The font atlas is built from the glyphs actually present in the four bundled locales, rather than adding the entire CJK Unicode range. This keeps the atlas compact while supporting instant language switching.
+`Stick + delocalisation` is a second, orbital-friendly view. Dashed/segmented bonds come from a conservative geometric ring heuristic only. They are a visual aid, not a calculated bond-order assignment.
 
-## Information architecture
+Controls remain available for atom size, bond size, molecule opacity, orbital opacity and hydrogen visibility.
 
-The scrollable overlay inspector now follows the user's workflow rather than implementation modules:
+## Orbital browser semantics
 
-```text
-┌──────────────────────────────────┐
-│ CUDA Orbital Visualisation       │ Language
-│ ● status                         │
-├──────────────────────────────────┤
-│ FILE                             │
-│ [Open File…] current file        │
-│ manual path / recent files       │
-├──────────────────────────────────┤
-│ WAVEFUNCTION                     │
-│ atoms / shells / basis / MOs     │
-├──────────────────────────────────┤
-│ ORBITAL BROWSER                  │
-│ HOMO-1 · HOMO · LUMO · LUMO+1   │
-│ search / filter / units          │
-│ degeneracy tolerance             │
-│ scrollable MO table              │
-├──────────────────────────────────┤
-│ ENERGY-LEVEL DIAGRAM             │
-│ occupied ↑↓ / virtual / selected │
-│ clickable levels                 │
-│ [export diagram + metadata]      │
-├──────────────────────────────────┤
-│ RENDERING                        │
-│ molecule style / sizes / opacity │
-│ isovalue / grid                  │
-├──────────────────────────────────┤
-│ PERFORMANCE                      │
-│ CUDA device / kernel time        │
-│ ● GPU resident                   │
-└──────────────────────────────────┘
-```
+Human-facing grouped labels such as `17-a` / `17-b` may represent an energy-degenerate compatible set. They never replace source identity: raw one-based Molden MO numbers and internal zero-based indices remain available in tooltips and machine-readable exports.
 
-The panel overlays rather than reallocates the viewport framebuffer.
+Default degeneracy tolerance is `1e-5 Ha`. If meaningful producer symmetry labels disagree, coincident printed energies are not automatically collapsed into one group.
 
-## Orbital numbering and degeneracy
-
-Raw Molden/user numbering is one-based; the internal C++ index remains zero-based.
-
-Degenerate sets are detected from **adjacent same-spin orbital energies** within a configurable tolerance. The default is `1e-5 Ha`. A two-member set beginning at raw MO17 is displayed as:
-
-```text
-17-a    raw MO 17
-17-b    raw MO 18
-```
-
-Larger sets continue `17-c`, `17-d`, etc. The grouped label is presentation metadata only: raw MO numbers and internal indices remain available in tooltips and JSON/CSV export.
-
-Energy-only degeneracy detection cannot prove group-theoretical degeneracy. The tolerance is therefore visible and adjustable; near-degenerate levels outside it are not silently grouped.
-
-## Frontier navigation and open-shell behaviour
-
-HOMO/LUMO helpers use occupation rather than assuming every occupied orbital has occupation 2. If beta-spin orbitals are present, quick navigation resolves the frontier within the selected spin set. The browser retains spin and occupation columns/metadata so an unrestricted calculation is not presented as a single closed-shell ladder.
-
-## Orbital filters
-
-Filters never delete or rewrite wavefunction data.
-
-- **All** — raw complete MO list
-- **Occupied** — occupation above the configured threshold
-- **Virtual** — unoccupied levels
-- **Core** — occupied + below the current core-energy heuristic
-- **Valence** — occupied + above the core-energy heuristic
-- **Auto · reasonable** — all occupied levels plus virtual levels within a configurable window above LUMO
-
-The current Core/Valence split is a UI heuristic, not a population/localisation analysis. The high-virtual filter is also purely presentational. Machine metadata records whether each raw orbital was visible under the active filter.
+High virtual levels are hidden only through non-destructive filters. `Auto · reasonable`, `All`, `Occupied`, `Virtual`, `Core` and `Valence` are browsing modes; they do not mutate wavefunction data.
 
 ## Energy units
 
-Hartree is the immutable source unit. UI and export display conversion supports:
+The scientific source of truth remains Hartree. UI presentation may be switched consistently between:
 
 - Ha
 - eV
@@ -123,78 +52,53 @@ Hartree is the immutable source unit. UI and export display conversion supports:
 - cal/mol
 - kcal/mol
 
-The browser and energy diagram share one unit selection. JSON always keeps `energy_hartree` alongside the selected display-unit value.
+Changing presentation units does not launch a CUDA orbital calculation.
 
-## Energy-level diagram
+## MO diagram presentation
 
-The diagram is drawn with `ImDrawList`, avoiding a plotting-framework dependency. It displays the selected neighbourhood rather than compressing hundreds of levels into one unreadable panel.
+The interactive energy-level diagram and exported report diagrams serve different visual needs. The GUI can remain compact/dark; PNG/SVG exports are light-background, print-friendly figures.
 
-Visual semantics:
+### Textbook diatomic mode
 
-- occupied ordinary level: light neutral
-- virtual: muted slate
-- HOMO: green accent
-- LUMO: amber accent
-- selected: blue accent
-- electron occupancy: up/down arrows
-- degenerate members: small horizontal offsets so each remains clickable
-
-Clicking a level requests the same orbital selection used by the browser. Hovering shows raw MO, grouped label, energy, occupation, spin, symmetry and degeneracy size. Hovering never launches CUDA.
-
-## SALC / symmetry grouping boundary
-
-A generic Molden file does not guarantee enough information to derive a strict general SALC basis: robust SALC construction needs the molecular point group, symmetry operations and the transformation of the relevant AO/basis functions under those operations.
-
-Therefore the application uses three explicit diagram modes:
-
-1. **Simple ordering** — suitable for small/simple systems.
-2. **Symmetry-grouped** — complex system where producer-supplied MO symmetry labels have sufficient coverage; these labels can form diagram lanes.
-3. **SALC not confidently available** — complex system without enough trustworthy symmetry information. The program falls back to energy/occupation/degeneracy ordering and states why.
-
-The third state is intentional. It is preferable to a visually impressive but chemically fabricated SALC diagram.
-
-## Automatic MO-diagram export
-
-The export bundle writes:
+For a small homonuclear diatomic such as H₂, the exported figure uses the familiar textbook structure:
 
 ```text
-<calculation>.mo.png
-<calculation>.mo.svg
-<calculation>.mo.json
-<calculation>.mo.csv
+atomic orbital       molecular orbitals       atomic orbital
+       ─────        ─────  antibonding        ─────
+          ╲           ↑ energy ↑              ╱
+           ╲
+           ╱        ─────  bonding             ╲
+       ─────                                  ─────
 ```
 
-PNG and SVG display orbital levels and electron occupancy. SVG preserves full text labels; PNG uses a deliberately dependency-free compact bitmap annotation layer. JSON/CSV provide exact machine-readable orbital state, including raw number, grouped label, Hartree/display energy, occupation, spin, symmetry, degeneracy size, Core/Valence/Virtual region, visible/filter state and selected state.
+H₂ therefore shows side `H 1s` levels, central `σ1s` and `σ*1s`, AO→MO interaction lines, an energy axis and electron arrows. The side AO position is explicitly qualitative unless isolated-atom AO energies are actually available; central MO energies come from the parsed wavefunction.
 
-## Molecular representation
+### Complex systems and SALC honesty
 
-### Medium ball + thin stick (default)
+A complex calculation with useful producer symmetry labels can be shown as a **symmetry-grouped MO diagram** with separate symmetry lanes, electron occupancy and collision-managed labels.
 
-The default molecular overlay deliberately increases atom readability compared with the original tiny-point renderer while keeping bonds thin so the orbital surface remains the primary visual object. Controls expose atom scale, bond width, molecular opacity, orbital opacity and hydrogen visibility.
+A strict universal SALC diagram is a stronger scientific claim. Ordinary Molden data generally do not provide the point-group operations and basis-function transformation matrices required to construct arbitrary SALCs rigorously. When that information is not available, the UI/export must say **`SALC not confidently available`** rather than invent a SALC decomposition.
 
-### Stick + delocalisation
+The supported hierarchy is therefore:
 
-Molden does not generally carry bond order. Dashed bonds therefore use a **conservative geometry heuristic**, not an asserted Lewis/resonance structure. A candidate must belong to a compact 5–7 member ring of common π-capable elements and the normalized ring bond lengths must be both short enough and near-equal. If those conditions are not met, the program draws a normal solid stick.
+1. textbook/simple MO diagram where scientifically defensible;
+2. symmetry-grouped MO diagram when producer symmetry information is sufficient;
+3. explicit SALC-unavailable fallback otherwise.
 
-This boundary must remain visible in the UI/documentation: dashed = “geometry suggests a delocalised ring”, not “bond order has been proven”.
+## Diagram export and machine readability
 
-## CUDA interaction rules
+`Export diagram + metadata` writes PNG, SVG, JSON and CSV together. PNG/SVG prioritize human readability: white/light background, adequate lane spacing, direct electron occupancy and collision-managed labels. JSON/CSV retain exact raw MO number, internal index, grouped display label, Hartree energy, converted display energy, occupation, spin, symmetry, degeneracy size, browsing-region heuristic, visibility and selection.
 
-1. Browser hover does not compute an orbital.
-2. Energy-diagram hover does not compute an orbital.
-3. Search, filtering, unit changes and degeneracy-label changes do not compute an orbital.
-4. An actual selected-MO change requests recomputation.
-5. Selection requests are coalesced at frame end so only the latest selection in that frame is evaluated.
-6. Isovalue changes remain shader-only and do not recompute the CUDA field.
-7. Grid-resolution changes resize/re-register the texture and recompute the field.
-8. The interactive volumetric path remains GPU-resident; the MO-diagram export does not read back the orbital volume.
+The diagram generator may move **labels** to avoid collisions; it must not move the underlying physical energy level to fake separation. Near-degenerate levels may be given a small horizontal offset for click/readability while their source energies remain unchanged.
 
-## Rules for future UI work
+## GPU interaction rules
 
-1. Human-readable labels must never destroy raw scientific identifiers.
-2. Heuristics must be named as heuristics and remain non-destructive.
-3. Do not claim strict SALC/group-theoretical results unless the required symmetry transformations are actually available and validated.
-4. Keep raw MO number, energy, occupation, spin and symmetry available to both humans and machine export.
-5. Do not commit proprietary/system fonts.
-6. Keep the 3D viewport dominant at ordinary desktop resolutions.
-7. A green CI check is not a substitute for Windows/CUDA/OpenGL visual validation.
+The UI must not turn browsing into GPU work:
+
+- changing isovalue: rendering only;
+- hover/search/filter/unit/degeneracy-display changes: no CUDA recompute if selection is unchanged;
+- selecting a different MO: one final frame-end CUDA evaluation;
+- changing grid resolution: CUDA recompute;
+- language changes: no scientific-state mutation.
+
+These rules preserve the project’s GPU-resident architecture while keeping the UI responsive and machine-readable state deterministic.
