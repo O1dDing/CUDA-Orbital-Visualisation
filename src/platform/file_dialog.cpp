@@ -22,8 +22,8 @@ FileDialogResult open_molden_file_dialog() {
     ofn.lpstrFile = buffer.data();
     ofn.nMaxFile = static_cast<DWORD>(buffer.size());
     ofn.lpstrFilter =
-        L"Molden wavefunction (*.molden;*.mol;*.molden.input)\0"
-        L"*.molden;*.mol;*.molden.input\0"
+        L"Molden wavefunction (*.molden;*.molden.input;*.molden.inp)\0"
+        L"*.molden;*.molden.input;*.molden.inp\0"
         L"All files (*.*)\0"
         L"*.*\0\0";
     ofn.nFilterIndex = 1;
