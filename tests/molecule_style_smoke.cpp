@@ -4,6 +4,13 @@
 #include <iostream>
 
 int main() {
+    const cov::MoleculeRenderSettings defaults;
+    if (defaults.atom_scale < 1.25f || defaults.bond_scale < 1.30f ||
+        defaults.molecule_opacity < 0.90f) {
+        std::cerr << "enhanced ball-and-stick defaults regressed\n";
+        return 1;
+    }
+
     cov::Wavefunction wf;
     constexpr double pi = 3.14159265358979323846;
     constexpr double side_angstrom = 1.40;
@@ -23,18 +30,18 @@ int main() {
     const auto bonds = cov::analyse_bonds(wf);
     if (bonds.size() != 5) {
         std::cerr << "expected five ring bonds, got " << bonds.size() << '\n';
-        return 1;
+        return 2;
     }
     for (const auto& bond : bonds) {
         if (!bond.delocalised) {
             std::cerr << "compact equal five-member ring was not marked delocalised\n";
-            return 2;
+            return 3;
         }
     }
 
     cov::Wavefunction saturated = wf;
-    // Stretch one edge/ring geometry into a single-bond-like regime. The
-    // conservative detector must stop claiming delocalisation.
+    // Stretch the ring into a single-bond-like regime. The conservative
+    // detector must stop claiming delocalisation.
     for (std::size_t i = 0; i < saturated.atoms.size(); ++i) {
         saturated.atoms[i].x *= 1.10;
         saturated.atoms[i].y *= 1.10;
@@ -44,7 +51,7 @@ int main() {
     for (const auto& bond : saturated_bonds) any_delocalised = any_delocalised || bond.delocalised;
     if (any_delocalised) {
         std::cerr << "long single-bond-like ring was incorrectly marked delocalised\n";
-        return 3;
+        return 4;
     }
 
     std::cout << "molecule_style_smoke ok\n";
