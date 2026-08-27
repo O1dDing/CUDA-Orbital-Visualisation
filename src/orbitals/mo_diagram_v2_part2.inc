@@ -4,7 +4,7 @@
     return std::nullopt;
 }
 
-std::string annotation_summary(const OrbitalAnnotation& annotation) {
+[[maybe_unused]] std::string annotation_summary(const OrbitalAnnotation& annotation) {
     std::string out;
     if (annotation.family != "unavailable") out += annotation.family;
     if (annotation.bonding_class != BondingClass::Unclassified) {
