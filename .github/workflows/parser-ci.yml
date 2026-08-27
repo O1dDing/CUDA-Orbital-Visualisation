@@ -88,16 +88,16 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.2.0-pre.2
+      - name: Publish v0.2.0-pre.3
         if: github.event_name == 'push' && github.ref == 'refs/heads/vibe/orbital-browser-and-file-dialog'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $exe = "build-cuda/Release/cov.exe"
-          gh release create "v0.2.0-pre.2" $exe `
+          gh release create "v0.2.0-pre.3" $exe `
             --repo "$env:GITHUB_REPOSITORY" `
             --target "$env:GITHUB_SHA" `
-            --title "CUDA Orbital Visualisation v0.2.0-pre.2" `
-            --notes "Second Windows Blackwell pre-release for manual validation. Molecular geometry now renders as true camera-coupled 3D tessellated spheres and cylinders with depth testing, smooth diffuse/specular shading, and 3D segmented tubes for the delocalisation style. CUDA 12.8.2; native sm_120 plus compute_120 PTX. PR #2 remains Draft until manual validation passes." `
+            --title "CUDA Orbital Visualisation v0.2.0-pre.3" `
+            --notes "Third Windows Blackwell pre-release for manual validation. Molecular size controls are normalized so the accepted pre.2 proportions are 1.0/1.0. Orbital isosurfaces now write physical OpenGL depth so lobes occlude 3D atoms/bonds behind them. Stick + delocalisation retains a full 3D single bond and adds a thinner inward 3D dashed tube. Standard Molden carries no authoritative bond-order field, so this build deliberately does not fabricate double/triple bonds from geometry. CUDA 12.8.2; native sm_120 plus compute_120 PTX. Item 11 remains deferred to PR #3." `
             --prerelease
