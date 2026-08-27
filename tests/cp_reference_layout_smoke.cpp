@@ -113,9 +113,9 @@ int main() {
     svg_buf << svg_file.rdbuf();
     const std::string svg = svg_buf.str();
     if (svg.find("adaptive nonlinear (log-gap v3)") == std::string::npos ||
-        svg.find("baseline-shift=\"sub\"") == std::string::npos ||
-        svg.find("baseline-shift=\"super\"") == std::string::npos) {
-        std::cerr << "adaptive/symmetry SVG markers missing\n";
+        svg.find("font-size=\"6.3\"") == std::string::npos ||
+        svg.find("baseline-shift=") != std::string::npos) {
+        std::cerr << "adaptive/explicit-position symmetry SVG markers missing\n";
         return 9;
     }
     if (svg.find(">17-a<") != std::string::npos || svg.find(">17-b<") != std::string::npos) {
