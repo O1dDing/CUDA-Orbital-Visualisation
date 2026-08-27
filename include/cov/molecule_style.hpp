@@ -14,10 +14,12 @@ enum class MoleculeStyle {
 
 struct MoleculeRenderSettings {
     MoleculeStyle style = MoleculeStyle::MediumBallAndStick;
-    float atom_scale = 1.0f;
-    float bond_scale = 1.0f;
-    float molecule_opacity = 0.92f;
-    float orbital_opacity = 1.0f;
+    // Deliberately larger than the first MVP defaults: the molecular skeleton
+    // should read immediately without becoming the visual subject over the MO.
+    float atom_scale = 1.35f;
+    float bond_scale = 1.45f;
+    float molecule_opacity = 0.96f;
+    float orbital_opacity = 0.94f;
     bool show_hydrogens = true;
 };
 
