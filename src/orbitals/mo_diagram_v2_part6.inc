@@ -50,6 +50,9 @@
 
 namespace {
 
+constexpr const char* kSvgFontFamily =
+    "Segoe UI, Microsoft YaHei UI, Yu Gothic UI, Noto Sans, sans-serif";
+
 std::string family_symbol_svg(const std::string& family) {
     if (family == "sigma") return "σ";
     if (family == "pi") return "π";
@@ -110,7 +113,7 @@ void write_svg_symmetry(std::ostream& out,
     if (notation.base.empty()) {
         out << "<text x=\"" << x << "\" y=\"" << y
             << "\" text-anchor=\"middle\" fill=\"" << colour
-            << "\" font-family=\"sans-serif\" font-size=\"" << font_size
+            << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"" << font_size
             << "\">N/A</text>\n";
         return;
     }
@@ -127,16 +130,16 @@ void write_svg_symmetry(std::ostream& out,
     // consistently in browsers, CairoSVG and print/PDF pipelines while still
     // giving textbook subscript/superscript placement.
     out << "<text x=\"" << start_x << "\" y=\"" << y
-        << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\""
+        << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\""
         << font_size << "\">" << xml_escape(notation.base) << "</text>\n";
     if (!notation.subscript.empty()) {
         out << "<text x=\"" << suffix_x << "\" y=\"" << y + 3.5
-            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\""
+            << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\""
             << suffix_size << "\">" << xml_escape(notation.subscript) << "</text>\n";
     }
     if (!notation.superscript.empty()) {
         out << "<text x=\"" << suffix_x << "\" y=\"" << y - 5.0
-            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\""
+            << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\""
             << suffix_size << "\">" << xml_escape(notation.superscript) << "</text>\n";
     }
 }
@@ -174,15 +177,15 @@ void write_svg_delocalised_pi(std::ostream& out,
     if (!pi.available) return;
     const double base_x = x - 4.0;
     out << "<text x=\"" << base_x << "\" y=\"" << y
-        << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\"10\">Π</text>\n";
+        << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"10\">Π</text>\n";
     if (pi.participating_atoms > 0) {
         out << "<text x=\"" << base_x + 7.0 << "\" y=\"" << y - 5.0
-            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\"7\">"
+            << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"7\">"
             << pi.participating_atoms << "</text>\n";
     }
     if (pi.participating_electrons > 0.0) {
         out << "<text x=\"" << base_x + 7.0 << "\" y=\"" << y + 4.0
-            << "\" fill=\"" << colour << "\" font-family=\"sans-serif\" font-size=\"7\">"
+            << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"7\">"
             << static_cast<int>(std::lround(pi.participating_electrons)) << "</text>\n";
     }
 }
@@ -208,23 +211,23 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         << "\" height=\"" << height << "\" viewBox=\"0 0 "
         << width << ' ' << height << "\">\n";
     out << "<rect width=\"100%\" height=\"100%\" fill=\"#fbfcfe\"/>\n";
-    out << "<text x=\"36\" y=\"40\" fill=\"#182231\" font-family=\"sans-serif\" "
+    out << "<text x=\"36\" y=\"40\" fill=\"#182231\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"24\" font-weight=\"600\">Valence MO diagram</text>\n";
-    out << "<text x=\"36\" y=\"64\" fill=\"#68778b\" font-family=\"sans-serif\" "
+    out << "<text x=\"36\" y=\"64\" fill=\"#68778b\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"12\">" << xml_escape(data.selection.summary) << "</text>\n";
-    out << "<text x=\"36\" y=\"82\" fill=\"#7f8c9c\" font-family=\"sans-serif\" "
+    out << "<text x=\"36\" y=\"82\" fill=\"#7f8c9c\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"11\">Molden-derived MO energies/occupations/symmetry; type/class is N/A unless supported by source data.</text>\n";
 
     const int axis_x = 70;
     out << "<line x1=\"" << axis_x << "\" y1=\"110\" x2=\"" << axis_x
         << "\" y2=\"" << height - 62 << "\" stroke=\"#2d3745\" stroke-width=\"2\"/>\n";
     out << "<path d=\"M " << axis_x << " 98 l -5 10 h 10 z\" fill=\"#2d3745\"/>\n";
-    out << "<text x=\"24\" y=\"124\" fill=\"#4d5a6c\" font-family=\"sans-serif\" "
+    out << "<text x=\"24\" y=\"124\" fill=\"#4d5a6c\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"12\" transform=\"rotate(-90 24 124)\">Energy · "
         << (options.energy_axis_mode == EnergyAxisMode::Linear ? "linear" : "adaptive nonlinear (log-gap v3)")
         << " (" << xml_escape(energy_unit_symbol(options.energy_unit)) << ")</text>\n";
     if (options.energy_axis_mode == EnergyAxisMode::NonlinearFocus) {
-        out << "<text x=\"82\" y=\"102\" fill=\"#8b6173\" font-family=\"sans-serif\" "
+        out << "<text x=\"82\" y=\"102\" fill=\"#8b6173\" font-family=\"" << kSvgFontFamily << "\" "
                "font-size=\"10\">nonlinear axis · ticks show exact physical energy</text>\n";
     }
 
@@ -234,7 +237,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         out << "<line x1=\"64\" y1=\"" << y << "\" x2=\"76\" y2=\"" << y
             << "\" stroke=\"#7c8795\" stroke-width=\"1\"/>\n";
         out << "<text x=\"80\" y=\"" << y + 4
-            << "\" fill=\"#7c8795\" font-family=\"sans-serif\" font-size=\"10\">"
+            << "\" fill=\"#7c8795\" font-family=\"" << kSvgFontFamily << "\" font-size=\"10\">"
             << xml_escape(format_energy(energy, options.energy_unit,
                    options.energy_unit == EnergyUnit::JoulePerMol ? 0 : 4))
             << "</text>\n";
@@ -259,7 +262,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         // attached directly below the physical level; raw numbering remains in
         // hover/JSON/CSV where it is useful without cluttering the figure.
         out << "<text x=\"" << item.x << "\" y=\"" << item.y + 16
-            << "\" text-anchor=\"middle\" fill=\"#435166\" font-family=\"sans-serif\" "
+            << "\" text-anchor=\"middle\" fill=\"#435166\" font-family=\"" << kSvgFontFamily << "\" "
                "font-size=\"10\">" << xml_escape(orbital_type_svg(level.annotation)) << "</text>\n";
         write_svg_symmetry(out, item.x, item.y + 29, level.metadata.symmetry, "#68778b", 9);
         if (level.annotation.delocalised_pi.available) {
@@ -269,7 +272,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
     }
 
     out << "<text x=\"36\" y=\"" << height - 24
-        << "\" fill=\"#8793a3\" font-family=\"sans-serif\" font-size=\"10\">"
+        << "\" fill=\"#8793a3\" font-family=\"" << kSvgFontFamily << "\" font-size=\"10\">"
            "MO numbering is intentionally omitted from the figure; exact/raw identifiers remain in interactive hover and machine metadata.</text>\n";
     out << "</svg>\n";
     if (!out) {
