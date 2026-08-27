@@ -102,14 +102,17 @@ void draw_text(Canvas& canvas, int x, const int y, const std::string& text,
     }
 }
 
-void draw_electron(Canvas& canvas, const int x, const int y,
+void draw_electron(Canvas& canvas, const int x, const int level_y,
                    const bool up, const std::uint8_t r = 28,
                    const std::uint8_t g = 38, const std::uint8_t b = 52) {
-    // Keep opposite-spin arrows legible without letting the downward arrow
-    // collide with the human-facing type/symmetry labels below the level.
+    // Textbook convention: both spin arrows occupy the space above the energy
+    // level. The beta arrow points down *towards* the level instead of below it,
+    // leaving the orbital-type and symmetry labels underneath completely clear.
     constexpr int kArrowLength = 11;
-    const int tip = up ? y - kArrowLength : y + kArrowLength;
-    canvas.line(x, y, x, tip, r, g, b, 2);
+    const int shaft_top = level_y - kArrowLength;
+    const int tip = up ? shaft_top : level_y;
+    const int tail = up ? level_y : shaft_top;
+    canvas.line(x, tail, x, tip, r, g, b, 2);
     const int dy = up ? 4 : -4;
     canvas.line(x, tip, x - 4, tip + dy, r, g, b, 2);
     canvas.line(x, tip, x + 4, tip + dy, r, g, b, 2);
