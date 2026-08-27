@@ -441,10 +441,11 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     glLoadIdentity();
 
     const float opacity = std::clamp(settings.molecule_opacity, 0.05f, 1.0f);
-    // Manual 4K validation showed the original 1.55/1.15 pixel baselines still
-    // looked like hairlines. Use a GaussView-like screen weight while keeping
-    // the user scale controls intact.
-    const float line_width = (settings.style == MoleculeStyle::MediumBallAndStick ? 2.40f : 1.80f) *
+    // The user's manual Cp- comparison against a conventional Gaussian-style
+    // ball-and-stick reference showed that the prior 4.8 px default still read
+    // as a wire overlay. Raise the actual screen-space bond weight, not just the
+    // UI slider value, while leaving the MO lobes as the visual subject.
+    const float line_width = (settings.style == MoleculeStyle::MediumBallAndStick ? 4.20f : 3.00f) *
                              std::clamp(settings.bond_scale, 0.35f, 3.0f);
     glLineWidth(line_width);
 
@@ -480,10 +481,10 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
             const float radius = static_cast<float>(covalent_radius_angstrom(atom.atomic_number));
             const float perspective = std::clamp(1.7f / std::max(0.45f, depth), 0.70f, 1.65f);
             const float point_size = std::clamp(
-                (15.0f + 13.0f * radius) * settings.atom_scale * perspective,
-                10.0f, 52.0f);
+                (22.0f + 18.0f * radius) * settings.atom_scale * perspective,
+                18.0f, 82.0f);
 
-            glPointSize(point_size + 4.5f);
+            glPointSize(point_size + 8.0f);
             glColor4f(0.025f, 0.031f, 0.043f, opacity * 0.95f);
             glBegin(GL_POINTS);
             glVertex2f(x, y);
