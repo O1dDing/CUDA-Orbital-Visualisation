@@ -88,16 +88,16 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.2.0-pre.1
+      - name: Publish v0.2.0-pre.2
         if: github.event_name == 'push' && github.ref == 'refs/heads/vibe/orbital-browser-and-file-dialog'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $exe = "build-cuda/Release/cov.exe"
-          gh release create "v0.2.0-pre.1" $exe `
+          gh release create "v0.2.0-pre.2" $exe `
             --repo "$env:GITHUB_REPOSITORY" `
             --target "$env:GITHUB_SHA" `
-            --title "CUDA Orbital Visualisation v0.2.0-pre.1" `
-            --notes "First downloadable Windows Blackwell pre-release for manual validation. Built with CUDA 12.8.2 for sm_120 native code plus compute_120 PTX. This remains a pre-release and PR #2 remains Draft pending the outstanding manual/scientific validation gates." `
+            --title "CUDA Orbital Visualisation v0.2.0-pre.2" `
+            --notes "Second Windows Blackwell pre-release for manual validation. Molecular geometry now renders as true camera-coupled 3D tessellated spheres and cylinders with depth testing, smooth diffuse/specular shading, and 3D segmented tubes for the delocalisation style. CUDA 12.8.2; native sm_120 plus compute_120 PTX. PR #2 remains Draft until manual validation passes." `
             --prerelease
