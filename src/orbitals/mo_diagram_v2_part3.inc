@@ -55,7 +55,7 @@ std::array<std::uint8_t, 7> glyph_rows(char c) {
         case 'K': return {17,18,20,24,20,18,17};
         case 'L': return {16,16,16,16,16,16,31};
         case 'M': return {17,27,21,21,17,17,17};
-        case 'N': return {17,25,21,19,17,17,17};
+        case 'N': return {17,25,21,19,17,17,15};
         case 'O': return {14,17,17,17,17,17,14};
         case 'P': return {30,17,17,30,16,16,16};
         case 'Q': return {14,17,17,17,21,18,13};
@@ -105,9 +105,12 @@ void draw_text(Canvas& canvas, int x, const int y, const std::string& text,
 void draw_electron(Canvas& canvas, const int x, const int y,
                    const bool up, const std::uint8_t r = 28,
                    const std::uint8_t g = 38, const std::uint8_t b = 52) {
-    const int tip = up ? y - 17 : y + 17;
+    // Keep opposite-spin arrows legible without letting the downward arrow
+    // collide with the human-facing type/symmetry labels below the level.
+    constexpr int kArrowLength = 11;
+    const int tip = up ? y - kArrowLength : y + kArrowLength;
     canvas.line(x, y, x, tip, r, g, b, 2);
-    const int dy = up ? 5 : -5;
+    const int dy = up ? 4 : -4;
     canvas.line(x, tip, x - 4, tip + dy, r, g, b, 2);
     canvas.line(x, tip, x + 4, tip + dy, r, g, b, 2);
 }
@@ -177,4 +180,3 @@ bool write_png_rgba(const Canvas& canvas,
         const std::uint16_t nlen = static_cast<std::uint16_t>(~len);
         zlib.push_back(static_cast<std::uint8_t>(len & 0xffu));
         zlib.push_back(static_cast<std::uint8_t>((len >> 8u) & 0xffu));
-        zlib.push_back(static_cast<std::uint8_t>(nlen & 0xffu));
