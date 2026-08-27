@@ -143,14 +143,19 @@ void write_svg_symmetry(std::ostream& out,
 
 void write_svg_electron(std::ostream& out,
                         const double x,
-                        const double y,
+                        const double level_anchor_y,
                         const bool up) {
+    // Textbook convention: both spin arrows occupy the space above the energy
+    // line. Alpha points upward from the near-line anchor. Beta starts above
+    // the line and points downward *towards* the same anchor, so neither arrow
+    // can collide with the orbital-type/symmetry text below the level.
     constexpr double length = 11.0;
     constexpr double head_dx = 3.2;
     constexpr double head_dy = 3.5;
-    const double tip = up ? y - length : y + length;
+    const double tail = up ? level_anchor_y : level_anchor_y - length;
+    const double tip = up ? level_anchor_y - length : level_anchor_y;
     const double wing_y = up ? tip + head_dy : tip - head_dy;
-    out << "<line x1=\"" << x << "\" y1=\"" << y
+    out << "<line x1=\"" << x << "\" y1=\"" << tail
         << "\" x2=\"" << x << "\" y2=\"" << tip
         << "\" stroke=\"#151d28\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n";
     out << "<line x1=\"" << x << "\" y1=\"" << tip
