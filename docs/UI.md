@@ -28,33 +28,75 @@ Default degeneracy tolerance is `1e-5 Ha`. If meaningful producer symmetry label
 
 Hartree remains the source of truth. UI presentation may be switched consistently between Ha, eV, J/mol, kJ/mol, cal/mol and kcal/mol. Changing units does not launch a CUDA calculation.
 
-## MO diagram presentation
+## Valence-focused central MO diagram
 
-The interactive energy-level diagram and exported report diagrams serve different visual needs. The GUI can remain compact/dark; PNG/SVG exports are light-background, print-friendly figures.
+The automatic MO diagram is deliberately a **central molecular-orbital energy diagram**, not an AO-interaction diagram and not a claimed strict SALC reconstruction.
 
-### Textbook diatomic mode
+It is designed around information that ordinary Molden files actually provide:
 
-For a small homonuclear diatomic such as H₂, the exported figure uses textbook AO → MO semantics: atomic-orbital levels on both sides, molecular-orbital levels in the centre, interaction lines, an energy axis and direct electron occupancy. H₂ shows `H 1s`, `σ1s`, `σ*1s` and the paired electrons in the bonding MO.
+- MO energy;
+- occupation;
+- spin;
+- producer symmetry label where present;
+- raw MO numbering;
+- energy-tolerance degeneracy grouping.
 
-The side AO position is explicitly qualitative unless isolated-atom AO energies are actually available; central MO energies come from the parsed wavefunction.
+### Selection
 
-### Complex systems and SALC honesty
+The default `ValenceCentral` plan is non-destructive. It selects:
 
-A complex calculation with useful producer symmetry labels can be shown as a **symmetry-grouped MO diagram** with separate symmetry lanes, electron occupancy and collision-managed labels.
+1. occupied orbitals classified as valence rather than deep core;
+2. low-lying frontier virtual orbitals inside the configured virtual-energy window;
+3. the current selected non-core MO if it would otherwise fall outside the compact view;
+4. complete degenerate sets when a diagram boundary would otherwise split one.
 
-A strict universal SALC diagram is a stronger scientific claim. Ordinary Molden data generally do not provide the point-group operations and basis-function transformation matrices required to construct arbitrary SALCs rigorously. When that information is not available, the UI/export must say **`SALC not confidently available`** rather than invent a SALC decomposition.
+A capacity derived from the diagram UI control prevents hundreds of levels from being plotted at once. The export records the number shown and the number hidden. Hidden orbitals remain present in the parsed wavefunction and in machine-readable metadata.
 
-Supported hierarchy:
+### Layout
 
-1. textbook/simple MO diagram where scientifically defensible;
-2. symmetry-grouped MO diagram when producer symmetry information is sufficient;
-3. explicit SALC-unavailable fallback otherwise.
+Energy is quantitative on the vertical axis: lower levels are below higher levels. Degenerate orbitals retain the same y coordinate and expand horizontally around the diagram centre. For example, a twofold set is drawn left/right; threefold sets use left/centre/right; larger sets continue symmetrically.
 
-## Diagram export and machine readability
+Labels are allowed to move slightly to prevent collisions, with leader lines back to the quantitative level. The physical level line itself must never be displaced to fake an energy separation.
 
-`Export diagram + metadata` writes PNG, SVG, JSON and CSV together. PNG/SVG prioritize human readability: white/light background, adequate lane spacing, direct electron occupancy and collision-managed labels. JSON/CSV retain exact raw MO number, internal index, grouped display label, Hartree energy, converted display energy, occupation, spin, symmetry, degeneracy size, browsing-region heuristic, visibility and selection.
+Each plotted level prioritizes:
 
-The generator may move **labels** to avoid collisions; it must not move the underlying energy level to fake separation. Near-degenerate levels may receive a small horizontal offset while source energies remain unchanged.
+- grouped display label;
+- electron occupancy;
+- producer symmetry;
+- energy in the selected unit;
+- optional orbital-family / bonding-class annotation only when supported.
+
+Raw MO number and internal index remain secondary/tooltip/export information.
+
+### Orbital-family and bonding annotations
+
+The project separates presentation from scientific provenance.
+
+`σ / π / δ / φ` family labels are currently derived only when producer text explicitly supports such a mapping (for example `sigma` / `pi` in a supplied symmetry/label string). A familiar molecule or a familiar energy pattern is not enough to assign a family.
+
+`bonding / nonbonding / antibonding` is stricter still. Energy and occupation alone are never used to assign bonding character. If producer text does not explicitly support a classification, the value remains `unclassified`.
+
+Machine metadata records the annotation source, confidence, and heuristic flag. This allows human-friendly labels where defensible without concealing uncertainty from downstream analysis.
+
+### Export
+
+`Export diagram + metadata` writes PNG, SVG, JSON and CSV together.
+
+PNG/SVG use a white/light report-friendly central layout. JSON/CSV retain:
+
+- exact raw MO number and internal index;
+- grouped display label;
+- Hartree source energy and converted display energy;
+- occupation and spin;
+- producer symmetry;
+- degeneracy size;
+- core/valence/virtual browsing region;
+- whether the MO is included in the compact diagram;
+- visibility/selection state;
+- optional orbital family and bonding class;
+- classification source, confidence and heuristic status.
+
+The current feature **does not claim universal AO→MO reconstruction or strict SALC generation** from ordinary Molden files.
 
 ## GPU interaction rules
 
