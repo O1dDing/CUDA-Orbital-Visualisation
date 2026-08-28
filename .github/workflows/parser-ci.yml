@@ -17,7 +17,10 @@ jobs:
         run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
       - name: Build parser, orbital, diagram and UI smoke targets
         run: cmake --build build --config Release --parallel
-      - name: Test parser, orbital semantics, adaptive layout, exports and localisation
+      - name: Download pinned real Gaussian 16 FCHK regression
+        run: >-
+          python -c "import urllib.request; u='https://raw.githubusercontent.com/cclib/cclib/21daa960123d28aa21eeaaacc2a1dea39e136829/data/FChk/basicGaussian16/dvb_sp.fchk'; urllib.request.urlretrieve(u, r'build/real_gaussian16_dvb_sp.fchk')"
+      - name: Test parser, real FCHK, symmetry, orbital semantics, exports and localisation
         run: ctest --test-dir build -C Release --output-on-failure
       - name: Upload deterministic MO visual-regression artifacts
         if: always()

@@ -28,9 +28,6 @@ add_library(cov_parser
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
 )
-# Compile the historical Molden implementation under an explicit format-only
-# symbol. The legacy parse_molden() API is now a compatibility dispatcher in
-# molden_compat.cpp, allowing the existing viewer call-site to accept FCHK too.
 set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
     COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
 )
@@ -79,8 +76,6 @@ else()
     target_compile_options(cov_platform PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-# The localisation/theme layer is also compiled in CPU-only CI, so UI source
-# compatibility does not depend on having a CUDA runner available.
 if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
     include(FetchContent)
     FetchContent_Declare(
@@ -220,6 +215,12 @@ if(COV_BUILD_TESTS)
     add_executable(cov_fchk_parser_smoke tests/fchk_parser_smoke.cpp)
     target_link_libraries(cov_fchk_parser_smoke PRIVATE cov_parser)
     add_test(NAME fchk_parser_smoke COMMAND cov_fchk_parser_smoke)
+
+    add_executable(cov_fchk_real_regression tests/fchk_real_regression.cpp)
+    target_link_libraries(cov_fchk_real_regression PRIVATE cov_parser)
+    add_test(NAME fchk_real_regression
+        COMMAND cov_fchk_real_regression ${CMAKE_BINARY_DIR}/real_gaussian16_dvb_sp.fchk)
+    set_tests_properties(fchk_real_regression PROPERTIES SKIP_RETURN_CODE 77)
 
     add_executable(cov_gaussian_log_smoke tests/gaussian_log_smoke.cpp)
     target_link_libraries(cov_gaussian_log_smoke PRIVATE cov_parser)
