@@ -20,6 +20,7 @@ add_library(cov_parser
     src/parser/molden_parser.cpp
     src/parser/molden_compat.cpp
     src/parser/fchk_parser.cpp
+    src/parser/fchk_overlap.cpp
     src/parser/wavefunction_io.cpp
     src/parser/formchk.cpp
     src/parser/gaussian_log.cpp
@@ -228,6 +229,14 @@ if(COV_BUILD_TESTS)
     add_executable(cov_fchk_parser_smoke tests/fchk_parser_smoke.cpp)
     target_link_libraries(cov_fchk_parser_smoke PRIVATE cov_parser)
     add_test(NAME fchk_parser_smoke COMMAND cov_fchk_parser_smoke)
+
+    add_executable(cov_fchk_overlap_smoke tests/fchk_overlap_smoke.cpp)
+    target_link_libraries(cov_fchk_overlap_smoke PRIVATE cov_parser)
+    add_test(NAME fchk_overlap_smoke COMMAND cov_fchk_overlap_smoke)
+
+    add_executable(cov_format_equivalence_smoke tests/format_equivalence_smoke.cpp)
+    target_link_libraries(cov_format_equivalence_smoke PRIVATE cov_parser)
+    add_test(NAME format_equivalence_smoke COMMAND cov_format_equivalence_smoke)
 
     add_executable(cov_fchk_real_regression tests/fchk_real_regression.cpp)
     target_link_libraries(cov_fchk_real_regression PRIVATE cov_parser)
