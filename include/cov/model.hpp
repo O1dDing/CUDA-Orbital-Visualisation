@@ -31,6 +31,11 @@ struct Atom {
     double x = 0.0; // bohr
     double y = 0.0; // bohr
     double z = 0.0; // bohr
+
+    // Producer-reported effective nuclear charge. This equals atomic_number
+    // for all-electron calculations and is smaller when an ECP replaces core
+    // electrons. Parsers set it explicitly; zero means "not reported".
+    double nuclear_charge = 0.0;
 };
 
 struct Primitive {
@@ -47,6 +52,104 @@ struct Shell {
     std::uint8_t pure = 0;             // 0 Cartesian, 1 real spherical
 };
 
+enum class ChemistryStatus : std::uint8_t {
+    Determined = 0,
+    Percentages,
+    Undetermined,
+    NotApplicable,
+    Unavailable,
+};
+
+enum class OrbitalAngularFamily : std::uint8_t {
+    Sigma = 0,
+    Pi,
+    Delta,
+    Phi,
+    Mixed,
+    NotApplicable,
+};
+
+enum class OrbitalBondingRole : std::uint8_t {
+    Bonding = 0,
+    Antibonding,
+    Nonbonding,
+    Mixed,
+    NotApplicable,
+};
+
+struct OrbitalChannelDistribution {
+    double sigma = 0.0;
+    double pi = 0.0;
+    double delta = 0.0;
+    double phi = 0.0;
+    double undetermined = 1.0;
+    OrbitalAngularFamily dominant = OrbitalAngularFamily::Mixed;
+    ChemistryStatus status = ChemistryStatus::Unavailable;
+};
+
+struct OrbitalBondingDistribution {
+    double bonding = 0.0;
+    double antibonding = 0.0;
+    double nonbonding = 0.0;
+    double undetermined = 1.0;
+    OrbitalBondingRole dominant = OrbitalBondingRole::Mixed;
+    ChemistryStatus status = ChemistryStatus::Unavailable;
+};
+
+struct OrbitalAOContribution {
+    std::uint32_t atom_index = 0;
+    int principal_n = 0;
+    int angular_momentum = 0;
+    std::string label;
+    double weight = 0.0;
+};
+
+struct OrbitalPairInteraction {
+    std::uint32_t atom_a = 0;
+    std::uint32_t atom_b = 0;
+    std::string atom_a_label;
+    std::string atom_b_label;
+
+    // Total density-level Mayer index for the pair.
+    double total_mayer_index = 0.0;
+
+    // Per-unit-occupation Mulliken overlap character for this canonical MO.
+    // This is representation/basis dependent and is not a universal bond order.
+    double overlap_character = 0.0;
+    double occupied_overlap_contribution = 0.0;
+
+    OrbitalChannelDistribution channel;
+    OrbitalBondingDistribution bonding;
+};
+
+struct OrbitalChemistry {
+    bool available = false;
+    bool valence_manifold = false;
+
+    double deep_core_weight = 0.0;
+    double semicore_weight = 0.0;
+    double valence_weight = 0.0;
+    double unresolved_weight = 1.0;
+
+    OrbitalChannelDistribution channel;
+    OrbitalBondingDistribution bonding;
+    std::vector<OrbitalAOContribution> ao_contributions;
+    std::vector<OrbitalPairInteraction> interactions;
+
+    std::string multicentre_label;
+    std::string family_symbol;
+    std::size_t participating_atoms = 0;
+    double participating_electrons = 0.0;
+
+    // FCHK-only canonical-MO evidence cannot always define a unique
+    // donor/acceptor direction. In that case this remains "UND".
+    std::string donor_acceptor = "UND";
+
+    std::string method;
+    double confidence = 0.0;
+    std::string note;
+};
+
 struct MolecularOrbital {
     double energy_hartree = 0.0;
     float occupation = 0.0f;
@@ -60,6 +163,10 @@ struct MolecularOrbital {
     // presented as producer data later in the UI/export layer.
     DataProvenance occupation_provenance = DataProvenance::Unavailable;
     DataProvenance symmetry_provenance = DataProvenance::Unavailable;
+
+    // Derived after density/overlap/symmetry/bond analysis. Producer data is
+    // never fabricated; unsupported conclusions remain percentage-valued or UND.
+    OrbitalChemistry chemistry;
 };
 
 struct BondOrderRecord {
