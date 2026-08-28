@@ -29,10 +29,6 @@ struct EnergyTransform {
     EnergyAxisMode mode = EnergyAxisMode::NonlinearFocus;
     double focus_hartree = 0.0;
     double scale_hartree = 1.0e-4;
-    // In adaptive mode this is the minimum normalized share of the drawable
-    // axis reserved for every non-zero, non-degenerate adjacent energy gap.
-    // 0.070 reaches the transform's 90%-floor safety cap for the default Cp-
-    // valence set, yielding about 50 px minimum separation on a 900 px export.
     double minimum_gap_weight = 0.070;
     std::vector<EnergyAxisKnot> knots;
 };
@@ -53,6 +49,7 @@ struct EnergyTransform {
 enum class AnnotationSource {
     Direct,
     ParsedLabel,
+    Derived,
     Heuristic,
     Unavailable,
 };
@@ -125,14 +122,10 @@ struct MODiagramOptions {
     OrbitalFilterSettings filter{};
     std::size_t selected_index = 0;
 
-    // In ValenceCentral mode this controls approximate diagram capacity.
     std::size_t neighbourhood = 12;
-    std::size_t max_levels = 0;          // 0 => derive from neighbourhood
+    std::size_t max_levels = 0;
     std::size_t max_virtual_levels = 10;
 
-    // Adaptive nonlinear axis: minimum normalized vertical share allocated to
-    // each distinct adjacent energy gap. The default intentionally spreads the
-    // dense Cp- 11..27 region to roughly twice the original crowded spacing.
     double nonlinear_minimum_gap_weight = 0.070;
 
     int width = 1200;
@@ -143,11 +136,10 @@ struct MODiagramOptions {
 struct MODiagramLevel {
     OrbitalMetadata metadata;
     OrbitalAnnotation annotation;
+    OrbitalChemistry chemistry;
     ElectronGlyphs electrons;
     bool homo = false;
     bool lumo = false;
-    // Degenerate members share the group-average layout energy so they remain
-    // exactly co-linear vertically even when producer print rounding differs.
     double layout_energy_hartree = 0.0;
 };
 
@@ -157,7 +149,7 @@ struct MODiagramData {
     DiagramSelectionPlan selection;
     std::vector<MODiagramLevel> levels;
     std::vector<OrbitalMetadata> metadata;
-    std::vector<OrbitalAnnotation> annotations; // aligned with metadata
+    std::vector<OrbitalAnnotation> annotations;
     MODiagramMode mode = MODiagramMode::ValenceCentral;
     EnergyTransform energy_transform;
 };
