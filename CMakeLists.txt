@@ -22,6 +22,8 @@ add_library(cov_parser
     src/parser/fchk_parser.cpp
     src/parser/wavefunction_io.cpp
     src/analysis/density.cpp
+    src/analysis/overlap.cpp
+    src/analysis/bond_analysis.cpp
 )
 # Compile the historical Molden implementation under an explicit format-only
 # symbol. The legacy parse_molden() API is now a compatibility dispatcher in
@@ -215,6 +217,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_fchk_parser_smoke tests/fchk_parser_smoke.cpp)
     target_link_libraries(cov_fchk_parser_smoke PRIVATE cov_parser)
     add_test(NAME fchk_parser_smoke COMMAND cov_fchk_parser_smoke)
+
+    add_executable(cov_wavefunction_analysis_smoke tests/wavefunction_analysis_smoke.cpp)
+    target_link_libraries(cov_wavefunction_analysis_smoke PRIVATE cov_parser)
+    add_test(NAME wavefunction_analysis_smoke COMMAND cov_wavefunction_analysis_smoke)
 
     add_executable(cov_orbital_view_smoke tests/orbital_view_smoke.cpp)
     target_link_libraries(cov_orbital_view_smoke PRIVATE cov_orbitals)
