@@ -3,6 +3,7 @@
 #include "cov/bond_analysis.hpp"
 #include "cov/density.hpp"
 #include "cov/fchk_parser.hpp"
+#include "cov/gaussian_log.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/overlap.hpp"
 
@@ -107,6 +108,14 @@ Wavefunction parse_wavefunction(const std::filesystem::path& path,
     } else {
         throw std::runtime_error(
             "Unsupported wavefunction input. Use Gaussian .fchk/.fch or Molden .molden files.");
+    }
+
+    std::filesystem::path enrichment = options.gaussian_log_path;
+    if (enrichment.empty() && options.auto_enrich_gaussian_log) {
+        enrichment = find_sibling_gaussian_log(path);
+    }
+    if (!enrichment.empty()) {
+        (void)enrich_from_gaussian_log(wf, enrichment);
     }
 
     postprocess_wavefunction(wf, options);
