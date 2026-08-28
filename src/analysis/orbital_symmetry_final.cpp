@@ -1,5 +1,7 @@
 #include "cov/orbital_symmetry.hpp"
 
+#include <iostream>
+
 // Keep the already-tested finite/linear machinery in one translation unit so
 // the final dispatcher can reuse its AO-operation helpers without exposing them
 // as public API.  The included implementation is renamed here; CMake compiles
@@ -42,7 +44,38 @@ OrbitalSymmetryResult derive_orbital_symmetry(
                 wavefunction, symmetry, group, options, retention);
             result.worst_subspace_retention =
                 std::min(result.worst_subspace_retention, retention);
-            if (!label) continue;
+            if (!label) {
+                const auto* c3 = find_operation(
+                    symmetry, SymmetryOperationKind::ProperRotation, 3);
+                const auto* c4 = find_operation(
+                    symmetry, SymmetryOperationKind::ProperRotation, 4);
+                const auto* inv = find_operation(
+                    symmetry, SymmetryOperationKind::Inversion, 2);
+                std::cerr << "COV Oh classifier rejected group dim=" << group.size();
+                if (c3) {
+                    const auto x = character(wavefunction, *c3, group);
+                    std::cerr << " C3=" << x.value << "/" << x.retention
+                              << "/" << x.valid;
+                } else {
+                    std::cerr << " C3=missing";
+                }
+                if (c4) {
+                    const auto x = character(wavefunction, *c4, group);
+                    std::cerr << " C4=" << x.value << "/" << x.retention
+                              << "/" << x.valid;
+                } else {
+                    std::cerr << " C4=missing";
+                }
+                if (inv) {
+                    const auto x = character(wavefunction, *inv, group);
+                    std::cerr << " inv=" << x.value << "/" << x.retention
+                              << "/" << x.valid;
+                } else {
+                    std::cerr << " inv=missing";
+                }
+                std::cerr << '\n';
+                continue;
+            }
 
             ++result.groups_labelled;
             for (const std::size_t index : group) {
