@@ -29,7 +29,7 @@ add_library(cov_parser
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
     src/analysis/orbital_symmetry.cpp
-    src/analysis/orbital_symmetry_dispatch.cpp
+    src/analysis/orbital_symmetry_final.cpp
 )
 set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
     COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
