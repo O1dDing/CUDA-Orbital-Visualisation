@@ -153,6 +153,44 @@ const char* molecule_style_name(const cov::MoleculeStyle style,
                        language);
 }
 
+struct OrbitalAppearanceText {
+    const char* material;
+    const char* standard;
+    const char* glass;
+    const char* surface;
+    const char* solid;
+    const char* wire;
+    const char* solid_wire;
+    const char* auto_light;
+};
+
+OrbitalAppearanceText orbital_appearance_text(const cov::ui::Language language) {
+    switch (language) {
+        case cov::ui::Language::ChineseSimplified:
+            return {"轨道材质", "标准", "玻璃", "表面模式", "实体", "线框", "实体 + 线框", "柔和自动打光"};
+        case cov::ui::Language::Japanese:
+            return {"軌道マテリアル", "標準", "ガラス", "表示モード", "ソリッド", "ワイヤー", "ソリッド + ワイヤー", "ソフト自動照明"};
+        case cov::ui::Language::French:
+            return {"Matériau orbital", "Standard", "Verre", "Mode de surface", "Solide", "Filaire", "Solide + filaire", "Éclairage automatique doux"};
+        default:
+            return {"Orbital material", "Standard", "Glass", "Surface mode", "Solid", "Wire", "Solid + Wire", "Soft automatic lighting"};
+    }
+}
+
+const char* orbital_material_name(const cov::OrbitalMaterial material,
+                                  const OrbitalAppearanceText& text) {
+    return material == cov::OrbitalMaterial::Glass ? text.glass : text.standard;
+}
+
+const char* orbital_surface_name(const cov::OrbitalSurfaceMode mode,
+                                 const OrbitalAppearanceText& text) {
+    switch (mode) {
+        case cov::OrbitalSurfaceMode::Wire: return text.wire;
+        case cov::OrbitalSurfaceMode::SolidWire: return text.solid_wire;
+        default: return text.solid;
+    }
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -203,6 +241,8 @@ int main(int argc, char** argv) {
         cov::ui::Language language = cov::ui::Language::English;
         cov::ui::OrbitalUIState orbital_ui;
         cov::MoleculeRenderSettings molecule_render;
+        cov::OrbitalMaterial orbital_material = cov::OrbitalMaterial::Standard;
+        cov::OrbitalSurfaceMode orbital_surface_mode = cov::OrbitalSurfaceMode::Solid;
         StatusKind status = StatusKind::Ready;
         std::string status_detail;
 
@@ -292,10 +332,15 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (wavefunction) {
-                renderer.render_volume(fb_w, fb_h, isovalue, camera,
-                                       molecule_render.orbital_opacity);
+                // Geometry is rendered first into colour + depth. The implicit
+                // orbital surface then depth-tests against it and alpha-blends
+                // over geometry behind the lobe. This preserves correct front/
+                // back occlusion while allowing a genuinely transparent glass skin.
                 renderer.render_geometry(*wavefunction, grid_box, fb_w, fb_h, camera,
                                          molecule_render);
+                renderer.render_volume(fb_w, fb_h, isovalue, camera,
+                                       molecule_render.orbital_opacity,
+                                       orbital_material, orbital_surface_mode);
             }
 
             ImGui_ImplOpenGL2_NewFrame();
@@ -504,7 +549,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            cov::ui::begin_card("##render_card", 370.0f * ui_scale);
+            cov::ui::begin_card("##render_card", 470.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::RenderingSection, language));
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoleculeStyle, language));
             ImGui::SetNextItemWidth(-1.0f);
@@ -526,6 +571,41 @@ int main(int argc, char** argv) {
                     cov::ui::tr(cov::ui::Text::DelocalisationHeuristic, language));
             }
 
+            const OrbitalAppearanceText appearance = orbital_appearance_text(language);
+            ImGui::TextDisabled("%s", appearance.material);
+            ImGui::SetNextItemWidth(-1.0f);
+            if (ImGui::BeginCombo("##orbital_material",
+                                  orbital_material_name(orbital_material, appearance))) {
+                for (const cov::OrbitalMaterial material : {
+                         cov::OrbitalMaterial::Standard,
+                         cov::OrbitalMaterial::Glass}) {
+                    const bool selected = orbital_material == material;
+                    if (ImGui::Selectable(orbital_material_name(material, appearance), selected)) {
+                        orbital_material = material;
+                    }
+                    if (selected) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            ImGui::TextDisabled("%s", appearance.surface);
+            ImGui::SetNextItemWidth(-1.0f);
+            if (ImGui::BeginCombo("##orbital_surface",
+                                  orbital_surface_name(orbital_surface_mode, appearance))) {
+                for (const cov::OrbitalSurfaceMode mode : {
+                         cov::OrbitalSurfaceMode::Solid,
+                         cov::OrbitalSurfaceMode::Wire,
+                         cov::OrbitalSurfaceMode::SolidWire}) {
+                    const bool selected = orbital_surface_mode == mode;
+                    if (ImGui::Selectable(orbital_surface_name(mode, appearance), selected)) {
+                        orbital_surface_mode = mode;
+                    }
+                    if (selected) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+            ImGui::TextDisabled("%s", appearance.auto_light);
+
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::AtomSize, language));
             ImGui::SliderFloat("##atom_size", &molecule_render.atom_scale, 0.55f, 1.8f, "%.2f");
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::BondSize, language));
@@ -538,7 +618,7 @@ int main(int argc, char** argv) {
                                0.15f, 1.0f, "%.2f");
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::OrbitalOpacity, language));
             ImGui::SliderFloat("##orbital_opacity", &molecule_render.orbital_opacity,
-                               0.20f, 1.0f, "%.2f");
+                               0.02f, 1.0f, "%.2f");
 
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::Isovalue, language));
             ImGui::SliderFloat("##isovalue", &isovalue, 0.002f, 0.12f, "%.4f",
