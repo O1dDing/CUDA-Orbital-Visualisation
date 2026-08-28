@@ -2,6 +2,8 @@
 
 #include "cov/model.hpp"
 
+#include <map>
+
 namespace cov {
 
 struct BondAnalysisOptions {
