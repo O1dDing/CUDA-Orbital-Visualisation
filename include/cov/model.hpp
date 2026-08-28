@@ -13,6 +13,18 @@ enum class Spin : std::uint8_t {
     Beta = 1,
 };
 
+enum class WavefunctionSource : std::uint8_t {
+    Unknown = 0,
+    Molden = 1,
+    Fchk = 2,
+};
+
+enum class DataProvenance : std::uint8_t {
+    Unavailable = 0,
+    Producer = 1,
+    Derived = 2,
+};
+
 struct Atom {
     std::string symbol;
     int atomic_number = 0;
@@ -52,6 +64,21 @@ struct Wavefunction {
     bool pure_d = false;
     bool pure_f = false;
     bool pure_g = false;
+
+    // Input/provenance metadata. These fields are intentionally orthogonal to
+    // rendering so Molden and FCHK converge on the same Wavefunction model.
+    WavefunctionSource source = WavefunctionSource::Unknown;
+    std::uint32_t alpha_electrons = 0;
+    std::uint32_t beta_electrons = 0;
+    std::string source_title;
+    std::string source_route;
+
+    // Packed lower-triangular AO density matrices when present or safely
+    // reconstructable. Size is basis_count*(basis_count+1)/2.
+    std::vector<double> total_density_packed;
+    std::vector<double> spin_density_packed;
+    DataProvenance total_density_provenance = DataProvenance::Unavailable;
+    DataProvenance spin_density_provenance = DataProvenance::Unavailable;
 };
 
 struct GridBox {
@@ -74,6 +101,14 @@ inline std::uint32_t spherical_basis_count(const std::uint8_t l) {
 inline std::uint32_t shell_basis_count(const Shell& shell) {
     return shell.pure ? spherical_basis_count(shell.angular_momentum)
                       : cartesian_basis_count(shell.angular_momentum);
+}
+
+inline const char* wavefunction_source_name(const WavefunctionSource source) noexcept {
+    switch (source) {
+        case WavefunctionSource::Molden: return "Molden";
+        case WavefunctionSource::Fchk: return "FCHK";
+        default: return "Unknown";
+    }
 }
 
 } // namespace cov
