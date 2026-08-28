@@ -5,19 +5,6 @@ on:
   pull_request:
 
 jobs:
-  cleanup-pre8:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/fchk-primary-interface'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Remove superseded pre.8 release and tag
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release delete v0.3.0-pre.8 --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
-          gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/v0.3.0-pre.8" || true
-
   cpu-core:
     strategy:
       fail-fast: false
@@ -28,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Configure CPU core build
         run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
-      - name: Build parser, orbital, diagram and UI smoke targets
+      - name: Build parser, orbital chemistry, diagram and UI targets
         run: cmake --build build --config Release --parallel
       - name: Download pinned real Gaussian 16 FCHK regression
         run: >-
@@ -73,7 +60,15 @@ jobs:
           $exe = "build-cuda/Release/cov.exe"
           if (-not (Test-Path $exe)) { throw "cov.exe was not produced" }
           $cuobjdump = Join-Path $env:CUDA_PATH "bin/cuobjdump.exe"
+          if (-not (Test-Path $cuobjdump)) { throw "cuobjdump.exe is missing" }
           & $cuobjdump --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
           if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) { throw "sm_120 cubin missing" }
           & $cuobjdump --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
           if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) { throw "compute_120 PTX missing" }
+      - name: Upload valence milestone viewer
+        uses: actions/upload-artifact@v4
+        with:
+          name: cov-pr3-valence-windows-sm120
+          path: build-cuda/Release/cov.exe
+          if-no-files-found: error
+          retention-days: 14
