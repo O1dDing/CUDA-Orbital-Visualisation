@@ -20,6 +20,7 @@ add_library(cov_parser
     src/parser/molden_parser.cpp
     src/parser/molden_compat.cpp
     src/parser/fchk_parser.cpp
+    src/parser/gaussian_log.cpp
     src/parser/wavefunction_io.cpp
     src/analysis/density.cpp
     src/analysis/overlap.cpp
@@ -217,6 +218,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_fchk_parser_smoke tests/fchk_parser_smoke.cpp)
     target_link_libraries(cov_fchk_parser_smoke PRIVATE cov_parser)
     add_test(NAME fchk_parser_smoke COMMAND cov_fchk_parser_smoke)
+
+    add_executable(cov_gaussian_log_smoke tests/gaussian_log_smoke.cpp)
+    target_link_libraries(cov_gaussian_log_smoke PRIVATE cov_parser)
+    add_test(NAME gaussian_log_smoke COMMAND cov_gaussian_log_smoke)
 
     add_executable(cov_wavefunction_analysis_smoke tests/wavefunction_analysis_smoke.cpp)
     target_link_libraries(cov_wavefunction_analysis_smoke PRIVATE cov_parser)
