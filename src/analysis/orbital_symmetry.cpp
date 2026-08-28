@@ -447,8 +447,6 @@ std::optional<std::string> classify_dnh(const Wavefunction& wf,
         if (std::abs(std::abs(a.character)-1.0)>options.character_tolerance ||
             std::abs(std::abs(b.character)-1.0)>options.character_tolerance) return std::nullopt;
         if (a.character<0.0) {
-            // B1/B2 orientation is convention-dependent for even Dnh without a
-            // producer axis convention; do not manufacture that distinction.
             if ((n%2)==0) return std::nullopt;
             return std::nullopt;
         }
@@ -610,7 +608,7 @@ OrbitalSymmetryResult derive_orbital_symmetry(Wavefunction& wavefunction,
             label=classify_td(wavefunction,symmetry,group,options,retention);
         } else if (symmetry.point_group=="Oh") {
             label=classify_oh(wavefunction,symmetry,group,options,retention);
-        } else if (symmetry.point_group.size()>=4 && symmetry.point_group[0]=='D' &&
+        } else if (symmetry.point_group.size()>=3 && symmetry.point_group[0]=='D' &&
                    symmetry.point_group.back()=='h') {
             label=classify_dnh(wavefunction,symmetry,group,options,retention);
         }
