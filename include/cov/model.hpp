@@ -95,6 +95,9 @@ struct Wavefunction {
     std::string source_title;
     std::string source_route;
     std::string enrichment_source;
+    std::string point_group_detected;
+    std::string point_group_used;
+    DataProvenance point_group_provenance = DataProvenance::Unavailable;
 
     // Packed lower-triangular AO density matrices when present or safely
     // reconstructable. Size is basis_count*(basis_count+1)/2.
