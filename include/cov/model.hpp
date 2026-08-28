@@ -62,6 +62,21 @@ struct MolecularOrbital {
     DataProvenance symmetry_provenance = DataProvenance::Unavailable;
 };
 
+struct BondOrderRecord {
+    std::uint32_t atom_a = 0;
+    std::uint32_t atom_b = 0;
+    double mayer_order = 0.0;
+    DataProvenance provenance = DataProvenance::Unavailable;
+};
+
+struct MulticentreCandidate {
+    std::uint32_t orbital_index = 0;
+    std::vector<std::uint32_t> atoms;
+    std::vector<double> participation;
+    double occupation = 0.0;
+    DataProvenance provenance = DataProvenance::Unavailable;
+};
+
 struct Wavefunction {
     std::vector<Atom> atoms;
     std::vector<Primitive> primitives;
@@ -79,6 +94,7 @@ struct Wavefunction {
     std::uint32_t beta_electrons = 0;
     std::string source_title;
     std::string source_route;
+    std::string enrichment_source;
 
     // Packed lower-triangular AO density matrices when present or safely
     // reconstructable. Size is basis_count*(basis_count+1)/2.
@@ -86,6 +102,20 @@ struct Wavefunction {
     std::vector<double> spin_density_packed;
     DataProvenance total_density_provenance = DataProvenance::Unavailable;
     DataProvenance spin_density_provenance = DataProvenance::Unavailable;
+
+    // AO overlap recovered from a complete orthonormal MO block when the input
+    // format does not provide S explicitly. Row-major basis_count*basis_count.
+    std::vector<double> ao_overlap;
+    DataProvenance ao_overlap_provenance = DataProvenance::Unavailable;
+    double ao_overlap_orthonormality_error = 0.0;
+
+    // Provenance-aware analyses derived from density + overlap. Mayer bond
+    // orders are pairwise evidence only and must never be interpreted as proof
+    // of a 3c2e/3c4e assignment. Multicentre candidates are deliberately named
+    // candidates for the same reason.
+    std::vector<BondOrderRecord> bond_orders;
+    DataProvenance bond_order_provenance = DataProvenance::Unavailable;
+    std::vector<MulticentreCandidate> multicentre_candidates;
 };
 
 struct GridBox {
