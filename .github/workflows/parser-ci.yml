@@ -6,12 +6,98 @@ on:
 
 jobs:
   cpu-core:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Configure CPU core build
         run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
-      - name: Build parser and UI smoke targets
-        run: cmake --build build --parallel
-      - name: Test parser and localisation/UI
-        run: ctest --test-dir build --output-on-failure
+      - name: Build parser, orbital, diagram and UI smoke targets
+        run: cmake --build build --config Release --parallel
+      - name: Test parser, orbital semantics, adaptive layout, exports and localisation
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Upload deterministic MO visual-regression artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mo-visual-${{ matrix.os }}
+          path: build/visual_artifacts/
+          if-no-files-found: warn
+
+  windows-cuda-viewer:
+    name: prebuilt Windows CUDA viewer
+    runs-on: windows-2022
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install CUDA 12.8.2 build toolkit
+        uses: Jimver/cuda-toolkit@v0.2.36
+        id: cuda-toolkit
+        with:
+          cuda: '12.8.2'
+          method: network
+          sub-packages: '["nvcc", "cudart", "cuobjdump", "visual_studio_integration"]'
+
+      - name: Show CUDA compiler
+        shell: pwsh
+        run: |
+          nvcc --version
+          Write-Host "CUDA_PATH=$env:CUDA_PATH"
+
+      - name: Configure Blackwell Release viewer
+        shell: pwsh
+        run: >-
+          cmake -S . -B build-cuda
+          -G "Visual Studio 17 2022" -A x64
+          -DCOV_ENABLE_CUDA=ON
+          -DCOV_BUILD_TESTS=OFF
+          -DCMAKE_CUDA_ARCHITECTURES="120-real;120-virtual"
+
+      - name: Build cov.exe
+        shell: pwsh
+        run: cmake --build build-cuda --config Release --parallel
+
+      - name: Verify standalone binary and Blackwell payload
+        shell: pwsh
+        run: |
+          $exe = "build-cuda/Release/cov.exe"
+          if (-not (Test-Path $exe)) { throw "cov.exe was not produced" }
+          $cuobjdump = Join-Path $env:CUDA_PATH "bin/cuobjdump.exe"
+          if (-not (Test-Path $cuobjdump)) { throw "cuobjdump.exe is missing from the CUDA build environment" }
+          & $cuobjdump --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
+          if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) {
+            throw "sm_120 native cubin was not found in cov.exe"
+          }
+          & $cuobjdump --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
+          if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) {
+            throw "compute_120 PTX fallback was not found in cov.exe"
+          }
+          Get-Item $exe | Format-List FullName,Length,LastWriteTime
+
+      - name: Upload ready-to-run cov.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: cov-windows-sm120
+          path: build-cuda/Release/cov.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish v0.2.0-pre.6
+        if: github.event_name == 'push' && github.ref == 'refs/heads/vibe/orbital-browser-and-file-dialog'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = "build-cuda/Release/cov.exe"
+          gh release create "v0.2.0-pre.6" $exe `
+            --repo "$env:GITHUB_REPOSITORY" `
+            --target "$env:GITHUB_SHA" `
+            --title "CUDA Orbital Visualisation v0.2.0-pre.6" `
+            --notes "Final PR #2 appearance candidate. Adds a Glass orbital material, true continuously adjustable orbital alpha, GPU-resident procedural triangular Wire and Solid + Wire surface modes, and a restrained camera-relative automatic key/fill light. Rendering order is depth-correct for transparency: 3D molecular geometry is drawn into depth first, then the implicit orbital surface depth-tests and alpha-blends over geometry behind it. No Marching Cubes or volumetric GPU-to-CPU readback is introduced. Includes the corrected omitted-[7F] Molden parser hotfix and existing 3D molecule rendering. CUDA 12.8.2; native sm_120 plus compute_120 PTX. Item 11 remains deferred to PR #3." `
+            --prerelease

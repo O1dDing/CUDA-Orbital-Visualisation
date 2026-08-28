@@ -1,13 +1,20 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(CUDAOrbitalVisualisation VERSION 0.1.0 LANGUAGES CXX)
+project(CUDAOrbitalVisualisation VERSION 0.2.0 LANGUAGES CXX)
 
 option(COV_ENABLE_CUDA "Build the CUDA/OpenGL viewer" ON)
-option(COV_BUILD_TESTS "Build parser and UI smoke tests" ON)
+option(COV_BUILD_TESTS "Build parser, orbital, diagram, molecule and UI smoke tests" ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Keep the downloadable Windows viewer self-contained with respect to the
+# Microsoft C/C++ runtime. OpenGL and the NVIDIA display driver remain normal
+# operating-system/driver dependencies.
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
 add_library(cov_parser
     src/parser/molden_parser.cpp
@@ -17,10 +24,44 @@ target_include_directories(cov_parser PUBLIC
 )
 target_compile_features(cov_parser PUBLIC cxx_std_20)
 
+add_library(cov_orbitals
+    src/orbitals/orbital_view.cpp
+    src/orbitals/mo_diagram_v2.cpp
+)
+target_include_directories(cov_orbitals PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_compile_features(cov_orbitals PUBLIC cxx_std_20)
+
+add_library(cov_molecule
+    src/render/molecule_style.cpp
+)
+target_include_directories(cov_molecule PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_compile_features(cov_molecule PUBLIC cxx_std_20)
+
+add_library(cov_platform
+    src/platform/file_dialog.cpp
+)
+target_include_directories(cov_platform PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_compile_features(cov_platform PUBLIC cxx_std_20)
+if(WIN32)
+    target_link_libraries(cov_platform PRIVATE comdlg32)
+endif()
+
 if(MSVC)
-    target_compile_options(cov_parser PRIVATE /W4 /permissive-)
+    target_compile_options(cov_parser PRIVATE /W4 /permissive- /utf-8)
+    target_compile_options(cov_orbitals PRIVATE /W4 /permissive- /utf-8)
+    target_compile_options(cov_molecule PRIVATE /W4 /permissive- /utf-8)
+    target_compile_options(cov_platform PRIVATE /W4 /permissive- /utf-8)
 else()
     target_compile_options(cov_parser PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(cov_orbitals PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(cov_molecule PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(cov_platform PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 # The localisation/theme layer is also compiled in CPU-only CI, so UI source
@@ -47,12 +88,13 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
 
     add_library(cov_ui STATIC
         src/ui/ui.cpp
+        src/ui/orbital_ui_v2.cpp
     )
     target_include_directories(cov_ui PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${imgui_SOURCE_DIR}
     )
-    target_link_libraries(cov_ui PUBLIC cov_imgui_core)
+    target_link_libraries(cov_ui PUBLIC cov_imgui_core cov_orbitals cov_molecule)
     target_compile_features(cov_ui PUBLIC cxx_std_20)
     target_compile_options(cov_ui PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
@@ -66,9 +108,6 @@ if(COV_ENABLE_CUDA)
         message(FATAL_ERROR "COV_ENABLE_CUDA=ON but no CUDA compiler was found.")
     endif()
 
-    # RTX 5090 / Blackwell first: native sm_120 cubin plus compute_120 PTX.
-    # Override at configure time for another CUDA GPU, e.g.
-    # -DCMAKE_CUDA_ARCHITECTURES=89
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
         set(CMAKE_CUDA_ARCHITECTURES "120-real;120-virtual" CACHE STRING
             "CUDA architectures (default: Blackwell sm_120 + PTX)" FORCE)
@@ -118,13 +157,14 @@ if(COV_ENABLE_CUDA)
     target_link_libraries(cov_gpu
         PUBLIC
             cov_parser
-            CUDA::cudart
+            cov_molecule
+            CUDA::cudart_static
             OpenGL::GL
             glfw
     )
     set_target_properties(cov_gpu PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON
-        CUDA_RESOLVE_DEVICE_SYMBOLS ON
+        CUDA_SEPARABLE_COMPILATION OFF
+        CUDA_RESOLVE_DEVICE_SYMBOLS OFF
         POSITION_INDEPENDENT_CODE ON
     )
     target_compile_options(cov_gpu PRIVATE
@@ -139,15 +179,15 @@ if(COV_ENABLE_CUDA)
     )
     target_link_libraries(cov PRIVATE
         cov_gpu
+        cov_orbitals
+        cov_molecule
+        cov_platform
         cov_ui
         cov_imgui_backends
     )
-
-    # Keep source and localisation strings explicitly UTF-8 on MSVC.
     target_compile_options(cov PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
-
     if(WIN32)
         set_property(TARGET cov PROPERTY WIN32_EXECUTABLE FALSE)
     endif()
@@ -157,26 +197,35 @@ if(COV_BUILD_TESTS)
     include(CTest)
     enable_testing()
 
-    add_executable(cov_parser_smoke
-        tests/parser_smoke.cpp
-    )
+    add_executable(cov_parser_smoke tests/parser_smoke.cpp)
     target_link_libraries(cov_parser_smoke PRIVATE cov_parser)
+    add_test(NAME parser_smoke
+        COMMAND cov_parser_smoke ${CMAKE_CURRENT_SOURCE_DIR}/examples/h2.molden)
 
-    add_test(
-        NAME parser_smoke
-        COMMAND cov_parser_smoke ${CMAKE_CURRENT_SOURCE_DIR}/examples/h2.molden
-    )
+    add_executable(cov_orbital_view_smoke tests/orbital_view_smoke.cpp)
+    target_link_libraries(cov_orbital_view_smoke PRIVATE cov_orbitals)
+    add_test(NAME orbital_view_smoke COMMAND cov_orbital_view_smoke)
 
-    add_executable(cov_ui_smoke
-        tests/ui_smoke.cpp
-    )
+    add_executable(cov_mo_diagram_smoke tests/mo_diagram_smoke.cpp)
+    target_link_libraries(cov_mo_diagram_smoke PRIVATE cov_orbitals)
+    add_test(NAME mo_diagram_smoke COMMAND cov_mo_diagram_smoke)
+
+    add_executable(cov_energy_axis_smoke tests/energy_axis_smoke.cpp)
+    target_link_libraries(cov_energy_axis_smoke PRIVATE cov_orbitals)
+    add_test(NAME energy_axis_smoke COMMAND cov_energy_axis_smoke)
+
+    add_executable(cov_cp_reference_layout_smoke tests/cp_reference_layout_smoke.cpp)
+    target_link_libraries(cov_cp_reference_layout_smoke PRIVATE cov_orbitals)
+    add_test(NAME cp_reference_layout_smoke COMMAND cov_cp_reference_layout_smoke)
+
+    add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
+    target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule)
+    add_test(NAME molecule_style_smoke COMMAND cov_molecule_style_smoke)
+
+    add_executable(cov_ui_smoke tests/ui_smoke.cpp)
     target_link_libraries(cov_ui_smoke PRIVATE cov_ui)
     target_compile_options(cov_ui_smoke PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
-
-    add_test(
-        NAME ui_smoke
-        COMMAND cov_ui_smoke
-    )
+    add_test(NAME ui_smoke COMMAND cov_ui_smoke)
 endif()

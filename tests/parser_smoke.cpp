@@ -1,8 +1,120 @@
 #include "cov/molden_parser.hpp"
 
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <string_view>
+
+namespace {
+
+bool test_no_sym_mo_boundaries() {
+    const auto path = std::filesystem::temp_directory_path() /
+                      "cov_molden_no_sym_regression.molden";
+    {
+        std::ofstream out(path, std::ios::binary);
+        if (!out) {
+            std::cerr << "unable to create temporary no-Sym Molden fixture\n";
+            return false;
+        }
+        out << "[Molden Format]\n"
+               "[Atoms] Angs\n"
+               "H 1 1 0.0 0.0 0.0\n"
+               "H 2 1 0.0 0.0 0.74\n"
+               "[GTO]\n"
+               "1 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "2 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "[MO]\n"
+               "Ene= -0.500000\n"
+               "Spin= Alpha\n"
+               "Occup= 2.0\n"
+               "1 0.70710678\n"
+               "2 0.70710678\n"
+               "Ene= 0.200000\n"
+               "Spin= Alpha\n"
+               "Occup= 0.0\n"
+               "1 0.70710678\n"
+               "2 -0.70710678\n";
+    }
+
+    try {
+        const auto wf = cov::parse_molden(path);
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        if (wf.orbitals.size() != 2 || wf.basis_count != 2) {
+            std::cerr << "no-Sym MO boundary regression: expected 2 MOs / 2 basis, got "
+                      << wf.orbitals.size() << " / " << wf.basis_count << '\n';
+            return false;
+        }
+        if (wf.orbitals[0].occupation != 2.0f || wf.orbitals[1].occupation != 0.0f) {
+            std::cerr << "no-Sym MO metadata regression\n";
+            return false;
+        }
+        return true;
+    } catch (const std::exception& e) {
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        std::cerr << "no-Sym MO parsing failed: " << e.what() << '\n';
+        return false;
+    }
+}
+
+bool test_omitted_7f_marker_inference() {
+    const auto path = std::filesystem::temp_directory_path() /
+                      "cov_molden_omitted_7f_regression.molden";
+    {
+        std::ofstream out(path, std::ios::binary);
+        if (!out) {
+            std::cerr << "unable to create temporary omitted-7F Molden fixture\n";
+            return false;
+        }
+        out << "[Molden Format]\n"
+               "[Atoms] AU\n"
+               "C 1 6 0.0 0.0 0.0\n"
+               "[GTO]\n"
+               "1 0\n"
+               "d 1 1.0\n"
+               "1.0 1.0\n"
+               "f 1 1.0\n"
+               "1.0 1.0\n"
+               "[5D]\n"
+               "[MO]\n"
+               "Ene= -0.100000\n"
+               "Spin= Alpha\n"
+               "Occup= 2.0\n";
+        for (int i = 1; i <= 12; ++i) {
+            out << i << " " << (i == 1 ? 1.0 : 0.0) << "\n";
+        }
+    }
+
+    try {
+        const auto wf = cov::parse_molden(path);
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        if (wf.basis_count != 12u || !wf.pure_d || !wf.pure_f) {
+            std::cerr << "omitted-7F regression: expected 5D+7F = 12 basis, got basis="
+                      << wf.basis_count << " pure_d=" << wf.pure_d
+                      << " pure_f=" << wf.pure_f << '\n';
+            return false;
+        }
+        if (wf.orbitals.size() != 1u || wf.orbitals[0].coefficients.size() != 12u) {
+            std::cerr << "omitted-7F regression: MO dimension mismatch\n";
+            return false;
+        }
+        return true;
+    } catch (const std::exception& e) {
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        std::cerr << "omitted-7F inference failed: " << e.what() << '\n';
+        return false;
+    }
+}
+
+} // namespace
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 3) {
@@ -33,6 +145,12 @@ int main(int argc, char** argv) {
         }
         if (wf.orbitals[0].coefficients.size() != wf.basis_count) {
             std::cerr << "MO coefficient consistency check failed\n";
+            return EXIT_FAILURE;
+        }
+        if (!test_no_sym_mo_boundaries()) {
+            return EXIT_FAILURE;
+        }
+        if (!test_omitted_7f_marker_inference()) {
             return EXIT_FAILURE;
         }
         std::cout << "parser smoke test passed\n";

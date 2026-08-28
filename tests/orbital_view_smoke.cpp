@@ -1,0 +1,149 @@
+#include "cov/orbital_view.hpp"
+
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+
+namespace {
+
+bool near(const double a, const double b, const double tol) {
+    return std::abs(a - b) <= tol;
+}
+
+cov::MolecularOrbital mo(const double e,
+                         const float occ,
+                         const cov::Spin spin = cov::Spin::Alpha,
+                         std::string sym = {}) {
+    cov::MolecularOrbital value;
+    value.energy_hartree = e;
+    value.occupation = occ;
+    value.spin = spin;
+    value.symmetry = std::move(sym);
+    return value;
+}
+
+} // namespace
+
+int main() {
+    if (!near(cov::convert_hartree(1.0, cov::EnergyUnit::ElectronVolt),
+              27.211386245988, 1.0e-12)) {
+        std::cerr << "Hartree -> eV conversion failed\n";
+        return 1;
+    }
+    if (!near(cov::convert_hartree(1.0, cov::EnergyUnit::KilojoulePerMol),
+              2625.4996394798255, 1.0e-9)) {
+        std::cerr << "Hartree -> kJ/mol conversion failed\n";
+        return 2;
+    }
+    if (!near(cov::convert_hartree(1.0, cov::EnergyUnit::KilocaloriePerMol),
+              627.5094740630558, 1.0e-9)) {
+        std::cerr << "Hartree -> kcal/mol conversion failed\n";
+        return 3;
+    }
+
+    std::vector<cov::MolecularOrbital> orbitals = {
+        mo(-2.2, 2.0f, cov::Spin::Alpha, "a1'"),
+        mo(-0.236093, 2.0f, cov::Spin::Alpha, "a2''"),
+        mo(-0.06804765, 2.0f, cov::Spin::Alpha, "e1''"),
+        mo(-0.06804758, 2.0f, cov::Spin::Alpha, "e1''"),
+        mo(0.0200, 0.0f, cov::Spin::Alpha, "e2''"),
+        mo(0.020000005, 0.0f, cov::Spin::Alpha, "e2''"),
+        mo(2.0, 0.0f, cov::Spin::Alpha, "a1'"),
+    };
+
+    cov::DegeneracySettings degeneracy;
+    degeneracy.tolerance_hartree = 1.0e-5;
+    const auto labels = cov::build_orbital_labels(orbitals, degeneracy);
+    if (labels.size() != orbitals.size()) return 4;
+    if (labels[2].display_label != "3-a" || labels[3].display_label != "3-b") {
+        std::cerr << "occupied degeneracy labels failed\n";
+        return 5;
+    }
+    if (labels[4].display_label != "5-a" || labels[5].display_label != "5-b") {
+        std::cerr << "virtual degeneracy labels failed\n";
+        return 6;
+    }
+    if (labels[6].display_label != "7") {
+        std::cerr << "single-level label failed\n";
+        return 7;
+    }
+
+    const std::vector<cov::MolecularOrbital> accidental = {
+        mo(-0.1, 2.0f, cov::Spin::Alpha, "a1"),
+        mo(-0.100000001, 2.0f, cov::Spin::Alpha, "b2"),
+    };
+    const auto accidental_labels = cov::build_orbital_labels(accidental, degeneracy);
+    if (accidental_labels[0].group_size != 1 || accidental_labels[1].group_size != 1) {
+        std::cerr << "different producer symmetry labels were incorrectly grouped\n";
+        return 8;
+    }
+    degeneracy.require_compatible_symmetry = false;
+    const auto energy_only_labels = cov::build_orbital_labels(accidental, degeneracy);
+    if (energy_only_labels[0].display_label != "1-a" ||
+        energy_only_labels[1].display_label != "1-b") {
+        std::cerr << "explicit energy-only degeneracy mode failed\n";
+        return 9;
+    }
+    degeneracy.require_compatible_symmetry = true;
+
+    const auto frontier = cov::find_frontier_orbitals(orbitals);
+    if (!frontier.homo || *frontier.homo != 3 || !frontier.lumo || *frontier.lumo != 4) {
+        std::cerr << "frontier detection failed\n";
+        return 10;
+    }
+
+    cov::OrbitalFilterSettings filter;
+    filter.mode = cov::OrbitalFilterMode::AutoReasonable;
+    filter.virtual_window_hartree = 1.5;
+    const auto visible = cov::visible_orbital_indices(orbitals, frontier, filter);
+    if (visible.size() != 6 || visible.back() != 5) {
+        std::cerr << "high-energy virtual filter failed\n";
+        return 11;
+    }
+
+    if (cov::classify_orbital_region(orbitals[0], filter) != cov::OrbitalRegion::Core ||
+        cov::classify_orbital_region(orbitals[2], filter) != cov::OrbitalRegion::Valence ||
+        cov::classify_orbital_region(orbitals[4], filter) != cov::OrbitalRegion::Virtual) {
+        std::cerr << "region classification failed\n";
+        return 12;
+    }
+
+    cov::Wavefunction wf;
+    wf.atoms.resize(20);
+    wf.orbitals = orbitals;
+    const auto plan = cov::choose_diagram_plan(wf);
+    if (plan.classification != cov::DiagramClassification::SymmetryGrouped ||
+        plan.strict_salc_available) {
+        std::cerr << "complex symmetry grouping plan failed\n";
+        return 13;
+    }
+
+    wf.orbitals[0].symmetry.clear();
+    wf.orbitals[1].symmetry.clear();
+    wf.orbitals[2].symmetry.clear();
+    wf.orbitals[3].symmetry.clear();
+    wf.orbitals[4].symmetry.clear();
+    const auto fallback = cov::choose_diagram_plan(wf);
+    if (fallback.classification != cov::DiagramClassification::SalcUnavailable ||
+        fallback.strict_salc_available) {
+        std::cerr << "SALC honesty fallback failed\n";
+        return 14;
+    }
+
+    const auto restricted_pair = cov::electron_glyphs_for_orbital(mo(-0.5, 2.0f), false);
+    if (restricted_pair.alpha != 1 || restricted_pair.beta != 1) {
+        std::cerr << "restricted electron glyph failed\n";
+        return 15;
+    }
+
+    const auto alpha = cov::electron_glyphs_for_orbital(mo(-0.5, 1.0f, cov::Spin::Alpha), true);
+    const auto beta = cov::electron_glyphs_for_orbital(mo(-0.5, 1.0f, cov::Spin::Beta), true);
+    if (alpha.alpha != 1 || alpha.beta != 0 || beta.alpha != 0 || beta.beta != 1) {
+        std::cerr << "spin-resolved electron glyph failed\n";
+        return 16;
+    }
+
+    std::cout << "orbital_view_smoke ok\n";
+    return 0;
+}

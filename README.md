@@ -4,7 +4,7 @@
 
 CUDA Orbital Visualisation is an experimental GPU-first molecular-orbital viewer for NVIDIA CUDA GPUs, developed first for **RTX 5090 / Blackwell (`sm_120`)**. The initial target is small and medium molecular systems of **up to 100 atoms**.
 
-The current MVP parses Molden wavefunctions on the CPU, uploads basis data to CUDA, evaluates a selected molecular orbital on a 3D grid, writes the scalar field **directly into an OpenGL 3D texture through CUDA/OpenGL interop**, and ray-marches the positive and negative isosurfaces on the GPU.
+The viewer parses Molden wavefunctions on the CPU, uploads basis data to CUDA, evaluates a selected molecular orbital on a 3D grid, writes the scalar field **directly into an OpenGL 3D texture through CUDA/OpenGL interop**, and ray-marches the positive and negative isosurfaces on the GPU.
 
 ## Current scope
 
@@ -12,21 +12,23 @@ The current MVP parses Molden wavefunctions on the CPU, uploads basis data to CU
 - [x] CUDA 12.8+ build path
 - [x] Blackwell `sm_120` cubin + PTX by default
 - [x] Streaming/two-pass Molden parser
-- [x] `[Atoms]` in Angstrom or atomic units
-- [x] `s`, `p`, `sp`, `d`, `f`, `g` shells
-- [x] Cartesian `6D / 10F / 15G`
-- [x] Real spherical `5D / 7F / 9G`
-- [x] Strict MO coefficient/basis-count consistency check
+- [x] Cartesian and real-spherical `s/p/d/f/g` basis support
+- [x] Strict MO coefficient/basis-count consistency checks
 - [x] CUDA orbital grid evaluator
-- [x] Direct CUDA surface writes into an OpenGL 3D texture
 - [x] GPU-resident `+iso / -iso` ray-marched visualisation
-- [x] Basic atom/bond overlay
 - [x] 64³ / 128³ / 256³ / 512³ grids
-- [x] Interactive MO, isovalue, camera and grid controls
-- [x] Compact viewport-first `COV Slate` Dear ImGui interface
-- [x] Runtime localisation: English / 简体中文 / 日本語 / Français
-- [x] System-font CJK fallback without redistributing font binaries
-- [x] CPU-only parser CI
+- [x] Viewport-first Dear ImGui UI
+- [x] English / 简体中文 / 日本語 / Français
+- [x] Native Windows Open File workflow + drag/drop/manual path
+- [x] Orbital browser, search, HOMO/LUMO navigation and filters
+- [x] Degeneracy-aware labels such as `17-a`, `17-b` while retaining raw MO numbers
+- [x] Ha / eV / J mol⁻¹ / kJ mol⁻¹ / cal mol⁻¹ / kcal mol⁻¹ display
+- [x] Enhanced ball-and-stick defaults plus stick/delocalisation display mode
+- [x] Interactive energy-level diagram with electron occupancy
+- [x] **Valence-focused central MO diagram** export: PNG + SVG + JSON + CSV
+- [x] Non-destructive valence/core/high-virtual filtering for readable diagrams
+- [x] Machine-readable annotation provenance for orbital-family/bonding labels
+- [ ] Universal strict SALC construction
 - [ ] Gaussian FCHK
 - [ ] CHK → `formchk`
 - [ ] Gaussian `.log/.out`
@@ -35,35 +37,9 @@ The current MVP parses Molden wavefunctions on the CPU, uploads basis data to CU
 - [ ] Cube export
 - [ ] Cp⁻ numerical regression against Gaussian/Multiwfn reference grids
 
-> **Scientific-status note:** this is an early MVP, not yet a validated production quantum-chemistry package. The spherical-harmonic path and producer-specific Molden phase/order conventions must pass reference-grid regression tests before scientific release.
+> **Scientific-status note:** this is an early project, not yet a validated production quantum-chemistry package. Producer-specific Molden phase/order conventions and the spherical-harmonic path still require reference-grid regression before scientific release.
 
-## Why this architecture?
-
-Conventional orbital workflows often become:
-
-```text
-wavefunction
-    ↓
-CPU grid generation
-    ↓
-CPU mesh extraction
-    ↓
-GPU display
-```
-
-or, in some GPU-enabled viewers:
-
-```text
-GPU scalar field
-    ↓
-GPU → CPU readback
-    ↓
-CPU/JS Marching Cubes
-    ↓
-GPU display
-```
-
-This project instead aims for:
+## Architecture
 
 ```text
 Molden parser (CPU)
@@ -81,18 +57,75 @@ display
 
 Changing the isovalue does **not** recompute the CUDA grid or rebuild a mesh.
 
-## UI and localisation
+## Human-facing orbital workflow
 
-The control surface is a compact dark inspector over the full-window molecular viewport. Information is grouped into File, Wavefunction, Orbital, Rendering and Performance cards, while scientific values remain visible rather than being hidden behind decorative controls.
+```text
+Open calculation
+→ inspect wavefunction
+→ browse orbitals
+→ select MO
+→ inspect energy / occupation / spin / symmetry
+→ view orbital
+→ generate/export a valence MO diagram
+```
 
-The language selector switches instantly between:
+The orbital browser keeps raw one-based Molden numbering for machine/scientific traceability while optionally presenting compact degeneracy groups. With the default `1e-5 Ha` tolerance, a compatible two-level degenerate set may be presented as `17-a` and `17-b`; raw source MO numbers remain available in tooltips and exported metadata.
 
-- English
-- 简体中文
-- 日本語
-- Français
+High virtual orbitals are never deleted. The default `Auto · reasonable` view and the diagram's valence selection are non-destructive filters. `All` restores the complete parsed orbital list. `Core`, `Valence`, and high-virtual hiding are human-facing selection heuristics rather than new quantum-chemical assignments.
 
-No font files are committed to the repository. The application loads local system fonts at startup and builds only the CJK glyph ranges required by the bundled translations. On Windows it prefers Segoe UI + Microsoft YaHei + Yu Gothic/Meiryo. See [`docs/UI.md`](docs/UI.md) for design references, localisation architecture and font policy.
+## Molecular display
+
+The default skeleton is deliberately stronger than the first MVP: larger atoms and thicker bonds make the molecule immediately legible while retaining orbital surfaces as the visual subject. A second `Stick + delocalisation` mode uses a conservative geometric ring heuristic for dashed bonds. Those dashed bonds are a visual aid and **do not claim an ab-initio bond order**.
+
+The renderer uses conventional chemical element colours for common atoms (H white, C graphite, N blue, O red, common halogens green where defined, P orange, S yellow) and will continue to expand its CPK/Jmol-style palette.
+
+## Valence-focused central MO diagram
+
+The automatic diagram is intentionally designed around what ordinary Molden data reliably contain. It does **not** try to reconstruct missing fragment AOs or fabricate strict SALCs.
+
+The default diagram:
+
+- shows only the central molecule's molecular orbitals;
+- uses a vertical energy axis, low energy at the bottom and high energy at the top;
+- keeps truly/near-degenerate orbitals at the same quantitative energy and expands them horizontally around the centre;
+- shows electron occupancy directly on each level;
+- keeps symmetry labels where the producer supplied them;
+- focuses on occupied valence orbitals plus a bounded frontier-virtual window;
+- hides deep core and very high virtual orbitals non-destructively;
+- keeps the complete raw orbital set in JSON/CSV metadata.
+
+### Valence selection
+
+`ValenceCentral` selection keeps the highest occupied orbitals classified as valence and a limited number of low-lying virtual orbitals inside the configured frontier window. A diagram capacity is derived from the UI window control and complete degeneracy sets are preserved when a boundary would otherwise cut through one.
+
+The exported selection summary reports how many orbitals were shown, how many remained hidden, and how many occupied-valence/frontier-virtual levels were included.
+
+### Orbital type / bonding annotations
+
+The program distinguishes **direct data** from **derived presentation**.
+
+Reliable direct/producer data include raw MO number, energy, occupation, spin, producer symmetry, and energy-tolerance degeneracy grouping.
+
+Orbital family labels such as `σ`, `π`, `δ`, or `φ` are shown only when the producer label explicitly supports a mapping (for example a symmetry/label string containing `sigma` or `pi`). The program does not infer `π` merely because an energy happens to belong to a familiar molecule.
+
+`bonding / nonbonding / antibonding` is even stricter: the current implementation only classifies it when the producer text explicitly carries such a label. **Energy and occupancy alone are never used to invent bonding character.** Otherwise the machine-readable value is `unclassified`.
+
+Every JSON/CSV orbital row therefore includes provenance fields such as `family_source`, `bonding_class_source`, confidence, and a heuristic flag.
+
+### Export
+
+`Export diagram + metadata` writes:
+
+```text
+calculation.mo.png
+calculation.mo.svg
+calculation.mo.json
+calculation.mo.csv
+```
+
+PNG/SVG use a light report-friendly central energy layout. JSON/CSV retain raw MO number, internal index, grouped label, Hartree energy, selected display-unit energy, occupation, spin, symmetry, degeneracy size, region/filter state, whether the orbital was included in the diagram, optional orbital-family/bonding annotation, annotation source/confidence, visibility and selection state.
+
+The project does **not** claim universal AO→MO textbook reconstruction or universal strict SALC generation from ordinary Molden files.
 
 ## Requirements
 
@@ -105,14 +138,14 @@ No font files are committed to the repository. The application loads local syste
 - OpenGL 2.1+ compatibility context
 - Git, because GLFW and Dear ImGui are fetched by CMake
 
-The default CUDA target is RTX 5090 / Blackwell:
+Default CUDA target:
 
 ```text
 sm_120 native cubin
 compute_120 PTX
 ```
 
-For a different CUDA GPU, override `CMAKE_CUDA_ARCHITECTURES`.
+For another CUDA GPU, override `CMAKE_CUDA_ARCHITECTURES`.
 
 ## Build
 
@@ -132,9 +165,7 @@ cmake --build build --parallel
 ./build/cov ./examples/h2.molden
 ```
 
-### Parser-only build without CUDA
-
-Useful for CI or parser development:
+### CPU/core tests without CUDA
 
 ```bash
 cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
@@ -142,43 +173,15 @@ cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ```
 
-## Usage
-
-Start with a Molden file:
-
-```bash
-cov calculation.molden
-```
-
-or launch the application and either:
-
-- enter a `.molden` path in the UI; or
-- drag a Molden file onto the viewport.
-
-Controls:
-
-- **Left mouse drag:** orbit
-- **Mouse wheel:** zoom
-- **MO slider:** select orbital
-- **Isovalue:** changes the GPU raymarch threshold immediately
-- **Grid:** 64³, 128³, 256³ or 512³; changing this recomputes the CUDA scalar field
-- **Language:** English / 简体中文 / 日本語 / Français without restarting the application
-
-Positive and negative orbital phases are rendered simultaneously with different colours.
-
 ## Molden parser rules
 
-The parser intentionally fails hard on inconsistent data.
-
-After expanding the parsed shells, it requires:
+The parser intentionally fails hard on inconsistent data. After expanding shells it requires:
 
 ```text
 n_basis_from_shells == n_coefficients_per_MO
 ```
 
 An MO coefficient index larger than the derived basis count is treated as a shell-convention/parser error, not guessed or silently repaired.
-
-For large Molden files the parser uses two streaming passes rather than `read()`-ing the whole file into one giant string. The first pass parses geometry/basis metadata; the second parses MO blocks.
 
 ## CUDA evaluator
 
@@ -190,13 +193,11 @@ For each grid point, the CUDA kernel evaluates
 
 directly. It deliberately does **not** allocate an `Ngrid × Nbasis` AO matrix.
 
-The current MVP evaluates one selected MO per kernel pass. The next performance milestone is a fused multi-MO kernel so expensive Gaussian/AO work is reused across 4/8/16 orbitals.
+The next performance milestone is a fused multi-MO kernel so expensive Gaussian/AO work can be reused across multiple orbitals.
 
 ## First regression target: cyclopentadienyl anion
 
-The first serious validation case is Cp⁻ (`C5H5−`) at `wB97XD/aug-cc-pVTZ`.
-
-Reference expectations from the development handoff:
+Cp⁻ (`C5H5−`) at `wB97XD/aug-cc-pVTZ` remains the first serious scientific regression target:
 
 - spherical `5D/7F`: 345 basis functions
 - Cartesian `6D/10F`: 400 basis functions
@@ -204,34 +205,22 @@ Reference expectations from the development handoff:
 - Cartesian MO16 ≈ −0.236093 Ha, `a2''` π
 - Cartesian MO17 ≈ MO18 ≈ −0.068048 Ha, `e1''` π
 
-The regression gate will compare CUDA values against a trusted Gaussian/Multiwfn grid at identical points and report maximum/RMS error.
+The numerical regression gate will compare CUDA values against a trusted Gaussian/Multiwfn grid at identical points and report maximum/RMS error.
 
 ## Repository layout
 
 ```text
 include/cov/              public C++ interfaces
 src/parser/               Molden parser
+src/orbitals/             orbital semantics + diagram generation
 src/cuda/                 CUDA orbital evaluator
-src/render/               OpenGL loader + volume raymarch renderer
-src/ui/                   UI theme, localisation and system-font setup
-src/main.cpp              GLFW + Dear ImGui application shell
-docs/UI.md                UI/localisation design notes
- tests/                    CPU parser tests
+src/render/               volume and molecule rendering
+src/ui/                   UI, localisation and orbital browser
+src/platform/             native platform integration
+tests/                    CPU/core regression tests
 examples/                 tiny checked-in examples only
-.github/workflows/        CPU parser CI
+.github/workflows/        CPU/core CI
 ```
-
-## Near-term roadmap
-
-1. Validate Cartesian s/p/d/f/g against reference cubes.
-2. Validate spherical 5D/7F/9G ordering, phase and normalisation.
-3. Add Cp⁻ regression data and GPU-vs-reference error report.
-4. Replace generic spherical-harmonic math with hard-coded low-`l` polynomial fast paths.
-5. Add fused multi-MO evaluation.
-6. Add FCHK.
-7. Add CHK → `formchk`.
-8. Add GPU Marching Cubes only for mesh export.
-9. Add Cube export.
 
 ## Licence
 

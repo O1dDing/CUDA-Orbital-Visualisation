@@ -12,191 +12,128 @@ namespace cov::ui {
 namespace {
 
 constexpr std::size_t kTextCount = static_cast<std::size_t>(Text::Count);
-constexpr std::size_t kLanguageCount = static_cast<std::size_t>(Language::Count);
 
-constexpr const char* kStrings[kLanguageCount][kTextCount] = {
-    {
-        "CUDA Orbital Visualisation",
-        "GPU-first molecular orbital viewer",
-        "Language",
-        "File",
-        "Molden file",
-        "Load",
-        "Drop a .molden file anywhere on the viewport, or enter a path.",
-        "Wavefunction",
-        "Atoms",
-        "Shells",
-        "Basis functions",
-        "Orbitals",
-        "Shell convention",
-        "Orbital",
-        "Molden MO (1-based)",
-        "Internal index",
-        "Energy",
-        "Occupation",
-        "Spin",
-        "Symmetry",
-        "Rendering",
-        "Isovalue",
-        "Grid",
-        "Recompute grid",
-        "Reset camera",
-        "Performance",
-        "CUDA device",
-        "Last CUDA kernel",
-        "GPU resident",
-        "Left-drag to orbit · mouse wheel to zoom",
-        "Changing isovalue is instant and does not recompute the CUDA grid.",
-        "Experimental MVP · scientific validation in progress",
-        "Ready",
-        "Parsing",
-        "Loaded",
-        "Grid updated",
-        "Error",
-        "(none)",
-        "Alpha",
-        "Beta",
-        "UI fonts",
-    },
-    {
-        "CUDA Orbital Visualisation",
-        "GPU 优先的分子轨道可视化",
-        "语言",
-        "文件",
-        "Molden 文件",
-        "加载",
-        "可将 .molden 文件拖到视口任意位置，或直接输入路径。",
-        "波函数",
-        "原子数",
-        "壳层数",
-        "基函数数",
-        "轨道数",
-        "壳层约定",
-        "轨道",
-        "Molden MO（从 1 开始）",
-        "内部索引",
-        "能量",
-        "占据数",
-        "自旋",
-        "对称性",
-        "渲染",
-        "等值面",
-        "网格",
-        "重新计算网格",
-        "重置相机",
-        "性能",
-        "CUDA 设备",
-        "最近 CUDA 内核",
-        "GPU 常驻",
-        "按住鼠标左键旋转 · 滚轮缩放",
-        "调整等值面不会重新计算 CUDA 网格，可即时更新。",
-        "实验性 MVP · 科学数值验证仍在进行",
-        "就绪",
-        "正在解析",
-        "已加载",
-        "网格已更新",
-        "错误",
-        "（无）",
-        "Alpha",
-        "Beta",
-        "界面字体",
-    },
-    {
-        "CUDA Orbital Visualisation",
-        "GPUファースト分子軌道ビューア",
-        "言語",
-        "ファイル",
-        "Molden ファイル",
-        "読み込む",
-        ".molden ファイルをビューポートへドロップするか、パスを入力してください。",
-        "波動関数",
-        "原子数",
-        "シェル数",
-        "基底関数数",
-        "軌道数",
-        "シェル規約",
-        "軌道",
-        "Molden MO（1 始まり）",
-        "内部インデックス",
-        "エネルギー",
-        "占有数",
-        "スピン",
-        "対称性",
-        "レンダリング",
-        "等値面",
-        "グリッド",
-        "グリッドを再計算",
-        "カメラをリセット",
-        "パフォーマンス",
-        "CUDA デバイス",
-        "直近の CUDA カーネル",
-        "GPU 常駐",
-        "左ドラッグで回転 · ホイールでズーム",
-        "等値面の変更では CUDA グリッドを再計算せず、即時更新します。",
-        "実験的 MVP · 科学的検証を継続中",
-        "準備完了",
-        "解析中",
-        "読み込み完了",
-        "グリッド更新完了",
-        "エラー",
-        "（なし）",
-        "Alpha",
-        "Beta",
-        "UI フォント",
-    },
-    {
-        "CUDA Orbital Visualisation",
-        "Visualiseur d’orbitales moléculaires orienté GPU",
-        "Langue",
-        "Fichier",
-        "Fichier Molden",
-        "Charger",
-        "Déposez un fichier .molden dans la vue ou saisissez son chemin.",
-        "Fonction d’onde",
-        "Atomes",
-        "Couches",
-        "Fonctions de base",
-        "Orbitales",
-        "Convention des couches",
-        "Orbitale",
-        "MO Molden (base 1)",
-        "Indice interne",
-        "Énergie",
-        "Occupation",
-        "Spin",
-        "Symétrie",
-        "Rendu",
-        "Isovaleur",
-        "Grille",
-        "Recalculer la grille",
-        "Réinitialiser la caméra",
-        "Performances",
-        "Périphérique CUDA",
-        "Dernier noyau CUDA",
-        "Résident GPU",
-        "Glisser gauche : rotation · molette : zoom",
-        "Changer l’isovaleur est instantané et ne recalcule pas la grille CUDA.",
-        "MVP expérimental · validation scientifique en cours",
-        "Prêt",
-        "Analyse",
-        "Chargé",
-        "Grille mise à jour",
-        "Erreur",
-        "(aucun)",
-        "Alpha",
-        "Beta",
-        "Polices UI",
-    },
+struct LocalisedString {
+    const char* en;
+    const char* zh;
+    const char* ja;
+    const char* fr;
 };
+
+constexpr std::array<LocalisedString, kTextCount> kStrings{{
+    {"CUDA Orbital Visualisation", "CUDA Orbital Visualisation", "CUDA Orbital Visualisation", "CUDA Orbital Visualisation"},
+    {"GPU-first molecular orbital viewer", "GPU 优先的分子轨道可视化", "GPUファースト分子軌道ビューア", "Visualiseur d’orbitales moléculaires orienté GPU"},
+    {"Language", "语言", "言語", "Langue"},
+    {"File", "文件", "ファイル", "Fichier"},
+    {"Molden file", "Molden 文件", "Molden ファイル", "Fichier Molden"},
+    {"Load", "加载", "読み込む", "Charger"},
+    {"Drop a .molden file anywhere on the viewport, or enter a path.", "可将 .molden 文件拖到视口任意位置，或直接输入路径。", ".molden ファイルをビューポートへドロップするか、パスを入力してください。", "Déposez un fichier .molden dans la vue ou saisissez son chemin."},
+    {"Wavefunction", "波函数", "波動関数", "Fonction d’onde"},
+    {"Atoms", "原子数", "原子数", "Atomes"},
+    {"Shells", "壳层数", "シェル数", "Couches"},
+    {"Basis functions", "基函数数", "基底関数数", "Fonctions de base"},
+    {"Orbitals", "轨道数", "軌道数", "Orbitales"},
+    {"Shell convention", "壳层约定", "シェル規約", "Convention des couches"},
+    {"Orbital", "轨道", "軌道", "Orbitale"},
+    {"Molden MO (1-based)", "Molden MO（从 1 开始）", "Molden MO（1 始まり）", "MO Molden (base 1)"},
+    {"Internal index", "内部索引", "内部インデックス", "Indice interne"},
+    {"Energy", "能量", "エネルギー", "Énergie"},
+    {"Occupation", "占据数", "占有数", "Occupation"},
+    {"Spin", "自旋", "スピン", "Spin"},
+    {"Symmetry", "对称性", "対称性", "Symétrie"},
+    {"Rendering", "渲染", "レンダリング", "Rendu"},
+    {"Isovalue", "等值面", "等値面", "Isovaleur"},
+    {"Grid", "网格", "グリッド", "Grille"},
+    {"Recompute grid", "重新计算网格", "グリッドを再計算", "Recalculer la grille"},
+    {"Reset camera", "重置相机", "カメラをリセット", "Réinitialiser la caméra"},
+    {"Performance", "性能", "パフォーマンス", "Performances"},
+    {"CUDA device", "CUDA 设备", "CUDA デバイス", "Périphérique CUDA"},
+    {"Last CUDA kernel", "最近 CUDA 内核", "直近の CUDA カーネル", "Dernier noyau CUDA"},
+    {"GPU resident", "GPU 常驻", "GPU 常駐", "Résident GPU"},
+    {"Left-drag to orbit · mouse wheel to zoom", "按住鼠标左键旋转 · 滚轮缩放", "左ドラッグで回転 · ホイールでズーム", "Glisser gauche : rotation · molette : zoom"},
+    {"Changing isovalue is instant and does not recompute the CUDA grid.", "调整等值面不会重新计算 CUDA 网格，可即时更新。", "等値面の変更では CUDA グリッドを再計算せず、即時更新します。", "Changer l’isovaleur est instantané et ne recalcule pas la grille CUDA."},
+    {"Experimental MVP · scientific validation in progress", "实验性 MVP · 科学数值验证仍在进行", "実験的 MVP · 科学的検証を継続中", "MVP expérimental · validation scientifique en cours"},
+    {"Ready", "就绪", "準備完了", "Prêt"},
+    {"Parsing", "正在解析", "解析中", "Analyse"},
+    {"Loaded", "已加载", "読み込み完了", "Chargé"},
+    {"Grid updated", "网格已更新", "グリッド更新完了", "Grille mise à jour"},
+    {"Error", "错误", "エラー", "Erreur"},
+    {"(none)", "（无）", "（なし）", "(aucun)"},
+    {"Alpha", "Alpha", "Alpha", "Alpha"},
+    {"Beta", "Beta", "Beta", "Beta"},
+    {"UI fonts", "界面字体", "UI フォント", "Polices UI"},
+
+    {"Open File…", "打开文件…", "ファイルを開く…", "Ouvrir un fichier…"},
+    {"Recent files", "最近文件", "最近のファイル", "Fichiers récents"},
+    {"Current file", "当前文件", "現在のファイル", "Fichier actuel"},
+    {"Orbital browser", "轨道浏览器", "軌道ブラウザ", "Explorateur d’orbitales"},
+    {"Search", "搜索", "検索", "Rechercher"},
+    {"Filter", "筛选", "フィルター", "Filtre"},
+    {"Auto · reasonable", "自动 · 合理范围", "自動 · 妥当範囲", "Auto · plage raisonnable"},
+    {"All", "全部", "すべて", "Toutes"},
+    {"Occupied", "已占据", "占有", "Occupées"},
+    {"Virtual", "虚轨道", "仮想", "Virtuelles"},
+    {"Core", "内层", "内殻", "Cœur"},
+    {"Valence", "价层", "価電子", "Valence"},
+    {"Virtual window", "虚轨道窗口", "仮想軌道ウィンドウ", "Fenêtre virtuelle"},
+    {"Degeneracy tolerance", "简并阈值", "縮退判定しきい値", "Tolérance de dégénérescence"},
+    {"Grouped labels", "分组标签", "グループ表示", "Étiquettes groupées"},
+    {"Raw numbering", "原始编号", "元の番号", "Numérotation brute"},
+    {"Degenerate set", "简并组", "縮退組", "Groupe dégénéré"},
+    {"Energy unit", "能量单位", "エネルギー単位", "Unité d’énergie"},
+    {"HOMO", "HOMO", "HOMO", "HOMO"},
+    {"LUMO", "LUMO", "LUMO", "LUMO"},
+    {"HOMO-1", "HOMO-1", "HOMO-1", "HOMO-1"},
+    {"LUMO+1", "LUMO+1", "LUMO+1", "LUMO+1"},
+    {"Valence MO diagram", "价电子层 MO 图", "価電子層 MO 図", "Diagramme MO de valence"},
+    {"Valence diagram span", "价电子 MO 图范围", "価電子 MO 図の表示範囲", "Étendue du diagramme MO de valence"},
+    {"Generate MO diagram", "生成 MO 图", "MO 図を生成", "Générer le diagramme MO"},
+    {"Export diagram + metadata", "导出图与元数据", "図とメタデータを書き出す", "Exporter diagramme + métadonnées"},
+    {"Exported", "已导出", "書き出し完了", "Exporté"},
+    {"Export failed", "导出失败", "書き出し失敗", "Échec de l’export"},
+    {"Molecule style", "分子样式", "分子表示", "Style moléculaire"},
+    {"Enhanced ball-and-stick", "增强球棍模型", "強調ボール＆スティック", "Boules et bâtonnets renforcés"},
+    {"Stick + delocalisation", "棍 + 离域虚线", "結合 + 非局在化破線", "Bâtons + délocalisation"},
+    {"Atom size", "原子大小", "原子サイズ", "Taille des atomes"},
+    {"Bond size", "键粗细", "結合の太さ", "Épaisseur des liaisons"},
+    {"Molecule opacity", "分子透明度", "分子の不透明度", "Opacité de la molécule"},
+    {"Orbital opacity", "轨道透明度", "軌道の不透明度", "Opacité de l’orbitale"},
+    {"Show hydrogens", "显示氢原子", "水素を表示", "Afficher les hydrogènes"},
+    {"Dashed bonds use a conservative delocalisation heuristic.", "虚线键使用保守的离域启发式判断。", "破線結合は保守的な非局在化ヒューリスティックです。", "Les liaisons en pointillés utilisent une heuristique prudente de délocalisation."},
+    {"Central valence layout", "中央价电子层布局", "中央価電子層レイアウト", "Disposition centrale de valence"},
+    {"Valence-grouped levels", "价电子层分组能级", "価電子層のグループ準位", "Niveaux groupés de valence"},
+    {"Valence MO diagram", "价电子层 MO 图", "価電子層 MO 図", "Diagramme MO de valence"},
+    {"Machine metadata", "机读元数据", "機械可読メタデータ", "Métadonnées machine"},
+    {"Visible orbitals", "可见轨道", "表示軌道", "Orbitales visibles"},
+    {"Raw MO", "原始 MO", "元の MO", "MO brute"},
+    {"Region", "区域", "領域", "Région"},
+    {"Core", "内层", "内殻", "Cœur"},
+    {"Valence", "价层", "価電子", "Valence"},
+    {"Virtual", "虚轨道", "仮想", "Virtuelle"},
+    {"Reasonable energy window", "合理能量窗口", "妥当なエネルギー範囲", "Fenêtre d’énergie raisonnable"},
+    {"Native Open File is unavailable on this platform.", "当前平台不支持原生“打开文件”。", "このプラットフォームではネイティブのファイル選択を利用できません。", "La boîte de dialogue native n’est pas disponible sur cette plateforme."},
+    {"Copy metadata", "复制元数据", "メタデータをコピー", "Copier les métadonnées"},
+    {"No orbitals", "无轨道", "軌道がありません", "Aucune orbitale"},
+    {"Adaptive nonlinear energy scale (log-gap v3)", "自适应非线性能量轴（log-gap v3）", "適応型非線形エネルギー軸（log-gap v3）", "Échelle d’énergie non linéaire adaptative (log-gap v3)"},
+    {"Energy scale", "能量轴", "エネルギー軸", "Échelle d’énergie"},
+    {"Linear", "线性", "線形", "Linéaire"},
+    {"Adaptive nonlinear", "自适应非线性", "適応型非線形", "Non linéaire adaptative"},
+    {"Orbital family", "轨道类型", "軌道タイプ", "Famille orbitale"},
+    {"Bonding class", "成键类别", "結合分類", "Classe de liaison"},
+    {"Exact energy", "精确能量", "正確なエネルギー", "Énergie exacte"},
+    {"Multicentre bond", "多中心键", "多中心結合", "Liaison multicentrique"},
+    {"Delocalised π system", "离域 π 体系", "非局在化 π 系", "Système π délocalisé"},
+    {"Classification source", "分类来源", "分類の出典", "Source de classification"},
+    {"Confidence", "置信度", "信頼度", "Confiance"},
+    {"Degenerate members", "简并成员", "縮退メンバー", "Membres dégénérés"},
+}};
 
 std::string g_font_status = "Dear ImGui default";
 
 std::string first_existing(std::initializer_list<const char*> candidates) {
     std::error_code ec;
     for (const char* candidate : candidates) {
-        if (candidate && std::filesystem::exists(candidate, ec) && !ec) {
-            return candidate;
-        }
+        if (candidate && std::filesystem::exists(candidate, ec) && !ec) return candidate;
         ec.clear();
     }
     return {};
@@ -210,7 +147,7 @@ const char* file_name_or_default(const std::string& path, const char* fallback) 
 }
 
 void merge_font_if_available(const std::string& path,
-                             float pixel_size,
+                             const float pixel_size,
                              const ImWchar* ranges,
                              bool& loaded) {
     if (path.empty()) return;
@@ -219,20 +156,24 @@ void merge_font_if_available(const std::string& path,
     cfg.PixelSnapH = true;
     cfg.OversampleH = 1;
     cfg.OversampleV = 1;
-    if (ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), pixel_size, &cfg, ranges)) {
-        loaded = true;
+    if (ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), pixel_size, &cfg, ranges)) loaded = true;
+}
+
+const char* localised(const LocalisedString& value, const Language language) noexcept {
+    switch (language) {
+        case Language::ChineseSimplified: return value.zh;
+        case Language::Japanese: return value.ja;
+        case Language::French: return value.fr;
+        default: return value.en;
     }
 }
 
 } // namespace
 
 const char* tr(const Text key, const Language language) noexcept {
-    auto l = static_cast<std::size_t>(language);
-    auto k = static_cast<std::size_t>(key);
-    if (l >= kLanguageCount) l = 0;
+    const auto k = static_cast<std::size_t>(key);
     if (k >= kTextCount) return "";
-    const char* value = kStrings[l][k];
-    return value ? value : kStrings[0][k];
+    return localised(kStrings[k], language);
 }
 
 const char* language_name(const Language language) noexcept {
@@ -247,7 +188,6 @@ const char* language_name(const Language language) noexcept {
 void apply_theme(const float scale) {
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
-
     style.WindowPadding = ImVec2(14.0f, 14.0f);
     style.FramePadding = ImVec2(10.0f, 6.0f);
     style.CellPadding = ImVec2(8.0f, 5.0f);
@@ -256,7 +196,6 @@ void apply_theme(const float scale) {
     style.IndentSpacing = 18.0f;
     style.ScrollbarSize = 11.0f;
     style.GrabMinSize = 10.0f;
-
     style.WindowRounding = 10.0f;
     style.ChildRounding = 8.0f;
     style.FrameRounding = 7.0f;
@@ -264,7 +203,6 @@ void apply_theme(const float scale) {
     style.ScrollbarRounding = 10.0f;
     style.GrabRounding = 6.0f;
     style.TabRounding = 6.0f;
-
     style.WindowBorderSize = 1.0f;
     style.ChildBorderSize = 1.0f;
     style.FrameBorderSize = 0.0f;
@@ -316,7 +254,6 @@ void apply_theme(const float scale) {
     c[ImGuiCol_DragDropTarget] = ImVec4(0.31f, 0.82f, 0.65f, 0.95f);
     c[ImGuiCol_NavHighlight] = ImVec4(0.36f, 0.56f, 0.98f, 0.90f);
     c[ImGuiCol_ModalWindowDimBg] = ImVec4(0.02f, 0.03f, 0.05f, 0.70f);
-
     style.ScaleAllSizes(std::clamp(scale, 0.85f, 2.0f));
 }
 
@@ -324,80 +261,47 @@ bool configure_fonts(const float pixel_size) {
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
     io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
-
 #ifdef _WIN32
-    const std::string base = first_existing({
-        "C:/Windows/Fonts/segoeui.ttf",
-        "C:/Windows/Fonts/arial.ttf",
-    });
-    const std::string chinese = first_existing({
-        "C:/Windows/Fonts/msyh.ttc",
-        "C:/Windows/Fonts/msyh.ttf",
-        "C:/Windows/Fonts/simhei.ttf",
-    });
-    const std::string japanese = first_existing({
-        "C:/Windows/Fonts/YuGothR.ttc",
-        "C:/Windows/Fonts/meiryo.ttc",
-        "C:/Windows/Fonts/msgothic.ttc",
-    });
+    // Windows 11: prefer Segoe UI Variable Text for cleaner high-DPI UI; keep
+    // classic Segoe UI as the Windows 10 fallback. CJK glyphs are merged from
+    // the OS-provided UI faces, so the downloadable cov.exe ships no font files.
+    const std::string base = first_existing({"C:/Windows/Fonts/SegUIVar.ttf", "C:/Windows/Fonts/segoeui.ttf", "C:/Windows/Fonts/arial.ttf"});
+    const std::string chinese = first_existing({"C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/msyh.ttf", "C:/Windows/Fonts/simhei.ttf"});
+    const std::string japanese = first_existing({"C:/Windows/Fonts/YuGothM.ttc", "C:/Windows/Fonts/YuGothR.ttc", "C:/Windows/Fonts/meiryo.ttc", "C:/Windows/Fonts/msgothic.ttc"});
 #elif defined(__APPLE__)
-    const std::string base = first_existing({
-        "/System/Library/Fonts/SFNS.ttf",
-        "/System/Library/Fonts/Supplemental/Arial.ttf",
-    });
-    const std::string chinese = first_existing({
-        "/System/Library/Fonts/PingFang.ttc",
-        "/Library/Fonts/NotoSansCJK-Regular.ttc",
-    });
-    const std::string japanese = first_existing({
-        "/Library/Fonts/NotoSansCJK-Regular.ttc",
-        "/System/Library/Fonts/AppleGothic.ttf",
-    });
+    const std::string base = first_existing({"/System/Library/Fonts/SFNS.ttf", "/System/Library/Fonts/Supplemental/Arial.ttf"});
+    const std::string chinese = first_existing({"/System/Library/Fonts/PingFang.ttc", "/Library/Fonts/NotoSansCJK-Regular.ttc"});
+    const std::string japanese = first_existing({"/Library/Fonts/NotoSansCJK-Regular.ttc", "/System/Library/Fonts/AppleGothic.ttf"});
 #else
-    const std::string base = first_existing({
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
-    });
-    const std::string chinese = first_existing({
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
-    });
-    const std::string japanese = first_existing({
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/opentype/noto/NotoSansCJKjp-Regular.otf",
-    });
+    const std::string base = first_existing({"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf"});
+    const std::string chinese = first_existing({"/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf"});
+    const std::string japanese = first_existing({"/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/usr/share/fonts/opentype/noto/NotoSansCJKjp-Regular.otf"});
 #endif
 
     ImFontGlyphRangesBuilder latin_builder;
     latin_builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
-    for (std::size_t i = 0; i < kTextCount; ++i) {
-        latin_builder.AddText(kStrings[static_cast<std::size_t>(Language::English)][i]);
-        latin_builder.AddText(kStrings[static_cast<std::size_t>(Language::French)][i]);
-    }
+    for (const auto& row : kStrings) { latin_builder.AddText(row.en); latin_builder.AddText(row.fr); }
     latin_builder.AddText(language_name(Language::French));
-    latin_builder.AddText("● · ³");
+    latin_builder.AddText("● · ³ ↑ ↓ σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
     ImVector<ImWchar> latin_ranges;
     latin_builder.BuildRanges(&latin_ranges);
 
     ImFont* primary = nullptr;
     if (!base.empty()) {
         ImFontConfig cfg{};
-        cfg.OversampleH = 2;
+        cfg.OversampleH = 3;
         cfg.OversampleV = 1;
-        primary = io.Fonts->AddFontFromFileTTF(base.c_str(), pixel_size, &cfg,
-                                               latin_ranges.Data);
+        primary = io.Fonts->AddFontFromFileTTF(base.c_str(), pixel_size, &cfg, latin_ranges.Data);
     }
     if (!primary) primary = io.Fonts->AddFontDefault();
 
     ImFontGlyphRangesBuilder zh_builder;
     ImFontGlyphRangesBuilder ja_builder;
-    for (std::size_t i = 0; i < kTextCount; ++i) {
-        zh_builder.AddText(kStrings[static_cast<std::size_t>(Language::ChineseSimplified)][i]);
-        ja_builder.AddText(kStrings[static_cast<std::size_t>(Language::Japanese)][i]);
-    }
+    for (const auto& row : kStrings) { zh_builder.AddText(row.zh); ja_builder.AddText(row.ja); }
     zh_builder.AddText(language_name(Language::ChineseSimplified));
     ja_builder.AddText(language_name(Language::Japanese));
-
+    zh_builder.AddText("σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
+    ja_builder.AddText("σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
     ImVector<ImWchar> zh_ranges;
     ImVector<ImWchar> ja_ranges;
     zh_builder.BuildRanges(&zh_ranges);
@@ -407,7 +311,6 @@ bool configure_fonts(const float pixel_size) {
     bool ja_loaded = false;
     merge_font_if_available(chinese, pixel_size, zh_ranges.Data, zh_loaded);
     merge_font_if_available(japanese, pixel_size, ja_ranges.Data, ja_loaded);
-
     const bool built = io.Fonts->Build();
     g_font_status = file_name_or_default(base, "ImGui default");
     g_font_status += " + ";
@@ -417,9 +320,7 @@ bool configure_fonts(const float pixel_size) {
     return built;
 }
 
-const char* font_status() noexcept {
-    return g_font_status.c_str();
-}
+const char* font_status() noexcept { return g_font_status.c_str(); }
 
 void section_title(const char* label) {
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.68f, 0.82f, 1.0f));

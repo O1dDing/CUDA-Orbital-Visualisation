@@ -1,98 +1,107 @@
 # UI and localisation
 
-The first UI pass keeps the molecular-orbital viewport as the dominant surface and treats the controls as a compact scientific inspector rather than a desktop form.
+The interface keeps the molecular-orbital viewport dominant and treats controls as a compact scientific inspector rather than a desktop form.
 
 ## COV Slate
 
-`COV Slate` is the project's own Dear ImGui theme. It uses:
+`COV Slate` uses a neutral graphite/slate hierarchy so red/blue orbital phase colours remain visually dominant, with a restrained cool-blue interaction accent and explicit success/error states. The panel overlays the viewport rather than shrinking it.
 
-- a neutral slate/graphite hierarchy so orbital phase colours remain visually dominant;
-- one cool-blue interaction accent;
-- green for healthy GPU-resident state and red only for errors;
-- modest 6–10 px rounding, restrained borders and medium-density spacing;
-- grouped cards for File, Wavefunction, Orbital, Rendering and Performance;
-- an overlay inspector so the 3D viewport remains full-window;
-- stable `##` ImGui identifiers so changing language does not change widget identity.
+## Locales and fonts
 
-The design was synthesised after reviewing open-source tooling conventions rather than copying a theme implementation or asset.
+Runtime locales: English, 简体中文, 日本語 and Français. English is the fallback. User-visible strings belong in the localisation table; stable `##` identifiers ensure a language switch does not change orbital selection or control state. No font binaries are redistributed.
 
-### Open-source references
+## Molecular representation
 
-- Dear ImGui — <https://github.com/ocornut/imgui>
-- ImThemes theme browser/editor — <https://github.com/Patitotective/ImThemes>
-- dear-imgui-styles collection — <https://github.com/GraphicsProgramming/dear-imgui-styles>
-- Blender Human Interface Guidelines — <https://developer.blender.org/docs/features/interface/human_interface_guidelines/>
+The default molecular skeleton is an **enhanced ball-and-stick** presentation: atoms and bonds are intentionally larger than the initial MVP so the molecular framework reads immediately, but the MO surface remains the subject.
 
-ImThemes and dear-imgui-styles were useful mainly for comparing control density, contrast and rounding. Blender's UI guidance reinforced the decision to keep a dark, low-distraction viewport-first layout. No third-party theme source, icons or font binaries are copied into this repository.
+Common elements use conventional chemical colours (H white with a dark visual outline, C graphite, N blue, O red, halogens green where defined, P orange, S yellow). The palette should continue towards CPK/Jmol conventions rather than decorative application-specific colours.
 
-## Locales
+`Stick + delocalisation` is a second, orbital-friendly view. Dashed/segmented bonds come from a conservative geometric ring heuristic only. They are a visual aid, not a calculated bond-order assignment. Controls remain available for atom size, bond size, molecule opacity, orbital opacity and hydrogen visibility.
 
-The runtime UI currently ships four locales:
+## Orbital browser semantics
 
-| Locale | Display name |
-| --- | --- |
-| `en` | English |
-| `zh-Hans` | 简体中文 |
-| `ja` | 日本語 |
-| `fr` | Français |
+Human-facing grouped labels such as `17-a` / `17-b` may represent an energy-degenerate compatible set. They never replace source identity: raw one-based Molden MO numbers and internal zero-based indices remain available in tooltips and machine-readable exports.
 
-English remains the fallback language. Translation keys are strongly enumerated in `include/cov/ui.hpp`, while the UTF-8 string tables live in `src/ui/ui.cpp`.
+Default degeneracy tolerance is `1e-5 Ha`. If meaningful producer symmetry labels disagree, coincident printed energies are not automatically collapsed into one group. High virtual levels are hidden only through non-destructive filters.
 
-The program is compiled with `/utf-8` for MSVC C++ sources so the literals have deterministic encoding on Windows.
+## Energy units
 
-## Font policy
+Hartree remains the source of truth. UI presentation may be switched consistently between Ha, eV, J/mol, kJ/mol, cal/mol and kcal/mol. Changing units does not launch a CUDA calculation.
 
-The repository deliberately does **not** redistribute font binaries.
+## Valence-focused central MO diagram
 
-At startup, the application builds an ImGui font atlas from locally installed system fonts. On Windows it prefers:
+The automatic MO diagram is deliberately a **central molecular-orbital energy diagram**, not an AO-interaction diagram and not a claimed strict SALC reconstruction.
 
-- Segoe UI for the Latin UI;
-- Microsoft YaHei for Simplified Chinese;
-- Yu Gothic, Meiryo or MS Gothic for Japanese.
+It is designed around information that ordinary Molden files actually provide:
 
-Linux and macOS have Noto/system-font fallbacks. Because this project currently pins Dear ImGui 1.90.9, CJK glyph ranges are built explicitly from the strings actually used by the Chinese and Japanese localisations with `ImFontGlyphRangesBuilder`. This avoids allocating a huge all-CJK atlas while still allowing instant runtime language switching.
+- MO energy;
+- occupation;
+- spin;
+- producer symmetry label where present;
+- raw MO numbering;
+- energy-tolerance degeneracy grouping.
 
-The selected font chain is shown in the Performance card so missing CJK fallback fonts are visible during testing.
+### Selection
 
-## Layout
+The default `ValenceCentral` plan is non-destructive. It selects:
 
-The control panel is intentionally narrow and scrollable:
+1. occupied orbitals classified as valence rather than deep core;
+2. low-lying frontier virtual orbitals inside the configured virtual-energy window;
+3. the current selected non-core MO if it would otherwise fall outside the compact view;
+4. complete degenerate sets when a diagram boundary would otherwise split one.
 
-```text
-┌──────────────────────────────┐
-│ CUDA Orbital Visualisation   │  Language
-│ GPU-first ...                │
-│ ● Ready                      │
-├──────────────────────────────┤
-│ FILE                         │
-│ [ Molden path .... ] [Load]  │
-├──────────────────────────────┤
-│ WAVEFUNCTION                 │
-│ Atoms                 10/100 │
-│ Shells                   ... │
-│ Basis functions          ... │
-├──────────────────────────────┤
-│ ORBITAL                      │
-│ [ MO slider ]                │
-│ Energy / occupation / spin   │
-├──────────────────────────────┤
-│ RENDERING                    │
-│ Isovalue / grid              │
-│ [Recompute] [Reset camera]   │
-├──────────────────────────────┤
-│ PERFORMANCE                  │
-│ RTX 5090 / kernel time       │
-│ ● GPU resident               │
-└──────────────────────────────┘
-```
+A capacity derived from the diagram UI control prevents hundreds of levels from being plotted at once. The export records the number shown and the number hidden. Hidden orbitals remain present in the parsed wavefunction and in machine-readable metadata.
 
-The panel overlays the viewport instead of shrinking it. The viewport therefore retains the full framebuffer for CUDA/OpenGL rendering.
+### Layout
 
-## Rules for future UI work
+Energy is quantitative on the vertical axis: lower levels are below higher levels. Degenerate orbitals retain the same y coordinate and expand horizontally around the diagram centre. For example, a twofold set is drawn left/right; threefold sets use left/centre/right; larger sets continue symmetrically.
 
-1. Scientific state must be explicit: MO number, energy, occupation, spin, symmetry and grid resolution must never be hidden behind decorative UI.
-2. Changing isovalue stays a rendering-only interaction; it must not trigger CUDA grid recomputation.
-3. Language changes must not alter internal widget IDs or scientific state.
-4. Do not commit proprietary/system fonts; detect them at runtime.
-5. Prefer text and restrained colour over decorative icons until an icon set has a clear functional purpose and compatible licence.
-6. Keep controls compact enough that a 1440×900 window leaves most of the viewport unobstructed.
+Labels are allowed to move slightly to prevent collisions, with leader lines back to the quantitative level. The physical level line itself must never be displaced to fake an energy separation.
+
+Each plotted level prioritizes:
+
+- grouped display label;
+- electron occupancy;
+- producer symmetry;
+- energy in the selected unit;
+- optional orbital-family / bonding-class annotation only when supported.
+
+Raw MO number and internal index remain secondary/tooltip/export information.
+
+### Orbital-family and bonding annotations
+
+The project separates presentation from scientific provenance.
+
+`σ / π / δ / φ` family labels are currently derived only when producer text explicitly supports such a mapping (for example `sigma` / `pi` in a supplied symmetry/label string). A familiar molecule or a familiar energy pattern is not enough to assign a family.
+
+`bonding / nonbonding / antibonding` is stricter still. Energy and occupation alone are never used to assign bonding character. If producer text does not explicitly support a classification, the value remains `unclassified`.
+
+Machine metadata records the annotation source, confidence, and heuristic flag. This allows human-friendly labels where defensible without concealing uncertainty from downstream analysis.
+
+### Export
+
+`Export diagram + metadata` writes PNG, SVG, JSON and CSV together.
+
+PNG/SVG use a white/light report-friendly central layout. JSON/CSV retain:
+
+- exact raw MO number and internal index;
+- grouped display label;
+- Hartree source energy and converted display energy;
+- occupation and spin;
+- producer symmetry;
+- degeneracy size;
+- core/valence/virtual browsing region;
+- whether the MO is included in the compact diagram;
+- visibility/selection state;
+- optional orbital family and bonding class;
+- classification source, confidence and heuristic status.
+
+The current feature **does not claim universal AO→MO reconstruction or strict SALC generation** from ordinary Molden files.
+
+## GPU interaction rules
+
+- changing isovalue: rendering only;
+- hover/search/filter/unit/degeneracy-display changes: no CUDA recompute if selection is unchanged;
+- selecting a different MO: one frame-end CUDA evaluation;
+- changing grid resolution: CUDA recompute;
+- language changes: no scientific-state mutation.

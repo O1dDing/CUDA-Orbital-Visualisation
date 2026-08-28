@@ -24,6 +24,18 @@ struct RawShell {
     std::vector<RawPrimitive> primitives;
 };
 
+struct BasisMarkerState {
+    bool d_declared = false;
+    bool f_declared = false;
+    bool g_declared = false;
+};
+
+struct BasisConvention {
+    bool pure_d = false;
+    bool pure_f = false;
+    bool pure_g = false;
+};
+
 enum class Section {
     None,
     Atoms,
@@ -80,32 +92,50 @@ bool is_section_header(const std::string& line) {
     return t.size() >= 3 && t.front() == '[' && t.back() == ']';
 }
 
-void apply_basis_marker(const std::string& line, bool& pure_d, bool& pure_f, bool& pure_g) {
+void apply_basis_marker(const std::string& line,
+                        bool& pure_d,
+                        bool& pure_f,
+                        bool& pure_g,
+                        BasisMarkerState& seen) {
     const std::string t = lower(trim(line));
     if (t == "[5d]") {
         pure_d = true;
+        seen.d_declared = true;
     } else if (t == "[6d]") {
         pure_d = false;
+        seen.d_declared = true;
     } else if (t == "[7f]") {
         pure_f = true;
+        seen.f_declared = true;
     } else if (t == "[10f]") {
         pure_f = false;
+        seen.f_declared = true;
     } else if (t == "[9g]") {
         pure_g = true;
+        seen.g_declared = true;
     } else if (t == "[15g]") {
         pure_g = false;
+        seen.g_declared = true;
     } else if (t == "[5d7f]") {
         pure_d = true;
         pure_f = true;
+        seen.d_declared = true;
+        seen.f_declared = true;
     } else if (t == "[5d10f]") {
         pure_d = true;
         pure_f = false;
+        seen.d_declared = true;
+        seen.f_declared = true;
     } else if (t == "[6d7f]") {
         pure_d = false;
         pure_f = true;
+        seen.d_declared = true;
+        seen.f_declared = true;
     } else if (t == "[6d10f]") {
         pure_d = false;
         pure_f = false;
+        seen.d_declared = true;
+        seen.f_declared = true;
     }
 }
 
@@ -114,6 +144,127 @@ bool pure_for_l(const std::uint8_t l, const Wavefunction& wf) {
     if (l == 3) return wf.pure_f;
     if (l == 4) return wf.pure_g;
     return false;
+}
+
+std::uint32_t raw_basis_count(const std::vector<RawShell>& raw_shells,
+                              const BasisConvention& convention) {
+    std::uint32_t count = 0;
+    for (const auto& shell : raw_shells) {
+        if (shell.type == "s") {
+            count += 1u;
+        } else if (shell.type == "p") {
+            count += 3u;
+        } else if (shell.type == "sp") {
+            count += 4u;
+        } else if (shell.type == "d") {
+            count += convention.pure_d ? 5u : 6u;
+        } else if (shell.type == "f") {
+            count += convention.pure_f ? 7u : 10u;
+        } else if (shell.type == "g") {
+            count += convention.pure_g ? 9u : 15u;
+        }
+    }
+    return count;
+}
+
+std::uint32_t probe_first_mo_dimension(const std::filesystem::path& path) {
+    std::ifstream input(path);
+    if (!input) {
+        return 0u;
+    }
+
+    bool in_mo = false;
+    std::uint32_t coefficient_count = 0u;
+    std::uint32_t maximum_index = 0u;
+    std::string line;
+    while (std::getline(input, line)) {
+        const std::string t = trim(line);
+        if (t.empty()) {
+            continue;
+        }
+        if (!in_mo) {
+            if (starts_with_ci(t, "[mo]")) {
+                in_mo = true;
+            }
+            continue;
+        }
+        if (is_section_header(t)) {
+            break;
+        }
+        if ((starts_with_ci(t, "sym=") || starts_with_ci(t, "ene=")) &&
+            coefficient_count > 0u) {
+            break;
+        }
+
+        std::istringstream css(t);
+        int coefficient_index = 0;
+        std::string coefficient_s;
+        if (css >> coefficient_index >> coefficient_s && coefficient_index > 0) {
+            ++coefficient_count;
+            maximum_index = std::max(maximum_index,
+                                     static_cast<std::uint32_t>(coefficient_index));
+        }
+    }
+
+    // Only use a complete contiguous 1..N first MO as dimensional evidence.
+    // The full parser remains responsible for duplicate and completeness checks.
+    return coefficient_count == maximum_index ? maximum_index : 0u;
+}
+
+void infer_omitted_basis_markers(const std::filesystem::path& path,
+                                 const std::vector<RawShell>& raw_shells,
+                                 const BasisMarkerState& seen,
+                                 Wavefunction& wf) {
+    const std::uint32_t mo_dimension = probe_first_mo_dimension(path);
+    if (mo_dimension == 0u) {
+        return;
+    }
+
+    const BasisConvention declared{wf.pure_d, wf.pure_f, wf.pure_g};
+    if (raw_basis_count(raw_shells, declared) == mo_dimension) {
+        return;
+    }
+
+    const bool has_d = std::any_of(raw_shells.begin(), raw_shells.end(),
+                                   [](const RawShell& shell) { return shell.type == "d"; });
+    const bool has_f = std::any_of(raw_shells.begin(), raw_shells.end(),
+                                   [](const RawShell& shell) { return shell.type == "f"; });
+    const bool has_g = std::any_of(raw_shells.begin(), raw_shells.end(),
+                                   [](const RawShell& shell) { return shell.type == "g"; });
+
+    std::vector<BasisConvention> matches;
+    for (int mask = 0; mask < 8; ++mask) {
+        const BasisConvention candidate{
+            (seen.d_declared || !has_d) ? wf.pure_d : ((mask & 1) != 0),
+            (seen.f_declared || !has_f) ? wf.pure_f : ((mask & 2) != 0),
+            (seen.g_declared || !has_g) ? wf.pure_g : ((mask & 4) != 0),
+        };
+
+        const auto duplicate = std::find_if(matches.begin(), matches.end(),
+            [&](const BasisConvention& existing) {
+                return existing.pure_d == candidate.pure_d &&
+                       existing.pure_f == candidate.pure_f &&
+                       existing.pure_g == candidate.pure_g;
+            });
+        if (duplicate != matches.end()) {
+            continue;
+        }
+        if (raw_basis_count(raw_shells, candidate) == mo_dimension) {
+            matches.push_back(candidate);
+        }
+    }
+
+    // Some writers (observed with Multiwfn-generated Gaussian/def2 Molden files)
+    // emit [5D] while omitting [7F], even though their MO vector length proves
+    // that the f shell is pure spherical. Infer only when coefficient dimension
+    // yields one unique convention for shell families that actually exist,
+    // while respecting every explicit marker. Ambiguous/inconsistent files
+    // remain strict and fail later as before.
+    if (matches.size() == 1u) {
+        wf.pure_d = matches.front().pure_d;
+        wf.pure_f = matches.front().pure_f;
+        wf.pure_g = matches.front().pure_g;
+    }
 }
 
 std::string value_after_equals(const std::string& line) {
@@ -159,6 +310,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
 
     Wavefunction wf;
     std::vector<RawShell> raw_shells;
+    BasisMarkerState basis_markers;
 
     Section section = Section::None;
     bool atoms_in_angstrom = false;
@@ -171,7 +323,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
             continue;
         }
 
-        apply_basis_marker(t, wf.pure_d, wf.pure_f, wf.pure_g);
+        apply_basis_marker(t, wf.pure_d, wf.pure_f, wf.pure_g, basis_markers);
 
         if (starts_with_ci(t, "[atoms]")) {
             section = Section::Atoms;
@@ -295,7 +447,10 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         throw std::runtime_error("No basis shells found in Molden file");
     }
 
-    // Expand SP shells and assign basis offsets after all [5D]/[7F]/[9G] markers are known.
+    infer_omitted_basis_markers(path, raw_shells, basis_markers, wf);
+
+    // Expand SP shells and assign basis offsets after all explicit markers and
+    // any uniquely inferable omitted higher-shell convention are known.
     std::uint32_t basis_offset = 0;
     for (const RawShell& raw : raw_shells) {
         const auto append_shell = [&](const std::string& type, const bool use_second_coeff) {
@@ -337,6 +492,14 @@ Wavefunction parse_molden(const std::filesystem::path& path,
     std::uint32_t coefficient_count = 0;
     std::vector<std::uint8_t> coefficient_seen(wf.basis_count, 0u);
 
+    const auto begin_mo = [&]() {
+        current_mo = MolecularOrbital{};
+        current_mo.coefficients.assign(wf.basis_count, 0.0f);
+        std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
+        coefficient_count = 0;
+        have_mo = true;
+    };
+
     while (std::getline(input, line)) {
         const std::string t = trim(line);
         if (t.empty()) {
@@ -354,31 +517,41 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         }
 
         if (starts_with_ci(t, "sym=")) {
-            finalise_mo(current_mo, have_mo, coefficient_count, wf, true);
-            current_mo = MolecularOrbital{};
-            current_mo.coefficients.assign(wf.basis_count, 0.0f);
-            std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
+            // Sym= is the traditional Molden MO delimiter. Some writers put
+            // Ene= first, so only close an existing MO after coefficients have
+            // actually been read; otherwise this metadata belongs to the same MO.
+            if (have_mo && coefficient_count > 0) {
+                finalise_mo(current_mo, have_mo, coefficient_count, wf, true);
+            }
+            if (!have_mo) begin_mo();
             current_mo.symmetry = value_after_equals(t);
-            have_mo = true;
+            continue;
+        }
+
+        if (starts_with_ci(t, "ene=")) {
+            // Multiwfn and other valid Molden writers may omit Sym= entirely.
+            // In that dialect each new Ene= after a complete coefficient block
+            // is the next MO boundary. Without this boundary, coefficient index
+            // 1 from the next orbital was falsely reported as a duplicate.
+            if (have_mo && coefficient_count > 0) {
+                finalise_mo(current_mo, have_mo, coefficient_count, wf, true);
+            }
+            if (!have_mo) begin_mo();
+            current_mo.energy_hartree = parse_fortran_double(value_after_equals(t));
             continue;
         }
 
         if (!have_mo) {
-            // Some writers omit Sym=. Start an MO when any metadata appears.
-            if (starts_with_ci(t, "ene=") || starts_with_ci(t, "spin=") ||
-                starts_with_ci(t, "occup=")) {
-                current_mo.coefficients.assign(wf.basis_count, 0.0f);
-                std::fill(coefficient_seen.begin(), coefficient_seen.end(), std::uint8_t{0});
-                coefficient_count = 0;
-                have_mo = true;
+            // Be permissive about metadata ordering while remaining strict about
+            // coefficient completeness and duplicate indices inside one MO.
+            if (starts_with_ci(t, "spin=") || starts_with_ci(t, "occup=")) {
+                begin_mo();
             } else {
                 continue;
             }
         }
 
-        if (starts_with_ci(t, "ene=")) {
-            current_mo.energy_hartree = parse_fortran_double(value_after_equals(t));
-        } else if (starts_with_ci(t, "spin=")) {
+        if (starts_with_ci(t, "spin=")) {
             const auto spin = lower(value_after_equals(t));
             current_mo.spin = (spin.find("beta") != std::string::npos)
                                   ? Spin::Beta
