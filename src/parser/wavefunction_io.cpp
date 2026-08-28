@@ -3,6 +3,7 @@
 #include "cov/bond_analysis.hpp"
 #include "cov/density.hpp"
 #include "cov/fchk_parser.hpp"
+#include "cov/formchk.hpp"
 #include "cov/gaussian_log.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/overlap.hpp"
@@ -90,13 +91,17 @@ Wavefunction parse_wavefunction(const std::filesystem::path& path,
     const std::string extension = lower(path.extension().string());
 
     Wavefunction wf;
-    if (extension == ".fchk" || extension == ".fch") {
+    if (extension == ".fchk" || extension == ".fch" || extension == ".chk") {
         FchkParseOptions fchk;
         fchk.max_atoms = options.max_atoms;
         fchk.require_orbitals = options.require_orbitals;
         fchk.keep_density = options.keep_density;
         fchk.reconstruct_density_if_missing = options.reconstruct_density_if_missing;
-        wf = parse_fchk(path, fchk);
+        if (extension == ".chk") {
+            wf = parse_gaussian_chk_via_formchk(path, fchk);
+        } else {
+            wf = parse_fchk(path, fchk);
+        }
     } else if (extension == ".molden" ||
                filename.ends_with(".molden.input") || filename.ends_with(".molden.inp") ||
                looks_like_molden(path)) {
@@ -107,7 +112,7 @@ Wavefunction parse_wavefunction(const std::filesystem::path& path,
         wf.source = WavefunctionSource::Molden;
     } else {
         throw std::runtime_error(
-            "Unsupported wavefunction input. Use Gaussian .fchk/.fch or Molden .molden files.");
+            "Unsupported wavefunction input. Use Gaussian .fchk/.fch/.chk or Molden .molden files.");
     }
 
     std::filesystem::path enrichment = options.gaussian_log_path;
