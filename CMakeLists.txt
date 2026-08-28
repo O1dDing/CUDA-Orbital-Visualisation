@@ -21,6 +21,7 @@ add_library(cov_parser
     src/parser/molden_compat.cpp
     src/parser/fchk_parser.cpp
     src/parser/fchk_overlap.cpp
+    src/parser/fchk_nuclear_charge.cpp
     src/parser/wavefunction_io.cpp
     src/parser/formchk.cpp
     src/parser/gaussian_log.cpp
@@ -30,6 +31,7 @@ add_library(cov_parser
     src/analysis/symmetry.cpp
     src/analysis/orbital_symmetry.cpp
     src/analysis/orbital_symmetry_final.cpp
+    src/analysis/orbital_chemistry.cpp
 )
 set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
     COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
@@ -44,7 +46,16 @@ target_compile_features(cov_parser PUBLIC cxx_std_20)
 
 add_library(cov_orbitals
     src/orbitals/orbital_view.cpp
+    src/orbitals/orbital_view_dispatch.cpp
     src/orbitals/mo_diagram_v2.cpp
+    src/orbitals/mo_diagram_chemistry.cpp
+    src/orbitals/annotation_source_dispatch.cpp
+)
+set_source_files_properties(src/orbitals/orbital_view.cpp PROPERTIES
+    COMPILE_DEFINITIONS "classify_orbital_region=classify_orbital_region_legacy;orbital_visible=orbital_visible_legacy;visible_orbital_indices=visible_orbital_indices_legacy;build_orbital_metadata=build_orbital_metadata_legacy"
+)
+set_source_files_properties(src/orbitals/mo_diagram_v2.cpp PROPERTIES
+    COMPILE_DEFINITIONS "annotation_source_name=annotation_source_name_legacy;annotate_orbital=annotate_orbital_legacy;build_valence_selection_plan=build_valence_selection_plan_legacy;build_mo_diagram_data=build_mo_diagram_data_legacy"
 )
 target_include_directories(cov_orbitals PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -255,6 +266,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_multicentre_classification_smoke tests/multicentre_classification_smoke.cpp)
     target_link_libraries(cov_multicentre_classification_smoke PRIVATE cov_parser)
     add_test(NAME multicentre_classification_smoke COMMAND cov_multicentre_classification_smoke)
+
+    add_executable(cov_chemical_valence_smoke tests/chemical_valence_smoke.cpp)
+    target_link_libraries(cov_chemical_valence_smoke PRIVATE cov_parser cov_orbitals)
+    add_test(NAME chemical_valence_smoke COMMAND cov_chemical_valence_smoke)
 
     add_executable(cov_symmetry_smoke tests/symmetry_smoke.cpp)
     target_link_libraries(cov_symmetry_smoke PRIVATE cov_parser)
