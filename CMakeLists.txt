@@ -27,6 +27,7 @@ add_library(cov_parser
     src/analysis/overlap.cpp
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
+    src/analysis/orbital_symmetry.cpp
 )
 set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
     COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
@@ -233,6 +234,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_symmetry_smoke tests/symmetry_smoke.cpp)
     target_link_libraries(cov_symmetry_smoke PRIVATE cov_parser)
     add_test(NAME symmetry_smoke COMMAND cov_symmetry_smoke)
+
+    add_executable(cov_orbital_symmetry_smoke tests/orbital_symmetry_smoke.cpp)
+    target_link_libraries(cov_orbital_symmetry_smoke PRIVATE cov_parser)
+    add_test(NAME orbital_symmetry_smoke COMMAND cov_orbital_symmetry_smoke)
 
     add_executable(cov_orbital_view_smoke tests/orbital_view_smoke.cpp)
     target_link_libraries(cov_orbital_view_smoke PRIVATE cov_orbitals)

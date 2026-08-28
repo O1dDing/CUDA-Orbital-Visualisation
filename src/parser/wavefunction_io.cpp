@@ -6,6 +6,7 @@
 #include "cov/formchk.hpp"
 #include "cov/gaussian_log.hpp"
 #include "cov/molden_parser.hpp"
+#include "cov/orbital_symmetry.hpp"
 #include "cov/overlap.hpp"
 #include "cov/symmetry.hpp"
 
@@ -38,8 +39,6 @@ bool looks_like_molden(const std::filesystem::path& path) {
 
 void postprocess_wavefunction(Wavefunction& wf,
                               const WavefunctionParseOptions& options) {
-    // Normalize provenance at the unified boundary. Molden values are explicit
-    // producer fields; FCHK occupations are reconstructed from electron counts.
     for (auto& mo : wf.orbitals) {
         if (wf.source == WavefunctionSource::Molden) {
             if (mo.occupation_provenance == DataProvenance::Unavailable) {
@@ -73,15 +72,18 @@ void postprocess_wavefunction(Wavefunction& wf,
         }
     }
 
-    // FCHK and Molden both normally carry complete canonical MO blocks. Recover
-    // S from MO orthonormality before introducing a second, convention-sensitive
-    // integral engine. If the block is incomplete/ill-conditioned, leave the
-    // analysis explicitly unavailable rather than guessing.
     const auto overlap = derive_ao_overlap_from_mos(wf);
     if (overlap.available()) {
         wf.ao_overlap = overlap.matrix;
         wf.ao_overlap_provenance = DataProvenance::Derived;
         wf.ao_overlap_orthonormality_error = overlap.max_orthonormality_error;
+    }
+
+    // FCHK normally lacks per-MO irreps. Once a validated geometry operation set
+    // and AO overlap are available, derive irreps from the transformed AO/MO
+    // representation. Producer labels remain immutable and always take priority.
+    if (!wf.ao_overlap.empty() && !wf.orbitals.empty()) {
+        (void)derive_orbital_symmetry(wf);
     }
 
     if (!wf.ao_overlap.empty() && !wf.total_density_packed.empty()) {
