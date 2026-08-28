@@ -57,13 +57,19 @@ void postprocess_wavefunction(Wavefunction& wf,
     if (options.keep_density && !wf.orbitals.empty()) {
         if (wf.total_density_packed.empty() &&
             options.reconstruct_density_if_missing) {
-            wf.total_density_packed = reconstruct_total_density_packed(wf);
-            wf.total_density_provenance = DataProvenance::Derived;
+            auto density = reconstruct_total_density_packed(wf);
+            if (!density.empty()) {
+                wf.total_density_packed = std::move(density);
+                wf.total_density_provenance = DataProvenance::Derived;
+            }
         }
         if (wf.spin_density_packed.empty() &&
             options.reconstruct_density_if_missing) {
-            wf.spin_density_packed = reconstruct_spin_density_packed(wf);
-            wf.spin_density_provenance = DataProvenance::Derived;
+            auto density = reconstruct_spin_density_packed(wf);
+            if (!density.empty()) {
+                wf.spin_density_packed = std::move(density);
+                wf.spin_density_provenance = DataProvenance::Derived;
+            }
         }
     }
 
