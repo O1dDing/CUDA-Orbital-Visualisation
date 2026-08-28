@@ -147,33 +147,33 @@ FchkRecords read_records(std::ifstream& input) {
 }
 
 const std::vector<long long>& require_int_array(const FchkRecords& records,
-                                                const std::string& label) {
+                                                const char* label) {
     const auto it = records.integer_arrays.find(label);
     if (it == records.integer_arrays.end()) {
-        throw std::runtime_error("Required FCHK field is missing: " + label);
+        throw std::runtime_error(std::string("Required FCHK field is missing: ") + label);
     }
     return it->second;
 }
 
 const std::vector<double>& require_real_array(const FchkRecords& records,
-                                              const std::string& label) {
+                                              const char* label) {
     const auto it = records.real_arrays.find(label);
     if (it == records.real_arrays.end()) {
-        throw std::runtime_error("Required FCHK field is missing: " + label);
+        throw std::runtime_error(std::string("Required FCHK field is missing: ") + label);
     }
     return it->second;
 }
 
-long long require_integer(const FchkRecords& records, const std::string& label) {
+long long require_integer(const FchkRecords& records, const char* label) {
     const auto it = records.integers.find(label);
     if (it == records.integers.end()) {
-        throw std::runtime_error("Required FCHK field is missing: " + label);
+        throw std::runtime_error(std::string("Required FCHK field is missing: ") + label);
     }
     return it->second;
 }
 
 const std::vector<double>* find_real_array(const FchkRecords& records,
-                                           const std::string& label) {
+                                           const char* label) {
     const auto it = records.real_arrays.find(label);
     return it == records.real_arrays.end() ? nullptr : &it->second;
 }
@@ -199,10 +199,10 @@ std::string atomic_symbol(const int z) {
     return symbols[static_cast<std::size_t>(z)];
 }
 
-std::uint32_t checked_u32(const long long value, const std::string& label) {
+std::uint32_t checked_u32(const long long value, const char* label) {
     if (value < 0 || static_cast<unsigned long long>(value) >
                          std::numeric_limits<std::uint32_t>::max()) {
-        throw std::runtime_error("FCHK integer is out of range: " + label);
+        throw std::runtime_error(std::string("FCHK integer is out of range: ") + label);
     }
     return static_cast<std::uint32_t>(value);
 }
@@ -238,6 +238,76 @@ void append_shell(Wavefunction& wf,
     wf.shells.push_back(shell);
 }
 
+struct BasisMapEntry {
+    std::size_t source_index = 0;
+    double sign = 1.0;
+};
+
+// COV's internal Cartesian ordering through f is the same ordering used by
+// Gaussian FCHK. Gaussian's Cartesian g coefficients are stored in a distinct
+// reverse-alphabet ordering; map them into the Molden/COV g order used by the
+// existing CUDA evaluator. Pure shells share the m=0,+1,-1,+2,-2,... order.
+std::vector<std::size_t> fchk_local_to_internal_source_map(const int shell_type) {
+    if (shell_type == -1) return {0u, 1u, 2u, 3u}; // SP: s, px, py, pz
+
+    const int l = shell_type < 0 ? -shell_type : shell_type;
+    const bool pure = shell_type <= -2;
+    const std::size_t count = pure
+                                  ? static_cast<std::size_t>(2 * l + 1)
+                                  : static_cast<std::size_t>((l + 1) * (l + 2) / 2);
+    if (pure || l <= 3) {
+        std::vector<std::size_t> identity(count);
+        for (std::size_t i = 0; i < count; ++i) identity[i] = i;
+        return identity;
+    }
+
+    if (l == 4) {
+        // FCHK Cartesian g source order (Gaussian/IOData convention):
+        // zzzz,yzzz,yyzz,yyyz,yyyy,xzzz,xyzz,xyyz,xyyy,xxzz,
+        // xxyz,xxyy,xxxz,xxxy,xxxx
+        // COV/Molden internal order:
+        // xxxx,yyyy,zzzz,xxxy,xxxz,xyyy,yyyz,xzzz,yzzz,xxyy,
+        // xxzz,yyzz,xxyz,xyyz,xyzz
+        return {14u, 4u, 0u, 13u, 12u, 8u, 3u, 5u, 1u,
+                11u, 9u, 2u, 10u, 7u, 6u};
+    }
+
+    throw std::runtime_error("FCHK basis ordering above g is not supported yet");
+}
+
+void append_basis_map(std::vector<BasisMapEntry>& basis_map,
+                      const std::size_t source_offset,
+                      const std::vector<std::size_t>& local_source_for_internal) {
+    for (const std::size_t local : local_source_for_internal) {
+        basis_map.push_back({source_offset + local, 1.0});
+    }
+}
+
+std::vector<double> transform_packed_density(const std::vector<double>& source,
+                                             const std::vector<BasisMapEntry>& basis_map) {
+    const std::size_t n = basis_map.size();
+    const std::size_t expected = n * (n + 1u) / 2u;
+    if (source.size() != expected) {
+        throw std::runtime_error("FCHK packed density dimension does not match basis count");
+    }
+
+    auto packed = [](std::size_t i, std::size_t j) {
+        if (j > i) std::swap(i, j);
+        return i * (i + 1u) / 2u + j;
+    };
+
+    std::vector<double> transformed(expected, 0.0);
+    for (std::size_t i = 0; i < n; ++i) {
+        for (std::size_t j = 0; j <= i; ++j) {
+            const BasisMapEntry& mi = basis_map[i];
+            const BasisMapEntry& mj = basis_map[j];
+            transformed[packed(i, j)] =
+                mi.sign * mj.sign * source[packed(mi.source_index, mj.source_index)];
+        }
+    }
+    return transformed;
+}
+
 void set_global_purity_flags(Wavefunction& wf) {
     auto all_pure = [&](const std::uint8_t l) {
         bool seen = false;
@@ -257,11 +327,15 @@ void set_global_purity_flags(Wavefunction& wf) {
 void append_orbital_set(Wavefunction& wf,
                         const std::vector<double>& energies,
                         const std::vector<double>& coefficients,
+                        const std::vector<BasisMapEntry>& basis_map,
                         const Spin spin,
                         const std::uint32_t occupied_count,
                         const bool restricted) {
     const std::size_t basis = wf.basis_count;
     if (basis == 0) throw std::runtime_error("FCHK orbital data has zero basis functions");
+    if (basis_map.size() != basis) {
+        throw std::runtime_error("Internal FCHK basis-order map does not match basis count");
+    }
     if (coefficients.size() != energies.size() * basis) {
         throw std::runtime_error(
             "FCHK MO coefficient dimension does not equal orbital_count * basis_count");
@@ -281,20 +355,23 @@ void append_orbital_set(Wavefunction& wf,
         }
         mo.coefficients.resize(basis);
         const std::size_t offset = i * basis;
-        for (std::size_t j = 0; j < basis; ++j) {
-            mo.coefficients[j] = static_cast<float>(coefficients[offset + j]);
+        for (std::size_t internal = 0; internal < basis; ++internal) {
+            const BasisMapEntry& map = basis_map[internal];
+            mo.coefficients[internal] = static_cast<float>(
+                map.sign * coefficients[offset + map.source_index]);
         }
         wf.orbitals.push_back(std::move(mo));
     }
 }
 
-void validate_density(std::vector<double>& density,
+void validate_density(const std::vector<double>& density,
                       const std::size_t basis,
-                      const std::string& label) {
+                      const char* label) {
     if (density.empty()) return;
     const std::size_t expected = basis * (basis + 1u) / 2u;
     if (density.size() != expected) {
-        throw std::runtime_error(label + " dimension does not match packed AO basis dimension");
+        throw std::runtime_error(std::string(label) +
+                                 " dimension does not match packed AO basis dimension");
     }
 }
 
@@ -361,7 +438,9 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
         throw std::runtime_error("FCHK primitive exponent/contraction arrays have inconsistent lengths");
     }
 
+    std::vector<BasisMapEntry> basis_map;
     std::size_t primitive_cursor = 0;
+    std::size_t source_basis_cursor = 0;
     for (std::size_t s = 0; s < shell_types.size(); ++s) {
         const long long count_ll = primitive_counts[s];
         if (count_ll <= 0) throw std::runtime_error("FCHK shell has no primitives");
@@ -386,6 +465,9 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
                          exponents, contractions, primitive_cursor, count);
             append_shell(wf, atom_index, 1u, false,
                          exponents, *sp_contractions, primitive_cursor, count);
+            append_basis_map(basis_map, source_basis_cursor,
+                             fchk_local_to_internal_source_map(shell_type));
+            source_basis_cursor += 4u;
         } else {
             const int l = shell_type < 0 ? -shell_type : shell_type;
             if (l < 0 || l > 4) {
@@ -396,6 +478,9 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
             const bool pure = shell_type <= -2;
             append_shell(wf, atom_index, static_cast<std::uint8_t>(l), pure,
                          exponents, contractions, primitive_cursor, count);
+            const auto local_map = fchk_local_to_internal_source_map(shell_type);
+            append_basis_map(basis_map, source_basis_cursor, local_map);
+            source_basis_cursor += local_map.size();
         }
         primitive_cursor += count;
     }
@@ -405,10 +490,11 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
 
     const auto expected_basis = checked_u32(require_integer(records, "Number of basis functions"),
                                             "Number of basis functions");
-    if (wf.basis_count != expected_basis) {
+    if (wf.basis_count != expected_basis || source_basis_cursor != expected_basis ||
+        basis_map.size() != expected_basis) {
         throw std::runtime_error(
-            "FCHK shell-derived basis count " + std::to_string(wf.basis_count) +
-            " does not match Number of basis functions " + std::to_string(expected_basis));
+            "FCHK shell-derived basis count/map does not match Number of basis functions " +
+            std::to_string(expected_basis));
     }
     set_global_purity_flags(wf);
 
@@ -426,10 +512,10 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
 
     if (alpha_energies && alpha_coefficients) {
         const bool unrestricted = beta_energies && beta_coefficients;
-        append_orbital_set(wf, *alpha_energies, *alpha_coefficients,
+        append_orbital_set(wf, *alpha_energies, *alpha_coefficients, basis_map,
                            Spin::Alpha, wf.alpha_electrons, !unrestricted);
         if (unrestricted) {
-            append_orbital_set(wf, *beta_energies, *beta_coefficients,
+            append_orbital_set(wf, *beta_energies, *beta_coefficients, basis_map,
                                Spin::Beta, wf.beta_electrons, false);
         }
     }
@@ -440,8 +526,8 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
 
     if (options.keep_density) {
         if (const auto* total = find_real_array(records, "Total SCF Density")) {
-            wf.total_density_packed = *total;
-            validate_density(wf.total_density_packed, wf.basis_count, "Total SCF Density");
+            validate_density(*total, wf.basis_count, "Total SCF Density");
+            wf.total_density_packed = transform_packed_density(*total, basis_map);
             wf.total_density_provenance = DataProvenance::Producer;
         } else if (options.reconstruct_density_if_missing && !wf.orbitals.empty()) {
             wf.total_density_packed = reconstruct_total_density_packed(wf);
@@ -449,8 +535,8 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
         }
 
         if (const auto* spin = find_real_array(records, "Spin SCF Density")) {
-            wf.spin_density_packed = *spin;
-            validate_density(wf.spin_density_packed, wf.basis_count, "Spin SCF Density");
+            validate_density(*spin, wf.basis_count, "Spin SCF Density");
+            wf.spin_density_packed = transform_packed_density(*spin, basis_map);
             wf.spin_density_provenance = DataProvenance::Producer;
         }
     }
