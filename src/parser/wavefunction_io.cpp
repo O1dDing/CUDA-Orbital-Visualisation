@@ -3,11 +3,13 @@
 #include "cov/bond_analysis.hpp"
 #include "cov/density.hpp"
 #include "cov/fchk_overlap.hpp"
+#include "cov/fchk_nuclear_charge.hpp"
 #include "cov/fchk_parser.hpp"
 #include "cov/formchk.hpp"
 #include "cov/gaussian_log.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/orbital_symmetry.hpp"
+#include "cov/orbital_chemistry.hpp"
 #include "cov/overlap.hpp"
 #include "cov/symmetry.hpp"
 
@@ -94,6 +96,12 @@ void postprocess_wavefunction(Wavefunction& wf,
     if (!wf.ao_overlap.empty() && !wf.total_density_packed.empty()) {
         derive_bond_and_multicentre_analysis(wf);
     }
+
+    // Chemistry is derived last so it can consume the validated AO metric,
+    // density-level Mayer indices, multicentre assignments and MO symmetry.
+    if (!wf.ao_overlap.empty() && !wf.orbitals.empty()) {
+        derive_orbital_chemistry(wf);
+    }
 }
 
 } // namespace
@@ -114,6 +122,7 @@ Wavefunction parse_wavefunction(const std::filesystem::path& path,
             wf = parse_gaussian_chk_via_formchk(path, fchk);
         } else {
             wf = parse_fchk(path, fchk);
+            (void)enrich_fchk_nuclear_charges_from_file(wf, path);
             (void)enrich_fchk_overlap_from_file(wf, path);
         }
     } else if (extension == ".molden" ||
