@@ -5,6 +5,19 @@ on:
   pull_request:
 
 jobs:
+  cleanup-pre8:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/fchk-primary-interface'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Remove superseded pre.8 release and tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete v0.3.0-pre.8 --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/v0.3.0-pre.8" || true
+
   cpu-core:
     strategy:
       fail-fast: false
@@ -20,7 +33,7 @@ jobs:
       - name: Download pinned real Gaussian 16 FCHK regression
         run: >-
           python -c "import urllib.request; u='https://raw.githubusercontent.com/cclib/cclib/21daa960123d28aa21eeaaacc2a1dea39e136829/data/FChk/basicGaussian16/dvb_sp.fchk'; urllib.request.urlretrieve(u, r'build/real_gaussian16_dvb_sp.fchk')"
-      - name: Test parser, real FCHK, symmetry, orbital semantics, exports and localisation
+      - name: Run test suite
         run: ctest --test-dir build -C Release --output-on-failure
       - name: Upload deterministic MO visual-regression artifacts
         if: always()
@@ -31,29 +44,18 @@ jobs:
           if-no-files-found: warn
 
   windows-cuda-viewer:
-    name: prebuilt Windows CUDA viewer
+    name: Windows CUDA viewer
     needs: cpu-core
     runs-on: windows-2022
     timeout-minutes: 45
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
-
       - name: Install CUDA 12.8.2 build toolkit
         uses: Jimver/cuda-toolkit@v0.2.36
-        id: cuda-toolkit
         with:
           cuda: '12.8.2'
           method: network
           sub-packages: '["nvcc", "cudart", "cuobjdump", "visual_studio_integration"]'
-
-      - name: Show CUDA compiler
-        shell: pwsh
-        run: |
-          nvcc --version
-          Write-Host "CUDA_PATH=$env:CUDA_PATH"
-
       - name: Configure Blackwell Release viewer
         shell: pwsh
         run: >-
@@ -62,69 +64,16 @@ jobs:
           -DCOV_ENABLE_CUDA=ON
           -DCOV_BUILD_TESTS=OFF
           -DCMAKE_CUDA_ARCHITECTURES="120-real;120-virtual"
-
       - name: Build cov.exe
         shell: pwsh
         run: cmake --build build-cuda --config Release --parallel
-
-      - name: Verify standalone binary and Blackwell payload
+      - name: Verify Blackwell payload
         shell: pwsh
         run: |
           $exe = "build-cuda/Release/cov.exe"
           if (-not (Test-Path $exe)) { throw "cov.exe was not produced" }
           $cuobjdump = Join-Path $env:CUDA_PATH "bin/cuobjdump.exe"
-          if (-not (Test-Path $cuobjdump)) { throw "cuobjdump.exe is missing from the CUDA build environment" }
           & $cuobjdump --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
-          if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) {
-            throw "sm_120 native cubin was not found in cov.exe"
-          }
+          if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) { throw "sm_120 cubin missing" }
           & $cuobjdump --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
-          if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) {
-            throw "compute_120 PTX fallback was not found in cov.exe"
-          }
-          Get-Item $exe | Format-List FullName,Length,LastWriteTime
-
-      - name: Stage pre.7 executable
-        shell: pwsh
-        run: |
-          $source = "build-cuda/Release/cov.exe"
-          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.7-Windows-sm120.exe"
-          Copy-Item $source $asset -Force
-          Get-FileHash $asset -Algorithm SHA256 | Format-List
-
-      - name: Upload ready-to-run pre.7 executable
-        uses: actions/upload-artifact@v4
-        with:
-          name: cov-v0.3.0-pre.7-windows-sm120
-          path: build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.7-Windows-sm120.exe
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Publish v0.3.0-pre.7
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/fchk-primary-interface'
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.7-Windows-sm120.exe"
-          $notes = @"
-          PR #3 local-acceptance build before deferred item 11.
-
-          FCHK is now the preferred Gaussian interface while Molden remains a compatibility/exchange interface. The unified Wavefunction path accepts .fchk/.fch directly and .chk through Gaussian formchk when available. It preserves strict basis/MO dimensions, reconstructs standard occupations, imports or reconstructs density data, consumes producer FCHK AO overlap when present, handles Cartesian/pure shell conventions through g including Gaussian Cartesian-g reordering, and can enrich FCHK with sibling Gaussian .log/.out symmetry metadata without overwriting producer provenance.
-
-          COV now contains its own geometry/operation-based symmetry stack rather than depending on libmsym. Regression coverage includes D3h, D5h, Td, Oh and linear Dinfh/Cinfv cases. FCHK-only orbital symmetry supports finite-group labels on the covered paths plus linear Sigma/Pi/Delta/Phi/Gamma labels, g/u parity and Sigma +/- where supported. The Oh path now classifies the TiF6-like central p triplet as T1u using C4, C4^2 and inversion characters, avoiding ambiguous selection between octahedral C2 classes.
-
-          Wavefunction analysis now includes AO-overlap/density based Mayer pair indices and strict multicentre active-subspace candidates. 3c2e/3c4e labels are only emitted when the restricted occupation pattern, three-centre coverage, pair support and unique active subspace satisfy the implemented evidence gates; pairwise Mayer values alone are not presented as proof of multicentre bonding. Geometry-only connectivity remains a conservative fallback rather than the primary authority when electronic evidence is available.
-
-          The UI is FCHK-first and provenance-aware while retaining all PR #2 rendering features: Glass material, adjustable orbital opacity, Wire/Solid+Wire modes, automatic soft lighting, depth-correct molecule/orbital composition, MO browser and diagram exports.
-
-          Release gate: the complete CPU regression suite must pass on both Ubuntu and Windows before this CUDA job can run. The viewer is then built with CUDA 12.8.2 and verified to contain both native sm_120 code and compute_120 PTX fallback.
-
-          Deferred item 11 is intentionally NOT included in pre.7; this build is the local validation checkpoint immediately before that workstream.
-          "@
-          gh release create "v0.3.0-pre.7" $asset `
-            --repo "$env:GITHUB_REPOSITORY" `
-            --target "$env:GITHUB_SHA" `
-            --title "CUDA Orbital Visualisation v0.3.0-pre.7 — FCHK-first acceptance candidate" `
-            --notes $notes `
-            --prerelease
+          if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) { throw "compute_120 PTX missing" }
