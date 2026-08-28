@@ -1,4 +1,4 @@
-#include "cov/fchk_parser.hpp"
+#include "cov/wavefunction_io.hpp"
 
 #include <cmath>
 #include <cstdlib>
@@ -21,13 +21,16 @@ int main(int argc, char** argv) {
         return 77;
     }
 
-    cov::FchkParseOptions options;
+    cov::WavefunctionParseOptions options;
     options.max_atoms = 100;
     options.require_orbitals = true;
     options.keep_density = true;
     options.reconstruct_density_if_missing = true;
+    options.auto_enrich_gaussian_log = false;
 
-    const cov::Wavefunction wf = cov::parse_fchk(argv[1], options);
+    // Exercise the same FCHK-first dispatch/post-processing path used by the
+    // viewer, not only the low-level parser.
+    const cov::Wavefunction wf = cov::parse_wavefunction(argv[1], options);
 
     // Pinned fixture:
     // cclib/cclib@21daa960123d28aa21eeaaacc2a1dea39e136829
@@ -68,6 +71,12 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    if (wf.ao_overlap.size() != 60u * 60u ||
+        wf.ao_overlap_provenance == cov::DataProvenance::Unavailable) {
+        std::cerr << "real Gaussian16 AO overlap import/reconstruction regression\n";
+        return EXIT_FAILURE;
+    }
+
     std::size_t shell_basis_total = 0;
     for (const auto& shell : wf.shells) shell_basis_total += cov::shell_basis_count(shell);
     if (shell_basis_total != wf.basis_count) {
@@ -75,6 +84,17 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    std::cout << "real Gaussian16 FCHK regression passed\n";
+    if (wf.point_group_detected.empty() ||
+        wf.point_group_provenance == cov::DataProvenance::Unavailable) {
+        std::cerr << "real Gaussian16 geometry point-group regression\n";
+        return EXIT_FAILURE;
+    }
+
+    if (wf.bond_order_provenance != cov::DataProvenance::Derived) {
+        std::cerr << "real Gaussian16 electronic bond-analysis regression\n";
+        return EXIT_FAILURE;
+    }
+
+    std::cout << "real Gaussian16 FCHK full-pipeline regression passed\n";
     return EXIT_SUCCESS;
 }
