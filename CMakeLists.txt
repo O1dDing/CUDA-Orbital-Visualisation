@@ -20,6 +20,7 @@ add_library(cov_parser
     src/parser/molden_parser.cpp
     src/parser/molden_compat.cpp
     src/parser/fchk_parser.cpp
+    src/parser/formchk.cpp
     src/parser/gaussian_log.cpp
     src/parser/wavefunction_io.cpp
     src/analysis/density.cpp
