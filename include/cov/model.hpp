@@ -77,6 +77,22 @@ struct MulticentreCandidate {
     DataProvenance provenance = DataProvenance::Unavailable;
 };
 
+enum class MulticentreKind : std::uint8_t {
+    Unclassified = 0,
+    ThreeCentreTwoElectron,
+    ThreeCentreFourElectron,
+};
+
+struct MulticentreAssignment {
+    MulticentreKind kind = MulticentreKind::Unclassified;
+    std::vector<std::uint32_t> atoms;
+    std::vector<std::uint32_t> orbitals;
+    double electron_count = 0.0;
+    double confidence = 0.0;
+    std::string rationale;
+    DataProvenance provenance = DataProvenance::Unavailable;
+};
+
 struct Wavefunction {
     std::vector<Atom> atoms;
     std::vector<Primitive> primitives;
@@ -113,12 +129,13 @@ struct Wavefunction {
     double ao_overlap_orthonormality_error = 0.0;
 
     // Provenance-aware analyses derived from density + overlap. Mayer bond
-    // orders are pairwise evidence only and must never be interpreted as proof
-    // of a 3c2e/3c4e assignment. Multicentre candidates are deliberately named
-    // candidates for the same reason.
+    // orders are pairwise evidence only. Multicentre assignments are made only
+    // by the separate active-subspace classifier when its stricter evidence
+    // requirements are met.
     std::vector<BondOrderRecord> bond_orders;
     DataProvenance bond_order_provenance = DataProvenance::Unavailable;
     std::vector<MulticentreCandidate> multicentre_candidates;
+    std::vector<MulticentreAssignment> multicentre_assignments;
 };
 
 struct GridBox {
@@ -156,6 +173,14 @@ inline const char* data_provenance_name(const DataProvenance provenance) noexcep
         case DataProvenance::Producer: return "producer";
         case DataProvenance::Derived: return "derived";
         default: return "unavailable";
+    }
+}
+
+inline const char* multicentre_kind_name(const MulticentreKind kind) noexcept {
+    switch (kind) {
+        case MulticentreKind::ThreeCentreTwoElectron: return "3c2e";
+        case MulticentreKind::ThreeCentreFourElectron: return "3c4e";
+        default: return "unclassified";
     }
 }
 
