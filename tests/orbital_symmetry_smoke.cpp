@@ -178,7 +178,17 @@ int main() {
         const auto r=cov::derive_orbital_symmetry(wf);
         if (r.point_group!="Oh" || r.orbitals_labelled!=3u ||
             !all_label(wf,0,3,"T1u")) {
-            std::cerr << "Oh AO-angular transform/derived-irrep regression\n";
+            std::cerr << "Oh AO-angular transform/derived-irrep regression"
+                      << " point_group=" << r.point_group
+                      << " groups_examined=" << r.groups_examined
+                      << " groups_labelled=" << r.groups_labelled
+                      << " orbitals_labelled=" << r.orbitals_labelled
+                      << " worst_retention=" << r.worst_subspace_retention << '\n';
+            for (std::size_t i=0;i<wf.orbitals.size();++i) {
+                std::cerr << "  MO " << i << " label='" << wf.orbitals[i].symmetry
+                          << "' provenance=" << static_cast<int>(wf.orbitals[i].symmetry_provenance)
+                          << '\n';
+            }
             return EXIT_FAILURE;
         }
     }
