@@ -32,6 +32,7 @@ jobs:
 
   windows-cuda-viewer:
     name: prebuilt Windows CUDA viewer
+    needs: cpu-core
     runs-on: windows-2022
     timeout-minutes: 45
     permissions:
@@ -83,24 +84,47 @@ jobs:
           }
           Get-Item $exe | Format-List FullName,Length,LastWriteTime
 
-      - name: Upload ready-to-run cov.exe
+      - name: Stage pre.7 executable
+        shell: pwsh
+        run: |
+          $source = "build-cuda/Release/cov.exe"
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.7-Windows-sm120.exe"
+          Copy-Item $source $asset -Force
+          Get-FileHash $asset -Algorithm SHA256 | Format-List
+
+      - name: Upload ready-to-run pre.7 executable
         uses: actions/upload-artifact@v4
         with:
-          name: cov-windows-sm120
-          path: build-cuda/Release/cov.exe
+          name: cov-v0.3.0-pre.7-windows-sm120
+          path: build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.7-Windows-sm120.exe
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.2.0-pre.6
-        if: github.event_name == 'push' && github.ref == 'refs/heads/vibe/orbital-browser-and-file-dialog'
+      - name: Publish v0.3.0-pre.7
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/fchk-primary-interface'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $exe = "build-cuda/Release/cov.exe"
-          gh release create "v0.2.0-pre.6" $exe `
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.7-Windows-sm120.exe"
+          $notes = @"
+          PR #3 local-acceptance build before deferred item 11.
+
+          FCHK is now the preferred Gaussian interface while Molden remains a compatibility/exchange interface. The unified Wavefunction path accepts .fchk/.fch directly and .chk through Gaussian formchk when available. It preserves strict basis/MO dimensions, reconstructs standard occupations, imports or reconstructs density data, consumes producer FCHK AO overlap when present, handles Cartesian/pure shell conventions through g including Gaussian Cartesian-g reordering, and can enrich FCHK with sibling Gaussian .log/.out symmetry metadata without overwriting producer provenance.
+
+          COV now contains its own geometry/operation-based symmetry stack rather than depending on libmsym. Regression coverage includes D3h, D5h, Td, Oh and linear Dinfh/Cinfv cases. FCHK-only orbital symmetry supports finite-group labels on the covered paths plus linear Sigma/Pi/Delta/Phi/Gamma labels, g/u parity and Sigma +/- where supported. The Oh path now classifies the TiF6-like central p triplet as T1u using C4, C4^2 and inversion characters, avoiding ambiguous selection between octahedral C2 classes.
+
+          Wavefunction analysis now includes AO-overlap/density based Mayer pair indices and strict multicentre active-subspace candidates. 3c2e/3c4e labels are only emitted when the restricted occupation pattern, three-centre coverage, pair support and unique active subspace satisfy the implemented evidence gates; pairwise Mayer values alone are not presented as proof of multicentre bonding. Geometry-only connectivity remains a conservative fallback rather than the primary authority when electronic evidence is available.
+
+          The UI is FCHK-first and provenance-aware while retaining all PR #2 rendering features: Glass material, adjustable orbital opacity, Wire/Solid+Wire modes, automatic soft lighting, depth-correct molecule/orbital composition, MO browser and diagram exports.
+
+          Release gate: the complete CPU regression suite must pass on both Ubuntu and Windows before this CUDA job can run. The viewer is then built with CUDA 12.8.2 and verified to contain both native sm_120 code and compute_120 PTX fallback.
+
+          Deferred item 11 is intentionally NOT included in pre.7; this build is the local validation checkpoint immediately before that workstream.
+          "@
+          gh release create "v0.3.0-pre.7" $asset `
             --repo "$env:GITHUB_REPOSITORY" `
             --target "$env:GITHUB_SHA" `
-            --title "CUDA Orbital Visualisation v0.2.0-pre.6" `
-            --notes "Final PR #2 appearance candidate. Adds a Glass orbital material, true continuously adjustable orbital alpha, GPU-resident procedural triangular Wire and Solid + Wire surface modes, and a restrained camera-relative automatic key/fill light. Rendering order is depth-correct for transparency: 3D molecular geometry is drawn into depth first, then the implicit orbital surface depth-tests and alpha-blends over geometry behind it. No Marching Cubes or volumetric GPU-to-CPU readback is introduced. Includes the corrected omitted-[7F] Molden parser hotfix and existing 3D molecule rendering. CUDA 12.8.2; native sm_120 plus compute_120 PTX. Item 11 remains deferred to PR #3." `
+            --title "CUDA Orbital Visualisation v0.3.0-pre.7 — FCHK-first acceptance candidate" `
+            --notes $notes `
             --prerelease
