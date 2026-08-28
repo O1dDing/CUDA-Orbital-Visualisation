@@ -55,6 +55,38 @@ int main() {
         return 4;
     }
 
+    // Once pairwise electronic evidence is available it must outrank the old
+    // 1.25*r_cov geometry rule. This synthetic C--C separation lies outside the
+    // geometry fallback cutoff but inside the deliberately generous electronic
+    // sanity distance; a positive Mayer index should therefore retain the bond.
+    cov::Wavefunction electronic;
+    electronic.atoms = {
+        {"C", 6, 0.0, 0.0, 0.0},
+        {"C", 6, 2.25 * cov::kAngstromToBohr, 0.0, 0.0},
+    };
+    electronic.bond_order_provenance = cov::DataProvenance::Derived;
+    electronic.bond_orders.push_back({0, 1, 0.18, cov::DataProvenance::Derived});
+    const auto electronic_bonds = cov::analyse_bonds(electronic);
+    if (electronic_bonds.size() != 1u ||
+        electronic_bonds[0].provenance != cov::DataProvenance::Derived ||
+        std::abs(electronic_bonds[0].bond_order - 0.18) > 1.0e-12) {
+        std::cerr << "Mayer connectivity did not outrank geometry fallback\n";
+        return 5;
+    }
+
+    // Conversely, electronic availability with no supported pair must not
+    // silently re-enable a geometry bond and manufacture connectivity.
+    cov::Wavefunction electronic_none;
+    electronic_none.atoms = {
+        {"C", 6, 0.0, 0.0, 0.0},
+        {"C", 6, 1.40 * cov::kAngstromToBohr, 0.0, 0.0},
+    };
+    electronic_none.bond_order_provenance = cov::DataProvenance::Derived;
+    if (!cov::analyse_bonds(electronic_none).empty()) {
+        std::cerr << "geometry fallback overrode an available electronic analysis\n";
+        return 6;
+    }
+
     std::cout << "molecule_style_smoke ok\n";
     return 0;
 }
