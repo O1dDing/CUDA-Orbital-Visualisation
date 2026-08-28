@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(CUDAOrbitalVisualisation VERSION 0.2.0 LANGUAGES CXX)
+project(CUDAOrbitalVisualisation VERSION 0.3.0 LANGUAGES CXX)
 
 option(COV_ENABLE_CUDA "Build the CUDA/OpenGL viewer" ON)
 option(COV_BUILD_TESTS "Build parser, orbital, diagram, molecule and UI smoke tests" ON)
@@ -18,6 +18,9 @@ endif()
 
 add_library(cov_parser
     src/parser/molden_parser.cpp
+    src/parser/fchk_parser.cpp
+    src/parser/wavefunction_io.cpp
+    src/analysis/density.cpp
 )
 target_include_directories(cov_parser PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -201,6 +204,10 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_parser_smoke PRIVATE cov_parser)
     add_test(NAME parser_smoke
         COMMAND cov_parser_smoke ${CMAKE_CURRENT_SOURCE_DIR}/examples/h2.molden)
+
+    add_executable(cov_fchk_parser_smoke tests/fchk_parser_smoke.cpp)
+    target_link_libraries(cov_fchk_parser_smoke PRIVATE cov_parser)
+    add_test(NAME fchk_parser_smoke COMMAND cov_fchk_parser_smoke)
 
     add_executable(cov_orbital_view_smoke tests/orbital_view_smoke.cpp)
     target_link_libraries(cov_orbital_view_smoke PRIVATE cov_orbitals)
