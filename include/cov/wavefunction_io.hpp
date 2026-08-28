@@ -12,6 +12,11 @@ struct WavefunctionParseOptions {
     bool require_orbitals = true;
     bool keep_density = true;
     bool reconstruct_density_if_missing = true;
+
+    // FCHK remains the wavefunction authority. A Gaussian output sidecar is
+    // optional enrichment for producer-reported point-group/orbital symmetry.
+    bool auto_enrich_gaussian_log = true;
+    std::filesystem::path gaussian_log_path;
 };
 
 Wavefunction parse_wavefunction(const std::filesystem::path& path,
