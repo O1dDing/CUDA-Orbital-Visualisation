@@ -1,5 +1,6 @@
 #include "cov/density.hpp"
 
+#include <cmath>
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
@@ -62,15 +63,37 @@ std::vector<double> reconstruct_spin_density_packed(const Wavefunction& wavefunc
         return density;
     }
 
-    // Restricted/ROHF-style FCHK stores one canonical orbital block. Recover
-    // alpha-beta occupation from the electron counts rather than equating the
-    // spin-summed occupation with spin density.
-    std::size_t orbital = 0;
+    if (wavefunction.alpha_electrons + wavefunction.beta_electrons > 0u) {
+        // Restricted/ROHF-style FCHK stores one canonical orbital block.
+        // Recover alpha-beta occupation from explicit electron counts.
+        std::size_t orbital = 0;
+        for (const auto& mo : wavefunction.orbitals) {
+            const double alpha = orbital < wavefunction.alpha_electrons ? 1.0 : 0.0;
+            const double beta = orbital < wavefunction.beta_electrons ? 1.0 : 0.0;
+            accumulate_outer(density, mo, n, alpha - beta);
+            ++orbital;
+        }
+        return density;
+    }
+
+    // Molden often has no global alpha/beta electron-count fields but does carry
+    // Spin= and Occup= per orbital. For a single Alpha block, occupation 2 is a
+    // doubly occupied restricted orbital (zero spin density), occupation 1 is a
+    // singly occupied alpha orbital, and 0 is virtual. Fractional occupations
+    // between these integer cases are insufficient to reconstruct alpha-beta
+    // partitioning uniquely, so leave spin density unavailable instead of
+    // inventing a decomposition.
     for (const auto& mo : wavefunction.orbitals) {
-        const double alpha = orbital < wavefunction.alpha_electrons ? 1.0 : 0.0;
-        const double beta = orbital < wavefunction.beta_electrons ? 1.0 : 0.0;
-        accumulate_outer(density, mo, n, alpha - beta);
-        ++orbital;
+        const double occ = static_cast<double>(mo.occupation);
+        double spin_occupation = 0.0;
+        if (std::abs(occ) <= 1.0e-5 || std::abs(occ - 2.0) <= 1.0e-5) {
+            spin_occupation = 0.0;
+        } else if (std::abs(occ - 1.0) <= 1.0e-5 && mo.spin == Spin::Alpha) {
+            spin_occupation = 1.0;
+        } else {
+            return {};
+        }
+        accumulate_outer(density, mo, n, spin_occupation);
     }
     return density;
 }
