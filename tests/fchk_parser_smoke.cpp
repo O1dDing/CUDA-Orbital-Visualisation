@@ -115,6 +115,40 @@ std::filesystem::path make_shell_convention_fixture() {
     return path;
 }
 
+std::filesystem::path make_cartesian_g_fixture() {
+    const auto path = std::filesystem::temp_directory_path() / "cov_cartesian_g_order.fchk";
+    std::ofstream out(path, std::ios::binary);
+    out << "Cartesian g ordering regression\n"
+           "SP        ROHF synthetic\n";
+    scalar_i(out, "Number of atoms", 1);
+    scalar_i(out, "Number of alpha electrons", 1);
+    scalar_i(out, "Number of beta electrons", 0);
+    scalar_i(out, "Number of basis functions", 15);
+    scalar_i(out, "Number of independent functions", 15);
+    array_i(out, "Atomic numbers", {6});
+    array_r(out, "Current cartesian coordinates", {0.0, 0.0, 0.0});
+    array_i(out, "Shell types", {4});
+    array_i(out, "Number of primitives per shell", {1});
+    array_i(out, "Shell to atom map", {1});
+    array_r(out, "Primitive exponents", {1.0});
+    array_r(out, "Contraction coefficients", {1.0});
+    array_r(out, "Alpha Orbital Energies", {-0.1});
+
+    std::vector<double> coefficients(15);
+    for (std::size_t i = 0; i < coefficients.size(); ++i) coefficients[i] = static_cast<double>(i + 1u);
+    array_r(out, "Alpha MO coefficients", coefficients);
+
+    std::vector<double> density;
+    density.reserve(120);
+    for (std::size_t i = 0; i < 15u; ++i) {
+        for (std::size_t j = 0; j <= i; ++j) {
+            density.push_back(static_cast<double>(100u * i + j));
+        }
+    }
+    array_r(out, "Total SCF Density", density);
+    return path;
+}
+
 bool approximately(const double a, const double b, const double eps = 1.0e-6) {
     return std::abs(a - b) <= eps;
 }
@@ -126,6 +160,7 @@ int main() {
     const auto h2 = make_restricted_h2_fixture();
     const auto h = make_unrestricted_h_fixture();
     const auto shells = make_shell_convention_fixture();
+    const auto cart_g = make_cartesian_g_fixture();
 
     try {
         const auto restricted = cov::parse_fchk(h2);
@@ -185,15 +220,35 @@ int main() {
             return EXIT_FAILURE;
         }
 
+        const auto g = cov::parse_fchk(cart_g);
+        const std::vector<float> expected_g{
+            15.0f, 5.0f, 1.0f, 14.0f, 13.0f, 9.0f, 4.0f, 6.0f, 2.0f,
+            12.0f, 10.0f, 3.0f, 11.0f, 8.0f, 7.0f
+        };
+        if (g.orbitals.size() != 1u || g.orbitals[0].coefficients != expected_g) {
+            std::cerr << "Cartesian g coefficient permutation regression\n";
+            return EXIT_FAILURE;
+        }
+        if (g.total_density_provenance != cov::DataProvenance::Producer ||
+            g.total_density_packed.size() != 120u ||
+            !approximately(g.total_density_packed[0], 1414.0) ||
+            !approximately(g.total_density_packed[1], 1404.0) ||
+            !approximately(g.total_density_packed[2], 404.0)) {
+            std::cerr << "Cartesian g packed-density permutation regression\n";
+            return EXIT_FAILURE;
+        }
+
         std::filesystem::remove(h2, ec);
         std::filesystem::remove(h, ec);
         std::filesystem::remove(shells, ec);
+        std::filesystem::remove(cart_g, ec);
         std::cout << "fchk parser smoke test passed\n";
         return EXIT_SUCCESS;
     } catch (const std::exception& e) {
         std::filesystem::remove(h2, ec);
         std::filesystem::remove(h, ec);
         std::filesystem::remove(shells, ec);
+        std::filesystem::remove(cart_g, ec);
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
