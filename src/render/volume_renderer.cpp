@@ -131,15 +131,13 @@ void main() {
 }
 )GLSL";
 
-    // The ray marcher now writes the real isosurface depth into the shared
-    // OpenGL depth buffer. Geometry rendered afterwards is therefore hidden by
-    // an orbital lobe when the lobe is physically closer to the camera, while
-    // atoms/bonds that genuinely sit in front remain visible.
     static constexpr const char* kFragment = R"GLSL(
 #version 120
 uniform sampler3D uVolume;
 uniform float uIso;
 uniform float uOpacity;
+uniform int uMaterial;
+uniform int uSurfaceMode;
 uniform vec3 uCameraPos;
 uniform vec3 uCameraForward;
 uniform vec3 uCameraRight;
@@ -149,7 +147,6 @@ uniform float uTanHalfFov;
 uniform vec3 uTexel;
 varying vec2 vUV;
 
-const vec3 kBackground = vec3(0.025, 0.031, 0.043);
 const float kNear = 0.03;
 const float kFar = 8.0;
 
@@ -182,6 +179,30 @@ float depthFromViewDistance(float viewDepth) {
     return clamp(0.5 * ndc + 0.5, 0.0, 1.0);
 }
 
+float edgeDistance(float x) {
+    float f = fract(x);
+    return min(f, 1.0 - f);
+}
+
+float triangularWireMask(vec3 p, vec3 n) {
+    vec3 an = abs(n);
+    vec2 uv;
+    if (an.x >= an.y && an.x >= an.z) {
+        uv = p.yz;
+    } else if (an.y >= an.z) {
+        uv = p.xz;
+    } else {
+        uv = p.xy;
+    }
+
+    uv *= 22.0;
+    float d0 = edgeDistance(uv.x);
+    float d1 = edgeDistance(uv.y);
+    float d2 = edgeDistance(uv.x + uv.y);
+    float d = min(d0, min(d1, d2));
+    return 1.0 - smoothstep(0.035, 0.085, d);
+}
+
 void main() {
     vec2 ndc = vUV * 2.0 - 1.0;
     vec3 ro = uCameraPos;
@@ -211,15 +232,51 @@ void main() {
         if (prevF < 0.0 && curF >= 0.0) {
             vec3 hit = p;
             vec3 n = gradient(hit);
-            vec3 light = normalize(vec3(0.55, 0.8, 0.35));
-            float diffuse = 0.25 + 0.75 * abs(dot(n, light));
+            if (dot(n, rd) > 0.0) n = -n;
+
             vec3 positive = vec3(0.92, 0.20, 0.17);
             vec3 negative = vec3(0.16, 0.38, 0.95);
             vec3 base = cur >= 0.0 ? positive : negative;
-            vec3 shaded = base * diffuse;
+
+            // Camera-relative soft key + weak fill. It follows the view so the
+            // orbital keeps readable form while rotating, without a harsh studio light.
+            vec3 key = normalize(-0.34 * uCameraRight + 0.56 * uCameraUp - 0.75 * uCameraForward);
+            vec3 fill = normalize(0.62 * uCameraRight + 0.16 * uCameraUp - 0.34 * uCameraForward);
+            vec3 viewDir = normalize(-rd);
+            vec3 halfVector = normalize(key + viewDir);
+            float keyDiffuse = max(0.0, dot(n, key));
+            float fillDiffuse = max(0.0, dot(n, fill));
+            float specular = pow(max(0.0, dot(n, halfVector)), 28.0);
+            float illumination = 0.42 + 0.40 * keyDiffuse + 0.10 * fillDiffuse;
+            vec3 shaded = base * illumination + vec3(0.13 * specular);
+
+            float wire = triangularWireMask(hit, n);
+            if (uSurfaceMode == 1 && wire < 0.45) discard;
+            if (uSurfaceMode == 1) {
+                shaded = mix(base * 0.32, base * 1.04 + vec3(0.10), wire);
+            } else if (uSurfaceMode == 2) {
+                shaded = mix(shaded, base * 0.30 + vec3(0.16), 0.80 * wire);
+            }
+
+            float alpha = clamp(uOpacity, 0.02, 1.0);
+            if (uMaterial == 1) {
+                float facing = clamp(abs(dot(n, viewDir)), 0.0, 1.0);
+                float fresnel = pow(1.0 - facing, 2.2);
+                float glassSpec = pow(max(0.0, dot(n, halfVector)), 52.0);
+                vec3 glassBody = mix(base * 0.48 + vec3(0.06),
+                                     base * 0.88 + vec3(0.12), fresnel);
+                shaded = mix(glassBody, vec3(1.0), 0.20 * glassSpec + 0.12 * fresnel);
+                alpha *= 0.28 + 0.56 * fresnel;
+                alpha = clamp(alpha, 0.02, 0.90);
+            }
+
+            if (uSurfaceMode == 1) {
+                alpha *= 0.82 + 0.18 * wire;
+            }
+
             float viewDepth = dot(hit - uCameraPos, uCameraForward);
             gl_FragDepth = depthFromViewDistance(viewDepth);
-            gl_FragColor = vec4(mix(kBackground, shaded, clamp(uOpacity, 0.08, 1.0)), 1.0);
+            gl_FragColor = vec4(clamp(shaded, vec3(0.0), vec3(1.0)), alpha);
             return;
         }
         prev = cur;
@@ -508,7 +565,9 @@ void VolumeRenderer::render_volume(const int framebuffer_width,
                                    const int framebuffer_height,
                                    const float isovalue,
                                    const OrbitCamera& camera,
-                                   const float opacity) {
+                                   const float opacity,
+                                   const OrbitalMaterial material,
+                                   const OrbitalSurfaceMode surface_mode) {
     if (nx_ <= 0 || ny_ <= 0 || nz_ <= 0) return;
 
     const CameraBasis b = camera_basis(camera);
@@ -521,13 +580,18 @@ void VolumeRenderer::render_volume(const int framebuffer_width,
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
-    glDisable(GL_BLEND);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     gl::UseProgram(program_);
 
     gl::Uniform1i(gl::GetUniformLocation(program_, "uVolume"), 0);
     gl::Uniform1f(gl::GetUniformLocation(program_, "uIso"), isovalue);
     gl::Uniform1f(gl::GetUniformLocation(program_, "uOpacity"),
-                  std::clamp(opacity, 0.08f, 1.0f));
+                  std::clamp(opacity, 0.02f, 1.0f));
+    gl::Uniform1i(gl::GetUniformLocation(program_, "uMaterial"),
+                  static_cast<int>(material));
+    gl::Uniform1i(gl::GetUniformLocation(program_, "uSurfaceMode"),
+                  static_cast<int>(surface_mode));
     gl::Uniform3f(gl::GetUniformLocation(program_, "uCameraPos"),
                   b.position.x, b.position.y, b.position.z);
     gl::Uniform3f(gl::GetUniformLocation(program_, "uCameraForward"),
@@ -567,6 +631,7 @@ void VolumeRenderer::render_volume(const int framebuffer_width,
 
     glBindTexture(GL_TEXTURE_3D, 0);
     gl::UseProgram(0);
+    glDisable(GL_BLEND);
 }
 
 void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
@@ -590,9 +655,6 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     const auto bonds = analyse_bonds(wavefunction);
     const Vec3 molecular_centre = heavy_atom_centroid(wavefunction, points);
 
-    // Do not clear the depth buffer here: the orbital raymarch has already
-    // written its true surface depth. Geometry behind a lobe must therefore be
-    // occluded by that lobe instead of being painted over it as an overlay.
     gl::UseProgram(0);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -608,9 +670,6 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     load_3d_camera(b, aspect, tan_half_fov);
 
     const float opacity = std::clamp(settings.molecule_opacity, 0.05f, 1.0f);
-    // The accepted pre.2 screenshot used Atom=1.25 and Bond=1.15. Those
-    // proportions are now calibrated into the base radii so the user-facing
-    // reference value 1.0 reproduces the same size.
     const float bond_radius = (settings.style == MoleculeStyle::MediumBallAndStick ? 0.00540f : 0.00415f) *
                               std::clamp(settings.bond_scale, 0.35f, 3.0f);
     const Vec3 bond_colour{0.73f, 0.76f, 0.81f};
@@ -626,17 +685,9 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
 
         const Vec3 a = points[bond.atom_a];
         const Vec3 c = points[bond.atom_b];
-
-        // Standard Molden does not carry authoritative bond orders. Therefore
-        // the base structural graph remains a chemically neutral single bond;
-        // no double/triple bond is fabricated from distance alone.
         draw_cylinder(a, c, bond_radius, bond_colour, opacity * 0.94f, b);
 
         if (settings.style == MoleculeStyle::StickDelocalisation && bond.delocalised) {
-            // Delocalisation is a visual heuristic: retain the full 3D single
-            // bond and add a thinner 3D dashed tube displaced toward the heavy-
-            // atom centre. This reads like an inner aromatic/delocalised line
-            // rather than replacing the molecular skeleton with floating dashes.
             const Vec3 inward = inward_delocalisation_offset(
                 a, c, molecular_centre, bond_radius * 2.35f);
             draw_dashed_cylinder(a + inward, c + inward,
