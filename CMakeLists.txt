@@ -28,9 +28,13 @@ add_library(cov_parser
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
     src/analysis/orbital_symmetry.cpp
+    src/analysis/orbital_symmetry_dispatch.cpp
 )
 set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
     COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
+)
+set_source_files_properties(src/analysis/orbital_symmetry.cpp PROPERTIES
+    COMPILE_DEFINITIONS "derive_orbital_symmetry=derive_orbital_symmetry_legacy"
 )
 target_include_directories(cov_parser PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -238,6 +242,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_orbital_symmetry_smoke tests/orbital_symmetry_smoke.cpp)
     target_link_libraries(cov_orbital_symmetry_smoke PRIVATE cov_parser)
     add_test(NAME orbital_symmetry_smoke COMMAND cov_orbital_symmetry_smoke)
+
+    add_executable(cov_linear_orbital_symmetry_smoke tests/linear_orbital_symmetry_smoke.cpp)
+    target_link_libraries(cov_linear_orbital_symmetry_smoke PRIVATE cov_parser)
+    add_test(NAME linear_orbital_symmetry_smoke COMMAND cov_linear_orbital_symmetry_smoke)
 
     add_executable(cov_orbital_view_smoke tests/orbital_view_smoke.cpp)
     target_link_libraries(cov_orbital_view_smoke PRIVATE cov_orbitals)
