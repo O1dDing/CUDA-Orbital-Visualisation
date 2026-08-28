@@ -53,6 +53,13 @@ struct MolecularOrbital {
     Spin spin = Spin::Alpha;
     std::string symmetry;
     std::vector<float> coefficients;
+
+    // Molden can carry occupation/symmetry explicitly; FCHK normally carries
+    // electron counts rather than per-orbital occupations and usually does not
+    // carry per-MO irreps. Keeping provenance prevents derived values from being
+    // presented as producer data later in the UI/export layer.
+    DataProvenance occupation_provenance = DataProvenance::Unavailable;
+    DataProvenance symmetry_provenance = DataProvenance::Unavailable;
 };
 
 struct Wavefunction {
@@ -108,6 +115,14 @@ inline const char* wavefunction_source_name(const WavefunctionSource source) noe
         case WavefunctionSource::Molden: return "Molden";
         case WavefunctionSource::Fchk: return "FCHK";
         default: return "Unknown";
+    }
+}
+
+inline const char* data_provenance_name(const DataProvenance provenance) noexcept {
+    switch (provenance) {
+        case DataProvenance::Producer: return "producer";
+        case DataProvenance::Derived: return "derived";
+        default: return "unavailable";
     }
 }
 
