@@ -103,7 +103,15 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
 
     add_library(cov_ui STATIC
         src/ui/ui.cpp
+        src/ui/ui_text_dispatch.cpp
         src/ui/orbital_ui_v2.cpp
+        src/ui/orbital_ui_dispatch.cpp
+    )
+    set_source_files_properties(src/ui/ui.cpp PROPERTIES
+        COMPILE_DEFINITIONS "tr=tr_legacy"
+    )
+    set_source_files_properties(src/ui/orbital_ui_v2.cpp PROPERTIES
+        COMPILE_DEFINITIONS "draw_orbital_browser=draw_orbital_browser_legacy;draw_energy_diagram=draw_energy_diagram_legacy"
     )
     target_include_directories(cov_ui PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -235,6 +243,10 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_wavefunction_analysis_smoke PRIVATE cov_parser)
     add_test(NAME wavefunction_analysis_smoke COMMAND cov_wavefunction_analysis_smoke)
 
+    add_executable(cov_multicentre_classification_smoke tests/multicentre_classification_smoke.cpp)
+    target_link_libraries(cov_multicentre_classification_smoke PRIVATE cov_parser)
+    add_test(NAME multicentre_classification_smoke COMMAND cov_multicentre_classification_smoke)
+
     add_executable(cov_symmetry_smoke tests/symmetry_smoke.cpp)
     target_link_libraries(cov_symmetry_smoke PRIVATE cov_parser)
     add_test(NAME symmetry_smoke COMMAND cov_symmetry_smoke)
@@ -273,4 +285,11 @@ if(COV_BUILD_TESTS)
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
     add_test(NAME ui_smoke COMMAND cov_ui_smoke)
+
+    add_executable(cov_ui_fchk_smoke tests/ui_fchk_smoke.cpp)
+    target_link_libraries(cov_ui_fchk_smoke PRIVATE cov_ui)
+    target_compile_options(cov_ui_fchk_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
+    )
+    add_test(NAME ui_fchk_smoke COMMAND cov_ui_fchk_smoke)
 endif()
