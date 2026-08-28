@@ -14,6 +14,17 @@ struct OrbitCamera {
     float fov_degrees = 42.0f;
 };
 
+enum class OrbitalMaterial : std::uint8_t {
+    Standard = 0,
+    Glass,
+};
+
+enum class OrbitalSurfaceMode : std::uint8_t {
+    Solid = 0,
+    Wire,
+    SolidWire,
+};
+
 class VolumeRenderer {
 public:
     VolumeRenderer();
@@ -33,7 +44,9 @@ public:
                        int framebuffer_height,
                        float isovalue,
                        const OrbitCamera& camera,
-                       float opacity = 1.0f);
+                       float opacity = 1.0f,
+                       OrbitalMaterial material = OrbitalMaterial::Standard,
+                       OrbitalSurfaceMode surface_mode = OrbitalSurfaceMode::Solid);
 
     void render_geometry(const Wavefunction& wavefunction,
                          const GridBox& box,
