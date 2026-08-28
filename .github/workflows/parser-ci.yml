@@ -88,16 +88,16 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.2.0-pre.5
+      - name: Publish v0.2.0-pre.6
         if: github.event_name == 'push' && github.ref == 'refs/heads/vibe/orbital-browser-and-file-dialog'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $exe = "build-cuda/Release/cov.exe"
-          gh release create "v0.2.0-pre.5" $exe `
+          gh release create "v0.2.0-pre.6" $exe `
             --repo "$env:GITHUB_REPOSITORY" `
             --target "$env:GITHUB_SHA" `
-            --title "CUDA Orbital Visualisation v0.2.0-pre.5" `
-            --notes "Corrected hotfix for Multiwfn/Gaussian Molden files that declare [5D] but omit [7F] while their MO vector dimension unambiguously uses pure spherical f functions. Convention inference now ignores angular-momentum families absent from the basis, respects all explicit Molden markers, and only accepts a unique dimension-matching convention. The regression fixture now passes on Ubuntu and Windows. Includes the pre.3 3D/depth-composited molecular rendering. CUDA 12.8.2; native sm_120 plus compute_120 PTX. Item 11 remains deferred to PR #3." `
+            --title "CUDA Orbital Visualisation v0.2.0-pre.6" `
+            --notes "Final PR #2 appearance candidate. Adds a Glass orbital material, true continuously adjustable orbital alpha, GPU-resident procedural triangular Wire and Solid + Wire surface modes, and a restrained camera-relative automatic key/fill light. Rendering order is depth-correct for transparency: 3D molecular geometry is drawn into depth first, then the implicit orbital surface depth-tests and alpha-blends over geometry behind it. No Marching Cubes or volumetric GPU-to-CPU readback is introduced. Includes the corrected omitted-[7F] Molden parser hotfix and existing 3D molecule rendering. CUDA 12.8.2; native sm_120 plus compute_120 PTX. Item 11 remains deferred to PR #3." `
             --prerelease
