@@ -52,7 +52,7 @@ Wavefunction parse_wavefunction(const std::filesystem::path& path,
         MoldenParseOptions molden;
         molden.max_atoms = options.max_atoms;
         molden.require_orbitals = options.require_orbitals;
-        Wavefunction wf = parse_molden(path, molden);
+        Wavefunction wf = parse_molden_format(path, molden);
         wf.source = WavefunctionSource::Molden;
         return wf;
     }
