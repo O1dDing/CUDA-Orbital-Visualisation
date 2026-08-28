@@ -18,9 +18,16 @@ endif()
 
 add_library(cov_parser
     src/parser/molden_parser.cpp
+    src/parser/molden_compat.cpp
     src/parser/fchk_parser.cpp
     src/parser/wavefunction_io.cpp
     src/analysis/density.cpp
+)
+# Compile the historical Molden implementation under an explicit format-only
+# symbol. The legacy parse_molden() API is now a compatibility dispatcher in
+# molden_compat.cpp, allowing the existing viewer call-site to accept FCHK too.
+set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
+    COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
 )
 target_include_directories(cov_parser PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
