@@ -22,12 +22,16 @@ FileDialogResult open_wavefunction_file_dialog() {
     ofn.lpstrFile = buffer.data();
     ofn.nMaxFile = static_cast<DWORD>(buffer.size());
     ofn.lpstrFilter =
-        L"Gaussian FCHK (*.fchk;*.fch)\0"
+        L"Gaussian wavefunction (*.fchk;*.fch;*.chk)\0"
+        L"*.fchk;*.fch;*.chk\0"
+        L"Gaussian formatted checkpoint (*.fchk;*.fch)\0"
         L"*.fchk;*.fch\0"
+        L"Gaussian binary checkpoint via formchk (*.chk)\0"
+        L"*.chk\0"
         L"Molden wavefunction (*.molden;*.molden.input;*.molden.inp)\0"
         L"*.molden;*.molden.input;*.molden.inp\0"
-        L"Supported wavefunctions (*.fchk;*.fch;*.molden;*.molden.input;*.molden.inp)\0"
-        L"*.fchk;*.fch;*.molden;*.molden.input;*.molden.inp\0"
+        L"Supported wavefunctions (*.fchk;*.fch;*.chk;*.molden;*.molden.input;*.molden.inp)\0"
+        L"*.fchk;*.fch;*.chk;*.molden;*.molden.input;*.molden.inp\0"
         L"All files (*.*)\0"
         L"*.*\0\0";
     ofn.nFilterIndex = 1;
