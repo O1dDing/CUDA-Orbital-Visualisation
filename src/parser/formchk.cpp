@@ -1,5 +1,7 @@
 #include "cov/formchk.hpp"
 
+#include "cov/fchk_overlap.hpp"
+
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
@@ -72,7 +74,9 @@ Wavefunction parse_gaussian_chk_via_formchk(const std::filesystem::path& chk_pat
             "Gaussian formchk reported success but did not produce a usable FCHK file");
     }
 
-    return parse_fchk(output.path, options);
+    Wavefunction wf=parse_fchk(output.path, options);
+    (void)enrich_fchk_overlap_from_file(wf, output.path);
+    return wf;
 }
 
 } // namespace cov
