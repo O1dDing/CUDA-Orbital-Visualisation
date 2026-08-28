@@ -2,6 +2,7 @@
 
 #include "cov/bond_analysis.hpp"
 #include "cov/density.hpp"
+#include "cov/fchk_overlap.hpp"
 #include "cov/fchk_parser.hpp"
 #include "cov/formchk.hpp"
 #include "cov/gaussian_log.hpp"
@@ -72,11 +73,15 @@ void postprocess_wavefunction(Wavefunction& wf,
         }
     }
 
-    const auto overlap = derive_ao_overlap_from_mos(wf);
-    if (overlap.available()) {
-        wf.ao_overlap = overlap.matrix;
-        wf.ao_overlap_provenance = DataProvenance::Derived;
-        wf.ao_overlap_orthonormality_error = overlap.max_orthonormality_error;
+    // A producer-supplied FCHK overlap matrix is authoritative. Only derive S
+    // from a complete orthonormal MO block when the input did not provide one.
+    if (wf.ao_overlap.empty()) {
+        const auto overlap = derive_ao_overlap_from_mos(wf);
+        if (overlap.available()) {
+            wf.ao_overlap = overlap.matrix;
+            wf.ao_overlap_provenance = DataProvenance::Derived;
+            wf.ao_overlap_orthonormality_error = overlap.max_orthonormality_error;
+        }
     }
 
     // FCHK normally lacks per-MO irreps. Once a validated geometry operation set
@@ -109,6 +114,7 @@ Wavefunction parse_wavefunction(const std::filesystem::path& path,
             wf = parse_gaussian_chk_via_formchk(path, fchk);
         } else {
             wf = parse_fchk(path, fchk);
+            (void)enrich_fchk_overlap_from_file(wf, path);
         }
     } else if (extension == ".molden" ||
                filename.ends_with(".molden.input") || filename.ends_with(".molden.inp") ||
