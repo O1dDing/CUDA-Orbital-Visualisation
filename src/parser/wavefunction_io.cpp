@@ -7,6 +7,7 @@
 #include "cov/gaussian_log.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/overlap.hpp"
+#include "cov/symmetry.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -54,22 +55,21 @@ void postprocess_wavefunction(Wavefunction& wf,
         }
     }
 
+    // Producer-reported Gaussian point-group information wins when a sibling
+    // log/out enrichment supplied it. FCHK-only and Molden-only inputs receive a
+    // geometry-derived point group from COV's own operation/permutation engine.
+    derive_point_group_from_geometry(wf);
+
     if (options.keep_density && !wf.orbitals.empty()) {
         if (wf.total_density_packed.empty() &&
             options.reconstruct_density_if_missing) {
-            auto density = reconstruct_total_density_packed(wf);
-            if (!density.empty()) {
-                wf.total_density_packed = std::move(density);
-                wf.total_density_provenance = DataProvenance::Derived;
-            }
+            wf.total_density_packed = reconstruct_total_density_packed(wf);
+            wf.total_density_provenance = DataProvenance::Derived;
         }
         if (wf.spin_density_packed.empty() &&
             options.reconstruct_density_if_missing) {
-            auto density = reconstruct_spin_density_packed(wf);
-            if (!density.empty()) {
-                wf.spin_density_packed = std::move(density);
-                wf.spin_density_provenance = DataProvenance::Derived;
-            }
+            wf.spin_density_packed = reconstruct_spin_density_packed(wf);
+            wf.spin_density_provenance = DataProvenance::Derived;
         }
     }
 
