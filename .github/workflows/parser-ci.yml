@@ -67,41 +67,39 @@ jobs:
           if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) { throw "sm_120 cubin missing" }
           & $cuobjdump --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
           if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) { throw "compute_120 PTX missing" }
-      - name: Stage v0.3.0-pre.8 executable
+      - name: Stage v0.3.0-pre.9 executable
         shell: pwsh
         run: |
           $source = "build-cuda/Release/cov.exe"
-          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.8-Windows-sm120.exe"
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.9-Windows-sm120.exe"
           Copy-Item $source $asset -Force
           Get-Item $asset | Format-List FullName,Length,LastWriteTime
-      - name: Upload pre.8 executable
+      - name: Upload pre.9 executable
         uses: actions/upload-artifact@v4
         with:
-          name: cov-v0.3.0-pre.8-windows-sm120
-          path: build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.8-Windows-sm120.exe
+          name: cov-v0.3.0-pre.9-windows-sm120
+          path: build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.9-Windows-sm120.exe
           if-no-files-found: error
           retention-days: 30
-      - name: Publish v0.3.0-pre.8
+      - name: Publish v0.3.0-pre.9
         if: github.event_name == 'push' && github.ref == 'refs/heads/feat/fchk-primary-interface'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag = "v0.3.0-pre.8"
-          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.8-Windows-sm120.exe"
-          $title = "CUDA Orbital Visualisation v0.3.0-pre.8 — Chemical-Valence MO Milestone"
+          $tag = "v0.3.0-pre.9"
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.9-Windows-sm120.exe"
+          $title = "CUDA Orbital Visualisation v0.3.0-pre.9 — Delocalised Pi and UI Polish"
           $notes = @"
-          This prerelease advances PR #3 with FCHK-driven chemical-valence orbital analysis.
+          This prerelease advances PR #3 with delocalised-pi detection and UI readability fixes.
 
           ### Highlights
-          - Chemical-valence MO selection is derived from an element- and ECP-aware minimal atomic reference using the AO-overlap metric.
-          - Auto and Valence views, together with the MO diagram, use the derived chemical-valence manifold instead of an energy cutoff.
-          - Selected-MO details expose valence AO composition, sigma/pi/delta/phi character, bonding character, Mayer pair indices, method-labelled MO overlap contributions, and supported multicentre families.
-          - Transition-metal `(n-1)d + ns + np` functions are retained as valence candidates, with `(n-1)s,(n-1)p` treated as semicore candidates.
-          - Unsupported assignments remain percentage-valued or explicitly undetermined rather than being forced into a categorical label.
-          - The CUDA/OpenGL viewer remains built with CUDA 12.8.2 and includes native `sm_120` code plus compute_120 PTX fallback.
-
-          Producer NBO/Wiberg data, expanded Gaussian LOG/OUT chemistry parsing, WFX input, and cross-source reconciliation remain planned for a later prerelease.
+          - Planar N-centre p-valence families are grouped into one delocalised Pi system with participating atoms and electrons.
+          - MO diagrams connect all family members with a Pi bracket and shared descriptor.
+          - Selected-MO chemistry values use semantic colours for orbital family, bonding role, symmetry, energies and confidence.
+          - Windows CJK font coverage includes the viewer's hard-coded Chinese and Japanese labels.
+          - Chemical-valence MO selection remains element- and ECP-aware and preserves complete degenerate groups.
+          - The CUDA/OpenGL viewer is built with CUDA 12.8.2 and verified for native sm_120 plus compute_120 PTX fallback.
           "@
 
           gh release view $tag --repo "$env:GITHUB_REPOSITORY" *> $null
