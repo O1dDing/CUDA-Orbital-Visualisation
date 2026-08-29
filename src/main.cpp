@@ -74,11 +74,8 @@ cov::GridBox make_grid_box(const cov::Wavefunction& wf, const float padding_bohr
 }
 
 std::size_t initial_orbital(const cov::Wavefunction& wf) {
-    std::size_t selected = 0;
-    for (std::size_t i = 0; i < wf.orbitals.size(); ++i) {
-        if (wf.orbitals[i].occupation > 1.0e-4f) selected = i;
-    }
-    return selected;
+    const auto frontier=cov::find_frontier_orbitals(wf.orbitals);
+    return frontier.homo.value_or(0u);
 }
 
 const char* status_label(const StatusKind status, const cov::ui::Language language) {
@@ -290,6 +287,8 @@ int main(int argc, char** argv) {
                 evaluator = std::make_unique<cov::CudaOrbitalEvaluator>(*wavefunction);
                 mo_index = new_mo;
                 pending_mo_index.reset();
+                orbital_ui.browser_cache={};
+                orbital_ui.diagram_cache={};
                 grid_box = new_box;
 
                 renderer.resize_volume(resolution, resolution, resolution);
@@ -531,8 +530,13 @@ int main(int argc, char** argv) {
                 options.energy_axis_mode = orbital_ui.energy_axis_mode;
                 options.degeneracy = orbital_ui.degeneracy;
                 options.filter = orbital_ui.filter;
-                options.selected_index = mo_index;
-                options.neighbourhood = static_cast<std::size_t>(std::max(2, orbital_ui.diagram_neighbourhood));
+                options.selected_index = orbital_ui.hide_ligand_centred_intermediates
+                    ?wavefunction->orbitals.size():mo_index;
+                options.neighbourhood = static_cast<std::size_t>(
+                    std::max(3, orbital_ui.diagram_neighbourhood));
+                options.hide_ligand_centred_intermediates=
+                    orbital_ui.hide_ligand_centred_intermediates;
+                options.nonlinear_minimum_gap_weight=0.055;
                 std::filesystem::path base = current_file.empty()
                                                  ? std::filesystem::current_path() / "mo_diagram"
                                                  : current_file;

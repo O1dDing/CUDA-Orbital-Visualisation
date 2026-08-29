@@ -47,6 +47,7 @@ target_compile_features(cov_parser PUBLIC cxx_std_20)
 add_library(cov_orbitals
     src/orbitals/orbital_view.cpp
     src/orbitals/orbital_view_dispatch.cpp
+    src/orbitals/ligand_field.cpp
     src/orbitals/mo_diagram_v2.cpp
     src/orbitals/mo_diagram_chemistry.cpp
     src/orbitals/annotation_source_dispatch.cpp
@@ -295,7 +296,7 @@ if(COV_BUILD_TESTS)
     add_test(NAME orbital_view_smoke COMMAND cov_orbital_view_smoke)
 
     add_executable(cov_mo_diagram_smoke tests/mo_diagram_smoke.cpp)
-    target_link_libraries(cov_mo_diagram_smoke PRIVATE cov_orbitals)
+    target_link_libraries(cov_mo_diagram_smoke PRIVATE cov_orbitals cov_parser)
     add_test(NAME mo_diagram_smoke COMMAND cov_mo_diagram_smoke)
 
     add_executable(cov_energy_axis_smoke tests/energy_axis_smoke.cpp)

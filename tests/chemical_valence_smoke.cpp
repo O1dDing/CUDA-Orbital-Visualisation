@@ -148,8 +148,10 @@ int main() {
     cov::MODiagramOptions options;
     options.selected_index=0;
     const auto diagram=cov::build_mo_diagram_data(wf,options);
-    if (diagram.levels.size()!=3u) {
-        std::cerr<<"MO diagram did not reduce H3 to three chemical-valence MOs\n";
+    if (diagram.selection.included_indices.size()!=3u ||
+        diagram.levels.size()!=2u ||
+        diagram.levels[1].member_indices.size()!=2u) {
+        std::cerr<<"MO diagram did not preserve three H3 valence MOs in two symmetry rows\n";
         return EXIT_FAILURE;
     }
     if (!diagram.levels[0].chemistry.available ||

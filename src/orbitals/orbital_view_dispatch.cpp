@@ -1,4 +1,5 @@
 #include "cov/orbital_view.hpp"
+#include "cov/ligand_field.hpp"
 
 #include <algorithm>
 
@@ -108,6 +109,7 @@ std::vector<OrbitalMetadata> build_orbital_metadata(
         result[i].visible=orbital_visible(
             wavefunction.orbitals,i,frontier,filter);
     }
+    apply_local_ligand_field_symmetry(wavefunction,result);
     return result;
 }
 

@@ -127,13 +127,46 @@ struct MODiagramOptions {
     std::size_t neighbourhood = 12;
     std::size_t max_levels = 0;
     std::size_t max_virtual_levels = 10;
+    bool hide_ligand_centred_intermediates = false;
 
     double nonlinear_minimum_gap_weight = 0.070;
+
+    // A small same-symmetry pi splitting is shown as an approximately
+    // nonbonding weak-coupling level instead of forcing a donor/acceptor
+    // assignment.  The retained member is the one with the larger metal
+    // valence contribution, so the reduced ligand-field diagram keeps the
+    // chemically relevant d-level rather than an arbitrary canonical MO.
+    double weak_pi_split_hartree = 0.020;
+    double weak_metal_ligand_overlap = 0.025;
 
     int width = 1200;
     int height = 900;
     bool include_hidden_in_metadata = true;
 };
+
+enum class PiInteractionKind {
+    Donor,
+    Acceptor,
+    Coupled,
+    WeakNearNonbonding,
+};
+
+struct PiInteractionDescriptor {
+    std::size_t lower_level = 0;
+    std::size_t upper_level = 0;
+    std::vector<std::size_t> lower_orbitals;
+    std::vector<std::size_t> upper_orbitals;
+    std::string symmetry;
+    PiInteractionKind kind = PiInteractionKind::Coupled;
+    double splitting_hartree = 0.0;
+    double confidence = 0.0;
+    bool lower_visible = true;
+    bool upper_visible = true;
+    std::size_t retained_level = 0;
+};
+
+[[nodiscard]] const char* pi_interaction_kind_name(
+    PiInteractionKind kind) noexcept;
 
 struct MODiagramLevel {
     OrbitalMetadata metadata;
@@ -143,6 +176,31 @@ struct MODiagramLevel {
     bool homo = false;
     bool lumo = false;
     double layout_energy_hartree = 0.0;
+
+    // One row represents a complete degenerate subspace.  Group-level
+    // quantities are averaged per member and therefore remain invariant to a
+    // rotation of canonical MOs inside an exactly degenerate subspace.
+    std::vector<std::size_t> member_indices;
+    std::vector<ElectronGlyphs> member_electrons;
+    // For a UDFT spatial-row view, each majority-spin member can retain the
+    // matched minority-spin canonical MO.  This keeps selection highlighting
+    // and exact member metadata available without drawing a duplicate row.
+    std::vector<std::size_t> member_spin_counterparts;
+    double energy_spread_hartree = 0.0;
+    double total_occupation = 0.0;
+    double metal_s_weight = 0.0;
+    double metal_p_weight = 0.0;
+    double metal_d_weight = 0.0;
+    // p population on the atoms directly coordinated to the selected metal.
+    // ligand_p_weight may additionally include the rest of those ligand
+    // fragments (for example O in CO or N in CN).
+    double direct_ligand_p_weight = 0.0;
+    double ligand_p_weight = 0.0;
+    double sigma_fraction = 0.0;
+    double pi_fraction = 0.0;
+    double metal_ligand_overlap = 0.0;
+    bool raw_data_fallback = false;
+    bool approximate_nonbonding = false;
 };
 
 struct MODiagramData {
@@ -152,8 +210,22 @@ struct MODiagramData {
     std::vector<MODiagramLevel> levels;
     std::vector<OrbitalMetadata> metadata;
     std::vector<OrbitalAnnotation> annotations;
+    std::vector<PiInteractionDescriptor> pi_interactions;
     MODiagramMode mode = MODiagramMode::ValenceCentral;
     EnergyTransform energy_transform;
+
+    // Local first-shell ligand-field information is kept separate from the
+    // full molecular point group.  For an unrestricted calculation the
+    // diagram can use majority-spin spatial representatives while retaining
+    // the paired alpha/beta occupation and member metadata.
+    std::string ligand_field_point_group;
+    std::size_t ligand_field_metal_atom = 0;
+    std::vector<std::size_t> ligand_field_ligand_atoms;
+    double ligand_field_confidence = 0.0;
+    bool spin_counterparts_collapsed = false;
+    bool spin_counterparts_partial = false;
+    std::size_t spin_counterpart_pair_count = 0;
+    std::size_t spin_counterpart_unmatched_visible = 0;
 };
 
 [[nodiscard]] const char* annotation_source_name(AnnotationSource source) noexcept;

@@ -144,6 +144,42 @@ int main() {
         return 16;
     }
 
+    // Gaussian UHF data is stored as a complete alpha block followed by a
+    // complete beta block.  Global and spin-resolved frontier orbitals must
+    // be selected by energy, not by whichever occupied/virtual item happens
+    // to occur last/first in that storage order.
+    const std::vector<cov::MolecularOrbital> unrestricted = {
+        mo(-0.70, 1.0f, cov::Spin::Alpha),
+        mo(-0.20, 1.0f, cov::Spin::Alpha),
+        mo( 0.30, 0.0f, cov::Spin::Alpha),
+        mo(-0.80, 1.0f, cov::Spin::Beta),
+        mo(-0.35, 1.0f, cov::Spin::Beta),
+        mo( 0.10, 0.0f, cov::Spin::Beta),
+    };
+    const auto unrestricted_frontier=cov::find_frontier_orbitals(unrestricted);
+    if (!unrestricted_frontier.homo || *unrestricted_frontier.homo!=1u ||
+        !unrestricted_frontier.lumo || *unrestricted_frontier.lumo!=5u ||
+        !unrestricted_frontier.alpha_homo ||
+        *unrestricted_frontier.alpha_homo!=1u ||
+        !unrestricted_frontier.alpha_lumo ||
+        *unrestricted_frontier.alpha_lumo!=2u ||
+        !unrestricted_frontier.beta_homo ||
+        *unrestricted_frontier.beta_homo!=4u ||
+        !unrestricted_frontier.beta_lumo ||
+        *unrestricted_frontier.beta_lumo!=5u) {
+        std::cerr << "UHF frontier detection depended on block order\n";
+        return 17;
+    }
+    auto reordered=unrestricted;
+    std::rotate(reordered.begin(),reordered.begin()+3,reordered.end());
+    const auto reordered_frontier=cov::find_frontier_orbitals(reordered);
+    if (!reordered_frontier.homo || !reordered_frontier.lumo ||
+        !near(reordered[*reordered_frontier.homo].energy_hartree,-0.20,1.0e-12) ||
+        !near(reordered[*reordered_frontier.lumo].energy_hartree,0.10,1.0e-12)) {
+        std::cerr << "global UHF frontier changed after block reordering\n";
+        return 18;
+    }
+
     std::cout << "orbital_view_smoke ok\n";
     return 0;
 }
