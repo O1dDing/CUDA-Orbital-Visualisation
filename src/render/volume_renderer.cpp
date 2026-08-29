@@ -687,7 +687,7 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
         const Vec3 c = points[bond.atom_b];
         draw_cylinder(a, c, bond_radius, bond_colour, opacity * 0.94f, b);
 
-        if (settings.style == MoleculeStyle::StickDelocalisation && bond.delocalised) {
+        if (bond.delocalised) {
             const Vec3 inward = inward_delocalisation_offset(
                 a, c, molecular_centre, bond_radius * 2.35f);
             draw_dashed_cylinder(a + inward, c + inward,

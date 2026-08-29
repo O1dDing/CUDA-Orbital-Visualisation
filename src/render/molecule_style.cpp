@@ -10,7 +10,12 @@ namespace cov {
 namespace {
 
 constexpr double kMayerRenderFloor = 0.05;
-constexpr double kElectronicDistanceSanityFactor = 2.20;
+// Mayer indices also contain non-local through-bond and pi-system coupling.
+// Keep the electronic value as bond evidence, but do not turn those remote
+// couplings into structural chords. 1.50 still admits unusually long genuine
+// bonds such as the equal H--H contacts in H3+ while separating the next
+// neighbour shell in ordinary carbon rings.
+constexpr double kElectronicAdjacencyFactor = 1.50;
 
 bool likely_pi_element(const int z) noexcept {
     switch (z) {
@@ -196,10 +201,10 @@ std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction) {
     const std::size_t atom_count = wavefunction.atoms.size();
 
     if (wavefunction.bond_order_provenance != DataProvenance::Unavailable) {
-        // Electronic connectivity is authoritative when available. A generous
-        // distance sanity guard rejects remote numerical couplings without
-        // reverting to a tight covalent-radius cutoff that would again erase
-        // coordination bonds.
+        // Electronic evidence is authoritative when available, while the
+        // distance envelope determines whether that pair is a drawable
+        // structural neighbour. This prevents delocalised Mayer coupling from
+        // becoming chords across aromatic rings.
         for (const auto& record : wavefunction.bond_orders) {
             const std::size_t i = record.atom_a;
             const std::size_t j = record.atom_b;
@@ -211,7 +216,7 @@ std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction) {
             const Atom& b = wavefunction.atoms[j];
             const double distance_bohr = atom_distance_bohr(a, b);
             const double sanity_bohr =
-                kElectronicDistanceSanityFactor *
+                kElectronicAdjacencyFactor *
                 (covalent_radius_angstrom(a.atomic_number) +
                  covalent_radius_angstrom(b.atomic_number)) * kAngstromToBohr;
             if (distance_bohr > sanity_bohr) continue;

@@ -35,11 +35,11 @@ struct BondVisual {
 
 [[nodiscard]] double covalent_radius_angstrom(int atomic_number) noexcept;
 
-// Connectivity hierarchy:
-// 1. wavefunction-derived pairwise Mayer evidence when available;
-// 2. conservative covalent-radius geometry fallback only when electronic
-//    connectivity is unavailable.
-// Pairwise Mayer evidence is not an electron-counting or multicentre claim.
+// Wavefunction-derived Mayer evidence is used when available, inside a
+// conservative structural-neighbour envelope. This keeps non-local electronic
+// coupling from being drawn as a bond. Covalent-radius geometry is the fallback
+// only when electronic evidence is unavailable. Pairwise Mayer evidence is not
+// an electron-counting or multicentre claim.
 [[nodiscard]] std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction);
 
 } // namespace cov
