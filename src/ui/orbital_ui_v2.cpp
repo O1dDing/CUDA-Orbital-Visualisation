@@ -715,11 +715,6 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         }
         draw->AddLine(ImVec2(x[i] - half, y), ImVec2(x[i] + half, y), colour,
                       level.metadata.selected ? 2.8f : 1.8f);
-        if (level.annotation.delocalised_pi.available) {
-            draw->AddLine(ImVec2(x[i] - half, y + 5.0f * ui_scale),
-                          ImVec2(x[i] + half, y + 5.0f * ui_scale),
-                          kPiColour, 1.5f * ui_scale);
-        }
         if (level.electrons.alpha > 0) draw_arrow(draw, ImVec2(x[i] - 7.0f * ui_scale, y - 2.0f), true, IM_COL32(234,242,252,255));
         if (level.electrons.beta > 0) draw_arrow(draw, ImVec2(x[i] + 7.0f * ui_scale, y - 2.0f), false, IM_COL32(234,242,252,255));
         if (level.metadata.selected) {

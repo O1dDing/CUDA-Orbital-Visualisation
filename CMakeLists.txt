@@ -307,7 +307,7 @@ if(COV_BUILD_TESTS)
     add_test(NAME cp_reference_layout_smoke COMMAND cov_cp_reference_layout_smoke)
 
     add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
-    target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule)
+    target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule cov_parser)
     add_test(NAME molecule_style_smoke COMMAND cov_molecule_style_smoke)
 
     add_executable(cov_ui_smoke tests/ui_smoke.cpp)

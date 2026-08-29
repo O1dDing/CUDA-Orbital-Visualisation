@@ -1,9 +1,63 @@
 #include "cov/molecule_style.hpp"
+#include "cov/wavefunction_io.hpp"
 
 #include <cmath>
+#include <cstdint>
+#include <filesystem>
 #include <iostream>
+#include <utility>
+#include <vector>
 
-int main() {
+namespace {
+
+void add_all_pair_mayer_records(cov::Wavefunction& wf, const double order) {
+    wf.bond_order_provenance = cov::DataProvenance::Derived;
+    for (std::size_t i = 0; i < wf.atoms.size(); ++i) {
+        for (std::size_t j = i + 1; j < wf.atoms.size(); ++j) {
+            wf.bond_orders.push_back({
+                static_cast<std::uint32_t>(i), static_cast<std::uint32_t>(j),
+                order, cov::DataProvenance::Derived});
+        }
+    }
+}
+
+bool check_carbon_graph(const cov::Wavefunction& wf,
+                        const std::vector<cov::BondVisual>& bonds,
+                        const std::size_t expected_edges,
+                        const std::vector<int>& expected_degrees) {
+    if (bonds.size() != expected_edges || expected_degrees.size() != wf.atoms.size()) {
+        return false;
+    }
+    std::vector<int> degrees(wf.atoms.size(), 0);
+    for (const auto& bond : bonds) {
+        if (bond.atom_a >= degrees.size() || bond.atom_b >= degrees.size()) return false;
+        ++degrees[bond.atom_a];
+        ++degrees[bond.atom_b];
+    }
+    return degrees == expected_degrees;
+}
+
+bool check_real_topology(const std::filesystem::path& path,
+                         const std::size_t expected_bonds,
+                         const std::size_t expected_carbon_bonds) {
+    const auto wf = cov::parse_wavefunction(path);
+    const auto bonds = cov::analyse_bonds(wf);
+    std::size_t carbon_bonds = 0;
+    for (const auto& bond : bonds) {
+        const auto& a = wf.atoms[bond.atom_a];
+        const auto& b = wf.atoms[bond.atom_b];
+        if (a.atomic_number == 6 && b.atomic_number == 6) ++carbon_bonds;
+        const double radii_bohr =
+            (cov::covalent_radius_angstrom(a.atomic_number) +
+             cov::covalent_radius_angstrom(b.atomic_number)) * cov::kAngstromToBohr;
+        if (bond.distance_bohr > 1.50 * radii_bohr + 1.0e-10) return false;
+    }
+    return bonds.size() == expected_bonds && carbon_bonds == expected_carbon_bonds;
+}
+
+} // namespace
+
+int main(const int argc, char** argv) {
     const cov::MoleculeRenderSettings defaults;
     if (std::abs(defaults.atom_scale - 1.0f) > 1.0e-6f ||
         std::abs(defaults.bond_scale - 1.0f) > 1.0e-6f ||
@@ -85,6 +139,80 @@ int main() {
     if (!cov::analyse_bonds(electronic_none).empty()) {
         std::cerr << "geometry fallback overrode an available electronic analysis\n";
         return 6;
+    }
+
+    // Delocalised Mayer coupling is not structural adjacency. Even when every
+    // carbon pair carries a small positive index, benzene must remain a C6
+    // perimeter rather than a complete graph with centre-crossing chords.
+    cov::Wavefunction benzene;
+    constexpr double benzene_radius_angstrom = side_angstrom;
+    for (int i = 0; i < 6; ++i) {
+        const double angle = 2.0 * pi * static_cast<double>(i) / 6.0;
+        benzene.atoms.push_back({
+            "C", 6,
+            benzene_radius_angstrom * std::cos(angle) * cov::kAngstromToBohr,
+            benzene_radius_angstrom * std::sin(angle) * cov::kAngstromToBohr,
+            0.0});
+    }
+    add_all_pair_mayer_records(benzene, 0.06);
+    const auto benzene_bonds = cov::analyse_bonds(benzene);
+    if (!check_carbon_graph(benzene, benzene_bonds, 6u,
+                            std::vector<int>(6u, 2))) {
+        std::cerr << "benzene electronic coupling created non-neighbour chords\n";
+        return 7;
+    }
+    for (const auto& bond : benzene_bonds) {
+        if (!bond.delocalised) {
+            std::cerr << "benzene perimeter was not marked delocalised\n";
+            return 8;
+        }
+    }
+
+    // Two regular fused six-membered rings: the carbon skeleton has exactly
+    // eleven edges. Only the two shared-edge atoms have degree three.
+    cov::Wavefunction naphthalene;
+    const double root3 = std::sqrt(3.0);
+    const std::vector<std::pair<double, double>> naphthalene_xy = {
+        {0.0, 0.5 * side_angstrom},
+        {0.0, -0.5 * side_angstrom},
+        {-0.5 * root3 * side_angstrom, side_angstrom},
+        {-root3 * side_angstrom, 0.5 * side_angstrom},
+        {-root3 * side_angstrom, -0.5 * side_angstrom},
+        {-0.5 * root3 * side_angstrom, -side_angstrom},
+        {0.5 * root3 * side_angstrom, side_angstrom},
+        {root3 * side_angstrom, 0.5 * side_angstrom},
+        {root3 * side_angstrom, -0.5 * side_angstrom},
+        {0.5 * root3 * side_angstrom, -side_angstrom},
+    };
+    for (const auto [x_angstrom, y_angstrom] : naphthalene_xy) {
+        naphthalene.atoms.push_back({
+            "C", 6, x_angstrom * cov::kAngstromToBohr,
+            y_angstrom * cov::kAngstromToBohr, 0.0});
+    }
+    add_all_pair_mayer_records(naphthalene, 0.06);
+    const auto naphthalene_bonds = cov::analyse_bonds(naphthalene);
+    const std::vector<int> naphthalene_degrees = {3, 3, 2, 2, 2, 2, 2, 2, 2, 2};
+    if (!check_carbon_graph(naphthalene, naphthalene_bonds, 11u,
+                            naphthalene_degrees)) {
+        std::cerr << "naphthalene electronic coupling created non-neighbour chords\n";
+        return 9;
+    }
+    for (const auto& bond : naphthalene_bonds) {
+        if (!bond.delocalised) {
+            std::cerr << "naphthalene fused-ring perimeter was not marked delocalised\n";
+            return 10;
+        }
+    }
+
+    if (argc == 3) {
+        if (!check_real_topology(argv[1], 12u, 6u)) {
+            std::cerr << "real benzene topology regression\n";
+            return 11;
+        }
+        if (!check_real_topology(argv[2], 19u, 11u)) {
+            std::cerr << "real naphthalene topology regression\n";
+            return 12;
+        }
     }
 
     std::cout << "molecule_style_smoke ok\n";
