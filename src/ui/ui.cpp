@@ -128,6 +128,46 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Degenerate members", "简并成员", "縮退メンバー", "Membres dégénérés"},
 }};
 
+// These strings deliberately mirror text that is rendered directly by
+// main.cpp, ui_text_dispatch.cpp and orbital_ui_dispatch.cpp instead of being
+// routed through kStrings.  Building the CJK range from kStrings alone used to
+// omit characters in labels such as “轨道材质” and “柔和自动打光”, which made
+// Dear ImGui display '?' even though the operating-system CJK font was loaded.
+constexpr const char* kSupplementalChinese =
+    "轨道材质 标准 玻璃 表面模式 实体 线框 实体 + 线框 柔和自动打光 "
+    "波函数文件（FCHK 优先；Molden 兼容） "
+    "可拖入 .fchk/.fch/.chk 或兼容的 .molden 文件，也可直接输入路径。 "
+    "源文件 MO（从 1 开始） 源 MO "
+    "所选 MO 化学性质 化学价层轨道组 是 否 价层 AO 组成 "
+    "原子对相互作用 轨道类型 成键性质 多中心 / 离域族 "
+    "成员 MO 参与原子 参与电子 "
+    "给体 / 受体方向 分析方法 MO 贡献 "
+    "MO 贡献来自重叠布居；Mayer 为总密度原子对指数。 "
+    "UND / 最小价层参考之外 CUDA 设备 CUDA设备";
+
+constexpr const char* kSupplementalJapanese =
+    "軌道マテリアル 標準 ガラス 表示モード ソリッド ワイヤー "
+    "ソリッド + ワイヤー ソフト自動照明 "
+    "波動関数ファイル（FCHK 優先・Molden 互換） "
+    ".fchk/.fch/.chk または互換 .molden ファイルをドロップするか、"
+    "パスを入力してください。 入力 MO（1 始まり） 入力 MO "
+    "選択 MO の化学的性質 化学原子価軌道群 はい いいえ "
+    "原子価 AO 組成 原子対相互作用 軌道型 結合性 "
+    "構成 MO 参加原子 参加電子 "
+    "多中心 / 非局在化族 供与体 / 受容体 解析法 MO 寄与 "
+    "MO 寄与は重なり密度由来、Mayer は全密度の原子対指数。 "
+    "UND / 最小原子価参照外 CUDA デバイス";
+
+// Keep all symbols produced by MO labels/annotations in the primary font.
+// Π⁵₆ is included as an exact sequence as well as through the complete digit
+// sets, which protects both the large-pi family label and future N-centre
+// families from atlas-range regressions.
+constexpr const char* kScientificGlyphs =
+    "● · – — − ± × → ← ↔ ↑ ↓ "
+    "σ π δ φ Σ Π Δ Φ Γ Π⁵₆ "
+    "⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ "
+    "₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ′ ″";
+
 std::string g_font_status = "Dear ImGui default";
 
 std::string first_existing(std::initializer_list<const char*> candidates) {
@@ -184,6 +224,16 @@ const char* language_name(const Language language) noexcept {
         default: return "English";
     }
 }
+
+const char* supplemental_glyph_seed(const Language language) noexcept {
+    switch (language) {
+        case Language::ChineseSimplified: return kSupplementalChinese;
+        case Language::Japanese: return kSupplementalJapanese;
+        default: return "";
+    }
+}
+
+const char* scientific_glyph_seed() noexcept { return kScientificGlyphs; }
 
 void apply_theme(const float scale) {
     ImGui::StyleColorsDark();
@@ -282,7 +332,7 @@ bool configure_fonts(const float pixel_size) {
     latin_builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
     for (const auto& row : kStrings) { latin_builder.AddText(row.en); latin_builder.AddText(row.fr); }
     latin_builder.AddText(language_name(Language::French));
-    latin_builder.AddText("● · ³ ↑ ↓ σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
+    latin_builder.AddText(scientific_glyph_seed());
     ImVector<ImWchar> latin_ranges;
     latin_builder.BuildRanges(&latin_ranges);
 
@@ -300,8 +350,10 @@ bool configure_fonts(const float pixel_size) {
     for (const auto& row : kStrings) { zh_builder.AddText(row.zh); ja_builder.AddText(row.ja); }
     zh_builder.AddText(language_name(Language::ChineseSimplified));
     ja_builder.AddText(language_name(Language::Japanese));
-    zh_builder.AddText("σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
-    ja_builder.AddText("σ π δ φ Π ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ′ ″");
+    zh_builder.AddText(supplemental_glyph_seed(Language::ChineseSimplified));
+    ja_builder.AddText(supplemental_glyph_seed(Language::Japanese));
+    zh_builder.AddText(scientific_glyph_seed());
+    ja_builder.AddText(scientific_glyph_seed());
     ImVector<ImWchar> zh_ranges;
     ImVector<ImWchar> ja_ranges;
     zh_builder.BuildRanges(&zh_ranges);

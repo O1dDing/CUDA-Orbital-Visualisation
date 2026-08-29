@@ -77,6 +77,8 @@ struct DelocalisedPiDescriptor {
     std::size_t participating_atoms = 0;
     double participating_electrons = 0.0;
     std::vector<std::size_t> atom_indices;
+    std::vector<std::size_t> orbital_indices;
+    std::string family_id;
     std::string label;
     AnnotationSource source = AnnotationSource::Unavailable;
     double confidence = 0.0;

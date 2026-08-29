@@ -11,10 +11,96 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace cov::ui {
 namespace {
+
+constexpr ImU32 kSigmaColour = IM_COL32(57, 210, 232, 255);
+constexpr ImU32 kPiColour = IM_COL32(226, 93, 220, 255);
+constexpr ImU32 kDeltaColour = IM_COL32(244, 155, 65, 255);
+constexpr ImU32 kPhiColour = IM_COL32(55, 199, 170, 255);
+constexpr ImU32 kBondingColour = IM_COL32(77, 218, 145, 255);
+constexpr ImU32 kAntibondingColour = IM_COL32(244, 93, 105, 255);
+constexpr ImU32 kNonbondingColour = IM_COL32(235, 181, 65, 255);
+constexpr ImU32 kSymmetryColour = IM_COL32(177, 125, 245, 255);
+constexpr ImU32 kMulticentreColour = IM_COL32(238, 194, 89, 255);
+constexpr ImU32 kNumericColour = IM_COL32(93, 174, 255, 255);
+constexpr ImU32 kUnavailableColour = IM_COL32(128, 149, 177, 255);
+
+ImVec4 text_colour(const ImU32 colour) {
+    return ImGui::ColorConvertU32ToFloat4(colour);
+}
+
+void labelled_value(const char* label, const std::string& value, const ImU32 colour) {
+    ImGui::Text("%s:", label);
+    ImGui::SameLine();
+    ImGui::TextColored(text_colour(colour), "%s", value.c_str());
+}
+
+void labelled_number(const char* label, const std::string& value) {
+    labelled_value(label, value, kNumericColour);
+}
+
+std::string fixed_number(const double value, const int precision) {
+    std::ostringstream result;
+    result.setf(std::ios::fixed, std::ios::floatfield);
+    result.precision(precision);
+    result << value;
+    return result.str();
+}
+
+ImU32 family_colour(const std::string_view family) {
+    if (family == "sigma") return kSigmaColour;
+    if (family == "pi") return kPiColour;
+    if (family == "delta") return kDeltaColour;
+    if (family == "phi") return kPhiColour;
+    return kUnavailableColour;
+}
+
+ImU32 bonding_colour(const BondingClass value) {
+    switch (value) {
+        case BondingClass::Bonding: return kBondingColour;
+        case BondingClass::Antibonding: return kAntibondingColour;
+        case BondingClass::Nonbonding: return kNonbondingColour;
+        default: return kUnavailableColour;
+    }
+}
+
+std::string superscript_number_ui(const std::size_t value) {
+    static constexpr const char* digits[] = {"⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"};
+    std::string result;
+    for (const char digit : std::to_string(value)) result += digits[digit - '0'];
+    return result;
+}
+
+std::string subscript_number_ui(const int value) {
+    static constexpr const char* digits[] = {"₀", "₁", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "₉"};
+    std::string result;
+    for (const char digit : std::to_string(std::max(0, value))) result += digits[digit - '0'];
+    return result;
+}
+
+std::string pi_descriptor_ui(const DelocalisedPiDescriptor& descriptor) {
+    return std::string("Π") + superscript_number_ui(descriptor.participating_atoms) +
+           subscript_number_ui(static_cast<int>(std::lround(descriptor.participating_electrons)));
+}
+
+struct DelocalisedLabels {
+    const char* members;
+    const char* atoms;
+    const char* electrons;
+};
+
+DelocalisedLabels delocalised_labels(const Language language) {
+    switch (language) {
+        case Language::ChineseSimplified: return {"成员 MO", "参与原子", "参与电子"};
+        case Language::Japanese: return {"構成 MO", "参加原子", "参加電子"};
+        case Language::French: return {"OM membres", "Atomes participants", "Électrons participants"};
+        default: return {"Member MOs", "Participating atoms", "Participating electrons"};
+    }
+}
 
 const char* filter_name(const OrbitalFilterMode mode, const Language language) {
     switch (mode) {
@@ -156,7 +242,7 @@ void draw_rich_symmetry(const std::string& raw,
                         const ImU32 colour = IM_COL32(220, 228, 240, 255)) {
     const SymmetryNotation notation = parse_symmetry_notation(raw);
     if (notation.base.empty()) {
-        ImGui::TextUnformatted("N/A");
+        ImGui::TextColored(text_colour(kUnavailableColour), "N/A");
         return;
     }
     const ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -193,11 +279,37 @@ void tooltip_source_confidence(const AnnotationSource source,
                                const double confidence,
                                const bool heuristic,
                                const Language language) {
-    ImGui::TextDisabled("%s: %s · %s %.0f%% · %s",
+    ImGui::TextDisabled("%s: %s · %s",
                         tr(Text::ClassificationSource, language),
                         annotation_source_name(source),
-                        tr(Text::Confidence, language), confidence * 100.0,
-                        heuristic ? "heuristic" : "direct/parsed");
+                        tr(Text::Confidence, language));
+    ImGui::SameLine();
+    ImGui::TextColored(text_colour(kNumericColour), "%.0f%%", confidence * 100.0);
+    ImGui::SameLine();
+    ImGui::TextDisabled("· %s", heuristic ? "heuristic" : "direct/parsed");
+}
+
+std::string delocalised_member_list(const MODiagramData& data,
+                                    const DelocalisedPiDescriptor& descriptor) {
+    std::ostringstream result;
+    for (const auto orbital_index : descriptor.orbital_indices) {
+        if (result.tellp() > 0) result << ", ";
+        if (orbital_index < data.metadata.size()) {
+            result << "MO " << data.metadata[orbital_index].raw_mo_number;
+        } else {
+            result << "MO " << orbital_index + 1u;
+        }
+    }
+    return result.str();
+}
+
+std::string delocalised_atom_list(const DelocalisedPiDescriptor& descriptor) {
+    std::ostringstream result;
+    for (const auto atom_index : descriptor.atom_indices) {
+        if (result.tellp() > 0) result << ", ";
+        result << atom_index + 1u;
+    }
+    return result.str();
 }
 
 void draw_level_tooltip(const MODiagramData& data,
@@ -207,24 +319,24 @@ void draw_level_tooltip(const MODiagramData& data,
     ImGui::BeginTooltip();
     ImGui::Text("MO %s", level.metadata.display_label.c_str());
     ImGui::Separator();
-    ImGui::Text("%s: %zu", tr(Text::RawMO, language), level.metadata.raw_mo_number);
-    ImGui::Text("%s: %zu", tr(Text::InternalIndex, language), level.metadata.orbital_index);
-    ImGui::Text("%s: %s", tr(Text::ExactEnergy, language),
-                format_energy(level.metadata.energy_hartree, state.energy_unit, 6).c_str());
-    ImGui::Text("Ha: %.10f", level.metadata.energy_hartree);
-    ImGui::Text("eV: %.8f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::ElectronVolt));
-    ImGui::Text("J/mol: %.2f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::JoulePerMol));
-    ImGui::Text("kJ/mol: %.5f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilojoulePerMol));
-    ImGui::Text("cal/mol: %.3f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::CaloriePerMol));
-    ImGui::Text("kcal/mol: %.5f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilocaloriePerMol));
-    ImGui::Text("%s: %.3f", tr(Text::Occupation, language), level.metadata.occupation);
+    labelled_number(tr(Text::RawMO, language), std::to_string(level.metadata.raw_mo_number));
+    labelled_number(tr(Text::InternalIndex, language), std::to_string(level.metadata.orbital_index));
+    labelled_number(tr(Text::ExactEnergy, language),
+                    format_energy(level.metadata.energy_hartree, state.energy_unit, 6));
+    labelled_number("Ha", fixed_number(level.metadata.energy_hartree, 10));
+    labelled_number("eV", fixed_number(convert_hartree(level.metadata.energy_hartree, EnergyUnit::ElectronVolt), 8));
+    labelled_number("J/mol", fixed_number(convert_hartree(level.metadata.energy_hartree, EnergyUnit::JoulePerMol), 2));
+    labelled_number("kJ/mol", fixed_number(convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilojoulePerMol), 5));
+    labelled_number("cal/mol", fixed_number(convert_hartree(level.metadata.energy_hartree, EnergyUnit::CaloriePerMol), 3));
+    labelled_number("kcal/mol", fixed_number(convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilocaloriePerMol), 5));
+    labelled_number(tr(Text::Occupation, language), fixed_number(level.metadata.occupation, 3));
     ImGui::Text("%s: %s", tr(Text::Spin, language), spin_name_ui(level.metadata.spin, language));
 
     ImGui::TextUnformatted(tr(Text::Symmetry, language));
     ImGui::SameLine();
-    draw_rich_symmetry(level.metadata.symmetry);
+    draw_rich_symmetry(level.metadata.symmetry, kSymmetryColour);
 
-    ImGui::Text("%s: %zu", tr(Text::DegenerateSet, language), level.metadata.degeneracy_size);
+    labelled_number(tr(Text::DegenerateSet, language), std::to_string(level.metadata.degeneracy_size));
     if (level.metadata.degeneracy_size > 1) {
         std::ostringstream members;
         const std::size_t base = group_base_raw(level.metadata);
@@ -234,33 +346,48 @@ void draw_level_tooltip(const MODiagramData& data,
             if (raw > 0 && raw <= data.metadata.size()) members << data.metadata[raw - 1].display_label;
             else members << raw;
         }
-        ImGui::Text("%s: %s", tr(Text::DegenerateMembers, language), members.str().c_str());
+        labelled_value(tr(Text::DegenerateMembers, language), members.str(), kNumericColour);
     }
 
     ImGui::Separator();
-    ImGui::Text("%s: %s", tr(Text::OrbitalFamily, language), family_symbol_ui(level.annotation.family));
+    labelled_value(tr(Text::OrbitalFamily, language), family_symbol_ui(level.annotation.family),
+                   family_colour(level.annotation.family));
     tooltip_source_confidence(level.annotation.family_source, level.annotation.family_confidence,
                               level.annotation.family_source == AnnotationSource::Heuristic, language);
-    ImGui::Text("%s: %s", tr(Text::BondingClassLabel, language), bonding_ui(level.annotation.bonding_class));
+    labelled_value(tr(Text::BondingClassLabel, language), bonding_ui(level.annotation.bonding_class),
+                   bonding_colour(level.annotation.bonding_class));
     tooltip_source_confidence(level.annotation.bonding_source, level.annotation.bonding_confidence,
                               level.annotation.bonding_source == AnnotationSource::Heuristic, language);
 
-    ImGui::Text("%s: %s", tr(Text::MulticentreBond, language),
-                level.annotation.multicentre.available ? level.annotation.multicentre.label.c_str() : "N/A");
+    std::string multicentre_value = level.annotation.multicentre.available
+        ? level.annotation.multicentre.label : "N/A";
+    ImU32 multicentre_tone = level.annotation.multicentre.available
+        ? kMulticentreColour : kUnavailableColour;
+    if (level.annotation.delocalised_pi.available) {
+        multicentre_value = pi_descriptor_ui(level.annotation.delocalised_pi) + " · " + multicentre_value;
+        multicentre_tone = kPiColour;
+    }
+    labelled_value(tr(Text::MulticentreBond, language), multicentre_value, multicentre_tone);
     if (level.annotation.multicentre.available) {
         tooltip_source_confidence(level.annotation.multicentre.source,
                                   level.annotation.multicentre.confidence,
                                   level.annotation.multicentre.heuristic, language);
     }
     if (level.annotation.delocalised_pi.available) {
-        ImGui::Text("%s: Π^%zu_%d", tr(Text::DelocalisedPiSystem, language),
-                    level.annotation.delocalised_pi.participating_atoms,
-                    static_cast<int>(std::lround(level.annotation.delocalised_pi.participating_electrons)));
+        const auto labels = delocalised_labels(language);
+        const auto& descriptor = level.annotation.delocalised_pi;
+        labelled_value(tr(Text::DelocalisedPiSystem, language), pi_descriptor_ui(descriptor), kPiColour);
+        labelled_value(labels.members, delocalised_member_list(data, descriptor), kPiColour);
+        std::string atom_value = std::to_string(descriptor.participating_atoms);
+        if (!descriptor.atom_indices.empty()) atom_value += " · " + delocalised_atom_list(descriptor);
+        labelled_number(labels.atoms, atom_value);
+        labelled_number(labels.electrons,
+                        std::to_string(static_cast<int>(std::lround(descriptor.participating_electrons))));
         tooltip_source_confidence(level.annotation.delocalised_pi.source,
                                   level.annotation.delocalised_pi.confidence,
                                   level.annotation.delocalised_pi.heuristic, language);
     } else {
-        ImGui::Text("%s: N/A", tr(Text::DelocalisedPiSystem, language));
+        labelled_value(tr(Text::DelocalisedPiSystem, language), "N/A", kUnavailableColour);
     }
     ImGui::EndTooltip();
 }
@@ -290,6 +417,71 @@ struct DiagramPoint {
     ImVec2 right{};
     float y = 0.0f;
 };
+
+struct PiDiagramGroup {
+    const DelocalisedPiDescriptor* descriptor = nullptr;
+    std::vector<const DiagramPoint*> points;
+};
+
+std::string pi_group_key(const DelocalisedPiDescriptor& descriptor) {
+    if (!descriptor.family_id.empty()) return descriptor.family_id;
+    std::ostringstream key;
+    key << descriptor.label << ':' << descriptor.participating_atoms << ':'
+        << std::lround(descriptor.participating_electrons);
+    for (const auto atom_index : descriptor.atom_indices) key << ":a" << atom_index;
+    for (const auto orbital_index : descriptor.orbital_indices) key << ':' << orbital_index;
+    return key.str();
+}
+
+void draw_pi_groups(ImDrawList* draw,
+                    const std::vector<DiagramPoint>& points,
+                    const ImVec2 canvas_max,
+                    const float ui_scale) {
+    std::map<std::string, PiDiagramGroup> groups;
+    for (const auto& point : points) {
+        if (!point.level || !point.level->annotation.delocalised_pi.available) continue;
+        const auto& descriptor = point.level->annotation.delocalised_pi;
+        if (descriptor.participating_atoms < 3u) continue;
+        auto& group = groups[pi_group_key(descriptor)];
+        if (!group.descriptor) group.descriptor = &descriptor;
+        group.points.push_back(&point);
+    }
+
+    float bracket_x = canvas_max.x - 13.0f * ui_scale;
+    for (const auto& [key, group] : groups) {
+        (void)key;
+        if (!group.descriptor || group.points.size() < 2u) continue;
+        if (!group.descriptor->orbital_indices.empty() &&
+            group.points.size() != group.descriptor->orbital_indices.size()) {
+            continue;
+        }
+        float upper = group.points.front()->y;
+        float lower = group.points.front()->y;
+        for (const auto* point : group.points) {
+            upper = std::min(upper, point->y);
+            lower = std::max(lower, point->y);
+        }
+        upper -= 5.0f * ui_scale;
+        lower += 5.0f * ui_scale;
+        if (lower - upper < 14.0f * ui_scale) {
+            const float middle = 0.5f * (upper + lower);
+            upper = middle - 7.0f * ui_scale;
+            lower = middle + 7.0f * ui_scale;
+        }
+
+        const float cap = 7.0f * ui_scale;
+        draw->AddLine(ImVec2(bracket_x, upper), ImVec2(bracket_x, lower), kPiColour, 2.0f * ui_scale);
+        draw->AddLine(ImVec2(bracket_x - cap, upper), ImVec2(bracket_x, upper), kPiColour, 2.0f * ui_scale);
+        draw->AddLine(ImVec2(bracket_x - cap, lower), ImVec2(bracket_x, lower), kPiColour, 2.0f * ui_scale);
+
+        const std::string label = pi_descriptor_ui(*group.descriptor);
+        const ImVec2 label_size = ImGui::CalcTextSize(label.c_str());
+        draw->AddText(ImVec2(bracket_x - cap - label_size.x - 5.0f * ui_scale,
+                             0.5f * (upper + lower) - 0.5f * label_size.y),
+                      kPiColour, label.c_str());
+        bracket_x -= std::max(20.0f * ui_scale, label_size.x + 12.0f * ui_scale);
+    }
+}
 
 void draw_arrow(ImDrawList* draw, const ImVec2 start, const bool up, const ImU32 colour) {
     const float dy = up ? -13.0f : 13.0f;
@@ -405,9 +597,11 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                     actions.select_orbital = index;
                 }
                 ImGui::TableNextColumn();
-                ImGui::TextUnformatted(format_energy(item.energy_hartree, state.energy_unit, 5).c_str());
-                ImGui::TableNextColumn(); ImGui::Text("%.2f", item.occupation);
-                ImGui::TableNextColumn(); draw_rich_symmetry(item.symmetry);
+                ImGui::TextColored(text_colour(kNumericColour), "%s",
+                                   format_energy(item.energy_hartree, state.energy_unit, 5).c_str());
+                ImGui::TableNextColumn();
+                ImGui::TextColored(text_colour(kNumericColour), "%.2f", item.occupation);
+                ImGui::TableNextColumn(); draw_rich_symmetry(item.symmetry, kSymmetryColour);
                 ImGui::PopID();
             }
         }
@@ -488,7 +682,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                       IM_COL32(100,118,140,255), 1.0f);
         const std::string tick = format_energy(energy, state.energy_unit, 3);
         draw->AddText(ImVec2(axis_x + 6.0f * ui_scale, y - ImGui::GetTextLineHeight() * 0.5f),
-                      IM_COL32(100,118,140,255), tick.c_str());
+                      kNumericColour, tick.c_str());
     }
 
     std::map<long long, std::vector<std::size_t>> coincident;
@@ -513,9 +707,19 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         if (level.metadata.region == OrbitalRegion::Virtual) colour = IM_COL32(126,143,165,255);
         if (level.homo) colour = IM_COL32(79,210,157,255);
         if (level.lumo) colour = IM_COL32(228,176,82,255);
-        if (level.metadata.selected) colour = IM_COL32(92,151,255,255);
+        if (level.annotation.family != "unavailable") colour = family_colour(level.annotation.family);
+        if (level.metadata.selected) {
+            draw->AddLine(ImVec2(x[i] - half - 1.0f * ui_scale, y),
+                          ImVec2(x[i] + half + 1.0f * ui_scale, y),
+                          kNumericColour, 5.0f * ui_scale);
+        }
         draw->AddLine(ImVec2(x[i] - half, y), ImVec2(x[i] + half, y), colour,
-                      level.metadata.selected ? 3.2f : 1.8f);
+                      level.metadata.selected ? 2.8f : 1.8f);
+        if (level.annotation.delocalised_pi.available) {
+            draw->AddLine(ImVec2(x[i] - half, y + 5.0f * ui_scale),
+                          ImVec2(x[i] + half, y + 5.0f * ui_scale),
+                          kPiColour, 1.5f * ui_scale);
+        }
         if (level.electrons.alpha > 0) draw_arrow(draw, ImVec2(x[i] - 7.0f * ui_scale, y - 2.0f), true, IM_COL32(234,242,252,255));
         if (level.electrons.beta > 0) draw_arrow(draw, ImVec2(x[i] + 7.0f * ui_scale, y - 2.0f), false, IM_COL32(234,242,252,255));
         if (level.metadata.selected) {
@@ -524,6 +728,8 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         }
         points.push_back({&level, ImVec2(x[i] - half, y), ImVec2(x[i] + half, y), y});
     }
+
+    draw_pi_groups(draw, points, p1, ui_scale);
 
     if (ImGui::IsItemHovered()) {
         const ImVec2 mouse = ImGui::GetIO().MousePos;

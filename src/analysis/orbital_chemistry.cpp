@@ -885,6 +885,513 @@ bool near(const double value,const double target,const double tolerance) {
     return std::abs(value-target)<=tolerance;
 }
 
+double pi_covalent_radius_angstrom(const int z) {
+    switch (z) {
+        case 1: return 0.31;
+        case 5: return 0.84;
+        case 6: return 0.76;
+        case 7: return 0.71;
+        case 8: return 0.66;
+        case 9: return 0.57;
+        case 14: return 1.11;
+        case 15: return 1.07;
+        case 16: return 1.05;
+        case 17: return 1.02;
+        case 32: return 1.20;
+        case 33: return 1.19;
+        case 34: return 1.20;
+        case 35: return 1.20;
+        case 50: return 1.39;
+        case 51: return 1.39;
+        case 52: return 1.38;
+        case 53: return 1.39;
+        default: return 0.85;
+    }
+}
+
+bool pi_connectivity_evidence(const Wavefunction& wf,
+                              const std::uint32_t a,
+                              const std::uint32_t b) {
+    if (a>=wf.atoms.size() || b>=wf.atoms.size() || a==b) return false;
+    const double radii_bohr=
+        (pi_covalent_radius_angstrom(wf.atoms[a].atomic_number)+
+         pi_covalent_radius_angstrom(wf.atoms[b].atomic_number))*
+        kAngstromToBohr;
+    const double distance=distance_bohr(wf.atoms[a],wf.atoms[b]);
+
+    if (wf.bond_order_provenance!=DataProvenance::Unavailable) {
+        if (distance>1.80*radii_bohr) return false;
+        for (const auto& record:wf.bond_orders) {
+            if ((record.atom_a==a && record.atom_b==b) ||
+                (record.atom_a==b && record.atom_b==a)) {
+                return std::abs(record.mayer_order)>=0.05;
+            }
+        }
+        return false;
+    }
+
+    // Geometry is used only when no electronic connectivity is available at
+    // all.  The cutoff is deliberately tighter than the rendering fallback.
+    return distance<=1.22*radii_bohr;
+}
+
+struct AtomicPReference {
+    std::uint32_t atom=0;
+    int principal_n=-1;
+    std::array<const ReferenceColumn*,3> component{nullptr,nullptr,nullptr};
+};
+
+std::vector<AtomicPReference> atomic_valence_p_references(
+    const Wavefunction& wf,
+    const std::vector<ReferenceColumn>& raw) {
+    std::map<std::uint32_t,AtomicPReference> by_atom;
+    for (const auto& column:raw) {
+        if (column.space!=ReferenceClass::ChemicalValence ||
+            column.l!=1 || column.component<0 || column.component>=3 ||
+            column.atom>=wf.atoms.size() ||
+            wf.atoms[column.atom].atomic_number<=2 ||
+            transition_metal(wf.atoms[column.atom].atomic_number) ||
+            f_block(wf.atoms[column.atom].atomic_number)) {
+            continue;
+        }
+        auto& candidate=by_atom[column.atom];
+        candidate.atom=column.atom;
+        if (column.n>candidate.principal_n) {
+            candidate.principal_n=column.n;
+            candidate.component={nullptr,nullptr,nullptr};
+        }
+        if (column.n==candidate.principal_n) {
+            candidate.component[static_cast<std::size_t>(column.component)]=
+                &column;
+        }
+    }
+
+    std::vector<AtomicPReference> result;
+    for (const auto& [atom,candidate]:by_atom) {
+        (void)atom;
+        if (std::all_of(candidate.component.begin(),candidate.component.end(),
+                        [](const auto* value){return value!=nullptr;})) {
+            result.push_back(candidate);
+        }
+    }
+    return result;
+}
+
+struct PiPlane {
+    bool valid=false;
+    std::array<double,3> origin{0.0,0.0,0.0};
+    std::array<double,3> normal{0.0,0.0,1.0};
+    double span_bohr=0.0;
+    double rms_bohr=0.0;
+    double max_deviation_bohr=0.0;
+};
+
+std::array<double,3> atom_position(const Atom& atom) {
+    return {atom.x,atom.y,atom.z};
+}
+
+std::array<double,3> subtract3(const std::array<double,3>& a,
+                               const std::array<double,3>& b) {
+    return {a[0]-b[0],a[1]-b[1],a[2]-b[2]};
+}
+
+PiPlane fit_pi_plane(const Wavefunction& wf,
+                     const std::vector<std::uint32_t>& atoms) {
+    PiPlane result;
+    if (atoms.size()<3u) return result;
+    for (const auto atom:atoms) {
+        if (atom>=wf.atoms.size()) return result;
+        const auto position=atom_position(wf.atoms[atom]);
+        for (std::size_t c=0;c<3u;++c) result.origin[c]+=position[c];
+    }
+    for (double& value:result.origin) {
+        value/=static_cast<double>(atoms.size());
+    }
+
+    double best_area=0.0;
+    std::array<double,3> best_normal{0.0,0.0,0.0};
+    for (std::size_t i=0;i<atoms.size();++i) {
+        for (std::size_t j=i+1u;j<atoms.size();++j) {
+            result.span_bohr=std::max(result.span_bohr,
+                distance_bohr(wf.atoms[atoms[i]],wf.atoms[atoms[j]]));
+            for (std::size_t k=j+1u;k<atoms.size();++k) {
+                const auto a=atom_position(wf.atoms[atoms[i]]);
+                const auto ab=subtract3(atom_position(wf.atoms[atoms[j]]),a);
+                const auto ac=subtract3(atom_position(wf.atoms[atoms[k]]),a);
+                const auto normal=cross3(ab,ac);
+                const double area=std::sqrt(dot3(normal,normal));
+                if (area>best_area) {
+                    best_area=area;
+                    best_normal=normal;
+                }
+            }
+        }
+    }
+    if (!(result.span_bohr>1.0e-6) ||
+        best_area<0.015*result.span_bohr*result.span_bohr) {
+        return result;
+    }
+    for (double& value:best_normal) value/=best_area;
+    const auto sign_component=std::max_element(
+        best_normal.begin(),best_normal.end(),
+        [](const double a,const double b){return std::abs(a)<std::abs(b);});
+    if (sign_component!=best_normal.end() && *sign_component<0.0) {
+        for (double& value:best_normal) value=-value;
+    }
+    result.normal=best_normal;
+
+    double sum2=0.0;
+    for (const auto atom:atoms) {
+        const double deviation=std::abs(dot3(
+            subtract3(atom_position(wf.atoms[atom]),result.origin),
+            result.normal));
+        result.max_deviation_bohr=std::max(
+            result.max_deviation_bohr,deviation);
+        sum2+=deviation*deviation;
+    }
+    result.rms_bohr=std::sqrt(sum2/static_cast<double>(atoms.size()));
+    const double rms_limit=std::max(0.12,0.035*result.span_bohr);
+    const double max_limit=std::max(0.25,0.070*result.span_bohr);
+    result.valid=result.rms_bohr<=rms_limit &&
+                 result.max_deviation_bohr<=max_limit;
+    return result;
+}
+
+bool substituents_follow_plane(const Wavefunction& wf,
+                               const std::vector<std::uint32_t>& atoms,
+                               const PiPlane& plane) {
+    std::set<std::uint32_t> checked(atoms.begin(),atoms.end());
+    for (const auto a:atoms) {
+        for (std::uint32_t b=0;b<wf.atoms.size();++b) {
+            if (pi_connectivity_evidence(wf,a,b)) checked.insert(b);
+        }
+    }
+    const double limit=std::max(0.30,0.075*plane.span_bohr);
+    for (const auto atom:checked) {
+        const double deviation=std::abs(dot3(
+            subtract3(atom_position(wf.atoms[atom]),plane.origin),
+            plane.normal));
+        if (deviation>limit) return false;
+    }
+    return true;
+}
+
+std::vector<std::vector<std::uint32_t>> planar_p_components(
+    const Wavefunction& wf,
+    const std::vector<AtomicPReference>& p_reference) {
+    std::vector<std::vector<std::uint32_t>> result;
+    std::set<std::uint32_t> visited;
+    for (const auto& seed:p_reference) {
+        if (visited.count(seed.atom)!=0u) continue;
+        std::vector<std::uint32_t> component;
+        std::vector<std::uint32_t> pending{seed.atom};
+        visited.insert(seed.atom);
+        while (!pending.empty()) {
+            const auto atom=pending.back();
+            pending.pop_back();
+            component.push_back(atom);
+            for (const auto& neighbour:p_reference) {
+                if (visited.count(neighbour.atom)!=0u ||
+                    !pi_connectivity_evidence(wf,atom,neighbour.atom)) {
+                    continue;
+                }
+                visited.insert(neighbour.atom);
+                pending.push_back(neighbour.atom);
+            }
+        }
+        if (component.size()<3u) continue;
+        std::sort(component.begin(),component.end());
+        result.push_back(std::move(component));
+    }
+    return result;
+}
+
+std::vector<ReferenceColumn> perpendicular_p_subspace(
+    const Wavefunction& wf,
+    const std::vector<std::uint32_t>& atoms,
+    const PiPlane& plane,
+    const std::vector<AtomicPReference>& p_reference) {
+    std::vector<ReferenceColumn> raw_perpendicular;
+    raw_perpendicular.reserve(atoms.size());
+    for (const auto atom:atoms) {
+        const auto found=std::find_if(
+            p_reference.begin(),p_reference.end(),
+            [atom](const auto& candidate){return candidate.atom==atom;});
+        if (found==p_reference.end()) return {};
+        ReferenceColumn column;
+        column.coefficients.assign(wf.basis_count,0.0);
+        column.atom=atom;
+        column.n=found->principal_n;
+        column.l=1;
+        column.component=2;
+        column.space=ReferenceClass::ChemicalValence;
+        column.label=reference_label(wf,atom,column.n,column.l)+" p_perp";
+        for (std::size_t axis=0;axis<3u;++axis) {
+            const auto* source=found->component[axis];
+            if (source==nullptr ||
+                source->coefficients.size()!=column.coefficients.size()) {
+                return {};
+            }
+            for (std::size_t mu=0;mu<column.coefficients.size();++mu) {
+                column.coefficients[mu]+=
+                    plane.normal[axis]*source->coefficients[mu];
+            }
+        }
+        raw_perpendicular.push_back(std::move(column));
+    }
+    auto orthonormal=orthonormalise_reference(
+        std::move(raw_perpendicular),wf);
+    if (orthonormal.size()!=atoms.size()) return {};
+    return orthonormal;
+}
+
+struct PiOrbitalSelection {
+    std::vector<std::size_t> orbitals;
+    std::vector<double> weights;
+    std::vector<std::vector<double>> projection;
+    double coverage=0.0;
+    double minimum_atom_coverage=0.0;
+    double minimum_pivot=0.0;
+};
+
+PiOrbitalSelection select_perpendicular_p_orbitals(
+    const Wavefunction& wf,
+    const std::vector<ReferenceColumn>& perpendicular,
+    const double degeneracy_tolerance) {
+    PiOrbitalSelection result;
+    const std::size_t target=perpendicular.size();
+    if (target==0u || wf.orbitals.empty()) return result;
+    if (std::any_of(wf.orbitals.begin(),wf.orbitals.end(),
+                    [](const auto& mo){return mo.spin==Spin::Beta;})) {
+        return result;
+    }
+
+    result.weights.assign(wf.orbitals.size(),0.0);
+    result.projection.assign(
+        wf.orbitals.size(),std::vector<double>(target,0.0));
+    double complete_weight=0.0;
+    for (std::size_t i=0;i<wf.orbitals.size();++i) {
+        const auto& mo=wf.orbitals[i];
+        if (mo.coefficients.size()!=wf.basis_count) continue;
+        for (std::size_t p=0;p<target;++p) {
+            const double amplitude=mo_s_dot(
+                perpendicular[p].coefficients,mo,
+                wf.ao_overlap,wf.basis_count);
+            result.projection[i][p]=amplitude;
+            result.weights[i]+=amplitude*amplitude;
+        }
+        complete_weight+=result.weights[i];
+    }
+    if (complete_weight<0.80*static_cast<double>(target) ||
+        complete_weight>1.20*static_cast<double>(target)) {
+        return {};
+    }
+
+    auto groups=degeneracy_groups(wf,degeneracy_tolerance);
+    std::vector<std::size_t> candidates;
+    for (std::size_t g=0;g<groups.size();++g) {
+        auto& group=groups[g];
+        bool eligible=group.spin==Spin::Alpha;
+        for (const auto index:group.orbitals) {
+            if (index>=wf.orbitals.size() ||
+                (!wf.orbitals[index].chemistry.valence_manifold &&
+                 wf.orbitals[index].chemistry.valence_weight<0.10)) {
+                eligible=false;
+                break;
+            }
+            group.score+=result.weights[index];
+        }
+        if (eligible && group.orbitals.size()<=target) candidates.push_back(g);
+    }
+
+    const double negative=-std::numeric_limits<double>::infinity();
+    std::vector<double> dp(target+1u,negative);
+    std::vector<std::vector<std::size_t>> chosen(target+1u);
+    dp[0]=0.0;
+    for (const auto group_index:candidates) {
+        const auto size=groups[group_index].orbitals.size();
+        for (std::size_t used=target+1u;used-- > size;) {
+            if (!std::isfinite(dp[used-size])) continue;
+            const double trial=dp[used-size]+groups[group_index].score;
+            if (trial>dp[used]+1.0e-12) {
+                dp[used]=trial;
+                chosen[used]=chosen[used-size];
+                chosen[used].push_back(group_index);
+            }
+        }
+    }
+    if (!std::isfinite(dp[target])) return {};
+    for (const auto group_index:chosen[target]) {
+        result.orbitals.insert(
+            result.orbitals.end(),
+            groups[group_index].orbitals.begin(),
+            groups[group_index].orbitals.end());
+    }
+    std::sort(result.orbitals.begin(),result.orbitals.end());
+    if (result.orbitals.size()!=target) return {};
+
+    double selected_weight=0.0;
+    for (const auto index:result.orbitals) {
+        if (result.weights[index]<0.12) return {};
+        selected_weight+=result.weights[index];
+    }
+    result.coverage=selected_weight/static_cast<double>(target);
+    if (result.coverage<0.62 || selected_weight/complete_weight<0.62) {
+        return {};
+    }
+
+    result.minimum_atom_coverage=std::numeric_limits<double>::infinity();
+    for (std::size_t p=0;p<target;++p) {
+        double atom_coverage=0.0;
+        for (const auto index:result.orbitals) {
+            const double amplitude=result.projection[index][p];
+            atom_coverage+=amplitude*amplitude;
+        }
+        result.minimum_atom_coverage=std::min(
+            result.minimum_atom_coverage,atom_coverage);
+    }
+    if (result.minimum_atom_coverage<0.30) return {};
+
+    // Pivoted Gram-Schmidt on the N selected projections rejects a high-trace
+    // but rank-deficient set which happens to represent the same p direction
+    // more than once.
+    std::vector<std::vector<double>> residuals;
+    residuals.reserve(target);
+    for (const auto index:result.orbitals) {
+        residuals.push_back(result.projection[index]);
+    }
+    result.minimum_pivot=std::numeric_limits<double>::infinity();
+    for (std::size_t pivot=0;pivot<target;++pivot) {
+        std::size_t best=pivot;
+        double best_norm2=-1.0;
+        for (std::size_t candidate=pivot;candidate<target;++candidate) {
+            const double norm2=std::inner_product(
+                residuals[candidate].begin(),residuals[candidate].end(),
+                residuals[candidate].begin(),0.0);
+            if (norm2>best_norm2) {
+                best_norm2=norm2;
+                best=candidate;
+            }
+        }
+        if (best_norm2<0.04) return {};
+        std::swap(residuals[pivot],residuals[best]);
+        result.minimum_pivot=std::min(result.minimum_pivot,best_norm2);
+        const double inverse=1.0/std::sqrt(best_norm2);
+        for (double& value:residuals[pivot]) value*=inverse;
+        for (std::size_t candidate=pivot+1u;candidate<target;++candidate) {
+            const double projection=std::inner_product(
+                residuals[pivot].begin(),residuals[pivot].end(),
+                residuals[candidate].begin(),0.0);
+            for (std::size_t p=0;p<target;++p) {
+                residuals[candidate][p]-=
+                    projection*residuals[pivot][p];
+            }
+        }
+    }
+    return result;
+}
+
+std::string delocalised_pi_family_id(
+    const std::vector<std::uint32_t>& atoms) {
+    std::ostringstream out;
+    out<<"delocalised-pi";
+    for (const auto atom:atoms) out<<':'<<(atom+1u);
+    return out.str();
+}
+
+void attach_planar_p_delocalised_families(
+    Wavefunction& wf,
+    const std::vector<ReferenceColumn>& raw,
+    const OrbitalChemistryOptions& options) {
+    const auto p_reference=atomic_valence_p_references(wf,raw);
+    if (p_reference.size()<3u) return;
+
+    for (const auto& atoms:planar_p_components(wf,p_reference)) {
+        const auto plane=fit_pi_plane(wf,atoms);
+        if (!plane.valid || !substituents_follow_plane(wf,atoms,plane)) continue;
+        const auto perpendicular=perpendicular_p_subspace(
+            wf,atoms,plane,p_reference);
+        if (perpendicular.size()!=atoms.size()) continue;
+        const auto selected=select_perpendicular_p_orbitals(
+            wf,perpendicular,options.degeneracy_tolerance_hartree);
+        if (selected.orbitals.size()!=atoms.size()) continue;
+
+        bool conflict=false;
+        for (const auto index:selected.orbitals) {
+            if (index>=wf.orbitals.size()) {
+                conflict=true;
+                break;
+            }
+            const auto& label=wf.orbitals[index].chemistry.multicentre_label;
+            if (!label.empty() && label!="delocalised-pi") {
+                conflict=true;
+                break;
+            }
+        }
+        if (conflict) continue;
+
+        double electrons=0.0;
+        for (const auto index:selected.orbitals) {
+            electrons+=static_cast<double>(wf.orbitals[index].occupation);
+        }
+        const double maximum_electrons=2.0*static_cast<double>(atoms.size());
+        if (electrons<0.5 || electrons>maximum_electrons+0.20) continue;
+
+        DelocalisedPiAssignment assignment;
+        assignment.family_id=delocalised_pi_family_id(atoms);
+        assignment.atoms=atoms;
+        for (const auto index:selected.orbitals) {
+            assignment.orbitals.push_back(static_cast<std::uint32_t>(index));
+        }
+        assignment.electron_count=electrons;
+        assignment.plane_normal=plane.normal;
+        assignment.plane_rms_bohr=plane.rms_bohr;
+        assignment.subspace_coverage=selected.coverage;
+        const double planarity=1.0-std::clamp(
+            plane.rms_bohr/std::max(0.12,0.035*plane.span_bohr),0.0,1.0);
+        assignment.confidence=std::clamp(
+            0.45+0.30*selected.coverage+
+            0.15*std::min(1.0,selected.minimum_atom_coverage)+
+            0.10*planarity,0.0,1.0);
+        assignment.rationale=
+            "connected near-planar main-group valence-p centres; full-rank "
+            "S-metric p_perpendicular subspace; exact degeneracy-preserving "
+            "N-orbital selection including virtual members";
+        assignment.provenance=DataProvenance::Derived;
+
+        for (const auto index:selected.orbitals) {
+            auto& chemistry=wf.orbitals[index].chemistry;
+            chemistry.valence_manifold=true;
+            chemistry.multicentre_label="delocalised-pi";
+            chemistry.family_symbol="pi";
+            chemistry.participating_atoms=atoms.size();
+            chemistry.participating_electrons=electrons;
+            chemistry.participating_atom_indices=atoms;
+            chemistry.delocalised_family_orbitals=assignment.orbitals;
+            chemistry.delocalised_family_id=assignment.family_id;
+            const double pi_weight=std::clamp(
+                selected.weights[index],0.0,1.0);
+            chemistry.channel.sigma=0.0;
+            chemistry.channel.pi=pi_weight;
+            chemistry.channel.delta=0.0;
+            chemistry.channel.phi=0.0;
+            chemistry.channel.undetermined=1.0-pi_weight;
+            chemistry.channel.dominant=OrbitalAngularFamily::Pi;
+            chemistry.channel.status=pi_weight>=options.determined_fraction
+                ?ChemistryStatus::Determined
+                :ChemistryStatus::Percentages;
+            chemistry.confidence=std::max(
+                chemistry.confidence,assignment.confidence);
+            if (chemistry.method.find("planar p_perpendicular")==
+                std::string::npos) {
+                chemistry.method+=
+                    "; planar p_perpendicular active-subspace family";
+            }
+        }
+        wf.delocalised_pi_assignments.push_back(std::move(assignment));
+    }
+}
+
 void attach_multicentre_assignments(Wavefunction& wf) {
     for (const auto& assignment:wf.multicentre_assignments) {
         std::string label;
@@ -897,6 +1404,7 @@ void attach_multicentre_assignments(Wavefunction& wf) {
             chemistry.multicentre_label=label;
             chemistry.participating_atoms=assignment.atoms.size();
             chemistry.participating_electrons=assignment.electron_count;
+            chemistry.participating_atom_indices=assignment.atoms;
             chemistry.family_symbol=family_symbol(chemistry.channel.dominant);
         }
     }
@@ -943,6 +1451,7 @@ void generic_three_centre_fallback(Wavefunction& wf) {
         chemistry.multicentre_label=label;
         chemistry.participating_atoms=3u;
         chemistry.participating_electrons=electrons;
+        chemistry.participating_atom_indices=centres;
         chemistry.family_symbol="sigma";
     }
 }
@@ -985,6 +1494,7 @@ const char* orbital_bonding_role_name(
 void derive_orbital_chemistry(
     Wavefunction& wf,
     const OrbitalChemistryOptions& options) {
+    wf.delocalised_pi_assignments.clear();
     const std::size_t n=wf.basis_count;
     if (n==0u || wf.orbitals.empty() ||
         wf.ao_overlap.size()!=n*n) {
@@ -1155,6 +1665,7 @@ void derive_orbital_chemistry(
 
     attach_multicentre_assignments(wf);
     generic_three_centre_fallback(wf);
+    attach_planar_p_delocalised_families(wf,raw,options);
 }
 
 } // namespace cov

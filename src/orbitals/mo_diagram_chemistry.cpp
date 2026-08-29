@@ -41,6 +41,28 @@ std::string family_name(const OrbitalAngularFamily family) {
     }
 }
 
+std::string script_number(const std::size_t value,const bool superscript) {
+    static constexpr const char* superscript_digits[]={
+        "⁰","¹","²","³","⁴","⁵","⁶","⁷","⁸","⁹"};
+    static constexpr const char* subscript_digits[]={
+        "₀","₁","₂","₃","₄","₅","₆","₇","₈","₉"};
+    const std::string plain=std::to_string(value);
+    std::string result;
+    for (const char digit:plain) {
+        const auto index=static_cast<std::size_t>(digit-'0');
+        result+=superscript?superscript_digits[index]:subscript_digits[index];
+    }
+    return result;
+}
+
+std::string delocalised_pi_label(const std::size_t atoms,
+                                 const double electrons) {
+    const auto rounded=static_cast<std::size_t>(
+        std::max(0LL,std::llround(electrons)));
+    return std::string("Π")+script_number(atoms,true)+
+           script_number(rounded,false);
+}
+
 OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
     const auto& chemistry=orbital.chemistry;
     OrbitalAnnotation result;
@@ -72,6 +94,9 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
         result.multicentre.available=true;
         result.multicentre.centres=chemistry.participating_atoms;
         result.multicentre.electrons=chemistry.participating_electrons;
+        result.multicentre.atom_indices.assign(
+            chemistry.participating_atom_indices.begin(),
+            chemistry.participating_atom_indices.end());
         result.multicentre.label=chemistry.multicentre_label;
         result.multicentre.source=AnnotationSource::Derived;
         result.multicentre.confidence=chemistry.confidence;
@@ -79,13 +104,25 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
     }
 
     if (chemistry.channel.dominant==OrbitalAngularFamily::Pi &&
-        chemistry.participating_atoms>2u) {
+        chemistry.participating_atoms>2u &&
+        (!chemistry.delocalised_family_id.empty() ||
+         chemistry.multicentre_label=="delocalised-pi")) {
         result.delocalised_pi.available=true;
         result.delocalised_pi.participating_atoms=
             chemistry.participating_atoms;
         result.delocalised_pi.participating_electrons=
             chemistry.participating_electrons;
-        result.delocalised_pi.label="delocalised-pi";
+        result.delocalised_pi.atom_indices.assign(
+            chemistry.participating_atom_indices.begin(),
+            chemistry.participating_atom_indices.end());
+        result.delocalised_pi.orbital_indices.assign(
+            chemistry.delocalised_family_orbitals.begin(),
+            chemistry.delocalised_family_orbitals.end());
+        result.delocalised_pi.family_id=
+            chemistry.delocalised_family_id;
+        result.delocalised_pi.label=delocalised_pi_label(
+            chemistry.participating_atoms,
+            chemistry.participating_electrons);
         result.delocalised_pi.source=AnnotationSource::Derived;
         result.delocalised_pi.confidence=chemistry.confidence;
         result.delocalised_pi.heuristic=false;

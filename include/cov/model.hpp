@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -141,6 +142,14 @@ struct OrbitalChemistry {
     std::size_t participating_atoms = 0;
     double participating_electrons = 0.0;
 
+    // A delocalised family is a property of a complete active subspace, not
+    // of one canonical MO in isolation.  Repeating the stable identity and
+    // complete membership on every member lets diagram/export code keep the
+    // family intact even when only a filtered subset of levels is visible.
+    std::vector<std::uint32_t> participating_atom_indices;
+    std::vector<std::uint32_t> delocalised_family_orbitals;
+    std::string delocalised_family_id;
+
     // FCHK-only canonical-MO evidence cannot always define a unique
     // donor/acceptor direction. In that case this remains "UND".
     std::string donor_acceptor = "UND";
@@ -200,6 +209,19 @@ struct MulticentreAssignment {
     DataProvenance provenance = DataProvenance::Unavailable;
 };
 
+struct DelocalisedPiAssignment {
+    std::string family_id;
+    std::vector<std::uint32_t> atoms;
+    std::vector<std::uint32_t> orbitals;
+    double electron_count = 0.0;
+    std::array<double, 3> plane_normal{0.0, 0.0, 1.0};
+    double plane_rms_bohr = 0.0;
+    double subspace_coverage = 0.0;
+    double confidence = 0.0;
+    std::string rationale;
+    DataProvenance provenance = DataProvenance::Unavailable;
+};
+
 struct Wavefunction {
     std::vector<Atom> atoms;
     std::vector<Primitive> primitives;
@@ -243,6 +265,7 @@ struct Wavefunction {
     DataProvenance bond_order_provenance = DataProvenance::Unavailable;
     std::vector<MulticentreCandidate> multicentre_candidates;
     std::vector<MulticentreAssignment> multicentre_assignments;
+    std::vector<DelocalisedPiAssignment> delocalised_pi_assignments;
 };
 
 struct GridBox {

@@ -271,6 +271,13 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_chemical_valence_smoke PRIVATE cov_parser cov_orbitals)
     add_test(NAME chemical_valence_smoke COMMAND cov_chemical_valence_smoke)
 
+    add_executable(cov_delocalised_pi_smoke tests/delocalised_pi_smoke.cpp)
+    target_link_libraries(cov_delocalised_pi_smoke PRIVATE cov_parser cov_orbitals)
+    target_compile_options(cov_delocalised_pi_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
+    )
+    add_test(NAME delocalised_pi_smoke COMMAND cov_delocalised_pi_smoke)
+
     add_executable(cov_symmetry_smoke tests/symmetry_smoke.cpp)
     target_link_libraries(cov_symmetry_smoke PRIVATE cov_parser)
     add_test(NAME symmetry_smoke COMMAND cov_symmetry_smoke)

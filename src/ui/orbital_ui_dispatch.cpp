@@ -27,6 +27,54 @@ void draw_energy_diagram_legacy(const Wavefunction& wavefunction,
 
 namespace {
 
+constexpr ImU32 kSigmaColour = IM_COL32(57, 210, 232, 255);
+constexpr ImU32 kPiColour = IM_COL32(226, 93, 220, 255);
+constexpr ImU32 kDeltaColour = IM_COL32(244, 155, 65, 255);
+constexpr ImU32 kPhiColour = IM_COL32(55, 199, 170, 255);
+constexpr ImU32 kBondingColour = IM_COL32(77, 218, 145, 255);
+constexpr ImU32 kAntibondingColour = IM_COL32(244, 93, 105, 255);
+constexpr ImU32 kNonbondingColour = IM_COL32(235, 181, 65, 255);
+constexpr ImU32 kMulticentreColour = IM_COL32(238, 194, 89, 255);
+constexpr ImU32 kNumericColour = IM_COL32(93, 174, 255, 255);
+constexpr ImU32 kUnavailableColour = IM_COL32(128, 149, 177, 255);
+
+ImVec4 text_colour(const ImU32 colour) {
+    return ImGui::ColorConvertU32ToFloat4(colour);
+}
+
+void inline_text(const std::string& value, const ImU32 colour, const bool first = false) {
+    if (!first) ImGui::SameLine(0.0f, 0.0f);
+    ImGui::TextColored(text_colour(colour), "%s", value.c_str());
+}
+
+void inline_plain(const std::string& value, const bool first = false) {
+    if (!first) ImGui::SameLine(0.0f, 0.0f);
+    ImGui::TextUnformatted(value.c_str());
+}
+
+ImU32 channel_colour(const OrbitalAngularFamily family) {
+    switch (family) {
+        case OrbitalAngularFamily::Sigma: return kSigmaColour;
+        case OrbitalAngularFamily::Pi: return kPiColour;
+        case OrbitalAngularFamily::Delta: return kDeltaColour;
+        case OrbitalAngularFamily::Phi: return kPhiColour;
+        default: return kUnavailableColour;
+    }
+}
+
+ImU32 role_colour(const OrbitalBondingRole role) {
+    switch (role) {
+        case OrbitalBondingRole::Bonding: return kBondingColour;
+        case OrbitalBondingRole::Antibonding: return kAntibondingColour;
+        case OrbitalBondingRole::Nonbonding: return kNonbondingColour;
+        default: return kUnavailableColour;
+    }
+}
+
+std::string percent_text(const double value) {
+    return std::to_string(static_cast<int>(std::lround(100.0 * value))) + "%";
+}
+
 struct ProvenanceCounts {
     std::size_t producer=0;
     std::size_t derived=0;
@@ -90,6 +138,9 @@ struct ChemistryText {
     const char* family;
     const char* bonding;
     const char* multicentre;
+    const char* members;
+    const char* atoms;
+    const char* electrons;
     const char* donor;
     const char* method;
     const char* contribution;
@@ -102,14 +153,16 @@ ChemistryText chemistry_text(const Language language) {
         case Language::ChineseSimplified:
             return {"所选 MO 化学性质","化学价层轨道组","是","否",
                     "价层 AO 组成","原子对相互作用","轨道类型",
-                    "成键性质","多中心 / 离域族","给体 / 受体方向",
+                    "成键性质","多中心 / 离域族","成员 MO","参与原子","参与电子",
+                    "给体 / 受体方向",
                     "分析方法","MO 贡献",
                     "MO 贡献来自重叠布居；Mayer 为总密度原子对指数。",
                     "UND / 最小价层参考之外"};
         case Language::Japanese:
             return {"選択 MO の化学的性質","化学原子価軌道群","はい","いいえ",
                     "原子価 AO 組成","原子対相互作用","軌道型",
-                    "結合性","多中心 / 非局在化族","供与体 / 受容体",
+                    "結合性","多中心 / 非局在化族","構成 MO","参加原子","参加電子",
+                    "供与体 / 受容体",
                     "解析法","MO 寄与",
                     "MO 寄与は重なり密度由来、Mayer は全密度の原子対指数。",
                     "UND / 最小原子価参照外"};
@@ -119,6 +172,7 @@ ChemistryText chemistry_text(const Language language) {
                     "Composition AO de valence","Interactions par paire atomique",
                     "Type orbitalaire","Caractère liant",
                     "Famille multicentrique / délocalisée",
+                    "OM membres","Atomes participants","Électrons participants",
                     "Direction donneur / accepteur","Méthode",
                     "Contribution OM",
                     "La contribution OM est fondée sur la population de recouvrement ; Mayer est l’indice de paire de densité totale.",
@@ -128,6 +182,7 @@ ChemistryText chemistry_text(const Language language) {
                     "Valence AO composition","Atom-pair interactions",
                     "Orbital family","Bonding role",
                     "Multicentre / delocalised family",
+                    "Member MOs","Participating atoms","Participating electrons",
                     "Donor / acceptor direction","Method","MO contribution",
                     "MO contribution is overlap-population based; Mayer is the total density-level pair index.",
                     "UND / outside minimal valence reference"};
@@ -192,6 +247,79 @@ std::string bonding_text(const OrbitalBondingDistribution& value) {
     return out.str();
 }
 
+void draw_label_value(const char* label, const std::string& value, const ImU32 colour) {
+    ImGui::Text("%s:", label);
+    ImGui::SameLine();
+    ImGui::TextColored(text_colour(colour), "%s", value.c_str());
+}
+
+void draw_channel_value(const char* label, const OrbitalChannelDistribution& value) {
+    ImGui::Text("%s:", label);
+    ImGui::SameLine();
+    if (value.status == ChemistryStatus::NotApplicable) {
+        ImGui::TextColored(text_colour(kUnavailableColour), "N/A");
+        return;
+    }
+    if (value.status == ChemistryStatus::Undetermined || value.status == ChemistryStatus::Unavailable) {
+        ImGui::TextColored(text_colour(kUnavailableColour), "mixed(UND)");
+        return;
+    }
+
+    ImGui::TextColored(text_colour(channel_colour(value.dominant)), "%s", family_symbol(value.dominant));
+    if (value.status != ChemistryStatus::Percentages) return;
+    inline_plain(" [");
+    const auto component = [](const char* symbol, const ImU32 colour, const double fraction, const bool separator) {
+        if (separator) inline_plain(" · ");
+        inline_text(symbol, colour);
+        inline_plain(" ");
+        inline_text(percent_text(fraction), kNumericColour);
+    };
+    component("σ", kSigmaColour, value.sigma, false);
+    component("π", kPiColour, value.pi, true);
+    component("δ", kDeltaColour, value.delta, true);
+    component("φ", kPhiColour, value.phi, true);
+    if (value.undetermined > 0.005) {
+        inline_plain(" · ");
+        inline_text("UND", kUnavailableColour);
+        inline_plain(" ");
+        inline_text(percent_text(value.undetermined), kNumericColour);
+    }
+    inline_plain("]");
+}
+
+void draw_bonding_value(const char* label, const OrbitalBondingDistribution& value) {
+    ImGui::Text("%s:", label);
+    ImGui::SameLine();
+    if (value.status == ChemistryStatus::NotApplicable) {
+        ImGui::TextColored(text_colour(kUnavailableColour), "N/A");
+        return;
+    }
+    if (value.status == ChemistryStatus::Undetermined || value.status == ChemistryStatus::Unavailable) {
+        ImGui::TextColored(text_colour(kUnavailableColour), "mixed(UND)");
+        return;
+    }
+
+    ImGui::TextColored(text_colour(role_colour(value.dominant)), "%s", bonding_word(value.dominant));
+    if (value.status != ChemistryStatus::Percentages) return;
+    inline_plain(" [");
+    const auto component = [](const char* name, const ImU32 colour, const double fraction, const bool separator) {
+        if (separator) inline_plain(" · ");
+        inline_text(name, colour);
+        inline_plain(" ");
+        inline_text(percent_text(fraction), kNumericColour);
+    };
+    component("bonding", kBondingColour, value.bonding, false);
+    component("antibonding", kAntibondingColour, value.antibonding, true);
+    component("nonbonding", kNonbondingColour, value.nonbonding, true);
+    if (value.undetermined > 0.005) {
+        inline_plain(" · ");
+        inline_text("UND", kUnavailableColour);
+        inline_plain(" ");
+        inline_text(percent_text(value.undetermined), kNumericColour);
+    }
+    inline_plain("]");
+}
+
 std::string superscript_number(std::size_t value) {
     static constexpr const char* digits[]={"⁰","¹","²","³","⁴","⁵","⁶","⁷","⁸","⁹"};
     const std::string plain=std::to_string(value);
@@ -210,11 +338,33 @@ std::string subscript_number(const int value) {
 
 std::string family_descriptor(const OrbitalChemistry& chemistry) {
     if (chemistry.multicentre_label.empty()) return "UND";
-    std::string symbol=family_symbol(chemistry.channel.dominant);
+    std::string symbol = chemistry.channel.dominant == OrbitalAngularFamily::Pi &&
+                         !chemistry.delocalised_family_id.empty()
+        ? "Π" : family_symbol(chemistry.channel.dominant);
     symbol+=superscript_number(chemistry.participating_atoms);
     symbol+=subscript_number(static_cast<int>(
         std::lround(chemistry.participating_electrons)));
     return symbol+" · "+chemistry.multicentre_label;
+}
+
+std::string delocalised_orbital_members(const OrbitalChemistry& chemistry) {
+    std::ostringstream result;
+    for (const auto orbital_index : chemistry.delocalised_family_orbitals) {
+        if (result.tellp() > 0) result << ", ";
+        result << "MO" << orbital_index + 1u;
+    }
+    return result.str();
+}
+
+std::string delocalised_atom_members(const Wavefunction& wf,
+                                     const OrbitalChemistry& chemistry) {
+    std::ostringstream result;
+    for (const auto atom_index : chemistry.participating_atom_indices) {
+        if (result.tellp() > 0) result << ", ";
+        if (atom_index < wf.atoms.size()) result << wf.atoms[atom_index].symbol;
+        result << atom_index + 1u;
+    }
+    return result.str();
 }
 
 void draw_selected_chemistry(const Wavefunction& wf,
@@ -226,34 +376,57 @@ void draw_selected_chemistry(const Wavefunction& wf,
 
     ImGui::SeparatorText(text.heading);
     if (!chemistry.available) {
-        ImGui::TextDisabled("UND — AO metric unavailable");
+        ImGui::TextColored(text_colour(kUnavailableColour), "UND — AO metric unavailable");
         return;
     }
 
-    ImGui::Text("%s: %s · %.1f%%",
-                text.valence,
-                chemistry.valence_manifold?text.yes:text.no,
-                100.0*chemistry.valence_weight);
-    ImGui::Text("%s: %s",text.family,
-                channel_text(chemistry.channel).c_str());
-    ImGui::Text("%s: %s",text.bonding,
-                bonding_text(chemistry.bonding).c_str());
-    ImGui::Text("%s: %s",text.multicentre,
-                family_descriptor(chemistry).c_str());
+    ImGui::Text("%s:", text.valence);
+    ImGui::SameLine();
+    ImGui::TextColored(text_colour(chemistry.valence_manifold ? kBondingColour : kUnavailableColour),
+                       "%s", chemistry.valence_manifold ? text.yes : text.no);
+    inline_plain(" · ");
+    inline_text(percent_text(chemistry.valence_weight), kNumericColour);
+    draw_channel_value(text.family, chemistry.channel);
+    draw_bonding_value(text.bonding, chemistry.bonding);
+
+    const std::string descriptor = family_descriptor(chemistry);
+    const bool delocalised_pi = chemistry.channel.dominant == OrbitalAngularFamily::Pi &&
+                                chemistry.participating_atoms > 2u;
+    draw_label_value(text.multicentre, descriptor,
+                     descriptor == "UND" ? kUnavailableColour :
+                     (delocalised_pi ? kPiColour : kMulticentreColour));
+    if (!chemistry.delocalised_family_orbitals.empty()) {
+        draw_label_value(text.members, delocalised_orbital_members(chemistry), kPiColour);
+    }
+    if (!chemistry.participating_atom_indices.empty()) {
+        draw_label_value(text.atoms,
+                         std::to_string(chemistry.participating_atoms) + " · " +
+                             delocalised_atom_members(wf, chemistry),
+                         kNumericColour);
+    }
+    if (chemistry.participating_atoms > 0u) {
+        draw_label_value(text.electrons,
+                         std::to_string(static_cast<int>(std::lround(chemistry.participating_electrons))),
+                         kNumericColour);
+    }
 
     ImGui::TextDisabled("%s",text.ao);
     const std::size_t ao_count=std::min<std::size_t>(
         8u,chemistry.ao_contributions.size());
     for (std::size_t i=0;i<ao_count;++i) {
         const auto& contribution=chemistry.ao_contributions[i];
-        ImGui::BulletText("%s: %.1f%%",
-                          contribution.label.c_str(),
-                          100.0*contribution.weight);
+        ImGui::Bullet();
+        ImGui::SameLine();
+        ImGui::Text("%s:", contribution.label.c_str());
+        ImGui::SameLine();
+        ImGui::TextColored(text_colour(kNumericColour), "%.1f%%", 100.0 * contribution.weight);
     }
     if (chemistry.unresolved_weight>0.005) {
-        ImGui::BulletText("%s: %.1f%%",
-                          text.outside,
-                          100.0*chemistry.unresolved_weight);
+        ImGui::Bullet();
+        ImGui::SameLine();
+        ImGui::TextColored(text_colour(kUnavailableColour), "%s:", text.outside);
+        ImGui::SameLine();
+        ImGui::TextColored(text_colour(kNumericColour), "%.1f%%", 100.0 * chemistry.unresolved_weight);
     }
 
     if (!chemistry.interactions.empty()) {
@@ -271,24 +444,35 @@ void draw_selected_chemistry(const Wavefunction& wf,
         const std::size_t count=std::min<std::size_t>(6u,interactions.size());
         for (std::size_t i=0;i<count;++i) {
             const auto& interaction=*interactions[i];
-            ImGui::BulletText(
-                "%s–%s · %s · %s · %s %+.4f · Mayer %.4f",
-                interaction.atom_a_label.c_str(),
-                interaction.atom_b_label.c_str(),
-                channel_text(interaction.channel).c_str(),
-                bonding_text(interaction.bonding).c_str(),
-                text.contribution,
-                interaction.occupied_overlap_contribution,
-                interaction.total_mayer_index);
+            ImGui::Bullet();
+            ImGui::SameLine();
+            ImGui::Text("%s–%s ·", interaction.atom_a_label.c_str(), interaction.atom_b_label.c_str());
+            ImGui::SameLine();
+            ImGui::TextColored(text_colour(channel_colour(interaction.channel.dominant)), "%s",
+                               channel_text(interaction.channel).c_str());
+            inline_plain(" · ");
+            inline_text(bonding_text(interaction.bonding), role_colour(interaction.bonding.dominant));
+            inline_plain(std::string(" · ") + text.contribution + " ");
+            std::ostringstream contribution_value;
+            contribution_value.setf(std::ios::fixed);
+            contribution_value.precision(4);
+            contribution_value << std::showpos << interaction.occupied_overlap_contribution;
+            inline_text(contribution_value.str(), kNumericColour);
+            inline_plain(" · Mayer ");
+            std::ostringstream mayer_value;
+            mayer_value.setf(std::ios::fixed);
+            mayer_value.precision(4);
+            mayer_value << interaction.total_mayer_index;
+            inline_text(mayer_value.str(), kMulticentreColour);
         }
         ImGui::TextDisabled("%s",text.explanation);
     }
 
-    ImGui::Text("%s: %s",text.donor,
-                chemistry.donor_acceptor.c_str());
-    ImGui::TextDisabled("%s: %s · confidence %.0f%%",
-                        text.method,chemistry.method.c_str(),
-                        100.0*chemistry.confidence);
+    draw_label_value(text.donor, chemistry.donor_acceptor,
+                     chemistry.donor_acceptor == "UND" ? kUnavailableColour : kMulticentreColour);
+    ImGui::TextDisabled("%s: %s · confidence", text.method, chemistry.method.c_str());
+    ImGui::SameLine();
+    ImGui::TextColored(text_colour(kNumericColour), "%.0f%%", 100.0 * chemistry.confidence);
     if (!chemistry.note.empty()) {
         ImGui::TextDisabled("%s",chemistry.note.c_str());
     }

@@ -35,6 +35,11 @@ jobs:
     needs: cpu-core
     runs-on: windows-2022
     timeout-minutes: 45
+    concurrency:
+      group: cov-pre9-${{ github.event_name }}-${{ github.ref }}
+      # Never terminate the asset/tag swap between its two API operations.
+      # A branch-tip check below rejects an obsolete queued run safely.
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -87,27 +92,241 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          $ErrorActionPreference = "Stop"
+          $PSNativeCommandUseErrorActionPreference = $true
+
+          function Invoke-Gh {
+            param([string[]]$CommandArgs)
+            & gh @CommandArgs
+            if ($LASTEXITCODE -ne 0) {
+              throw "gh failed: gh $($CommandArgs -join ' ')"
+            }
+          }
+          function Get-GhJson {
+            param([string[]]$CommandArgs)
+            $raw = & gh @CommandArgs
+            if ($LASTEXITCODE -ne 0) {
+              throw "gh failed: gh $($CommandArgs -join ' ')"
+            }
+            return ($raw | ConvertFrom-Json)
+          }
+
+          $repo = $env:GITHUB_REPOSITORY
           $tag = "v0.3.0-pre.9"
           $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.9-Windows-sm120.exe"
-          $title = "CUDA Orbital Visualisation v0.3.0-pre.9 — Delocalised Pi and UI Polish"
-          $notes = @"
-          This prerelease advances PR #3 with delocalised-pi detection and UI readability fixes.
+          $canonical = Split-Path $asset -Leaf
+          $candidateName = "candidate-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT-$canonical"
+          $rollbackName = "rollback-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT-$canonical"
+          $candidatePath = Join-Path (Split-Path $asset -Parent) $candidateName
 
-          ### Highlights
-          - Planar N-centre p-valence families are grouped into one delocalised Pi system with participating atoms and electrons.
-          - MO diagrams connect all family members with a Pi bracket and shared descriptor.
-          - Selected-MO chemistry values use semantic colours for orbital family, bonding role, symmetry, energies and confidence.
-          - Windows CJK font coverage includes the viewer's hard-coded Chinese and Japanese labels.
-          - Chemical-valence MO selection remains element- and ECP-aware and preserves complete degenerate groups.
-          - The CUDA/OpenGL viewer is built with CUDA 12.8.2 and verified for native sm_120 plus compute_120 PTX fallback.
-          "@
-
-          gh release view $tag --repo "$env:GITHUB_REPOSITORY" *> $null
-          if ($LASTEXITCODE -eq 0) {
-            gh release upload $tag $asset --repo "$env:GITHUB_REPOSITORY" --clobber
-            gh release edit $tag --repo "$env:GITHUB_REPOSITORY" `
-              --target "$env:GITHUB_SHA" --title $title --notes $notes --prerelease
-          } else {
-            gh release create $tag $asset --repo "$env:GITHUB_REPOSITORY" `
-              --target "$env:GITHUB_SHA" --title $title --notes $notes --prerelease
+          # Refuse to mutate a public release from an obsolete queued run.
+          $branchRef = Get-GhJson -CommandArgs @(
+            "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+          )
+          if ($branchRef.object.sha -ne $env:GITHUB_SHA) {
+            throw "stale run: branch=$($branchRef.object.sha), run=$env:GITHUB_SHA"
           }
+
+          $release = Get-GhJson -CommandArgs @("api", "repos/$repo/releases/tags/$tag")
+          $tagRef = Get-GhJson -CommandArgs @("api", "repos/$repo/git/ref/tags/$tag")
+          $oldTagSha = [string]$tagRef.object.sha
+          $oldAsset = @($release.assets | Where-Object { $_.name -eq $canonical })
+          if ($oldAsset.Count -ne 1) {
+            throw "expected exactly one existing canonical asset, got $($oldAsset.Count)"
+          }
+          $oldAsset = $oldAsset[0]
+
+          Copy-Item $asset $candidatePath -Force
+          $localSize = (Get-Item $asset).Length
+          $localDigest = "sha256:" + `
+            (Get-FileHash $asset -Algorithm SHA256).Hash.ToLowerInvariant()
+
+          $committed = $false
+          $candidate = $null
+          try {
+            # Upload a unique candidate first.  The existing public EXE remains
+            # downloadable until the new bytes pass GitHub's digest and size.
+            Invoke-Gh -CommandArgs @(
+              "release", "upload", $tag, $candidatePath, "--repo", $repo
+            )
+            $release = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/releases/tags/$tag"
+            )
+            $candidateMatches = @(
+              $release.assets | Where-Object { $_.name -eq $candidateName }
+            )
+            if ($candidateMatches.Count -ne 1) {
+              throw "candidate asset was not uploaded exactly once"
+            }
+            $candidate = $candidateMatches[0]
+            if ([int64]$candidate.size -ne [int64]$localSize -or
+                [string]$candidate.digest -ne $localDigest) {
+              throw "candidate verification failed: size=$($candidate.size), digest=$($candidate.digest), expected=$localSize/$localDigest"
+            }
+
+            # The branch may have moved while the candidate uploaded.  Recheck
+            # immediately before changing either public asset name or the tag.
+            $freshRef = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+            )
+            if ($freshRef.object.sha -ne $env:GITHUB_SHA) {
+              throw "stale run before commit: branch=$($freshRef.object.sha), run=$env:GITHUB_SHA"
+            }
+
+            Get-GhJson -CommandArgs @(
+              "api", "--method", "PATCH",
+              "repos/$repo/releases/assets/$($oldAsset.id)",
+              "-f", "name=$rollbackName"
+            ) | Out-Null
+            Get-GhJson -CommandArgs @(
+              "api", "--method", "PATCH",
+              "repos/$repo/releases/assets/$($candidate.id)",
+              "-f", "name=$canonical"
+            ) | Out-Null
+
+            Get-GhJson -CommandArgs @(
+              "api", "--method", "PATCH", "repos/$repo/git/refs/tags/$tag",
+              "-f", "sha=$env:GITHUB_SHA", "-F", "force=true"
+            ) | Out-Null
+
+            $finalRef = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/tags/$tag"
+            )
+            $finalBranch = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+            )
+            $finalRelease = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/releases/tags/$tag"
+            )
+            $finalAsset = @(
+              $finalRelease.assets | Where-Object { $_.name -eq $canonical }
+            )
+            if ($finalRef.object.sha -ne $env:GITHUB_SHA) {
+              throw "final tag mismatch: $($finalRef.object.sha)"
+            }
+            if ($finalBranch.object.sha -ne $env:GITHUB_SHA) {
+              throw "branch moved during publish: $($finalBranch.object.sha)"
+            }
+            if ($finalAsset.Count -ne 1) {
+              throw "final canonical asset count is $($finalAsset.Count)"
+            }
+            if ([int64]$finalAsset[0].size -ne [int64]$localSize -or
+                [string]$finalAsset[0].digest -ne $localDigest) {
+              throw "final canonical asset digest/size mismatch"
+            }
+            if (-not [bool]$finalRelease.prerelease) {
+              throw "release is not marked prerelease"
+            }
+            $committed = $true
+          }
+          catch {
+            $failure = $_
+
+            # Reconcile remote truth instead of trusting whether a mutating gh
+            # command returned.  A server can commit a PATCH even if the client
+            # subsequently times out and reports failure.
+            try {
+              $remoteTag = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/git/ref/tags/$tag"
+              )
+              if ($remoteTag.object.sha -eq $env:GITHUB_SHA) {
+                Get-GhJson -CommandArgs @(
+                  "api", "--method", "PATCH", "repos/$repo/git/refs/tags/$tag",
+                  "-f", "sha=$oldTagSha", "-F", "force=true"
+                ) | Out-Null
+              } elseif ($remoteTag.object.sha -ne $oldTagSha) {
+                Write-Warning "tag changed externally; not overwriting $($remoteTag.object.sha)"
+              }
+            } catch { Write-Warning "tag reconciliation failed: $_" }
+
+            $canonicalRestored = $false
+            $candidateId = $null
+            try {
+              $remoteRelease = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/releases/tags/$tag"
+              )
+              $remoteOld = @(
+                $remoteRelease.assets |
+                  Where-Object { [int64]$_.id -eq [int64]$oldAsset.id }
+              )
+              $remoteCandidate = if ($null -ne $candidate) {
+                @($remoteRelease.assets |
+                  Where-Object { [int64]$_.id -eq [int64]$candidate.id })
+              } else {
+                @($remoteRelease.assets |
+                  Where-Object { $_.name -eq $candidateName })
+              }
+              if ($remoteCandidate.Count -eq 0) {
+                # The candidate rename may have committed before its response
+                # failed.  In that case it is the canonical asset with a new ID.
+                $remoteCandidate = @(
+                  $remoteRelease.assets | Where-Object {
+                    $_.name -eq $canonical -and
+                    [int64]$_.id -ne [int64]$oldAsset.id
+                  }
+                )
+              }
+              if ($remoteCandidate.Count -gt 1 -or $remoteOld.Count -ne 1) {
+                throw "cannot uniquely reconcile release assets"
+              }
+              if ($remoteCandidate.Count -eq 1) {
+                $candidateId = $remoteCandidate[0].id
+                if ($remoteCandidate[0].name -eq $canonical) {
+                  Get-GhJson -CommandArgs @(
+                    "api", "--method", "PATCH",
+                    "repos/$repo/releases/assets/$candidateId",
+                    "-f", "name=$candidateName"
+                  ) | Out-Null
+                }
+              }
+
+              $remoteRelease = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/releases/tags/$tag"
+              )
+              $remoteOld = @(
+                $remoteRelease.assets |
+                  Where-Object { [int64]$_.id -eq [int64]$oldAsset.id }
+              )
+              if ($remoteOld.Count -ne 1) {
+                throw "old canonical asset disappeared during rollback"
+              }
+              if ($remoteOld[0].name -ne $canonical) {
+                Get-GhJson -CommandArgs @(
+                  "api", "--method", "PATCH",
+                  "repos/$repo/releases/assets/$($oldAsset.id)",
+                  "-f", "name=$canonical"
+                ) | Out-Null
+              }
+
+              $verifiedRollback = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/releases/tags/$tag"
+              )
+              $restored = @($verifiedRollback.assets | Where-Object {
+                [int64]$_.id -eq [int64]$oldAsset.id -and
+                $_.name -eq $canonical
+              })
+              $canonicalRestored = $restored.Count -eq 1
+            } catch { Write-Warning "asset reconciliation failed: $_" }
+
+            if ($canonicalRestored -and $null -ne $candidateId) {
+              try {
+                Invoke-Gh -CommandArgs @(
+                  "api", "--method", "DELETE",
+                  "repos/$repo/releases/assets/$candidateId"
+                )
+              } catch { Write-Warning "candidate cleanup failed: $_" }
+            }
+            throw $failure
+          }
+
+          # The new canonical asset and tag are already fully verified.  Old
+          # rollback cleanup is best-effort and must never undo a good publish.
+          try {
+            Invoke-Gh -CommandArgs @(
+              "api", "--method", "DELETE",
+              "repos/$repo/releases/assets/$($oldAsset.id)"
+            )
+          } catch { Write-Warning "old rollback asset cleanup failed: $_" }
+
+          Write-Host "Published $tag at $env:GITHUB_SHA"
+          Write-Host "Asset: $canonical ($localSize bytes, $localDigest)"
