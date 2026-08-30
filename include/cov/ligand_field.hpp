@@ -1,8 +1,10 @@
 #pragma once
 
+#include "cov/coordination_geometry.hpp"
 #include "cov/model.hpp"
 #include "cov/orbital_view.hpp"
 
+#include <array>
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -19,6 +21,7 @@ enum class LigandFieldGeometry {
     Unknown,
     Tetrahedral,
     Octahedral,
+    General,
 };
 
 // A local coordination environment is deliberately separate from the full
@@ -26,27 +29,43 @@ enum class LigandFieldGeometry {
 // leaving an unambiguous first-shell ligand field around a transition metal.
 struct LigandFieldEnvironment {
     LigandFieldGeometry geometry = LigandFieldGeometry::Unknown;
+    GeometryId geometry_id = GeometryId::Unknown;
     std::size_t metal_atom = 0;
     std::vector<std::size_t> ligand_atoms;
     double confidence = 0.0;
+    double angular_rms = 0.0;
+    double shape_measure = 0.0;
+    double radial_cv = 0.0;
+    std::array<double, 9> rotation_reference_to_input{
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+    };
     bool equivalent_ligand_elements = false;
+    bool ambiguous = false;
 
     [[nodiscard]] bool available() const noexcept {
-        return geometry != LigandFieldGeometry::Unknown &&
+        return geometry_id != GeometryId::Unknown && !ambiguous &&
                !ligand_atoms.empty();
     }
 
+    [[nodiscard]] std::size_t coordination_number() const noexcept {
+        return ligand_atoms.size();
+    }
+
+    [[nodiscard]] std::string geometry_machine_id() const;
+    [[nodiscard]] std::string geometry_name() const;
     [[nodiscard]] std::string local_point_group() const;
 };
 
 // Uses density-derived Mayer connectivity to isolate the first coordination
-// shell, removes collinear through-ligand contacts, and classifies only
-// geometries supported by the ligand-field diagram (currently Td and Oh).
-// No molecule name, atom ordering, or canonical-MO number is consulted.
+// shell, removes collinear through-ligand contacts, and compares CN 2--10 with
+// the shared ideal-geometry catalogue.  No molecule name, atom ordering, or
+// canonical-MO number is consulted.
 [[nodiscard]] LigandFieldEnvironment analyse_ligand_field_environment(
     const Wavefunction& wavefunction);
 
-// Apply local Oh/Td labels to the same per-MO metadata consumed by the
+// Apply local parent-group labels to the same per-MO metadata consumed by the
 // orbital browser, diagram tooltips and exports.  Producer labels are never
 // overwritten: only unavailable members of a confidently recovered central-
 // metal valence subspace are filled.  This keeps the ordinary MO table and

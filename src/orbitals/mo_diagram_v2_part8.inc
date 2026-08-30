@@ -9,6 +9,46 @@ const char* machine_bonding_class(const BondingClass value) noexcept {
     }
 }
 
+void write_json_index_array(std::ostream& out,
+                            const std::vector<std::size_t>& values) {
+    out << '[';
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ',';
+        out << values[i];
+    }
+    out << ']';
+}
+
+std::string csv_index_list(const std::vector<std::size_t>& values) {
+    std::ostringstream out;
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ';';
+        out << values[i];
+    }
+    return out.str();
+}
+
+std::string csv_pi_interaction_summary(const MODiagramData& data) {
+    std::ostringstream out;
+    out << std::setprecision(14);
+    for (std::size_t i = 0; i < data.pi_interactions.size(); ++i) {
+        if (i) out << " || ";
+        const auto& interaction = data.pi_interactions[i];
+        out << "kind=" << export_pi_kind_id(interaction.kind)
+            << ";symmetry=" << interaction.symmetry
+            << ";lower_level=" << interaction.lower_level
+            << ";upper_level=" << interaction.upper_level
+            << ";retained_level=" << interaction.retained_level
+            << ";lower_orbitals=" << csv_index_list(interaction.lower_orbitals)
+            << ";upper_orbitals=" << csv_index_list(interaction.upper_orbitals)
+            << ";splitting_hartree=" << interaction.splitting_hartree
+            << ";confidence=" << interaction.confidence
+            << ";lower_visible=" << (interaction.lower_visible ? 1 : 0)
+            << ";upper_visible=" << (interaction.upper_visible ? 1 : 0);
+    }
+    return out.str();
+}
+
 } // namespace
 
 bool write_mo_diagram_json(const MODiagramData& data,
@@ -45,9 +85,80 @@ bool write_mo_diagram_json(const MODiagramData& data,
     out << "]\n  },\n";
     out << "  \"selection_summary\": \"" << json_escape(data.selection.summary) << "\",\n";
     out << "  \"shown_orbitals\": " << data.selection.included_indices.size() << ",\n";
+    out << "  \"diagram_row_count\": " << data.levels.size() << ",\n";
     out << "  \"hidden_orbitals\": " << data.selection.hidden_count << ",\n";
     out << "  \"valence_occupied_count\": " << data.selection.valence_occupied_count << ",\n";
     out << "  \"frontier_virtual_count\": " << data.selection.frontier_virtual_count << ",\n";
+    out << "  \"local_coordination\": {\n";
+    out << "    \"available\": "
+        << (!data.ligand_field_geometry_id.empty() &&
+            data.ligand_field_coordination_number > 0 ? "true" : "false") << ",\n";
+    out << "    \"point_group\": \""
+        << json_escape(data.ligand_field_point_group) << "\",\n";
+    out << "    \"geometry_id\": \""
+        << json_escape(data.ligand_field_geometry_id) << "\",\n";
+    out << "    \"geometry_name\": \""
+        << json_escape(data.ligand_field_geometry_name) << "\",\n";
+    out << "    \"coordination_number\": "
+        << data.ligand_field_coordination_number << ",\n";
+    out << "    \"metal_atom_index\": " << data.ligand_field_metal_atom << ",\n";
+    out << "    \"ligand_atom_indices\": ";
+    write_json_index_array(out, data.ligand_field_ligand_atoms);
+    out << ",\n";
+    out << "    \"confidence\": " << std::setprecision(14)
+        << data.ligand_field_confidence << ",\n";
+    out << "    \"angular_rms\": " << data.ligand_field_angular_rms << ",\n";
+    out << "    \"shape_measure\": " << data.ligand_field_shape_measure << ",\n";
+    out << "    \"radial_cv\": " << data.ligand_field_radial_cv << "\n";
+    out << "  },\n";
+    out << "  \"pi_interactions\": [\n";
+    for (std::size_t i = 0; i < data.pi_interactions.size(); ++i) {
+        const auto& interaction = data.pi_interactions[i];
+        out << "    {\n";
+        out << "      \"kind\": \""
+            << export_pi_kind_id(interaction.kind) << "\",\n";
+        out << "      \"description\": \""
+            << json_escape(pi_interaction_kind_name(interaction.kind)) << "\",\n";
+        out << "      \"symmetry\": \""
+            << json_escape(interaction.symmetry) << "\",\n";
+        out << "      \"lower_level\": " << interaction.lower_level << ",\n";
+        out << "      \"upper_level\": " << interaction.upper_level << ",\n";
+        out << "      \"retained_level\": " << interaction.retained_level << ",\n";
+        out << "      \"lower_orbitals\": ";
+        write_json_index_array(out, interaction.lower_orbitals);
+        out << ",\n";
+        out << "      \"upper_orbitals\": ";
+        write_json_index_array(out, interaction.upper_orbitals);
+        out << ",\n";
+        out << "      \"splitting_hartree\": " << std::setprecision(14)
+            << interaction.splitting_hartree << ",\n";
+        out << "      \"splitting_display\": "
+            << convert_hartree(interaction.splitting_hartree, options.energy_unit)
+            << ",\n";
+        out << "      \"confidence\": " << interaction.confidence << ",\n";
+        out << "      \"lower_visible\": "
+            << (interaction.lower_visible ? "true" : "false") << ",\n";
+        out << "      \"upper_visible\": "
+            << (interaction.upper_visible ? "true" : "false") << "\n";
+        out << "    }" << (i + 1 < data.pi_interactions.size() ? "," : "") << "\n";
+    }
+    out << "  ],\n";
+    out << "  \"diagram_rows\": [\n";
+    for (std::size_t i = 0; i < data.levels.size(); ++i) {
+        const auto& level = data.levels[i];
+        out << "    {\"row_index\":" << i
+            << ",\"layout_energy_hartree\":" << std::setprecision(14)
+            << level.layout_energy_hartree
+            << ",\"symmetry\":\"" << json_escape(level.metadata.symmetry)
+            << "\",\"member_orbitals\":";
+        if (level.member_indices.empty()) {
+            write_json_index_array(out, std::vector<std::size_t>{level.metadata.orbital_index});
+        } else {
+            write_json_index_array(out, level.member_indices);
+        }
+        out << '}' << (i + 1 < data.levels.size() ? "," : "") << "\n";
+    }
+    out << "  ],\n";
     out << "  \"orbitals\": [\n";
 
     bool first = true;
@@ -126,7 +237,13 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "multicentre_source,multicentre_confidence,multicentre_heuristic,"
            "delocalised_pi_available,delocalised_pi_participating_atoms,"
            "delocalised_pi_participating_electrons,delocalised_pi_label,delocalised_pi_source,"
-           "delocalised_pi_confidence,delocalised_pi_heuristic,heuristic\n";
+           "delocalised_pi_confidence,delocalised_pi_heuristic,heuristic,"
+           "local_point_group,local_geometry_id,local_geometry_name,local_coordination_number,"
+           "local_metal_atom_index,local_ligand_atom_indices,local_confidence,local_angular_rms,"
+           "local_shape_measure,local_radial_cv,diagram_row_count,pi_interaction_count,"
+           "pi_interactions\n";
+    const std::string ligand_atoms = csv_index_list(data.ligand_field_ligand_atoms);
+    const std::string pi_interactions = csv_pi_interaction_summary(data);
     for (std::size_t i = 0; i < data.metadata.size(); ++i) {
         if (!options.include_hidden_in_metadata && !included.count(i)) continue;
         const auto& item = data.metadata[i];
@@ -157,7 +274,20 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             << annotation_source_name(annotation.delocalised_pi.source) << ','
             << annotation.delocalised_pi.confidence << ','
             << (annotation.delocalised_pi.heuristic ? 1 : 0) << ','
-            << (annotation.heuristic ? 1 : 0) << '\n';
+            << (annotation.heuristic ? 1 : 0) << ','
+            << csv_escape(data.ligand_field_point_group) << ','
+            << csv_escape(data.ligand_field_geometry_id) << ','
+            << csv_escape(data.ligand_field_geometry_name) << ','
+            << data.ligand_field_coordination_number << ','
+            << data.ligand_field_metal_atom << ','
+            << csv_escape(ligand_atoms) << ','
+            << data.ligand_field_confidence << ','
+            << data.ligand_field_angular_rms << ','
+            << data.ligand_field_shape_measure << ','
+            << data.ligand_field_radial_cv << ','
+            << data.levels.size() << ','
+            << data.pi_interactions.size() << ','
+            << csv_escape(pi_interactions) << '\n';
     }
     if (!out) {
         if (error) *error = "Failed while writing CSV";

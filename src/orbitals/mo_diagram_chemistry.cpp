@@ -1,5 +1,7 @@
 #include "cov/mo_diagram.hpp"
 #include "cov/ligand_field.hpp"
+#include "cov/local_orbital_symmetry.hpp"
+#include "cov/point_group_catalog.hpp"
 
 #include <algorithm>
 #include <array>
@@ -7,6 +9,7 @@
 #include <limits>
 #include <map>
 #include <numeric>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <string>
@@ -336,6 +339,8 @@ struct GroupCandidate {
     bool include=false;
     bool locally_grouped=false;
     bool suppressed_spin_counterpart=false;
+    std::uint8_t local_irrep_copy=0;
+    bool locally_classified=false;
 };
 
 Spin group_spin(const Wavefunction& wavefunction,
@@ -427,6 +432,11 @@ GroupCandidate merge_local_groups(const Wavefunction& wavefunction,
     result.selected_by_raw=left.selected_by_raw || right.selected_by_raw;
     result.include=left.include || right.include;
     result.locally_grouped=true;
+    if (left.local_irrep_copy!=right.local_irrep_copy) {
+        result.local_irrep_copy=0;
+    }
+    result.locally_classified=left.locally_classified &&
+                              right.locally_classified;
     return result;
 }
 
@@ -513,9 +523,17 @@ void merge_local_pseudodegenerate_groups(
     std::vector<GroupCandidate>& groups) {
     if (!environment.available() ||
         !environment.equivalent_ligand_elements) return;
-    while (merge_resolved_five_d_run(wavefunction,groups)) {
-        // Re-evaluate indices after forming a non-adjacent five-dimensional
-        // d run into two resolved 2/3-dimensional local subspaces.
+    const std::string point_group=environment.local_point_group();
+    const bool unique_two_three_d=
+        classify_local_irrep_by_dimension(
+            point_group,MetalAOShell::D,2u).has_value() &&
+        classify_local_irrep_by_dimension(
+            point_group,MetalAOShell::D,3u).has_value();
+    if (unique_two_three_d) {
+        while (merge_resolved_five_d_run(wavefunction,groups)) {
+            // Re-evaluate indices after forming a non-adjacent
+            // five-dimensional d run into two resolved subspaces.
+        }
     }
     for (std::size_t i=0;i+1u<groups.size();) {
         auto& left=groups[i];
@@ -524,9 +542,15 @@ void merge_local_pseudodegenerate_groups(
             left.level.metadata.symmetry);
         const std::string right_symmetry=normalised_symmetry(
             right.level.metadata.symmetry);
+        const bool local_copies_compatible=
+            (!left.locally_classified && !right.locally_classified) ||
+            (left.locally_classified && right.locally_classified &&
+             left.local_irrep_copy!=0u &&
+             left.local_irrep_copy==right.local_irrep_copy);
         const bool labels_compatible=
             (left_symmetry.empty() && right_symmetry.empty()) ||
-            (!left_symmetry.empty() && left_symmetry==right_symmetry);
+            (!left_symmetry.empty() && left_symmetry==right_symmetry &&
+             local_copies_compatible);
         if (group_spin(wavefunction,left)!=group_spin(wavefunction,right) ||
             !labels_compatible) {
             ++i;
@@ -540,6 +564,11 @@ void merge_local_pseudodegenerate_groups(
         const std::size_t left_size=left.level.member_indices.size();
         const std::size_t right_size=right.level.member_indices.size();
         const std::size_t combined=left_size+right_size;
+        const bool unlabeled=left_symmetry.empty() && right_symmetry.empty();
+        const bool dimension_unambiguous=!unlabeled ||
+            classify_local_irrep_by_dimension(
+                point_group,static_cast<MetalAOShell>(family),combined)
+                .has_value();
         const bool expected_p=family==1 && combined<=3u &&
             (left_size<3u || right_size<3u);
         const bool expected_d=family==2 &&
@@ -548,7 +577,7 @@ void merge_local_pseudodegenerate_groups(
         const double gap=std::abs(
             right.level.layout_energy_hartree-left.level.layout_energy_hartree);
         const double local_tolerance_hartree=family==1?0.015:0.005;
-        if ((!expected_p && !expected_d) ||
+        if (!dimension_unambiguous || (!expected_p && !expected_d) ||
             gap>local_tolerance_hartree) {
             ++i;
             continue;
@@ -559,39 +588,37 @@ void merge_local_pseudodegenerate_groups(
 }
 
 void recover_local_ligand_field_symmetry(
+    const Wavefunction& wavefunction,
     const LigandFieldEnvironment& environment,
     std::vector<GroupCandidate>& groups) {
-    if (!environment.available() ||
-        !environment.equivalent_ligand_elements) return;
+    if (!environment.available()) return;
     const std::string point_group=environment.local_point_group();
     for (auto& group:groups) {
         auto& level=group.level;
-        if (!normalised_symmetry(level.metadata.symmetry).empty()) continue;
-        const std::size_t degeneracy=level.member_indices.size();
-        if (point_group=="Oh") {
-            if (degeneracy==3u &&
-                level.metal_d_weight>=kLocalDIrrepWeightFloor) {
-                level.metadata.symmetry="T2g";
-            } else if (degeneracy==2u &&
-                       level.metal_d_weight>=kLocalDIrrepWeightFloor) {
-                level.metadata.symmetry="Eg";
-            } else if (degeneracy==3u && level.metal_p_weight>=0.08) {
-                level.metadata.symmetry="T1u";
-            } else if (degeneracy==1u && level.metal_s_weight>=0.08) {
-                level.metadata.symmetry="A1g";
-            }
-        } else if (point_group=="Td") {
-            if (degeneracy==2u &&
-                level.metal_d_weight>=kLocalDIrrepWeightFloor) {
-                level.metadata.symmetry="E";
-            } else if (degeneracy==3u &&
-                       (level.metal_d_weight>=kLocalDIrrepWeightFloor ||
-                        level.metal_p_weight>=0.08)) {
-                level.metadata.symmetry="T2";
-            } else if (degeneracy==1u && level.metal_s_weight>=0.08) {
-                level.metadata.symmetry="A1";
+        const int family=dominant_metal_family(level);
+        // Do not promote numerical AO noise on a ligand-only SALC into a
+        // central-metal irrep.  Besides overwriting a valid producer label,
+        // that can create dimensionally impossible rows (for example a
+        // three-member Eg group) and then prevent alpha/beta spatial pairing.
+        // The same chemically meaningful metal-family floor used by the
+        // compact selector is therefore also the admission gate here.
+        std::optional<LocalIrrepAssignment> assignment;
+        if (family>=0) {
+            assignment=classify_local_metal_irrep(
+                wavefunction,level.member_indices,environment.metal_atom,
+                point_group,environment.rotation_reference_to_input);
+        }
+        if (!assignment) {
+            if (family>=0) {
+                assignment=classify_local_irrep_by_dimension(
+                    point_group,static_cast<MetalAOShell>(family),
+                    level.member_indices.size());
             }
         }
+        if (!assignment) continue;
+        level.metadata.symmetry=assignment->label;
+        group.local_irrep_copy=assignment->copy_index;
+        group.locally_classified=true;
     }
 }
 
@@ -693,20 +720,27 @@ private:
 };
 
 double subspace_overlap(const SpinOverlapWorkspace& workspace,
-                        const GroupCandidate& alpha,
-                        const GroupCandidate& beta) {
-    if (alpha.level.member_indices.empty() ||
-        alpha.level.member_indices.size()!=beta.level.member_indices.size()) {
+                        const std::vector<std::size_t>& alpha_members,
+                        const std::vector<std::size_t>& beta_members) {
+    if (alpha_members.empty() ||
+        alpha_members.size()!=beta_members.size()) {
         return 0.0;
     }
     double squared=0.0;
-    for (const auto a:alpha.level.member_indices) {
-        for (const auto b:beta.level.member_indices) {
+    for (const auto a:alpha_members) {
+        for (const auto b:beta_members) {
             const double overlap=workspace.overlap(a,b);
             squared+=overlap*overlap;
         }
     }
-    return squared/static_cast<double>(alpha.level.member_indices.size());
+    return squared/static_cast<double>(alpha_members.size());
+}
+
+double subspace_overlap(const SpinOverlapWorkspace& workspace,
+                        const GroupCandidate& alpha,
+                        const GroupCandidate& beta) {
+    return subspace_overlap(workspace,alpha.level.member_indices,
+                            beta.level.member_indices);
 }
 
 void combine_spin_occupations(const Wavefunction& wavefunction,
@@ -789,9 +823,315 @@ struct SpinCollapseResult {
     std::size_t paired_members=0u;
 };
 
+struct SpinPairCandidate {
+    std::size_t alpha=0u;
+    std::size_t beta=0u;
+    double score=0.0;
+};
+
+std::vector<SpinPairCandidate> maximum_cardinality_spin_matching(
+    const std::vector<SpinPairCandidate>& candidates,
+    const std::size_t group_count) {
+    if (candidates.empty()) return {};
+
+    std::vector<std::size_t> alpha_groups;
+    std::vector<std::size_t> beta_groups;
+    for (const auto& candidate:candidates) {
+        alpha_groups.push_back(candidate.alpha);
+        beta_groups.push_back(candidate.beta);
+    }
+    std::sort(alpha_groups.begin(),alpha_groups.end());
+    alpha_groups.erase(
+        std::unique(alpha_groups.begin(),alpha_groups.end()),alpha_groups.end());
+    std::sort(beta_groups.begin(),beta_groups.end());
+    beta_groups.erase(
+        std::unique(beta_groups.begin(),beta_groups.end()),beta_groups.end());
+
+    const int source=0;
+    const int alpha_begin=1;
+    const int beta_begin=alpha_begin+static_cast<int>(alpha_groups.size());
+    const int sink=beta_begin+static_cast<int>(beta_groups.size());
+    const int node_count=sink+1;
+    std::vector<int> alpha_node(group_count,-1);
+    std::vector<int> beta_node(group_count,-1);
+    for (std::size_t i=0;i<alpha_groups.size();++i) {
+        if (alpha_groups[i]<group_count) {
+            alpha_node[alpha_groups[i]]=alpha_begin+static_cast<int>(i);
+        }
+    }
+    for (std::size_t i=0;i<beta_groups.size();++i) {
+        if (beta_groups[i]<group_count) {
+            beta_node[beta_groups[i]]=beta_begin+static_cast<int>(i);
+        }
+    }
+
+    struct FlowEdge {
+        int to=0;
+        std::size_t reverse=0u;
+        int capacity=0;
+        double cost=0.0;
+    };
+    std::vector<std::vector<FlowEdge>> graph(
+        static_cast<std::size_t>(node_count));
+    const auto add_edge=[&](const int from,const int to,const double cost) {
+        const std::size_t forward=graph[static_cast<std::size_t>(from)].size();
+        const std::size_t reverse=graph[static_cast<std::size_t>(to)].size();
+        graph[static_cast<std::size_t>(from)].push_back(
+            {to,reverse,1,cost});
+        graph[static_cast<std::size_t>(to)].push_back(
+            {from,forward,0,-cost});
+        return forward;
+    };
+    for (const auto group:alpha_groups) {
+        add_edge(source,alpha_node[group],0.0);
+    }
+    for (const auto group:beta_groups) {
+        add_edge(beta_node[group],sink,0.0);
+    }
+    struct PairArc {
+        std::size_t candidate=0u;
+        int from=0;
+        std::size_t edge=0u;
+    };
+    std::vector<PairArc> pair_arcs;
+    pair_arcs.reserve(candidates.size());
+    for (std::size_t i=0;i<candidates.size();++i) {
+        const int from=alpha_node[candidates[i].alpha];
+        const int to=beta_node[candidates[i].beta];
+        pair_arcs.push_back({i,from,add_edge(from,to,-candidates[i].score)});
+    }
+
+    // Successive shortest augmenting paths continue until no source/sink
+    // path remains.  Consequently cardinality is the primary objective; the
+    // negative overlap cost makes total S-metric overlap the secondary one.
+    // Residual reverse arcs permit an earlier choice to be replaced, which is
+    // precisely the reassignment the former sorted-edge greedy pass lacked.
+    constexpr double infinity=std::numeric_limits<double>::infinity();
+    for (;;) {
+        std::vector<double> distance(
+            static_cast<std::size_t>(node_count),infinity);
+        std::vector<int> previous_node(
+            static_cast<std::size_t>(node_count),-1);
+        std::vector<std::size_t> previous_edge(
+            static_cast<std::size_t>(node_count),0u);
+        std::vector<bool> queued(static_cast<std::size_t>(node_count),false);
+        std::queue<int> pending;
+        distance[static_cast<std::size_t>(source)]=0.0;
+        pending.push(source);
+        queued[static_cast<std::size_t>(source)]=true;
+        while (!pending.empty()) {
+            const int from=pending.front();
+            pending.pop();
+            queued[static_cast<std::size_t>(from)]=false;
+            const auto& edges=graph[static_cast<std::size_t>(from)];
+            for (std::size_t edge_index=0;edge_index<edges.size();++edge_index) {
+                const auto& edge=edges[edge_index];
+                if (edge.capacity<=0) continue;
+                const double proposed=distance[static_cast<std::size_t>(from)]+
+                                      edge.cost;
+                if (proposed>=distance[static_cast<std::size_t>(edge.to)]-
+                                 1.0e-12) continue;
+                distance[static_cast<std::size_t>(edge.to)]=proposed;
+                previous_node[static_cast<std::size_t>(edge.to)]=from;
+                previous_edge[static_cast<std::size_t>(edge.to)]=edge_index;
+                if (!queued[static_cast<std::size_t>(edge.to)]) {
+                    pending.push(edge.to);
+                    queued[static_cast<std::size_t>(edge.to)]=true;
+                }
+            }
+        }
+        if (previous_node[static_cast<std::size_t>(sink)]<0) break;
+        for (int node=sink;node!=source;
+             node=previous_node[static_cast<std::size_t>(node)]) {
+            const int from=previous_node[static_cast<std::size_t>(node)];
+            const std::size_t edge_index=
+                previous_edge[static_cast<std::size_t>(node)];
+            auto& edge=graph[static_cast<std::size_t>(from)][edge_index];
+            --edge.capacity;
+            ++graph[static_cast<std::size_t>(node)][edge.reverse].capacity;
+        }
+    }
+
+    std::vector<SpinPairCandidate> result;
+    for (const auto& arc:pair_arcs) {
+        if (graph[static_cast<std::size_t>(arc.from)][arc.edge].capacity==0) {
+            result.push_back(candidates[arc.candidate]);
+        }
+    }
+    std::sort(result.begin(),result.end(),[](const auto& left,const auto& right) {
+        if (left.alpha!=right.alpha) return left.alpha<right.alpha;
+        return left.beta<right.beta;
+    });
+    return result;
+}
+
+std::optional<std::size_t> formal_irrep_dimension(
+    const std::string& point_group,const std::string& symmetry) {
+    const auto* definition=find_point_group(point_group);
+    if (definition==nullptr || symmetry.empty()) return std::nullopt;
+    const auto found=std::find_if(
+        definition->irreps.begin(),definition->irreps.end(),[&](const auto& irrep) {
+            return normalised_symmetry(std::string(irrep.label))==symmetry;
+        });
+    if (found==definition->irreps.end() || found->dimension==0u) {
+        return std::nullopt;
+    }
+    return static_cast<std::size_t>(found->dimension);
+}
+
+std::vector<std::vector<std::size_t>> group_subsets_with_member_count(
+    const std::vector<GroupCandidate>& groups,
+    const std::vector<std::size_t>& candidates,
+    const std::size_t target) {
+    std::vector<std::vector<std::size_t>> result;
+    std::vector<std::size_t> current;
+    const auto visit=[&](const auto& self,const std::size_t begin,
+                         const std::size_t count)->void {
+        if (count==target) {
+            if (current.size()>=2u) result.push_back(current);
+            return;
+        }
+        for (std::size_t i=begin;i<candidates.size();++i) {
+            const std::size_t group=candidates[i];
+            const std::size_t size=groups[group].level.member_indices.size();
+            if (size==0u || count+size>target) continue;
+            current.push_back(group);
+            self(self,i+1u,count+size);
+            current.pop_back();
+        }
+    };
+    visit(visit,0u,0u);
+    return result;
+}
+
+GroupCandidate merge_spin_partition(
+    const Wavefunction& wavefunction,
+    const std::vector<GroupCandidate>& groups,
+    const std::vector<std::size_t>& partition) {
+    GroupCandidate merged=groups[partition.front()];
+    for (std::size_t i=1u;i<partition.size();++i) {
+        merged=merge_local_groups(wavefunction,merged,groups[partition[i]]);
+    }
+    return merged;
+}
+
+void collapse_split_spin_partitions(
+    const Wavefunction& wavefunction,
+    const MODiagramOptions& options,
+    const std::string& point_group,
+    const SpinOverlapWorkspace& overlap_workspace,
+    std::vector<GroupCandidate>& groups,
+    std::set<std::size_t>& used_alpha,
+    std::set<std::size_t>& used_beta,
+    SpinCollapseResult& result) {
+    struct ResidualCandidate {
+        std::vector<std::size_t> alpha;
+        std::vector<std::size_t> beta;
+        double score=0.0;
+    };
+    std::vector<ResidualCandidate> candidates;
+    const auto add_full_against_split=[&](const Spin full_spin) {
+        const Spin split_spin=full_spin==Spin::Alpha?Spin::Beta:Spin::Alpha;
+        const auto& used_full=full_spin==Spin::Alpha?used_alpha:used_beta;
+        const auto& used_split=split_spin==Spin::Alpha?used_alpha:used_beta;
+        for (std::size_t full=0;full<groups.size();++full) {
+            if (group_spin(wavefunction,groups[full])!=full_spin ||
+                used_full.count(full)>0u) continue;
+            const std::string symmetry=normalised_symmetry(
+                groups[full].level.metadata.symmetry);
+            const auto dimension=formal_irrep_dimension(point_group,symmetry);
+            if (!dimension || *dimension<2u ||
+                groups[full].level.member_indices.size()!=*dimension) continue;
+            std::vector<std::size_t> pieces;
+            for (std::size_t split=0;split<groups.size();++split) {
+                if (group_spin(wavefunction,groups[split])!=split_spin ||
+                    used_split.count(split)>0u ||
+                    groups[split].level.member_indices.empty() ||
+                    groups[split].level.member_indices.size()>=*dimension ||
+                    normalised_symmetry(
+                        groups[split].level.metadata.symmetry)!=symmetry) continue;
+                pieces.push_back(split);
+            }
+            for (auto partition:group_subsets_with_member_count(
+                     groups,pieces,*dimension)) {
+                std::vector<std::size_t> alpha;
+                std::vector<std::size_t> beta;
+                if (full_spin==Spin::Alpha) {
+                    alpha={full};
+                    beta=std::move(partition);
+                } else {
+                    alpha=std::move(partition);
+                    beta={full};
+                }
+                std::vector<std::size_t> alpha_members;
+                std::vector<std::size_t> beta_members;
+                for (const auto group:alpha) {
+                    alpha_members.insert(alpha_members.end(),
+                        groups[group].level.member_indices.begin(),
+                        groups[group].level.member_indices.end());
+                }
+                for (const auto group:beta) {
+                    beta_members.insert(beta_members.end(),
+                        groups[group].level.member_indices.begin(),
+                        groups[group].level.member_indices.end());
+                }
+                const double score=subspace_overlap(
+                    overlap_workspace,alpha_members,beta_members);
+                if (score>=0.80) {
+                    candidates.push_back(
+                        {std::move(alpha),std::move(beta),score});
+                }
+            }
+        }
+    };
+    add_full_against_split(Spin::Alpha);
+    add_full_against_split(Spin::Beta);
+    std::sort(candidates.begin(),candidates.end(),[](const auto& left,
+                                                     const auto& right) {
+        if (left.score!=right.score) return left.score>right.score;
+        if (left.alpha!=right.alpha) return left.alpha<right.alpha;
+        return left.beta<right.beta;
+    });
+
+    for (const auto& candidate:candidates) {
+        if (std::any_of(candidate.alpha.begin(),candidate.alpha.end(),
+                [&](const auto group) {return used_alpha.count(group)>0u;}) ||
+            std::any_of(candidate.beta.begin(),candidate.beta.end(),
+                [&](const auto group) {return used_beta.count(group)>0u;})) {
+            continue;
+        }
+        GroupCandidate alpha=merge_spin_partition(
+            wavefunction,groups,candidate.alpha);
+        const GroupCandidate beta=merge_spin_partition(
+            wavefunction,groups,candidate.beta);
+        combine_spin_occupations(
+            wavefunction,overlap_workspace,alpha,beta,
+            options.filter.occupation_threshold);
+
+        const std::size_t alpha_primary=candidate.alpha.front();
+        groups[alpha_primary]=std::move(alpha);
+        groups[alpha_primary].suppressed_spin_counterpart=false;
+        for (std::size_t i=1u;i<candidate.alpha.size();++i) {
+            auto& piece=groups[candidate.alpha[i]];
+            piece.include=false;
+            piece.suppressed_spin_counterpart=true;
+        }
+        for (const auto group:candidate.beta) {
+            groups[group].include=false;
+            groups[group].suppressed_spin_counterpart=true;
+        }
+        used_alpha.insert(candidate.alpha.begin(),candidate.alpha.end());
+        used_beta.insert(candidate.beta.begin(),candidate.beta.end());
+        ++result.paired_groups;
+        result.paired_members+=
+            groups[alpha_primary].level.member_indices.size();
+    }
+}
+
 SpinCollapseResult collapse_spin_counterparts(
                                 const Wavefunction& wavefunction,
                                 const MODiagramOptions& options,
+                                const std::string& point_group,
     std::vector<GroupCandidate>& groups) {
     SpinCollapseResult result;
     const bool has_alpha_orbitals=std::any_of(
@@ -803,8 +1143,7 @@ SpinCollapseResult collapse_spin_counterparts(
     if (!has_alpha_orbitals || !has_beta_orbitals ||
         wavefunction.ao_overlap.empty()) return result;
     const SpinOverlapWorkspace overlap_workspace(wavefunction);
-    struct Pair { std::size_t alpha=0; std::size_t beta=0; double score=0.0; };
-    std::vector<Pair> pairs;
+    std::vector<SpinPairCandidate> candidates;
     for (std::size_t a=0;a<groups.size();++a) {
         if (group_spin(wavefunction,groups[a])!=Spin::Alpha) continue;
         for (std::size_t b=0;b<groups.size();++b) {
@@ -818,7 +1157,8 @@ SpinCollapseResult collapse_spin_counterparts(
             if (!sa.empty() && !sb.empty() && sa!=sb) continue;
             const int alpha_family=dominant_metal_family(groups[a].level);
             const int beta_family=dominant_metal_family(groups[b].level);
-            if (alpha_family>=0 && beta_family>=0 &&
+            const bool same_valid_irrep=!sa.empty() && !sb.empty() && sa==sb;
+            if (!same_valid_irrep && alpha_family>=0 && beta_family>=0 &&
                 alpha_family!=beta_family) continue;
             const double score=subspace_overlap(
                 overlap_workspace,groups[a],groups[b]);
@@ -827,16 +1167,14 @@ SpinCollapseResult collapse_spin_counterparts(
             // well below the old 0.50 cutoff even for the same spatial d
             // block; metal-family and symmetry compatibility guard the more
             // permissive floor against unrelated matches.
-            if (score>=0.30) pairs.push_back({a,b,score});
+            if (score>=0.30) candidates.push_back({a,b,score});
         }
     }
-    std::sort(pairs.begin(),pairs.end(),[](const auto& a,const auto& b) {
-        return a.score>b.score;
-    });
+    const auto pairs=maximum_cardinality_spin_matching(
+        candidates,groups.size());
     std::set<std::size_t> used_alpha;
     std::set<std::size_t> used_beta;
     for (const auto& pair:pairs) {
-        if (used_alpha.count(pair.alpha) || used_beta.count(pair.beta)) continue;
         used_alpha.insert(pair.alpha);
         used_beta.insert(pair.beta);
         combine_spin_occupations(
@@ -848,6 +1186,9 @@ SpinCollapseResult collapse_spin_counterparts(
         ++result.paired_groups;
         result.paired_members+=groups[pair.alpha].level.member_indices.size();
     }
+    collapse_split_spin_partitions(
+        wavefunction,options,point_group,overlap_workspace,groups,
+        used_alpha,used_beta,result);
     return result;
 }
 
@@ -1099,9 +1440,13 @@ struct RawPiPair {
 bool local_pi_irrep(const std::string& point_group,
                     const std::string& symmetry) {
     if (symmetry.empty() || symmetry=="?" || symmetry=="n/a") return false;
-    if (point_group=="Oh") return symmetry=="t2g";
-    if (point_group=="Td") return symmetry=="e" || symmetry=="t2";
-    return true;
+    const auto decomposition=decompose_metal_ao_shell(
+        point_group,MetalAOShell::D);
+    if (!decomposition) return false;
+    return std::any_of(
+        decomposition->begin(),decomposition->end(),[&](const auto& copy) {
+            return normalised_symmetry(std::string(copy.label))==symmetry;
+        });
 }
 
 std::vector<RawPiPair> find_pi_pairs(
@@ -1429,9 +1774,16 @@ MODiagramData build_mo_diagram_data(
         wavefunction,ligand_field);
     if (ligand_field.available()) {
         data.ligand_field_point_group=ligand_field.local_point_group();
+        data.ligand_field_geometry_id=ligand_field.geometry_machine_id();
+        data.ligand_field_geometry_name=ligand_field.geometry_name();
+        data.ligand_field_coordination_number=
+            ligand_field.coordination_number();
         data.ligand_field_metal_atom=ligand_field.metal_atom;
         data.ligand_field_ligand_atoms=ligand_field.ligand_atoms;
         data.ligand_field_confidence=ligand_field.confidence;
+        data.ligand_field_angular_rms=ligand_field.angular_rms;
+        data.ligand_field_shape_measure=ligand_field.shape_measure;
+        data.ligand_field_radial_cv=ligand_field.radial_cv;
     }
 
     data.annotations.reserve(wavefunction.orbitals.size());
@@ -1456,9 +1808,12 @@ MODiagramData build_mo_diagram_data(
     }
 
     if (ligand_field.available()) {
+        recover_local_ligand_field_symmetry(
+            wavefunction,ligand_field,groups);
         merge_local_pseudodegenerate_groups(
             wavefunction,ligand_field,groups);
-        recover_local_ligand_field_symmetry(ligand_field,groups);
+        recover_local_ligand_field_symmetry(
+            wavefunction,ligand_field,groups);
     }
 
     // Some FCHK producers omit member-level irreps even though the complete
@@ -1481,7 +1836,11 @@ MODiagramData build_mo_diagram_data(
     }
 
     const SpinCollapseResult spin_collapse=collapse_spin_counterparts(
-        wavefunction,options,groups);
+        wavefunction,options,
+        data.ligand_field_point_group.empty()
+            ?wavefunction.point_group_detected
+            :data.ligand_field_point_group,
+        groups);
     data.spin_counterpart_pair_count=spin_collapse.paired_groups;
 
     // Matching may recover a label from either spin channel.  Apply it to
@@ -1558,22 +1917,26 @@ MODiagramData build_mo_diagram_data(
         const std::string local_group=data.ligand_field_point_group.empty()
             ?wavefunction.point_group_detected
             :data.ligand_field_point_group;
-        const bool supported_ligand_field=
-            local_group=="Oh" || local_group=="Td";
-        const std::set<std::string> d_irreps=local_group=="Oh"
-            ?std::set<std::string>{"eg","t2g"}
-            :(local_group=="Td"?std::set<std::string>{"e","t2"}
-                               :std::set<std::string>{});
+        std::map<std::string,std::size_t> d_irrep_multiplicity;
+        if (const auto decomposition=decompose_metal_ao_shell(
+                local_group,MetalAOShell::D)) {
+            for (const auto& copy:*decomposition) {
+                ++d_irrep_multiplicity[normalised_symmetry(
+                    std::string(copy.label))];
+            }
+        }
+        const bool supported_ligand_field=!d_irrep_multiplicity.empty();
         std::map<std::string,std::vector<std::size_t>> candidates;
         for (std::size_t group=0;group<groups.size();++group) {
             if (!groups[group].include) continue;
             const std::string symmetry=normalised_symmetry(
                 groups[group].level.metadata.symmetry);
-            if (d_irreps.count(symmetry)) candidates[symmetry].push_back(group);
+            if (d_irrep_multiplicity.count(symmetry)) {
+                candidates[symmetry].push_back(group);
+            }
         }
         std::set<std::size_t> anchors;
         for (auto& [symmetry,indices]:candidates) {
-            (void)symmetry;
             std::sort(indices.begin(),indices.end(),[&](const auto a,const auto b) {
                 const auto& left=groups[a].level;
                 const auto& right=groups[b].level;
@@ -1584,40 +1947,49 @@ MODiagramData build_mo_diagram_data(
                 if (left_score!=right_score) return left_score>right_score;
                 return a<b;
             });
-            for (std::size_t i=0;i<std::min<std::size_t>(2u,indices.size());++i) {
+            const std::size_t needed=std::max<std::size_t>(
+                1u,d_irrep_multiplicity[symmetry]);
+            for (std::size_t i=0;i<std::min(needed,indices.size());++i) {
                 anchors.insert(indices[i]);
             }
         }
         for (const auto group:anchors) essential[group]=true;
 
         // Preserve one bonding and one antibonding representative for each
-        // central-metal s/p sigma framework symmetry.  Ranking by actual
-        // metal s+p population rejects ligand-internal and diffuse virtual
-        // rows even when their raw overlap magnitude is numerically large.
+        // central-metal s/p/d sigma-framework symmetry.  The measured sigma
+        // channel is the gate; the point-group catalogue supplies the allowed
+        // local labels without hard-coding Td/Oh names.
         using SigmaKey=std::pair<std::string,bool>;
         std::map<SigmaKey,std::pair<std::size_t,double>> sigma_representatives;
+        std::set<std::string> local_spd_labels;
+        if (const auto decomposition=decompose_metal_spd(local_group)) {
+            for (const auto* block:{&decomposition->s,&decomposition->p,
+                                   &decomposition->d}) {
+                for (const auto& copy:*block) {
+                    local_spd_labels.insert(normalised_symmetry(
+                        std::string(copy.label)));
+                }
+            }
+        }
         for (std::size_t group=0;group<groups.size();++group) {
             if (!groups[group].include) continue;
             const auto& level=groups[group].level;
             const double metal_sp=level.metal_s_weight+level.metal_p_weight;
+            const double metal_spd=metal_sp+level.metal_d_weight;
             const std::string symmetry=normalised_symmetry(
                 level.metadata.symmetry);
             if (symmetry.empty() || symmetry=="?" || symmetry=="n/a") continue;
-            const bool local_sigma_label=
-                (data.ligand_field_point_group=="Oh" &&
-                 (symmetry=="a1g" || symmetry=="t1u" || symmetry=="eg")) ||
-                (data.ligand_field_point_group=="Td" &&
-                 (symmetry=="a1" || symmetry=="t2" || symmetry=="e"));
+            const bool local_sigma_label=local_spd_labels.count(symmetry)>0u;
             const double sigma_floor=local_sigma_label?0.50:0.55;
-            if (level.sigma_fraction<sigma_floor || metal_sp<0.03) continue;
+            if (level.sigma_fraction<sigma_floor || metal_spd<0.025) continue;
             const SigmaKey key{
                 symmetry,
                 level.metal_ligand_overlap<0.0};
             const double balanced_mixing=2.0*std::min(
-                metal_sp,level.direct_ligand_p_weight);
+                metal_spd,level.direct_ligand_p_weight);
             const double representative_score=balanced_mixing+
                 0.20*std::min(1.0,std::abs(level.metal_ligand_overlap))+
-                0.05*metal_sp;
+                0.05*metal_spd;
             const auto current=sigma_representatives.find(key);
             if (current==sigma_representatives.end() ||
                 representative_score>current->second.second) {
@@ -1629,18 +2001,16 @@ MODiagramData build_mo_diagram_data(
             essential[representative.first]=true;
         }
 
-        // One recovered row for each d irrep is already a complete minimal
-        // ligand-field manifold (Eg+T2g in Oh, E+T2 in Td).  Requiring three
-        // rows made ligand-only T1g/T1 pruning depend on whether a second
-        // bonding/antibonding representative happened to be present.  Gate
-        // on symmetry completeness instead, while retaining the explicit
-        // Oh/Td guard so unrelated point groups cannot enter this compact
-        // pruning path merely because they also use E or T2 labels.
+        // One recovered row for every copy in the formal d decomposition is a
+        // complete minimal ligand-field manifold.  Repeated irreps (for
+        // example 2A1 in C2v or 2E in C3v) are counted explicitly.
         const bool complete_d_manifold=supported_ligand_field &&
-            std::all_of(d_irreps.begin(),d_irreps.end(),
-                [&](const std::string& symmetry) {
-                    const auto found=candidates.find(symmetry);
-                    return found!=candidates.end() && !found->second.empty();
+            std::all_of(d_irrep_multiplicity.begin(),
+                d_irrep_multiplicity.end(),
+                [&](const auto& expected) {
+                    const auto found=candidates.find(expected.first);
+                    return found!=candidates.end() &&
+                           found->second.size()>=expected.second;
                 });
         if (complete_d_manifold) {
             for (std::size_t group=0;group<groups.size();++group) {
@@ -1747,7 +2117,10 @@ MODiagramData build_mo_diagram_data(
     std::ostringstream summary;
     summary<<"ligand-field valence groups: "<<data.levels.size()
            <<"; local field="<<(data.ligand_field_point_group.empty()
-                ?"unresolved":data.ligand_field_point_group)
+                 ?"unresolved":data.ligand_field_point_group)
+           <<"; geometry="<<(data.ligand_field_geometry_id.empty()
+                ?"unresolved":data.ligand_field_geometry_id)
+           <<"; CN="<<data.ligand_field_coordination_number
            <<"; spin counterparts="<<(data.spin_counterparts_collapsed
                 ?"collapsed":(data.spin_counterparts_partial
                     ?"partial":"separate"))

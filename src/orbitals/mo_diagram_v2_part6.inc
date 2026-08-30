@@ -190,6 +190,65 @@ void write_svg_delocalised_pi(std::ostream& out,
     }
 }
 
+struct ExportPiColour {
+    const char* hex = "#e25ddc";
+    std::uint8_t r = 226;
+    std::uint8_t g = 93;
+    std::uint8_t b = 220;
+};
+
+ExportPiColour export_pi_colour(const PiInteractionKind kind) noexcept {
+    switch (kind) {
+        case PiInteractionKind::Donor: return {"#f2a340", 242, 163, 64};
+        case PiInteractionKind::Acceptor: return {"#46ceda", 70, 206, 218};
+        case PiInteractionKind::WeakNearNonbonding:
+            return {"#ae9abe", 174, 154, 190};
+        default: return {};
+    }
+}
+
+const char* export_pi_kind_id(const PiInteractionKind kind) noexcept {
+    switch (kind) {
+        case PiInteractionKind::Donor: return "donor";
+        case PiInteractionKind::Acceptor: return "acceptor";
+        case PiInteractionKind::WeakNearNonbonding: return "weak-near-nonbonding";
+        default: return "coupled";
+    }
+}
+
+struct ExportPiBracket {
+    double top = 0.0;
+    double bottom = 0.0;
+};
+
+std::optional<ExportPiBracket> export_pi_bracket(
+    const PiInteractionDescriptor& interaction,
+    const std::vector<PositionedLevel>& positioned) {
+    if (interaction.retained_level >= positioned.size()) return std::nullopt;
+
+    ExportPiBracket bracket;
+    if (interaction.kind == PiInteractionKind::WeakNearNonbonding ||
+        !interaction.lower_visible || !interaction.upper_visible ||
+        interaction.lower_level >= positioned.size() ||
+        interaction.upper_level >= positioned.size()) {
+        const double y = positioned[interaction.retained_level].y;
+        bracket.top = y - 7.0;
+        bracket.bottom = y + 7.0;
+        return bracket;
+    }
+
+    bracket.top = std::min(positioned[interaction.lower_level].y,
+                           positioned[interaction.upper_level].y) - 5.0;
+    bracket.bottom = std::max(positioned[interaction.lower_level].y,
+                              positioned[interaction.upper_level].y) + 5.0;
+    if (bracket.bottom - bracket.top < 14.0) {
+        const double middle = 0.5 * (bracket.top + bracket.bottom);
+        bracket.top = middle - 7.0;
+        bracket.bottom = middle + 7.0;
+    }
+    return bracket;
+}
+
 } // namespace
 
 bool write_mo_diagram_svg(const MODiagramData& data,
@@ -208,8 +267,10 @@ bool write_mo_diagram_svg(const MODiagramData& data,
 
     out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     out << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" << width
-        << "\" height=\"" << height << "\" viewBox=\"0 0 "
-        << width << ' ' << height << "\">\n";
+         << "\" height=\"" << height << "\" viewBox=\"0 0 "
+         << width << ' ' << height << "\" data-diagram-row-count=\""
+         << data.levels.size() << "\" data-pi-interaction-count=\""
+         << data.pi_interactions.size() << "\">\n";
     out << "<rect width=\"100%\" height=\"100%\" fill=\"#fbfcfe\"/>\n";
     out << "<text x=\"36\" y=\"40\" fill=\"#182231\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"24\" font-weight=\"600\">Valence MO diagram</text>\n";
@@ -243,7 +304,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
             << "</text>\n";
     }
 
-    for (const auto& item : positioned) {
+    for (std::size_t row_index = 0; row_index < positioned.size(); ++row_index) {
+        const auto& item = positioned[row_index];
         const auto& level = *item.level;
         const char* colour = level.metadata.selected ? "#286de0" :
                              level.homo ? "#138a62" :
@@ -251,7 +313,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
                              level.metadata.region == OrbitalRegion::Virtual ? "#778496" : "#29384c";
         const double x0 = item.x - 45.0;
         const double x1 = item.x + 45.0;
-        out << "<line x1=\"" << x0 << "\" y1=\"" << item.y
+        out << "<line class=\"mo-level\" data-row-index=\"" << row_index
+            << "\" x1=\"" << x0 << "\" y1=\"" << item.y
             << "\" x2=\"" << x1 << "\" y2=\"" << item.y
             << "\" stroke=\"" << colour << "\" stroke-width=\""
             << (level.metadata.selected ? 4 : 2.2) << "\"/>\n";
@@ -270,6 +333,46 @@ bool write_mo_diagram_svg(const MODiagramData& data,
                                      level.annotation.delocalised_pi, "#5b6575");
         }
     }
+
+    out << "<g id=\"pi-interactions\">\n";
+    std::size_t rendered_interactions = 0;
+    for (std::size_t interaction_index = 0;
+         interaction_index < data.pi_interactions.size(); ++interaction_index) {
+        const auto& interaction = data.pi_interactions[interaction_index];
+        const auto bracket = export_pi_bracket(interaction, positioned);
+        if (!bracket) continue;
+        const ExportPiColour colour = export_pi_colour(interaction.kind);
+        const double x = static_cast<double>(width) - 26.0 -
+                         static_cast<double>(rendered_interactions) * 48.0;
+        constexpr double cap = 7.0;
+        const double middle = 0.5 * (bracket->top + bracket->bottom);
+        out << "<g class=\"pi-interaction\" data-interaction-index=\""
+            << interaction_index << "\" data-kind=\""
+            << export_pi_kind_id(interaction.kind) << "\">\n";
+        out << "<title>" << xml_escape(pi_interaction_kind_name(interaction.kind));
+        if (!interaction.symmetry.empty()) {
+            out << " · " << xml_escape(interaction.symmetry);
+        }
+        out << " · Δπ=" << std::setprecision(10)
+            << interaction.splitting_hartree << " Ha · confidence="
+            << std::setprecision(4) << interaction.confidence << "</title>\n";
+        out << "<line x1=\"" << x << "\" y1=\"" << bracket->top
+            << "\" x2=\"" << x << "\" y2=\"" << bracket->bottom
+            << "\" stroke=\"" << colour.hex << "\" stroke-width=\"2\"/>\n";
+        out << "<line x1=\"" << x - cap << "\" y1=\"" << bracket->top
+            << "\" x2=\"" << x << "\" y2=\"" << bracket->top
+            << "\" stroke=\"" << colour.hex << "\" stroke-width=\"2\"/>\n";
+        out << "<line x1=\"" << x - cap << "\" y1=\"" << bracket->bottom
+            << "\" x2=\"" << x << "\" y2=\"" << bracket->bottom
+            << "\" stroke=\"" << colour.hex << "\" stroke-width=\"2\"/>\n";
+        out << "<text x=\"" << x - cap - 5.0 << "\" y=\"" << middle + 4.0
+            << "\" text-anchor=\"end\" fill=\"" << colour.hex
+            << "\" font-family=\"" << kSvgFontFamily
+            << "\" font-size=\"13\">Δπ</text>\n";
+        out << "</g>\n";
+        ++rendered_interactions;
+    }
+    out << "</g>\n";
 
     out << "<text x=\"36\" y=\"" << height - 24
         << "\" fill=\"#8793a3\" font-family=\"" << kSvgFontFamily << "\" font-size=\"10\">"

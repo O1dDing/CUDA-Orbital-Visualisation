@@ -371,6 +371,22 @@ void draw_level_tooltip(const MODiagramData& data,
         labelled_value("local ligand field",
                        data.ligand_field_point_group+" first shell",
                        kSymmetryColour);
+        if (!data.ligand_field_geometry_name.empty()) {
+            labelled_value("coordination geometry",
+                           data.ligand_field_geometry_name+
+                               " ("+data.ligand_field_geometry_id+")",
+                           kSymmetryColour);
+        }
+        labelled_number("coordination number",
+                        std::to_string(data.ligand_field_coordination_number));
+        labelled_number("geometry confidence",
+                        fixed_number(data.ligand_field_confidence,3));
+        labelled_number("angular RMS (rad)",
+                        fixed_number(data.ligand_field_angular_rms,5));
+        labelled_number("directional shape score",
+                        fixed_number(data.ligand_field_shape_measure,5));
+        labelled_number("radial variation",
+                        fixed_number(100.0*data.ligand_field_radial_cv,2)+"%");
     }
 
     labelled_number(tr(Text::DegenerateSet, language), std::to_string(level.metadata.degeneracy_size));

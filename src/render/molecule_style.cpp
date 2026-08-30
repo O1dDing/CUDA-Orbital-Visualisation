@@ -1,6 +1,7 @@
 #include "cov/molecule_style.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <queue>
@@ -16,6 +17,39 @@ constexpr double kMayerRenderFloor = 0.05;
 // bonds such as the equal H--H contacts in H3+ while separating the next
 // neighbour shell in ordinary carbon rings.
 constexpr double kElectronicAdjacencyFactor = 1.50;
+
+// Covalent radii are structural data, not element-colour cosmetics: an
+// incomplete table can silently remove genuine metal--ligand bonds at the
+// electronic-adjacency gate below. Values through Cm follow Cordero et al.,
+// Dalton Trans. 2008, 2832 (DOI:10.1039/B801115J), matching the values this
+// renderer already used. The remaining super-heavy elements use the
+// single-bond radii of Pyykko and Atsumi, Chem. Eur. J. 2009, 15, 186
+// (DOI:10.1002/chem.200800987), so every real atomic number accepted by the
+// parser has a defined radius. Index zero is a ghost/unknown sentinel.
+constexpr std::array<double, 119> kCovalentRadiiAngstrom = {
+    0.85,
+    // H--Ne
+    0.31, 0.28, 1.28, 0.96, 0.84, 0.76, 0.71, 0.66, 0.57, 0.58,
+    // Na--Ar
+    1.66, 1.41, 1.21, 1.11, 1.07, 1.05, 1.02, 1.06,
+    // K--Kr
+    2.03, 1.76, 1.70, 1.60, 1.53, 1.39, 1.39, 1.32, 1.26, 1.24,
+    1.32, 1.22, 1.22, 1.20, 1.19, 1.20, 1.20, 1.16,
+    // Rb--Xe
+    2.20, 1.95, 1.90, 1.75, 1.64, 1.54, 1.47, 1.46, 1.42, 1.39,
+    1.45, 1.44, 1.42, 1.39, 1.39, 1.38, 1.39, 1.40,
+    // Cs--Rn
+    2.44, 2.15, 2.07, 2.04, 2.03, 2.01, 1.99, 1.98, 1.98, 1.96,
+    1.94, 1.92, 1.92, 1.89, 1.90, 1.87, 1.87, 1.75, 1.70, 1.62,
+    1.51, 1.44, 1.41, 1.36, 1.36, 1.32, 1.45, 1.46, 1.48, 1.40,
+    1.50, 1.50,
+    // Fr--Cm
+    2.60, 2.21, 2.15, 2.06, 2.00, 1.96, 1.90, 1.87, 1.80, 1.69,
+    // Bk--Og (Pyykko--Atsumi single-bond radii)
+    1.68, 1.68, 1.65, 1.67, 1.73, 1.76, 1.61, 1.57, 1.49, 1.43,
+    1.41, 1.34, 1.29, 1.28, 1.21, 1.22, 1.36, 1.43, 1.62, 1.75,
+    1.65, 1.57,
+};
 
 bool likely_pi_element(const int z) noexcept {
     switch (z) {
@@ -168,32 +202,10 @@ void mark_conservative_ring_delocalisation(const Wavefunction& wavefunction,
 } // namespace
 
 double covalent_radius_angstrom(const int z) noexcept {
-    switch (z) {
-        case 1: return 0.31;
-        case 5: return 0.84;
-        case 6: return 0.76;
-        case 7: return 0.71;
-        case 8: return 0.66;
-        case 9: return 0.57;
-        case 14: return 1.11;
-        case 15: return 1.07;
-        case 16: return 1.05;
-        case 17: return 1.02;
-        case 21: return 1.70;
-        case 22: return 1.60;
-        case 23: return 1.53;
-        case 24: return 1.39;
-        case 25: return 1.39;
-        case 26: return 1.32;
-        case 27: return 1.26;
-        case 28: return 1.24;
-        case 29: return 1.32;
-        case 30: return 1.22;
-        case 35: return 1.20;
-        case 53: return 1.39;
-        case 54: return 1.40;
-        default: return 0.85;
+    if (z > 0 && static_cast<std::size_t>(z) < kCovalentRadiiAngstrom.size()) {
+        return kCovalentRadiiAngstrom[static_cast<std::size_t>(z)];
     }
+    return kCovalentRadiiAngstrom[0];
 }
 
 std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction) {

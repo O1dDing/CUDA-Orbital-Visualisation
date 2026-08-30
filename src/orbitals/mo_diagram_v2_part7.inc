@@ -81,6 +81,50 @@ void draw_symmetry_png(Canvas& canvas,
     }
 }
 
+void draw_delta_pi_png(Canvas& canvas,
+                       const int right_x,
+                       const int centre_y,
+                       const ExportPiColour colour) {
+    // Raster exports use vector strokes for the same compact Δπ symbol as the
+    // interactive canvas.  This avoids depending on a platform bitmap font for
+    // Greek glyphs and keeps the symbol legible at all supported export sizes.
+    const int delta_x = right_x - 25;
+    canvas.line(delta_x, centre_y + 5, delta_x + 5, centre_y - 5,
+                colour.r, colour.g, colour.b, 2);
+    canvas.line(delta_x + 5, centre_y - 5, delta_x + 10, centre_y + 5,
+                colour.r, colour.g, colour.b, 2);
+    canvas.line(delta_x, centre_y + 5, delta_x + 10, centre_y + 5,
+                colour.r, colour.g, colour.b, 2);
+
+    const int pi_x = delta_x + 14;
+    canvas.line(pi_x, centre_y - 4, pi_x + 10, centre_y - 4,
+                colour.r, colour.g, colour.b, 2);
+    canvas.line(pi_x + 2, centre_y - 4, pi_x + 2, centre_y + 5,
+                colour.r, colour.g, colour.b, 2);
+    canvas.line(pi_x + 8, centre_y - 4, pi_x + 8, centre_y + 5,
+                colour.r, colour.g, colour.b, 2);
+}
+
+void draw_pi_interactions_png(Canvas& canvas,
+                              const MODiagramData& data,
+                              const std::vector<PositionedLevel>& positioned) {
+    std::size_t rendered = 0;
+    for (const auto& interaction : data.pi_interactions) {
+        const auto bracket = export_pi_bracket(interaction, positioned);
+        if (!bracket) continue;
+        const ExportPiColour colour = export_pi_colour(interaction.kind);
+        const int x = canvas.width - 26 - static_cast<int>(rendered) * 48;
+        const int top = static_cast<int>(std::lround(bracket->top));
+        const int bottom = static_cast<int>(std::lround(bracket->bottom));
+        constexpr int cap = 7;
+        canvas.line(x, top, x, bottom, colour.r, colour.g, colour.b, 2);
+        canvas.line(x - cap, top, x, top, colour.r, colour.g, colour.b, 2);
+        canvas.line(x - cap, bottom, x, bottom, colour.r, colour.g, colour.b, 2);
+        draw_delta_pi_png(canvas, x - cap - 5, (top + bottom) / 2, colour);
+        ++rendered;
+    }
+}
+
 } // namespace
 
 bool write_mo_diagram_png(const MODiagramData& data,
@@ -157,9 +201,10 @@ bool write_mo_diagram_png(const MODiagramData& data,
         }
     }
 
+    draw_pi_interactions_png(canvas, data, positioned);
+
     draw_text(canvas, 36, height - 32,
               "FIGURE LABELS: ORBITAL TYPE / BONDING CLASS; MO NUMBERS ARE IN HOVER + JSON/CSV",
               113, 126, 144, 1);
     return write_png_rgba(canvas, path, error);
 }
-

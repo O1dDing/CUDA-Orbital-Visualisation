@@ -219,9 +219,15 @@ struct MODiagramData {
     // diagram can use majority-spin spatial representatives while retaining
     // the paired alpha/beta occupation and member metadata.
     std::string ligand_field_point_group;
+    std::string ligand_field_geometry_id;
+    std::string ligand_field_geometry_name;
+    std::size_t ligand_field_coordination_number = 0;
     std::size_t ligand_field_metal_atom = 0;
     std::vector<std::size_t> ligand_field_ligand_atoms;
     double ligand_field_confidence = 0.0;
+    double ligand_field_angular_rms = 0.0;
+    double ligand_field_shape_measure = 0.0;
+    double ligand_field_radial_cv = 0.0;
     bool spin_counterparts_collapsed = false;
     bool spin_counterparts_partial = false;
     std::size_t spin_counterpart_pair_count = 0;

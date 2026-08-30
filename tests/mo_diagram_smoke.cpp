@@ -1,9 +1,13 @@
 #include "cov/mo_diagram.hpp"
 #include "cov/ligand_field.hpp"
+#include "cov/local_orbital_symmetry.hpp"
+#include "cov/molecule_style.hpp"
+#include "cov/point_group_catalog.hpp"
 #include "cov/wavefunction_io.hpp"
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
@@ -155,6 +159,92 @@ bool validate_local_symmetry_missing_markers() {
             return item.symmetry=="T1u";
         })) {
         std::cerr<<"low metal-p noise used the metal-d grouping floor\n";
+        return false;
+    }
+    return true;
+}
+
+bool validate_ligand_only_noise_preserves_producer_irrep() {
+    auto wavefunction=synthetic_oh_environment();
+    wavefunction.point_group_detected="Oh";
+    wavefunction.basis_count=5u;
+    cov::Shell metal_d;
+    metal_d.atom_index=0u;
+    metal_d.basis_offset=0u;
+    metal_d.angular_momentum=2u;
+    metal_d.pure=1u;
+    wavefunction.shells.push_back(metal_d);
+
+    for (std::size_t member=0;member<3u;++member) {
+        cov::MolecularOrbital orbital;
+        orbital.energy_hartree=-0.08;
+        orbital.occupation=1.0f;
+        orbital.symmetry="T1g";
+        orbital.symmetry_provenance=cov::DataProvenance::Producer;
+        orbital.coefficients.assign(wavefunction.basis_count,0.0f);
+        // A deliberately misleading, numerically tiny central-metal dz2
+        // coefficient would be classified as Eg if it were normalised on its
+        // own.  The chemically meaningful population is far below the d-floor.
+        orbital.coefficients[0]=1.0e-5f;
+        orbital.chemistry.available=true;
+        orbital.chemistry.valence_manifold=true;
+        orbital.chemistry.valence_weight=1.0;
+        orbital.chemistry.unresolved_weight=0.0;
+
+        cov::OrbitalAOContribution metal_noise;
+        metal_noise.atom_index=0u;
+        metal_noise.angular_momentum=2;
+        metal_noise.weight=1.0e-12;
+        orbital.chemistry.ao_contributions.push_back(metal_noise);
+
+        cov::OrbitalAOContribution ligand;
+        ligand.atom_index=static_cast<std::uint32_t>(member+1u);
+        ligand.angular_momentum=1;
+        ligand.weight=0.85;
+        orbital.chemistry.ao_contributions.push_back(ligand);
+        wavefunction.orbitals.push_back(std::move(orbital));
+    }
+
+    const auto environment=cov::analyse_ligand_field_environment(wavefunction);
+    const std::array<std::size_t,3> members{{0u,1u,2u}};
+    const auto noise_only=cov::classify_local_metal_irrep(
+        wavefunction,members,environment.metal_atom,
+        environment.local_point_group(),environment.rotation_reference_to_input);
+    if (!noise_only || noise_only->label!="Eg") {
+        std::cerr<<"ligand-only noise fixture no longer exercises false Eg classification\n";
+        return false;
+    }
+
+    cov::MODiagramOptions options;
+    options.selected_index=0u;
+    const auto metadata=cov::build_orbital_metadata(
+        wavefunction,options.selected_index,options.degeneracy,options.filter);
+    if (metadata.size()!=3u ||
+        !std::all_of(metadata.begin(),metadata.end(),[](const auto& item) {
+            return item.symmetry=="T1g" && item.degeneracy_size==3u;
+        })) {
+        std::cerr<<"ligand-only metal noise overwrote producer T1g metadata\n";
+        return false;
+    }
+
+    const auto diagram=cov::build_mo_diagram_data(wavefunction,options);
+    const auto level=std::find_if(
+        diagram.levels.begin(),diagram.levels.end(),[](const auto& item) {
+            return item.member_indices.size()==3u &&
+                   item.member_indices.front()==0u;
+        });
+    const auto* point_group=cov::find_point_group(diagram.ligand_field_point_group);
+    if (level==diagram.levels.end() || level->metadata.symmetry!="T1g" ||
+        point_group==nullptr) {
+        std::cerr<<"ligand-only noise produced an illegal local-irrep row dimension\n";
+        return false;
+    }
+    const auto irrep=std::find_if(
+        point_group->irreps.begin(),point_group->irreps.end(),
+        [&](const auto& item) {return item.label==level->metadata.symmetry;});
+    if (irrep==point_group->irreps.end() ||
+        irrep->dimension!=level->member_indices.size()) {
+        std::cerr<<"ligand-only noise produced an illegal local-irrep row dimension\n";
         return false;
     }
     return true;
@@ -446,6 +536,120 @@ bool validate_equal_count_unrestricted_collapse() {
     return true;
 }
 
+cov::Wavefunction synthetic_spin_matching_wavefunction(
+    const std::size_t basis_count,const std::string& point_group) {
+    cov::Wavefunction wavefunction;
+    wavefunction.atoms.resize(1u);
+    wavefunction.atoms[0].symbol="Cr";
+    wavefunction.atoms[0].atomic_number=24;
+    wavefunction.point_group_detected=point_group;
+    wavefunction.basis_count=basis_count;
+    wavefunction.ao_overlap.assign(basis_count*basis_count,0.0);
+    for (std::size_t i=0;i<basis_count;++i) {
+        wavefunction.ao_overlap[i*basis_count+i]=1.0;
+    }
+    return wavefunction;
+}
+
+void add_spin_matching_orbital(cov::Wavefunction& wavefunction,
+                               const cov::Spin spin,
+                               const double energy,
+                               const std::string& symmetry,
+                               const std::vector<float>& coefficients,
+                               const int metal_angular_momentum) {
+    cov::MolecularOrbital orbital;
+    orbital.energy_hartree=energy;
+    orbital.occupation=1.0f;
+    orbital.spin=spin;
+    orbital.symmetry=symmetry;
+    orbital.coefficients=coefficients;
+    orbital.chemistry.available=true;
+    orbital.chemistry.valence_manifold=true;
+    orbital.chemistry.valence_weight=1.0;
+    orbital.chemistry.confidence=1.0;
+    cov::OrbitalAOContribution metal;
+    metal.atom_index=0u;
+    metal.angular_momentum=metal_angular_momentum;
+    metal.weight=0.60;
+    orbital.chemistry.ao_contributions.push_back(metal);
+    wavefunction.orbitals.push_back(std::move(orbital));
+    if (spin==cov::Spin::Beta) ++wavefunction.beta_electrons;
+    else ++wavefunction.alpha_electrons;
+}
+
+bool validate_general_spin_counterpart_matching() {
+    cov::MODiagramOptions options;
+    options.selected_index=0u;
+    options.max_levels=0u;
+
+    // A valid irrep identifies the same spatial block even when spin
+    // polarisation changes which metal angular family has the largest
+    // Mulliken population.
+    auto family=synthetic_spin_matching_wavefunction(1u,"C3v");
+    add_spin_matching_orbital(
+        family,cov::Spin::Alpha,-0.20,"A1",{1.0f},1);
+    add_spin_matching_orbital(
+        family,cov::Spin::Beta,-0.19,"A1",{1.0f},2);
+    const auto family_data=cov::build_mo_diagram_data(family,options);
+    if (!family_data.spin_counterparts_collapsed ||
+        family_data.spin_counterpart_pair_count!=1u ||
+        family_data.spin_counterpart_unmatched_visible!=0u) {
+        std::cerr<<"same-irrep spin pair was rejected by metal-family drift\n";
+        return false;
+    }
+
+    // The largest single edge is a trap: choosing it leaves the second alpha
+    // group unmatched, while the two crossed edges form a complete matching.
+    auto global=synthetic_spin_matching_wavefunction(2u,"C3v");
+    add_spin_matching_orbital(
+        global,cov::Spin::Alpha,-0.30,"A1",{1.0f,0.0f},2);
+    add_spin_matching_orbital(
+        global,cov::Spin::Alpha,-0.20,"A1",{0.0f,1.0f},2);
+    add_spin_matching_orbital(
+        global,cov::Spin::Beta,-0.29,"A1",{0.9f,0.8f},2);
+    add_spin_matching_orbital(
+        global,cov::Spin::Beta,-0.19,"A1",{0.8f,0.1f},2);
+    const auto global_data=cov::build_mo_diagram_data(global,options);
+    if (!global_data.spin_counterparts_collapsed ||
+        global_data.spin_counterpart_pair_count!=2u ||
+        global_data.spin_counterpart_unmatched_visible!=0u) {
+        std::cerr<<"spin matching did not maximise counterpart cardinality\n";
+        return false;
+    }
+
+    // D4d E2 may be printed as two non-adjacent alpha singlets while beta is
+    // one formal two-dimensional block.  Their joint S-metric subspace is
+    // exact and must become one spatial row in either partition direction.
+    auto split=synthetic_spin_matching_wavefunction(3u,"D4d");
+    add_spin_matching_orbital(
+        split,cov::Spin::Alpha,-0.30,"E2",{1.0f,0.0f,0.0f},2);
+    add_spin_matching_orbital(
+        split,cov::Spin::Alpha,-0.20,"A1",{0.0f,0.0f,1.0f},0);
+    add_spin_matching_orbital(
+        split,cov::Spin::Alpha,-0.10,"E2",{0.0f,1.0f,0.0f},2);
+    add_spin_matching_orbital(
+        split,cov::Spin::Beta,-0.30,"E2",{1.0f,0.0f,0.0f},2);
+    add_spin_matching_orbital(
+        split,cov::Spin::Beta,-0.30,"E2",{0.0f,1.0f,0.0f},2);
+    add_spin_matching_orbital(
+        split,cov::Spin::Beta,-0.20,"A1",{0.0f,0.0f,1.0f},0);
+    const auto split_data=cov::build_mo_diagram_data(split,options);
+    const auto e2=std::find_if(
+        split_data.levels.begin(),split_data.levels.end(),[](const auto& level) {
+            return level.metadata.symmetry=="E2" &&
+                   level.member_indices.size()==2u;
+        });
+    if (!split_data.spin_counterparts_collapsed ||
+        split_data.spin_counterpart_pair_count!=2u ||
+        split_data.spin_counterpart_unmatched_visible!=0u ||
+        e2==split_data.levels.end() ||
+        e2->member_spin_counterparts.size()!=2u) {
+        std::cerr<<"split D4d E2 spin partition was not jointly collapsed\n";
+        return false;
+    }
+    return true;
+}
+
 bool same_compact_structure(const cov::MODiagramData& left,
                             const cov::MODiagramData& right) {
     if (left.ligand_field_point_group!=right.ligand_field_point_group ||
@@ -486,6 +690,38 @@ bool same_compact_structure(const cov::MODiagramData& left,
     return true;
 }
 
+std::size_t compact_hidden_intermediate_count(
+    const cov::DiagramSelectionPlan& selection) {
+    constexpr std::string_view marker="intermediate groups hidden=";
+    const auto marker_position=selection.summary.find(marker);
+    if (marker_position==std::string::npos) return 0u;
+    std::size_t value=0u;
+    bool found_digit=false;
+    for (std::size_t i=marker_position+marker.size();
+         i<selection.summary.size();++i) {
+        const char character=selection.summary[i];
+        if (character<'0' || character>'9') break;
+        found_digit=true;
+        value=10u*value+static_cast<std::size_t>(character-'0');
+    }
+    return found_digit?value:0u;
+}
+
+std::size_t coordination_number_encoded_in_filename(
+    const std::string_view filename) {
+    const auto marker=filename.find("_CN");
+    if (marker==std::string_view::npos) return 0u;
+    std::size_t value=0u;
+    bool found_digit=false;
+    for (std::size_t i=marker+3u;i<filename.size();++i) {
+        const char character=filename[i];
+        if (character<'0' || character>'9') break;
+        found_digit=true;
+        value=10u*value+static_cast<std::size_t>(character-'0');
+    }
+    return found_digit?value:0u;
+}
+
 bool inspect_real_fchk(const std::filesystem::path& path) {
     const auto wf=cov::parse_wavefunction(path);
     cov::MODiagramOptions options;
@@ -505,6 +741,8 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
              <<" rows="<<data.levels.size()
              <<" selected="<<data.selection.included_indices.size()
              <<" local-field="<<data.ligand_field_point_group
+             <<" geometry="<<data.ligand_field_geometry_id
+             <<" CN="<<data.ligand_field_coordination_number
              <<" first-shell="<<data.ligand_field_ligand_atoms.size()
              <<" spin-collapsed="<<data.spin_counterparts_collapsed
              <<" spin-partial="<<data.spin_counterparts_partial
@@ -556,13 +794,19 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
         std::cerr<<path.filename().string()<<": empty ligand-field diagram\n";
         return false;
     }
-    for (const auto& level:data.levels) {
+    for (std::size_t level_index=0;level_index<data.levels.size();++level_index) {
+        const auto& level=data.levels[level_index];
         const double allowed_spread=data.ligand_field_point_group.empty()
             ?options.degeneracy.tolerance_hartree:0.01501;
         if (level.member_indices.empty() ||
             level.member_indices.size()!=level.metadata.degeneracy_size ||
             level.energy_spread_hartree>allowed_spread) {
-            std::cerr<<path.filename().string()<<": broken degenerate row\n";
+            std::cerr<<path.filename().string()<<": broken degenerate row "
+                     <<level_index<<" sym="<<level.metadata.symmetry
+                     <<" members="<<level.member_indices.size()
+                     <<" declared="<<level.metadata.degeneracy_size
+                     <<" spread="<<level.energy_spread_hartree
+                     <<" allowed="<<allowed_spread<<'\n';
             return false;
         }
     }
@@ -581,6 +825,66 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
     compact_options.hide_ligand_centred_intermediates=true;
     const auto compact=cov::build_mo_diagram_data(wf,compact_options);
     const std::string filename=path.filename().string();
+    const std::size_t encoded_coordination_number=
+        coordination_number_encoded_in_filename(filename);
+    if (encoded_coordination_number>0u &&
+        (data.ligand_field_geometry_id.empty() ||
+         data.ligand_field_point_group.empty() ||
+         data.ligand_field_coordination_number!=encoded_coordination_number ||
+         data.ligand_field_ligand_atoms.size()!=encoded_coordination_number)) {
+        std::cerr<<filename
+                 <<": encoded coordination shell was not resolved (expected CN="
+                 <<encoded_coordination_number<<", geometry="
+                 <<data.ligand_field_geometry_id<<", point-group="
+                 <<data.ligand_field_point_group<<", CN="
+                 <<data.ligand_field_coordination_number<<", shell="
+                 <<data.ligand_field_ligand_atoms.size()<<")\n";
+        return false;
+    }
+    const cov::CoordinationGeometryDescriptor* encoded_geometry=nullptr;
+    for (const auto& descriptor:cov::coordination_geometry_catalog()) {
+        const std::string token="_"+std::string(descriptor.machine_id)+"_";
+        if (filename.find(token)!=std::string::npos) {
+            encoded_geometry=&descriptor;
+            break;
+        }
+    }
+    if (encoded_geometry!=nullptr &&
+        (data.ligand_field_geometry_id!=encoded_geometry->machine_id ||
+         data.ligand_field_point_group!=encoded_geometry->point_group ||
+         data.ligand_field_coordination_number!=
+             encoded_geometry->coordination_number)) {
+        std::cerr<<filename<<": encoded geometry "
+                 <<encoded_geometry->machine_id<<'/'
+                 <<encoded_geometry->point_group<<" was resolved as "
+                 <<data.ligand_field_geometry_id<<'/'
+                 <<data.ligand_field_point_group<<" (CN="
+                 <<data.ligand_field_coordination_number<<")\n";
+        return false;
+    }
+    // The diagram and the 3-D molecule consume the same wavefunction but have
+    // historically used independent adjacency filters. Every donor accepted
+    // into a resolved first coordination shell must also remain connected to
+    // its metal in the rendered molecular graph. This generic invariant
+    // catches missing element radii and future threshold drift for every CN.
+    if (!data.ligand_field_ligand_atoms.empty()) {
+        const auto rendered_bonds=cov::analyse_bonds(wf);
+        for (const auto ligand_atom:data.ligand_field_ligand_atoms) {
+            const bool connected=std::any_of(
+                rendered_bonds.begin(),rendered_bonds.end(),
+                [&](const auto& bond) {
+                    return (bond.atom_a==data.ligand_field_metal_atom &&
+                            bond.atom_b==ligand_atom) ||
+                           (bond.atom_b==data.ligand_field_metal_atom &&
+                            bond.atom_a==ligand_atom);
+                });
+            if (!connected) {
+                std::cerr<<filename<<": first-shell atom "<<ligand_atom
+                         <<" is absent from the rendered metal-ligand graph\n";
+                return false;
+            }
+        }
+    }
     for (std::size_t i=0;i<compact.levels.size();++i) {
         const auto& level=compact.levels[i];
         std::cout<<"  compact-row "<<i
@@ -596,13 +900,28 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
                  <<" sigma="<<level.sigma_fraction
                  <<" ML="<<level.metal_ligand_overlap<<'\n';
     }
-    if (compact.levels.size()>=data.levels.size() ||
+    std::cout<<"COMPACT "<<path.filename().string()
+             <<" geometry="<<compact.ligand_field_geometry_id
+             <<" CN="<<compact.ligand_field_coordination_number
+             <<" point-group="<<compact.ligand_field_point_group
+             <<" symmetries=";
+    for (const auto& level:compact.levels) {
+        std::cout<<' '<<level.metadata.symmetry
+                 <<'('<<level.member_indices.size()<<')';
+    }
+    std::cout<<'\n';
+    const std::size_t hidden_intermediates=
+        compact_hidden_intermediate_count(compact.selection);
+    if (compact.levels.size()>data.levels.size() ||
+        (hidden_intermediates>0u &&
+         compact.levels.size()>=data.levels.size()) ||
         compact.pi_interactions.size()!=data.pi_interactions.size()) {
         std::cerr<<path.filename().string()
                  <<": intermediate-orbital toggle did not reduce safely ("
                  <<data.levels.size()<<" -> "<<compact.levels.size()
                  <<" rows; "<<data.pi_interactions.size()<<" -> "
-                 <<compact.pi_interactions.size()<<" pairs)\n";
+                 <<compact.pi_interactions.size()<<" pairs; hidden="
+                 <<hidden_intermediates<<")\n";
         return false;
     }
     const bool selection_invariance_fixture=
@@ -976,6 +1295,99 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
                      <<": strong-field open-shell Oh pi-acceptor regression\n";
             return false;
         }
+    } else if (filename.find("25_AgNH3_2")!=std::string::npos) {
+        if (!expected_shell("Dinfh",2u,47,7) ||
+            data.ligand_field_geometry_id!="L-2" ||
+            !data.pi_interactions.empty() || compact.levels.size()>8u ||
+            compact_group("Sigma_g+",1u)==compact.levels.end() ||
+            compact_group("Sigma_u+",1u)==compact.levels.end()) {
+            std::cerr<<filename
+                     <<": linear CN2 sigma-framework regression\n";
+            return false;
+        }
+    } else if (filename.find("26_FeCl3")!=std::string::npos) {
+        if (!expected_shell("D3h",3u,26,17) ||
+            data.ligand_field_geometry_id!="TP-3" ||
+            !fully_collapsed_open_shell() || compact.levels.size()>8u ||
+            compact_group("A1'",1u)==compact.levels.end() ||
+            compact_group("E'",2u)==compact.levels.end() ||
+            compact_group("E''",2u)==compact.levels.end()) {
+            std::cerr<<filename
+                     <<": trigonal-planar CN3 open-shell regression\n";
+            return false;
+        }
+    } else if (filename.find("27_FeCO5")!=std::string::npos) {
+        const auto pair=expected_pair(cov::PiInteractionKind::Acceptor,"E''");
+        if (!expected_shell("D3h",5u,26,6) ||
+            data.ligand_field_geometry_id!="TBPY-5" ||
+            pair==data.pi_interactions.end() ||
+            !pair->lower_visible || !pair->upper_visible ||
+            !all_members_have(pair->lower_orbitals,"E''") ||
+            !all_members_have(pair->upper_orbitals,"E''") ||
+            compact.levels.size()>10u) {
+            std::cerr<<filename
+                     <<": trigonal-bipyramidal CN5 pi-acceptor regression\n";
+            return false;
+        }
+    } else if (filename.find("28_ZrF7")!=std::string::npos) {
+        const auto pair=expected_pair(cov::PiInteractionKind::Donor,"E1''");
+        if (!expected_shell("D5h",7u,40,9) ||
+            data.ligand_field_geometry_id!="PBPY-7" ||
+            pair==data.pi_interactions.end() ||
+            !pair->lower_visible || !pair->upper_visible ||
+            !all_members_have(pair->lower_orbitals,"E1''") ||
+            !all_members_have(pair->upper_orbitals,"E1''") ||
+            compact.levels.size()>11u) {
+            std::cerr<<filename
+                     <<": pentagonal-bipyramidal CN7 pi-donor regression\n";
+            return false;
+        }
+    } else if (filename.find("29_MoCN8")!=std::string::npos) {
+        const auto pair=expected_pair(cov::PiInteractionKind::Acceptor,"A1");
+        if (!expected_shell("D4d",8u,42,6) ||
+            data.ligand_field_geometry_id!="SAPR-8" ||
+            !fully_collapsed_open_shell() ||
+            pair==data.pi_interactions.end() ||
+            !pair->lower_visible || !pair->upper_visible ||
+            !all_members_have(pair->lower_orbitals,"A1") ||
+            !all_members_have(pair->upper_orbitals,"A1") ||
+            compact.levels.size()>11u) {
+            std::cerr<<filename
+                     <<": square-antiprismatic CN8 open-shell regression\n";
+            return false;
+        }
+    } else if (filename.find("30_ReH9")!=std::string::npos) {
+        if (!expected_shell("D3h",9u,75,1) ||
+            data.ligand_field_geometry_id!="TCTPR-9" ||
+            !data.pi_interactions.empty() || compact.levels.size()>11u ||
+            compact_group("A1'",1u)==compact.levels.end() ||
+            compact_group("E'",2u)==compact.levels.end()) {
+            std::cerr<<filename
+                     <<": tricapped-trigonal-prismatic CN9 regression\n";
+            return false;
+        }
+    } else if (filename.find("31_HfH2O10")!=std::string::npos) {
+        if (!expected_shell("D5d",10u,72,8) ||
+            data.ligand_field_geometry_id!="PAPR-10" ||
+            !data.pi_interactions.empty() || compact.levels.size()>8u ||
+            compact_group("A1g",1u)==compact.levels.end() ||
+            compact_group("E1u",2u)==compact.levels.end() ||
+            compact_group("E2g",2u)==compact.levels.end()) {
+            std::cerr<<filename
+                     <<": pentagonal-antiprismatic CN10 regression\n";
+            return false;
+        }
+    } else if (filename.find("32_CuCl4")!=std::string::npos) {
+        if (!expected_shell("C3v",4u,29,17) ||
+            data.ligand_field_geometry_id!="vTBPY-4" ||
+            !fully_collapsed_open_shell() ||
+            !data.pi_interactions.empty() || compact.levels.size()>6u ||
+            compact_group("A1",1u)==compact.levels.end() ||
+            compact_group("E",2u)==compact.levels.end()) {
+            std::cerr<<filename
+                     <<": vacant-trigonal-bipyramidal CN4 regression\n";
+            return false;
+        }
     }
 
     std::cout<<"REAL "<<path.filename().string()
@@ -1012,12 +1424,48 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
 } // namespace
 
 int main(int argc,char** argv) {
+    std::vector<std::string> failed_real_fchk;
+    for (int i=1;i<argc;++i) {
+        const std::filesystem::path path=argv[i];
+        const auto started=std::chrono::steady_clock::now();
+        bool passed=false;
+        std::string exception_message;
+        try {
+            passed=inspect_real_fchk(path);
+        } catch (const std::exception& exception) {
+            exception_message=exception.what();
+        } catch (...) {
+            exception_message="unknown exception";
+        }
+        const auto elapsed=std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now()-started);
+        std::cout<<"CASE "<<path.filename().string()<<' '
+                 <<(passed?"PASS":"FAIL")
+                 <<" elapsed_ms="<<elapsed.count()<<'\n';
+        if (!passed) {
+            failed_real_fchk.push_back(path.string());
+            if (!exception_message.empty()) {
+                std::cerr<<path.filename().string()<<": "
+                         <<exception_message<<'\n';
+            }
+        }
+    }
+    if (!failed_real_fchk.empty()) {
+        std::cerr<<"REAL FCHK FAILURES "<<failed_real_fchk.size()<<'/'
+                 <<(argc-1)<<'\n';
+        for (const auto& path:failed_real_fchk) {
+            std::cerr<<"  "<<path<<'\n';
+        }
+    }
+
     if (!validate_radial_first_shell_retry()) return 14;
     if (!validate_local_symmetry_missing_markers()) return 12;
+    if (!validate_ligand_only_noise_preserves_producer_irrep()) return 18;
     if (!validate_resolved_five_d_runs()) return 15;
     if (!validate_minimal_compact_ligand_field_framework()) return 17;
     if (!validate_pi_topology_and_two_sided_composition()) return 16;
     if (!validate_equal_count_unrestricted_collapse()) return 13;
+    if (!validate_general_spin_counterpart_matching()) return 19;
 
     cov::Wavefunction wf;
     wf.atoms.resize(4);
@@ -1141,8 +1589,8 @@ int main(int argc,char** argv) {
     std::filesystem::remove(json_path, ec);
     std::filesystem::remove(std::filesystem::path(temp.string() + ".mo.csv"), ec);
 
-    for (int i=1;i<argc;++i) {
-        if (!inspect_real_fchk(argv[i])) return 11;
+    if (!failed_real_fchk.empty()) {
+        return 11;
     }
 
     std::cout << "mo_diagram_smoke ok\n";

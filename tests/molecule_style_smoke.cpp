@@ -55,6 +55,16 @@ bool check_real_topology(const std::filesystem::path& path,
     return bonds.size() == expected_bonds && carbon_bonds == expected_carbon_bonds;
 }
 
+bool has_central_degree(const cov::Wavefunction& wf,
+                        const std::size_t expected_degree) {
+    const auto bonds = cov::analyse_bonds(wf);
+    std::size_t degree = 0;
+    for (const auto& bond : bonds) {
+        if (bond.atom_a == 0u || bond.atom_b == 0u) ++degree;
+    }
+    return bonds.size() == expected_degree && degree == expected_degree;
+}
+
 } // namespace
 
 int main(const int argc, char** argv) {
@@ -204,14 +214,95 @@ int main(const int argc, char** argv) {
         }
     }
 
+    // All real elements supported by the parser must have a defined radius.
+    // In particular, 4d/5d centres must never fall back to the old 0.85 A
+    // sentinel: doing so removed long but electronically supported
+    // coordination bonds.
+    if (std::abs(cov::covalent_radius_angstrom(40) - 1.75) > 1.0e-12 ||
+        std::abs(cov::covalent_radius_angstrom(72) - 1.75) > 1.0e-12) {
+        std::cerr << "Zr/Hf covalent-radius coverage regressed\n";
+        return 11;
+    }
+    for (int z = 1; z <= 118; ++z) {
+        if (cov::covalent_radius_angstrom(z) <= 0.0) {
+            std::cerr << "missing covalent radius for atomic number " << z << '\n';
+            return 12;
+        }
+    }
+
+    // Synthetic pentagonal-bipyramidal ZrF7: two axial 2.10 A contacts and
+    // five equatorial 2.15 A contacts, each backed by a strong Mayer index.
+    cov::Wavefunction zrf7;
+    zrf7.atoms.push_back({"Zr", 40, 0.0, 0.0, 0.0});
+    zrf7.atoms.push_back({"F", 9, 0.0, 0.0, 2.10 * cov::kAngstromToBohr});
+    zrf7.atoms.push_back({"F", 9, 0.0, 0.0, -2.10 * cov::kAngstromToBohr});
+    for (int i = 0; i < 5; ++i) {
+        const double angle = 2.0 * pi * static_cast<double>(i) / 5.0;
+        zrf7.atoms.push_back({
+            "F", 9,
+            2.15 * std::cos(angle) * cov::kAngstromToBohr,
+            2.15 * std::sin(angle) * cov::kAngstromToBohr,
+            0.0});
+    }
+    zrf7.bond_order_provenance = cov::DataProvenance::Derived;
+    for (std::uint32_t ligand = 1; ligand <= 7; ++ligand) {
+        zrf7.bond_orders.push_back({0, ligand, 0.80, cov::DataProvenance::Derived});
+    }
+    if (!has_central_degree(zrf7, 7u)) {
+        std::cerr << "electronically supported ZrF7 first shell lost bonds\n";
+        return 13;
+    }
+
+    // Synthetic D5d pentagonal-antiprismatic HfO10. Every donor lies 2.50 A
+    // from Hf and has the same moderate Mayer evidence as an aqua complex.
+    cov::Wavefunction hfo10;
+    hfo10.atoms.push_back({"Hf", 72, 0.0, 0.0, 0.0});
+    constexpr double ring_z_angstrom = 1.0;
+    const double ring_radius_angstrom =
+        std::sqrt(2.50 * 2.50 - ring_z_angstrom * ring_z_angstrom);
+    for (int ring = 0; ring < 2; ++ring) {
+        const double z_angstrom = ring == 0 ? ring_z_angstrom : -ring_z_angstrom;
+        const double offset = ring == 0 ? 0.0 : pi / 5.0;
+        for (int i = 0; i < 5; ++i) {
+            const double angle = 2.0 * pi * static_cast<double>(i) / 5.0 + offset;
+            hfo10.atoms.push_back({
+                "O", 8,
+                ring_radius_angstrom * std::cos(angle) * cov::kAngstromToBohr,
+                ring_radius_angstrom * std::sin(angle) * cov::kAngstromToBohr,
+                z_angstrom * cov::kAngstromToBohr});
+        }
+    }
+    hfo10.bond_order_provenance = cov::DataProvenance::Derived;
+    for (std::uint32_t ligand = 1; ligand <= 10; ++ligand) {
+        hfo10.bond_orders.push_back({0, ligand, 0.37, cov::DataProvenance::Derived});
+    }
+    if (!has_central_degree(hfo10, 10u)) {
+        std::cerr << "electronically supported HfO10 first shell lost bonds\n";
+        return 14;
+    }
+
+    // A complete heavy-element table must not make genuinely remote Mayer
+    // coupling drawable. The existing adjacency envelope remains authoritative.
+    cov::Wavefunction remote_hf_o;
+    remote_hf_o.atoms = {
+        {"Hf", 72, 0.0, 0.0, 0.0},
+        {"O", 8, 5.0 * cov::kAngstromToBohr, 0.0, 0.0},
+    };
+    remote_hf_o.bond_order_provenance = cov::DataProvenance::Derived;
+    remote_hf_o.bond_orders.push_back({0, 1, 0.06, cov::DataProvenance::Derived});
+    if (!cov::analyse_bonds(remote_hf_o).empty()) {
+        std::cerr << "remote heavy-element Mayer coupling became a structural bond\n";
+        return 15;
+    }
+
     if (argc == 3) {
         if (!check_real_topology(argv[1], 12u, 6u)) {
             std::cerr << "real benzene topology regression\n";
-            return 11;
+            return 16;
         }
         if (!check_real_topology(argv[2], 19u, 11u)) {
             std::cerr << "real naphthalene topology regression\n";
-            return 12;
+            return 17;
         }
     }
 

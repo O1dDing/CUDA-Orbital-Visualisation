@@ -29,6 +29,7 @@ add_library(cov_parser
     src/analysis/overlap.cpp
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
+    src/analysis/point_group_catalog.cpp
     src/analysis/orbital_symmetry.cpp
     src/analysis/orbital_symmetry_final.cpp
     src/analysis/orbital_chemistry.cpp
@@ -45,8 +46,10 @@ target_include_directories(cov_parser PUBLIC
 target_compile_features(cov_parser PUBLIC cxx_std_20)
 
 add_library(cov_orbitals
+    src/analysis/local_orbital_symmetry.cpp
     src/orbitals/orbital_view.cpp
     src/orbitals/orbital_view_dispatch.cpp
+    src/orbitals/coordination_geometry.cpp
     src/orbitals/ligand_field.cpp
     src/orbitals/mo_diagram_v2.cpp
     src/orbitals/mo_diagram_chemistry.cpp
@@ -61,6 +64,7 @@ set_source_files_properties(src/orbitals/mo_diagram_v2.cpp PROPERTIES
 target_include_directories(cov_orbitals PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+target_link_libraries(cov_orbitals PUBLIC cov_parser)
 target_compile_features(cov_orbitals PUBLIC cxx_std_20)
 
 add_library(cov_molecule
@@ -283,6 +287,24 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_symmetry_smoke PRIVATE cov_parser)
     add_test(NAME symmetry_smoke COMMAND cov_symmetry_smoke)
 
+    add_executable(cov_point_group_catalog_smoke tests/point_group_catalog_smoke.cpp)
+    target_link_libraries(cov_point_group_catalog_smoke PRIVATE cov_parser)
+    add_test(NAME point_group_catalog_smoke COMMAND cov_point_group_catalog_smoke)
+
+    add_executable(cov_coordination_geometry_smoke tests/coordination_geometry_smoke.cpp)
+    target_link_libraries(cov_coordination_geometry_smoke PRIVATE cov_orbitals)
+    add_test(NAME coordination_geometry_smoke COMMAND cov_coordination_geometry_smoke)
+
+    add_executable(cov_local_orbital_symmetry_smoke tests/local_orbital_symmetry_smoke.cpp)
+    target_link_libraries(cov_local_orbital_symmetry_smoke PRIVATE cov_orbitals)
+    add_test(NAME local_orbital_symmetry_smoke COMMAND cov_local_orbital_symmetry_smoke)
+
+    add_executable(cov_coordination_frame_contract_smoke
+        tests/coordination_frame_contract_smoke.cpp)
+    target_link_libraries(cov_coordination_frame_contract_smoke PRIVATE cov_orbitals)
+    add_test(NAME coordination_frame_contract_smoke
+        COMMAND cov_coordination_frame_contract_smoke)
+
     add_executable(cov_orbital_symmetry_smoke tests/orbital_symmetry_smoke.cpp)
     target_link_libraries(cov_orbital_symmetry_smoke PRIVATE cov_parser)
     add_test(NAME orbital_symmetry_smoke COMMAND cov_orbital_symmetry_smoke)
@@ -296,7 +318,7 @@ if(COV_BUILD_TESTS)
     add_test(NAME orbital_view_smoke COMMAND cov_orbital_view_smoke)
 
     add_executable(cov_mo_diagram_smoke tests/mo_diagram_smoke.cpp)
-    target_link_libraries(cov_mo_diagram_smoke PRIVATE cov_orbitals cov_parser)
+    target_link_libraries(cov_mo_diagram_smoke PRIVATE cov_orbitals cov_parser cov_molecule)
     add_test(NAME mo_diagram_smoke COMMAND cov_mo_diagram_smoke)
 
     add_executable(cov_energy_axis_smoke tests/energy_axis_smoke.cpp)
@@ -305,7 +327,16 @@ if(COV_BUILD_TESTS)
 
     add_executable(cov_cp_reference_layout_smoke tests/cp_reference_layout_smoke.cpp)
     target_link_libraries(cov_cp_reference_layout_smoke PRIVATE cov_orbitals)
+    target_compile_options(cov_cp_reference_layout_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
+    )
     add_test(NAME cp_reference_layout_smoke COMMAND cov_cp_reference_layout_smoke)
+
+    add_executable(cov_mo_diagram_export_semantics_smoke
+        tests/mo_diagram_export_semantics_smoke.cpp)
+    target_link_libraries(cov_mo_diagram_export_semantics_smoke PRIVATE cov_orbitals)
+    add_test(NAME mo_diagram_export_semantics_smoke
+        COMMAND cov_mo_diagram_export_semantics_smoke)
 
     add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
     target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule cov_parser)
