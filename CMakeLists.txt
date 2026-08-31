@@ -78,7 +78,6 @@ target_include_directories(cov_molecule PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_compile_features(cov_molecule PUBLIC cxx_std_20)
-
 add_library(cov_platform
     src/platform/file_dialog.cpp
 )
@@ -163,6 +162,25 @@ if(COV_ENABLE_CUDA)
 
     find_package(CUDAToolkit 12.8 REQUIRED)
     find_package(OpenGL REQUIRED)
+
+    # AO-overlap recovery is ordinary C++ code with an optional dense CUDA
+    # backend. Link the solver/BLAS runtime only in CUDA builds; CPU-only
+    # builds retain the same public API and multithreaded fallback.
+    target_compile_definitions(cov_parser PRIVATE COV_ENABLE_CUDA=1)
+    target_link_libraries(cov_parser PRIVATE CUDA::cudart_static)
+    if(WIN32)
+        # NVIDIA's Windows toolkit ships cuBLAS/cuSOLVER import libraries and
+        # DLLs, not static archives. Resolve them optionally at runtime so the
+        # single-file cov.exe still starts on a driver-only installation and
+        # falls back to the CPU implementation when the toolkit DLLs are absent.
+        target_compile_definitions(cov_parser PRIVATE
+            COV_CUDA_DYNAMIC_DENSE=1)
+    else()
+        target_link_libraries(cov_parser PRIVATE
+            CUDA::cublas_static
+            CUDA::cusolver_static
+        )
+    endif()
 
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -281,6 +299,11 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_wavefunction_analysis_smoke PRIVATE cov_parser)
     add_test(NAME wavefunction_analysis_smoke COMMAND cov_wavefunction_analysis_smoke)
 
+    add_executable(cov_overlap_large_smoke tests/overlap_large_smoke.cpp)
+    target_link_libraries(cov_overlap_large_smoke PRIVATE cov_parser)
+    add_test(NAME overlap_large_smoke COMMAND cov_overlap_large_smoke)
+    set_tests_properties(overlap_large_smoke PROPERTIES TIMEOUT 120)
+
     add_executable(cov_multicentre_classification_smoke tests/multicentre_classification_smoke.cpp)
     target_link_libraries(cov_multicentre_classification_smoke PRIVATE cov_parser)
     add_test(NAME multicentre_classification_smoke COMMAND cov_multicentre_classification_smoke)
@@ -333,7 +356,7 @@ if(COV_BUILD_TESTS)
     add_test(NAME pi_topology_smoke COMMAND cov_pi_topology_smoke)
 
     add_executable(cov_interaction_graph_smoke tests/interaction_graph_smoke.cpp)
-    target_link_libraries(cov_interaction_graph_smoke PRIVATE cov_molecule)
+    target_link_libraries(cov_interaction_graph_smoke PRIVATE cov_molecule cov_parser)
     add_test(NAME interaction_graph_smoke COMMAND cov_interaction_graph_smoke)
 
     add_executable(cov_coordination_frame_contract_smoke

@@ -49,7 +49,7 @@ jobs:
         with:
           cuda: '12.8.2'
           method: network
-          sub-packages: '["nvcc", "cudart", "cuobjdump", "visual_studio_integration"]'
+          sub-packages: '["nvcc", "cudart", "cublas", "cusolver", "cusparse", "cuobjdump", "visual_studio_integration"]'
       - name: Configure Blackwell Release viewer
         shell: pwsh
         run: >-
@@ -72,6 +72,15 @@ jobs:
           if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) { throw "sm_120 cubin missing" }
           & $cuobjdump --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
           if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) { throw "compute_120 PTX missing" }
+          $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
+          $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          $dumpbin = Get-ChildItem "$vs/VC/Tools/MSVC/*/bin/Hostx64/x64/dumpbin.exe" |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          if ($null -eq $dumpbin) { throw "dumpbin.exe is missing" }
+          & $dumpbin.FullName /DEPENDENTS $exe | Tee-Object -FilePath build-cuda/dependents.txt
+          if (Select-String -Path build-cuda/dependents.txt -Pattern "cu(?:blas|solver).*\.dll" -Quiet) {
+            throw "cov.exe has a forbidden cuBLAS/cuSOLVER DLL startup dependency"
+          }
       - name: Stage v0.3.0-pre.9 executable
         shell: pwsh
         run: |

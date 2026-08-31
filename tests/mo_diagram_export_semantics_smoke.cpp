@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <string>
@@ -60,6 +61,7 @@ int main() {
     derived_pi.orbital_indices={0};
     derived_pi.family_id="pi-family-derived";
     derived_pi.topology_available=true;
+    derived_pi.topology=cov::DelocalisedPiTopology::HapticMetal;
     derived_pi.orientation_channels=2u;
     derived_pi.cyclic_topology=true;
     derived_pi.orientation_channel_details={
@@ -68,6 +70,10 @@ int main() {
     };
     derived_pi.label="PI6_6";
     derived_pi.source=cov::AnnotationSource::Derived;
+    if (cov::compact_pi_topology_suffix(derived_pi)!="2ch H") {
+        std::cerr<<"shared compact pi topology label mismatch\n";
+        return 11;
+    }
     auto& parsed_pi=data.annotations[1].delocalised_pi;
     parsed_pi.available=true;
     parsed_pi.family_id="pi-family-parsed-only";
@@ -92,6 +98,15 @@ int main() {
         level.electrons = i == 0 ? cov::ElectronGlyphs{1, 1}
                                  : cov::ElectronGlyphs{};
         data.levels.push_back(level);
+    }
+    cov::MODiagramLevel collapsed_udft_level;
+    collapsed_udft_level.member_indices={2u,3u};
+    collapsed_udft_level.member_spin_counterparts={6u,7u};
+    if (!cov::mo_diagram_level_covers_orbital(collapsed_udft_level,2u) ||
+        !cov::mo_diagram_level_covers_orbital(collapsed_udft_level,7u) ||
+        cov::mo_diagram_level_covers_orbital(collapsed_udft_level,8u)) {
+        std::cerr<<"collapsed UDFT pi-family row coverage mismatch\n";
+        return 12;
     }
     data.energy_transform = cov::build_energy_transform(
         {-0.20, 0.10}, cov::EnergyAxisMode::NonlinearFocus, 0.055);
@@ -162,8 +177,14 @@ int main() {
     options.height = 720;
     options.include_hidden_in_metadata = false;
 
+    // CPU and CUDA build trees may execute this contract concurrently.  Keep
+    // their transient artifacts disjoint so one process cannot replace an SVG
+    // while the other is reading it.
+    const auto build_id=std::hash<std::string>{}(
+        std::filesystem::absolute(std::filesystem::current_path()).string());
     const auto base = std::filesystem::temp_directory_path() /
-                      "cov_mo_diagram_export_semantics_smoke";
+        ("cov_mo_diagram_export_semantics_smoke_"+
+         std::to_string(build_id));
     const auto svg_path = std::filesystem::path(base.string() + ".svg");
     const auto png_path = std::filesystem::path(base.string() + ".png");
     const auto json_path = std::filesystem::path(base.string() + ".json");
@@ -179,10 +200,15 @@ int main() {
 
     const std::string svg = read_all(svg_path);
     if (svg.find("data-diagram-row-count=\"2\"") == std::string::npos ||
+        svg.find("data-diagram-mode=\"valence-central\"")==std::string::npos ||
+        svg.find("Valence MO diagram")==std::string::npos ||
+        svg.find("data-symmetry=\"T2g\"")==std::string::npos ||
+        svg.find(">T</text>")!=std::string::npos ||
         count_token(svg, "class=\"mo-level\"") != data.levels.size() ||
         count_token(svg, "class=\"pi-interaction\"") != 1 ||
         svg.find("data-kind=\"acceptor\"") == std::string::npos ||
         svg.find("data-pi-topology-available=\"true\"") == std::string::npos ||
+        svg.find("data-pi-topology=\"haptic-metal\"") == std::string::npos ||
         svg.find("data-pi-orientation-channels=\"2\"") == std::string::npos ||
         svg.find("data-pi-cyclic=\"true\"") == std::string::npos ||
         svg.find("data-pi-topology-available=\"false\"") == std::string::npos ||
@@ -190,6 +216,34 @@ int main() {
         std::cerr << "SVG compact-row or pi-marker semantics mismatch\n";
         return 2;
     }
+
+    // Screen/SVG semantics must preserve the actual chemistry topology, not
+    // collapse every family to the coarser cyclic/non-cyclic flag.
+    const std::array<std::pair<cov::DelocalisedPiTopology,const char*>,3>
+        topology_contracts{{
+            {cov::DelocalisedPiTopology::HapticMetal,"haptic-metal"},
+            {cov::DelocalisedPiTopology::Spiro,"spiro"},
+            {cov::DelocalisedPiTopology::SymmetryDirectSum,
+             "symmetry-direct-sum"},
+        }};
+    for (const auto& [topology,machine]:topology_contracts) {
+        data.levels[0].annotation.delocalised_pi.topology=topology;
+        if (!cov::write_mo_diagram_svg(data,options,svg_path,&error)) {
+            std::cerr<<"topology-specific SVG export failed: "<<error<<'\n';
+            return 9;
+        }
+        const auto topology_svg=read_all(svg_path);
+        if (topology_svg.find(
+                std::string("data-pi-topology=\"")+machine+"\"")==
+                std::string::npos ||
+            topology_svg.find(std::string("<title>delocalised pi; ")+machine+
+                              ";")==std::string::npos) {
+            std::cerr<<"SVG lost concrete pi topology "<<machine<<'\n';
+            return 10;
+        }
+    }
+    data.levels[0].annotation.delocalised_pi.topology=
+        cov::DelocalisedPiTopology::HapticMetal;
 
     const std::string png = read_all(png_path);
     const std::string acceptor_rgb{
@@ -201,7 +255,8 @@ int main() {
     }
 
     const std::string json = read_all(json_path);
-    if (json.find("\"local_coordination\": {") == std::string::npos ||
+    if (json.find("\"mode\": \"valence-central\"")==std::string::npos ||
+        json.find("\"local_coordination\": {") == std::string::npos ||
         json.find("\"geometry_id\": \"OC-6\"") == std::string::npos ||
         json.find("\"geometry_name\": \"Octahedron\"") == std::string::npos ||
         json.find("\"coordination_number\": 6") == std::string::npos ||
@@ -226,9 +281,11 @@ int main() {
         json.find("\"lower_orbitals\": [0,2,4]") == std::string::npos ||
         json.find("\"family_id\":\"pi-family-derived\"") == std::string::npos ||
         json.find("\"topology_available\":true") == std::string::npos ||
+        json.find("\"topology\":\"haptic-metal\"") == std::string::npos ||
         json.find("\"orientation_channels\":2") == std::string::npos ||
         json.find("\"direction\":[0,0,1]") == std::string::npos ||
         json.find("\"delocalised_pi_topology_available\": false") == std::string::npos ||
+        json.find("\"delocalised_pi_topology\": null") == std::string::npos ||
         json.find("\"delocalised_pi_orientation_channels\": null") == std::string::npos ||
         json.find("\"delocalised_pi_cyclic_topology\": null") == std::string::npos ||
         json.find("\"multicentre_channel_count\": 2") == std::string::npos ||
@@ -242,7 +299,9 @@ int main() {
     }
 
     const std::string csv = read_all(csv_path);
-    if (csv.find("local_geometry_id,local_geometry_name,local_coordination_number") ==
+    if (csv.find("diagram_mode,index,raw_mo")==std::string::npos ||
+        csv.find("valence-central,0,1,")==std::string::npos ||
+        csv.find("local_geometry_id,local_geometry_name,local_coordination_number") ==
             std::string::npos ||
         csv.find("local_angular_rms,local_shape_measure,local_radial_cv") ==
             std::string::npos ||
@@ -250,7 +309,8 @@ int main() {
             std::string::npos ||
         csv.find("delocalised_pi_participating_electrons,delocalised_pi_label") ==
             std::string::npos ||
-        csv.find("pi_interactions,delocalised_pi_topology_available,") ==
+        csv.find("pi_interactions,delocalised_pi_topology_available,"
+                 "delocalised_pi_topology,") ==
             std::string::npos ||
         csv.find("delocalised_pi_orientation_channel_details") ==
             std::string::npos ||
@@ -275,6 +335,42 @@ int main() {
             std::string::npos) {
         std::cerr << "CSV shared multicentre source metadata missing\n";
         return 6;
+    }
+
+    struct ModeContract {
+        cov::MODiagramMode mode;
+        const char* machine;
+        const char* title;
+    };
+    const std::array<ModeContract,2> compact_modes{{
+        {cov::MODiagramMode::DelocalisedPiFamilyOnly,
+         "delocalised-pi-family-only","Delocalised pi MO diagram"},
+        {cov::MODiagramMode::MulticentreActiveSpaceOnly,
+         "multicentre-active-space-only","Multicentre active-space MO diagram"},
+    }};
+    for (const auto& contract:compact_modes) {
+        data.mode=contract.mode;
+        if (!cov::write_mo_diagram_svg(data,options,svg_path,&error) ||
+            !cov::write_mo_diagram_json(data,options,json_path,&error) ||
+            !cov::write_mo_diagram_csv(data,options,csv_path,&error)) {
+            std::cerr<<"mode-specific export failed: "<<error<<'\n';
+            return 7;
+        }
+        const auto mode_svg=read_all(svg_path);
+        const auto mode_json=read_all(json_path);
+        const auto mode_csv=read_all(csv_path);
+        if (mode_svg.find(std::string("data-diagram-mode=\"")+contract.machine+
+                          "\"")==std::string::npos ||
+            mode_svg.find(contract.title)==std::string::npos ||
+            mode_json.find(std::string("\"mode\": \"")+contract.machine+
+                           "\"")==std::string::npos ||
+            mode_csv.find(std::string("diagram_mode,index,raw_mo"))==
+                std::string::npos ||
+            mode_csv.find(std::string(contract.machine)+",0,1,")==
+                std::string::npos) {
+            std::cerr<<"mode-specific export labels diverged\n";
+            return 8;
+        }
     }
 
     std::error_code ec;

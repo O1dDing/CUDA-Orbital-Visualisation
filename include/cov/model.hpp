@@ -154,21 +154,26 @@ struct OrbitalChemistry {
 
     std::string multicentre_label;
     std::string family_symbol;
-    std::size_t participating_atoms = 0;
-    double participating_electrons = 0.0;
+    std::size_t multicentre_participating_atoms = 0;
+    double multicentre_participating_electrons = 0.0;
+    std::vector<std::uint32_t> multicentre_participating_atom_indices;
     std::size_t multicentre_channel_count = 0;
     std::string multicentre_source_subspace_id;
     double multicentre_source_electron_count = 0.0;
+    double multicentre_confidence = 0.0;
 
     // A delocalised family is a property of a complete active subspace, not
     // of one canonical MO in isolation.  Repeating the stable identity and
     // complete membership on every member lets diagram/export code keep the
     // family intact even when only a filtered subset of levels is visible.
-    std::vector<std::uint32_t> participating_atom_indices;
+    std::size_t delocalised_participating_atoms = 0;
+    double delocalised_participating_electrons = 0.0;
+    std::vector<std::uint32_t> delocalised_participating_atom_indices;
     std::vector<std::uint32_t> delocalised_family_orbitals;
     std::string delocalised_family_id;
     std::size_t delocalised_orientation_channels = 0;
     bool delocalised_cyclic_topology = false;
+    double delocalised_pi_confidence = 0.0;
 
     // FCHK-only canonical-MO evidence cannot always define a unique
     // donor/acceptor direction. In that case this remains "UND".
@@ -227,6 +232,11 @@ struct MulticentreAssignment {
     double confidence = 0.0;
     std::string rationale;
     DataProvenance provenance = DataProvenance::Unavailable;
+    // True only when the three-centre active space passed an explicit
+    // geometry-directed valence-subspace construction.  Generic population
+    // candidates remain useful annotations, but must not take over the
+    // compact MO diagram merely because they contain three orbitals.
+    bool geometry_qualified_framework = false;
     // Equivalent local channels may be obtained by a derived rotation inside
     // one shared canonical source span.  In that case every channel carries
     // the same non-empty id, the total source electron count, and a partition
@@ -244,6 +254,19 @@ struct PiOrientationChannel {
     bool cyclic = false;
 };
 
+enum class DelocalisedPiTopology : std::uint8_t {
+    Unknown = 0,
+    Path,
+    Cycle,
+    BranchedResonance,
+    Spiro,
+    HapticMetal,
+    // Several disconnected but symmetry-equivalent pi subsystems whose
+    // canonical MOs mix across the whole molecule. They are selected as one
+    // direct-sum active space without claiming a fictitious covalent cycle.
+    SymmetryDirectSum,
+};
+
 struct DelocalisedPiAssignment {
     std::string family_id;
     std::vector<std::uint32_t> atoms;
@@ -254,7 +277,19 @@ struct DelocalisedPiAssignment {
     // shared sp centre (cumulenes). Individual canonical MOs are not assigned
     // to an arbitrary direction inside a degenerate subspace.
     std::vector<PiOrientationChannel> orientation_channels;
+    // This topology is produced by the same pruned first-neighbour graph and
+    // oriented-p analysis that generated the assignment.  Diagram policy must
+    // consume it rather than rebuilding a second graph from raw all-pair
+    // Mayer couplings (which contain legitimate through-bond terms).
+    DelocalisedPiTopology topology = DelocalisedPiTopology::Unknown;
     bool cyclic_topology = false;
+    // For a unique branched centre, record the electronically occupied share
+    // of its selected oriented-p column.  The normalisation is by that
+    // column's selected canonical coverage, so 0..2 electrons has a stable
+    // meaning across basis sizes.  It separates a strongly participating
+    // resonance centre from a weak ligand-to-centre donor star without
+    // element or molecule-name rules.
+    double branch_centre_projected_occupation = 0.0;
     // Backward-compatible representative plane data. For a non-planar bundle,
     // plane_normal is only the first channel direction and plane_rms_bohr is 0;
     // consumers must inspect orientation_channels before making a plane claim.

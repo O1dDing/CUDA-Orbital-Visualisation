@@ -1,4 +1,5 @@
 #include "cov/orbital_chemistry.hpp"
+#include "cov/molecule_style.hpp"
 #include "cov/pi_topology.hpp"
 
 #include <algorithm>
@@ -437,6 +438,46 @@ std::vector<ReferenceColumn> orthonormalise_reference(
         q.push_back(std::move(candidate));
     }
     return q;
+}
+
+std::vector<ReferenceColumn> core_orthogonalised_valence_p_reference(
+    const Wavefunction& wf,
+    const std::vector<ReferenceColumn>& raw) {
+    std::vector<ReferenceColumn> result=raw;
+    for (auto& candidate:result) {
+        if (candidate.space!=ReferenceClass::ChemicalValence ||
+            candidate.l!=1 || candidate.coefficients.size()!=wf.basis_count) {
+            continue;
+        }
+        std::vector<ReferenceColumn> lower_p;
+        for (const auto& column:raw) {
+            if (column.atom==candidate.atom && column.l==1 &&
+                column.n<candidate.n &&
+                column.coefficients.size()==wf.basis_count) {
+                lower_p.push_back(column);
+            }
+        }
+        const auto core=orthonormalise_reference(std::move(lower_p),wf);
+        for (const auto& previous:core) {
+            const double projection=s_dot(
+                previous.coefficients,candidate.coefficients,
+                wf.ao_overlap,wf.basis_count);
+            for (std::size_t mu=0u;mu<wf.basis_count;++mu) {
+                candidate.coefficients[mu]-=
+                    projection*previous.coefficients[mu];
+            }
+        }
+        const double norm2=s_dot(
+            candidate.coefficients,candidate.coefficients,
+            wf.ao_overlap,wf.basis_count);
+        if (!(norm2>1.0e-10) || !std::isfinite(norm2)) {
+            candidate.coefficients.clear();
+            continue;
+        }
+        const double inverse=1.0/std::sqrt(norm2);
+        for (double& value:candidate.coefficients) value*=inverse;
+    }
+    return result;
 }
 
 std::vector<std::uint32_t> basis_atom_map(const Wavefunction& wf) {
@@ -886,37 +927,13 @@ bool near(const double value,const double target,const double tolerance) {
     return std::abs(value-target)<=tolerance;
 }
 
-double pi_covalent_radius_angstrom(const int z) {
-    switch (z) {
-        case 1: return 0.31;
-        case 5: return 0.84;
-        case 6: return 0.76;
-        case 7: return 0.71;
-        case 8: return 0.66;
-        case 9: return 0.57;
-        case 14: return 1.11;
-        case 15: return 1.07;
-        case 16: return 1.05;
-        case 17: return 1.02;
-        case 32: return 1.20;
-        case 33: return 1.19;
-        case 34: return 1.20;
-        case 35: return 1.20;
-        case 50: return 1.39;
-        case 51: return 1.39;
-        case 52: return 1.38;
-        case 53: return 1.39;
-        default: return 0.85;
-    }
-}
-
 bool pi_connectivity_evidence(const Wavefunction& wf,
                               const std::uint32_t a,
                               const std::uint32_t b) {
     if (a>=wf.atoms.size() || b>=wf.atoms.size() || a==b) return false;
     const double radii_bohr=
-        (pi_covalent_radius_angstrom(wf.atoms[a].atomic_number)+
-         pi_covalent_radius_angstrom(wf.atoms[b].atomic_number))*
+        (covalent_radius_angstrom(wf.atoms[a].atomic_number)+
+         covalent_radius_angstrom(wf.atoms[b].atomic_number))*
         kAngstromToBohr;
     const double distance=distance_bohr(wf.atoms[a],wf.atoms[b]);
 
@@ -1198,6 +1215,26 @@ std::vector<ReferenceColumn> oriented_p_subspace(
 std::vector<std::pair<std::uint32_t,std::uint32_t>>
 pi_topology_bonded_pairs(const Wavefunction& wf) {
     std::vector<std::pair<std::uint32_t,std::uint32_t>> result;
+    if (wf.bond_order_provenance!=DataProvenance::Unavailable) {
+        std::set<std::pair<std::uint32_t,std::uint32_t>> unique;
+        for (const auto& record:wf.bond_orders) {
+            auto a=record.atom_a;
+            auto b=record.atom_b;
+            if (a==b || a>=wf.atoms.size() || b>=wf.atoms.size() ||
+                record.mayer_order<0.05) {
+                continue;
+            }
+            if (b<a) std::swap(a,b);
+            const double radii=(
+                covalent_radius_angstrom(wf.atoms[a].atomic_number)+
+                covalent_radius_angstrom(wf.atoms[b].atomic_number))*
+                kAngstromToBohr;
+            if (distance_bohr(wf.atoms[a],wf.atoms[b])>1.45*radii) continue;
+            unique.insert({a,b});
+        }
+        result.assign(unique.begin(),unique.end());
+        return result;
+    }
     for (std::uint32_t a=0;a<wf.atoms.size();++a) {
         for (std::uint32_t b=a+1u;b<wf.atoms.size();++b) {
             if (pi_connectivity_evidence(wf,a,b)) result.emplace_back(a,b);
@@ -1213,28 +1250,412 @@ bool networks_share_atom(const OrientedPiNetwork& a,
     });
 }
 
-std::vector<std::vector<std::size_t>> pi_network_bundles(
-    const std::vector<OrientedPiNetwork>& networks) {
-    std::vector<std::vector<std::size_t>> result;
+struct PiNetworkBundle {
+    std::vector<std::size_t> networks;
+    bool spiro=false;
+    bool haptic_metal=false;
+    std::set<std::uint32_t> haptic_metals;
+    bool symmetry_direct_sum=false;
+    std::uint32_t symmetry_hub=std::numeric_limits<std::uint32_t>::max();
+    bool has_non_direct_sum_join=false;
+};
+
+std::vector<PiNetworkBundle> pi_network_bundles(
+    const Wavefunction& wf,
+    const std::vector<OrientedPiNetwork>& networks,
+    const std::vector<std::pair<std::uint32_t,std::uint32_t>>& bonded_pairs) {
+    std::vector<std::vector<std::uint32_t>> adjacency(wf.atoms.size());
+    for (const auto& pair:bonded_pairs) {
+        if (pair.first>=adjacency.size() || pair.second>=adjacency.size()) {
+            continue;
+        }
+        adjacency[pair.first].push_back(pair.second);
+        adjacency[pair.second].push_back(pair.first);
+    }
+    std::vector<std::map<std::uint32_t,std::size_t>> bridge_counts(
+        networks.size());
+    for (std::size_t network_index=0u;network_index<networks.size();
+         ++network_index) {
+        const auto& network=networks[network_index];
+        const std::set<std::uint32_t> members(
+            network.atoms.begin(),network.atoms.end());
+        for (const auto atom:network.atoms) {
+            if (atom>=adjacency.size()) continue;
+            for (const auto neighbour:adjacency[atom]) {
+                if (members.count(neighbour)==0u) {
+                    ++bridge_counts[network_index][neighbour];
+                }
+            }
+        }
+    }
+    auto spiro_coupled=[&](const std::size_t a_index,
+                            const std::size_t b_index) {
+        const auto& a=networks[a_index];
+        const auto& b=networks[b_index];
+        if (std::abs(dot3(a.representative_direction,
+                          b.representative_direction))>0.35) return false;
+        const auto& a_bridges=bridge_counts[a_index];
+        const auto& b_bridges=bridge_counts[b_index];
+        for (const auto& [bridge,a_neighbours]:a_bridges) {
+            const auto b_bridge=b_bridges.find(bridge);
+            if (a_neighbours<2u || b_bridge==b_bridges.end() ||
+                b_bridge->second<2u) {
+                continue;
+            }
+            if (bridge>=wf.atoms.size()) continue;
+            const int z=wf.atoms[bridge].atomic_number;
+            if (z<=2 || transition_metal(z) || f_block(z)) continue;
+            // A true spiro bridge is the common atom of two covalent rings:
+            // it has two local neighbours in each orthogonal pi component.
+            // A metal bound once to each of several CO ligands has only one
+            // neighbour per component and must never merge those ligands into
+            // one artificial delocalised-pi family.
+            return true;
+        }
+        return false;
+    };
+    std::vector<std::set<std::uint32_t>> network_haptic_metals(
+        networks.size());
+    for (std::size_t network_index=0u;network_index<networks.size();
+         ++network_index) {
+        const auto& network=networks[network_index];
+        if (!network.cyclic) continue;
+        for (std::uint32_t metal=0u;metal<wf.atoms.size();++metal) {
+            const int z=wf.atoms[metal].atomic_number;
+            if (!transition_metal(z) && !f_block(z)) continue;
+            std::size_t contacts=0u;
+            for (const auto atom:network.atoms) {
+                if (atom>=wf.atoms.size()) continue;
+                const double mayer=std::abs(pair_mayer(wf,metal,atom));
+                const double radius=(
+                    covalent_radius_angstrom(z)+
+                    covalent_radius_angstrom(
+                        wf.atoms[atom].atomic_number))*kAngstromToBohr;
+                const bool within_haptic_shell=
+                    distance_bohr(wf.atoms[metal],wf.atoms[atom])<=
+                        1.60*radius;
+                const bool electronic_contact=
+                    within_haptic_shell && mayer>=0.02;
+                const bool geometry_fallback=
+                    wf.bond_order_provenance==DataProvenance::Unavailable &&
+                    within_haptic_shell;
+                if (electronic_contact || geometry_fallback) ++contacts;
+            }
+            const std::size_t required=std::max<std::size_t>(
+                3u,(3u*network.atoms.size()+4u)/5u);
+            if (contacts>=required) {
+                network_haptic_metals[network_index].insert(metal);
+            }
+        }
+    }
+    auto haptic_metal_coupled=[&](const std::size_t a_index,
+                                  const std::size_t b_index) {
+        if (a_index>=network_haptic_metals.size() ||
+            b_index>=network_haptic_metals.size() ||
+            networks_share_atom(networks[a_index],networks[b_index])) {
+            return false;
+        }
+        const auto& a=network_haptic_metals[a_index];
+        const auto& b=network_haptic_metals[b_index];
+        return std::any_of(a.begin(),a.end(),[&](const auto metal) {
+            return b.count(metal)!=0u;
+        });
+    };
+
+    struct RootedCycleTraversal {
+        std::uint32_t root=std::numeric_limits<std::uint32_t>::max();
+        std::vector<std::vector<int>> labels;
+        std::vector<std::uint32_t> mapped_atoms;
+    };
+    auto rooted_cycle_traversals=[&](const OrientedPiNetwork& network,
+                                     const std::uint32_t hub) {
+        std::vector<RootedCycleTraversal> traversals;
+        const std::set<std::uint32_t> members(
+            network.atoms.begin(),network.atoms.end());
+        if (members.size()<3u || network.edges.size()!=members.size()) {
+            return traversals;
+        }
+        std::map<std::uint32_t,std::vector<std::uint32_t>> internal;
+        for (const auto& edge:network.edges) {
+            if (members.count(edge.first)==0u ||
+                members.count(edge.second)==0u) {
+                return traversals;
+            }
+            internal[edge.first].push_back(edge.second);
+            internal[edge.second].push_back(edge.first);
+        }
+        for (const auto atom:network.atoms) {
+            if (internal[atom].size()!=2u) return traversals;
+        }
+        std::vector<std::uint32_t> roots;
+        for (const auto atom:network.atoms) {
+            if (atom<adjacency.size() &&
+                std::find(adjacency[atom].begin(),adjacency[atom].end(),hub)!=
+                    adjacency[atom].end()) {
+                roots.push_back(atom);
+            }
+        }
+        // A saturated common hub supplies one root per independent ring.  A
+        // multi-contact root is haptic/spiro chemistry and is handled by the
+        // corresponding predicates instead of a symmetry direct-sum claim.
+        if (roots.size()!=1u) return traversals;
+        const auto root=roots.front();
+        for (const auto first:internal[root]) {
+            std::vector<std::uint32_t> order{root};
+            std::set<std::uint32_t> visited{root};
+            auto previous=root;
+            auto current=first;
+            while (current!=root && visited.insert(current).second) {
+                order.push_back(current);
+                const auto& neighbours=internal[current];
+                const auto next=neighbours[0]==previous
+                    ?neighbours[1]:neighbours[0];
+                previous=current;
+                current=next;
+            }
+            if (current!=root || order.size()!=members.size()) continue;
+
+            RootedCycleTraversal traversal;
+            traversal.root=root;
+            bool supported=true;
+            for (const auto atom:order) {
+                if (atom>=wf.atoms.size() || atom>=adjacency.size()) {
+                    supported=false;
+                    break;
+                }
+                std::vector<std::uint32_t> external;
+                for (const auto neighbour:adjacency[atom]) {
+                    if (members.count(neighbour)==0u && neighbour!=hub) {
+                        external.push_back(neighbour);
+                    }
+                }
+                // Stay conservative for branched substituents: without a
+                // full molecular graph isomorphism they are separate pi
+                // families, not asserted symmetry copies.
+                if (external.size()>1u ||
+                    (!external.empty() &&
+                     adjacency[external.front()].size()!=1u)) {
+                    supported=false;
+                    break;
+                }
+                std::vector<int> label{wf.atoms[atom].atomic_number};
+                traversal.mapped_atoms.push_back(atom);
+                if (!external.empty()) {
+                    if (external.front()>=wf.atoms.size()) {
+                        supported=false;
+                        break;
+                    }
+                    label.push_back(wf.atoms[external.front()].atomic_number);
+                    traversal.mapped_atoms.push_back(external.front());
+                } else {
+                    label.push_back(0);
+                }
+                traversal.labels.push_back(std::move(label));
+            }
+            if (supported) traversals.push_back(std::move(traversal));
+        }
+        return traversals;
+    };
+    auto symmetry_related_geometry=[&](const RootedCycleTraversal& a,
+                                       const RootedCycleTraversal& b,
+                                       const std::uint32_t hub) {
+        if (hub>=wf.atoms.size() || a.labels!=b.labels ||
+            a.mapped_atoms.size()!=b.mapped_atoms.size() ||
+            a.mapped_atoms.empty()) {
+            return false;
+        }
+        const auto vector_from_hub=[&](const std::uint32_t atom) {
+            return std::array<double,3>{
+                wf.atoms[atom].x-wf.atoms[hub].x,
+                wf.atoms[atom].y-wf.atoms[hub].y,
+                wf.atoms[atom].z-wf.atoms[hub].z};
+        };
+        const auto gram_equivalent=[&](
+            const std::vector<std::uint32_t>& source,
+            const std::vector<std::uint32_t>& target) {
+            if (source.size()!=target.size() || source.empty()) return false;
+            double squared_error=0.0;
+            double squared_scale=0.0;
+            for (std::size_t i=0u;i<source.size();++i) {
+                const auto ai=vector_from_hub(source[i]);
+                const auto bi=vector_from_hub(target[i]);
+                for (std::size_t j=0u;j<source.size();++j) {
+                    const auto aj=vector_from_hub(source[j]);
+                    const auto bj=vector_from_hub(target[j]);
+                    const double ga=dot3(ai,aj);
+                    const double gb=dot3(bi,bj);
+                    const double scale=0.5*(std::abs(ga)+std::abs(gb));
+                    squared_error+=(ga-gb)*(ga-gb);
+                    squared_scale+=scale*scale;
+                }
+            }
+            return squared_scale>1.0e-16 &&
+                std::sqrt(squared_error/squared_scale)<=0.06;
+        };
+
+        // A local ring-to-ring fit is not enough to claim a molecular
+        // symmetry direct sum: the same orthogonal map must also permute the
+        // complete first shell of the common hub.  This rejects, for example,
+        // C(Ph)2ClF even when the two phenyl fragments are individually
+        // congruent.  Non-terminal non-ring hub substituents are deliberately
+        // unsupported rather than over-claimed.
+        const auto hub_neighbour_label=[&](const std::uint32_t neighbour) {
+            std::pair<bool,std::vector<int>> result{
+                false,{}};
+            if (neighbour>=wf.atoms.size() ||
+                neighbour>=adjacency.size()) return result;
+            result.second={wf.atoms[neighbour].atomic_number,
+                static_cast<int>(adjacency[neighbour].size())};
+            std::size_t rooted_networks=0u;
+            std::vector<std::vector<int>> best;
+            for (std::size_t index=0u;index<networks.size();++index) {
+                const auto traversals=rooted_cycle_traversals(
+                    networks[index],hub);
+                for (const auto& traversal:traversals) {
+                    if (traversal.root!=neighbour) continue;
+                    ++rooted_networks;
+                    if (best.empty() || traversal.labels<best) {
+                        best=traversal.labels;
+                    }
+                }
+            }
+            if (rooted_networks>0u) {
+                result.second.push_back(-3);
+                for (const auto& row:best) {
+                    result.second.push_back(static_cast<int>(row.size()));
+                    result.second.insert(
+                        result.second.end(),row.begin(),row.end());
+                }
+                result.first=true;
+            } else if (adjacency[neighbour].size()==1u) {
+                result.first=true;
+            }
+            return result;
+        };
+
+        std::vector<std::uint32_t> source=a.mapped_atoms;
+        std::vector<std::uint32_t> target=b.mapped_atoms;
+        // A symmetry operation that exchanges the two chosen rooted rings
+        // also exchanges their hub bonds.
+        source.push_back(b.root);
+        target.push_back(a.root);
+
+        std::vector<std::uint32_t> remaining;
+        for (const auto neighbour:adjacency[hub]) {
+            if (neighbour!=a.root && neighbour!=b.root) {
+                remaining.push_back(neighbour);
+            }
+        }
+        std::vector<std::vector<int>> labels;
+        labels.reserve(remaining.size());
+        for (const auto neighbour:remaining) {
+            auto label=hub_neighbour_label(neighbour);
+            if (!label.first) return false;
+            labels.push_back(std::move(label.second));
+        }
+        std::vector<bool> used(remaining.size(),false);
+        const auto search=[&](const auto& self,const std::size_t index)->bool {
+            if (index==remaining.size()) {
+                return gram_equivalent(source,target);
+            }
+            source.push_back(remaining[index]);
+            for (std::size_t candidate=0u;candidate<remaining.size();
+                 ++candidate) {
+                if (used[candidate] || labels[candidate]!=labels[index]) {
+                    continue;
+                }
+                used[candidate]=true;
+                target.push_back(remaining[candidate]);
+                if (self(self,index+1u)) return true;
+                target.pop_back();
+                used[candidate]=false;
+            }
+            source.pop_back();
+            return false;
+        };
+        return search(search,0u);
+    };
+    const auto no_hub=std::numeric_limits<std::uint32_t>::max();
+    auto common_hub_cycle_coupled=[&](const std::size_t a_index,
+                                      const std::size_t b_index) {
+        const auto& a=networks[a_index];
+        const auto& b=networks[b_index];
+        if (!a.cyclic || !b.cyclic || a.atoms.size()!=b.atoms.size() ||
+            networks_share_atom(a,b)) {
+            return no_hub;
+        }
+        // Equivalent ligand-local rings attached to one saturated hub can be
+        // mixed by the canonical symmetry of the whole molecule even though
+        // they are not one conjugated ring.  Select their direct-sum
+        // projector jointly (for example the four C6F5 rings of B(C6F5)4-),
+        // while retaining separate cyclic orientation channels.  Requiring a
+        // common external hub and cyclic networks excludes independent
+        // fragments and every CO ligand-field case.
+        for (const auto& [hub,a_neighbours]:bridge_counts[a_index]) {
+            const auto found=bridge_counts[b_index].find(hub);
+            if (a_neighbours<1u || found==bridge_counts[b_index].end() ||
+                found->second<1u || hub>=wf.atoms.size()) {
+                continue;
+            }
+            const int z=wf.atoms[hub].atomic_number;
+            if (z<=2 || transition_metal(z) || f_block(z)) continue;
+            const auto a_traversals=rooted_cycle_traversals(a,hub);
+            const auto b_traversals=rooted_cycle_traversals(b,hub);
+            for (const auto& a_traversal:a_traversals) {
+                for (const auto& b_traversal:b_traversals) {
+                    if (symmetry_related_geometry(
+                            a_traversal,b_traversal,hub)) {
+                        return hub;
+                    }
+                }
+            }
+        }
+        return no_hub;
+    };
+    std::vector<PiNetworkBundle> result;
     std::vector<bool> visited(networks.size(),false);
     for (std::size_t seed=0;seed<networks.size();++seed) {
         if (visited[seed]) continue;
-        std::vector<std::size_t> bundle;
+        PiNetworkBundle bundle;
+        bundle.haptic_metals=network_haptic_metals[seed];
+        bundle.haptic_metal=!bundle.haptic_metals.empty();
         std::vector<std::size_t> pending{seed};
         visited[seed]=true;
         while (!pending.empty()) {
             const auto current=pending.back();
             pending.pop_back();
-            bundle.push_back(current);
+            bundle.networks.push_back(current);
             for (std::size_t candidate=0;candidate<networks.size();++candidate) {
-                if (visited[candidate] ||
-                    !networks_share_atom(networks[current],networks[candidate])) {
-                    continue;
+                if (visited[candidate]) continue;
+                const bool shared=networks_share_atom(
+                    networks[current],networks[candidate]);
+                const bool spiro=spiro_coupled(current,candidate);
+                const bool haptic=haptic_metal_coupled(current,candidate);
+                const auto hub=common_hub_cycle_coupled(current,candidate);
+                const bool hub_coupled=hub!=no_hub &&
+                    (bundle.symmetry_hub==no_hub ||
+                     bundle.symmetry_hub==hub);
+                if (!shared && !spiro && !haptic && !hub_coupled) continue;
+                bundle.spiro=bundle.spiro || spiro ||
+                    (shared && std::abs(dot3(
+                        networks[current].representative_direction,
+                        networks[candidate].representative_direction))<0.35);
+                bundle.haptic_metal=bundle.haptic_metal || haptic;
+                bundle.haptic_metals.insert(
+                    network_haptic_metals[candidate].begin(),
+                    network_haptic_metals[candidate].end());
+                bundle.haptic_metal=!bundle.haptic_metals.empty();
+                if (hub_coupled && bundle.symmetry_hub==no_hub) {
+                    bundle.symmetry_hub=hub;
                 }
+                bundle.has_non_direct_sum_join=
+                    bundle.has_non_direct_sum_join || shared || spiro || haptic;
                 visited[candidate]=true;
                 pending.push_back(candidate);
             }
         }
+        bundle.symmetry_direct_sum=bundle.symmetry_hub!=no_hub &&
+            !bundle.has_non_direct_sum_join;
         result.push_back(std::move(bundle));
     }
     return result;
@@ -1242,9 +1663,9 @@ std::vector<std::vector<std::size_t>> pi_network_bundles(
 
 std::vector<OrientedPColumn> oriented_columns_for_bundle(
     const std::vector<OrientedPiNetwork>& networks,
-    const std::vector<std::size_t>& bundle) {
+    const PiNetworkBundle& bundle) {
     std::vector<OrientedPColumn> result;
-    for (const auto network_index:bundle) {
+    for (const auto network_index:bundle.networks) {
         if (network_index>=networks.size()) continue;
         const auto& network=networks[network_index];
         for (const auto atom:network.atoms) {
@@ -1357,6 +1778,114 @@ PiOrbitalSelection select_perpendicular_p_orbitals(
                 groups[group_index].orbitals.begin(),
                 groups[group_index].orbitals.end());
         }
+
+        auto full_rank_selection=[&](const std::vector<std::size_t>& selection) {
+            if (selection.size()!=target) return false;
+            double spin_weight=0.0;
+            for (const auto index:selection) {
+                if (result.weights[index]<0.12) return false;
+                spin_weight+=result.weights[index];
+            }
+            if (spin_weight/complete_weight[spin]<0.62) return false;
+            for (std::size_t p=0;p<target;++p) {
+                double atom_coverage=0.0;
+                for (const auto index:selection) {
+                    const double amplitude=result.projection[index][p];
+                    atom_coverage+=amplitude*amplitude;
+                }
+                if (atom_coverage<0.30) return false;
+            }
+            std::vector<std::vector<double>> residuals;
+            for (const auto index:selection) {
+                residuals.push_back(result.projection[index]);
+            }
+            for (std::size_t pivot=0;pivot<target;++pivot) {
+                std::size_t best=pivot;
+                double best_norm2=-1.0;
+                for (std::size_t candidate=pivot;candidate<target;++candidate) {
+                    const double norm2=std::inner_product(
+                        residuals[candidate].begin(),residuals[candidate].end(),
+                        residuals[candidate].begin(),0.0);
+                    if (norm2>best_norm2) {best_norm2=norm2;best=candidate;}
+                }
+                if (best_norm2<1.0e-3) return false;
+                std::swap(residuals[pivot],residuals[best]);
+                const double inverse=1.0/std::sqrt(best_norm2);
+                for (double& value:residuals[pivot]) value*=inverse;
+                for (std::size_t candidate=pivot+1u;candidate<target;++candidate) {
+                    const double projection=std::inner_product(
+                        residuals[pivot].begin(),residuals[pivot].end(),
+                        residuals[candidate].begin(),0.0);
+                    for (std::size_t p=0;p<target;++p) {
+                        residuals[candidate][p]-=projection*residuals[pivot][p];
+                    }
+                }
+            }
+            return true;
+        };
+
+        // A maximum-trace N-set can be rank deficient when bonding and
+        // antibonding character is distributed across nearby canonical MOs.
+        // Retry with a block-pivoted selection.  Exact degenerate groups remain
+        // indivisible, while the residual score depends only on their spanned
+        // subspace and is therefore invariant to rotations inside the block.
+        if (!full_rank_selection(spin_selection)) {
+            spin_selection.clear();
+            std::vector<std::vector<double>> basis;
+            std::set<std::size_t> used_groups;
+            while (spin_selection.size()<target) {
+                std::size_t best_group=groups.size();
+                double best_score=-1.0;
+                std::vector<std::vector<double>> best_vectors;
+                for (const auto group_index:candidates) {
+                    if (used_groups.count(group_index)!=0u) continue;
+                    const auto& orbitals=groups[group_index].orbitals;
+                    if (spin_selection.size()+orbitals.size()>target) continue;
+                    std::vector<std::vector<double>> trial;
+                    double score=0.0;
+                    bool independent=true;
+                    for (const auto index:orbitals) {
+                        auto residual=result.projection[index];
+                        for (const auto& vector:basis) {
+                            const double overlap=std::inner_product(
+                                vector.begin(),vector.end(),residual.begin(),0.0);
+                            for (std::size_t p=0;p<target;++p) {
+                                residual[p]-=overlap*vector[p];
+                            }
+                        }
+                        for (const auto& vector:trial) {
+                            const double overlap=std::inner_product(
+                                vector.begin(),vector.end(),residual.begin(),0.0);
+                            for (std::size_t p=0;p<target;++p) {
+                                residual[p]-=overlap*vector[p];
+                            }
+                        }
+                        const double norm2=std::inner_product(
+                            residual.begin(),residual.end(),residual.begin(),0.0);
+                        if (norm2<1.0e-8) {independent=false;break;}
+                        score+=norm2;
+                        const double inverse=1.0/std::sqrt(norm2);
+                        for (double& value:residual) value*=inverse;
+                        trial.push_back(std::move(residual));
+                    }
+                    if (!independent) continue;
+                    score+=0.01*groups[group_index].score;
+                    if (score>best_score+1.0e-12) {
+                        best_score=score;
+                        best_group=group_index;
+                        best_vectors=std::move(trial);
+                    }
+                }
+                if (best_group==groups.size()) break;
+                used_groups.insert(best_group);
+                spin_selection.insert(
+                    spin_selection.end(),groups[best_group].orbitals.begin(),
+                    groups[best_group].orbitals.end());
+                basis.insert(
+                    basis.end(),best_vectors.begin(),best_vectors.end());
+            }
+            if (!full_rank_selection(spin_selection)) return {};
+        }
         std::sort(spin_selection.begin(),spin_selection.end());
         if (spin_selection.size()!=target) return {};
         result.orbitals.insert(
@@ -1414,7 +1943,7 @@ PiOrbitalSelection select_perpendicular_p_orbitals(
                     best=candidate;
                 }
             }
-            if (best_norm2<0.04) return {};
+            if (best_norm2<1.0e-3) return {};
             std::swap(residuals[pivot],residuals[best]);
             result.minimum_pivot=std::min(result.minimum_pivot,best_norm2);
             const double inverse=1.0/std::sqrt(best_norm2);
@@ -1450,15 +1979,11 @@ void attach_planar_p_delocalised_families(
     const auto p_reference=atomic_valence_p_references(wf,raw);
     if (p_reference.size()<2u) return;
 
-    const auto networks=infer_oriented_pi_networks(
-        wf,pi_topology_bonded_pairs(wf));
+    const auto bonded_pairs=pi_topology_bonded_pairs(wf);
+    const auto networks=infer_oriented_pi_networks(wf,bonded_pairs);
     if (networks.empty()) return;
-    const auto bundles=pi_network_bundles(networks);
+    const auto bundles=pi_network_bundles(wf,networks,bonded_pairs);
     std::set<std::size_t> excluded;
-    for (std::size_t index=0;index<wf.orbitals.size();++index) {
-        const auto& label=wf.orbitals[index].chemistry.multicentre_label;
-        if (!label.empty() && label!="delocalised-pi") excluded.insert(index);
-    }
 
     for (std::size_t bundle_index=0;bundle_index<bundles.size();
          ++bundle_index) {
@@ -1482,8 +2007,7 @@ void attach_planar_p_delocalised_families(
                 conflict=true;
                 break;
             }
-            const auto& label=wf.orbitals[index].chemistry.multicentre_label;
-            if (!label.empty() && label!="delocalised-pi") {
+            if (!wf.orbitals[index].chemistry.delocalised_family_id.empty()) {
                 conflict=true;
                 break;
             }
@@ -1504,13 +2028,15 @@ void attach_planar_p_delocalised_families(
         double topology_confidence=0.0;
         double topology_coherence=0.0;
         bool cyclic=false;
-        for (const auto network_index:bundle) {
+        for (const auto network_index:bundle.networks) {
             topology_confidence+=networks[network_index].confidence;
             topology_coherence+=networks[network_index].orientation_coherence;
             cyclic=cyclic || networks[network_index].cyclic;
         }
-        topology_confidence/=static_cast<double>(bundle.size());
-        topology_coherence/=static_cast<double>(bundle.size());
+        topology_confidence/=
+            static_cast<double>(bundle.networks.size());
+        topology_coherence/=
+            static_cast<double>(bundle.networks.size());
 
         DelocalisedPiAssignment assignment;
         assignment.family_id=delocalised_pi_family_id(atoms,bundle_index);
@@ -1519,7 +2045,7 @@ void attach_planar_p_delocalised_families(
             assignment.orbitals.push_back(static_cast<std::uint32_t>(index));
         }
         assignment.electron_count=electrons;
-        for (const auto network_index:bundle) {
+        for (const auto network_index:bundle.networks) {
             PiOrientationChannel channel;
             channel.atoms=networks[network_index].atoms;
             channel.direction=networks[network_index].representative_direction;
@@ -1527,9 +2053,69 @@ void attach_planar_p_delocalised_families(
             channel.cyclic=networks[network_index].cyclic;
             assignment.orientation_channels.push_back(std::move(channel));
         }
+        if (bundle.haptic_metal) {
+            assignment.topology=DelocalisedPiTopology::HapticMetal;
+        } else if (bundle.symmetry_direct_sum) {
+            assignment.topology=DelocalisedPiTopology::SymmetryDirectSum;
+        } else if (bundle.spiro || bundle.networks.size()>1u) {
+            assignment.topology=DelocalisedPiTopology::Spiro;
+        } else if (cyclic) {
+            assignment.topology=DelocalisedPiTopology::Cycle;
+        } else {
+            std::map<std::uint32_t,std::size_t> degree;
+            for (const auto& edge:
+                 networks[bundle.networks.front()].edges) {
+                ++degree[edge.first];
+                ++degree[edge.second];
+            }
+            std::vector<std::uint32_t> branch_centres;
+            for (const auto& [atom,value]:degree) {
+                if (value>2u) branch_centres.push_back(atom);
+            }
+            assignment.topology=branch_centres.size()==1u
+                ?DelocalisedPiTopology::BranchedResonance
+                :DelocalisedPiTopology::Path;
+            if (branch_centres.size()==1u) {
+                for (std::size_t p=0u;p<requested.size();++p) {
+                    if (requested[p].atom!=branch_centres.front()) continue;
+                    struct SpinProjectedOccupation {
+                        double projected_electrons=0.0;
+                        double coverage=0.0;
+                    };
+                    std::map<Spin,SpinProjectedOccupation> by_spin;
+                    for (const auto orbital:selected.orbitals) {
+                        if (orbital>=selected.projection.size() ||
+                            p>=selected.projection[orbital].size()) continue;
+                        const double amplitude=
+                            selected.projection[orbital][p];
+                        const double weight=amplitude*amplitude;
+                        auto& projected=by_spin[wf.orbitals[orbital].spin];
+                        projected.coverage+=weight;
+                        projected.projected_electrons+=
+                            weight*static_cast<double>(
+                                wf.orbitals[orbital].occupation);
+                    }
+                    double projected_occupation=0.0;
+                    bool available=false;
+                    for (const auto& [spin,projected]:by_spin) {
+                        (void)spin;
+                        if (projected.coverage<=1.0e-10) continue;
+                        projected_occupation+=
+                            projected.projected_electrons/
+                            projected.coverage;
+                        available=true;
+                    }
+                    if (available) {
+                        assignment.branch_centre_projected_occupation=
+                            std::clamp(projected_occupation,0.0,2.0);
+                    }
+                    break;
+                }
+            }
+        }
         assignment.cyclic_topology=cyclic;
         assignment.plane_normal=
-            networks[bundle.front()].representative_direction;
+            networks[bundle.networks.front()].representative_direction;
         assignment.plane_rms_bohr=0.0;
         assignment.subspace_coverage=selected.coverage;
         assignment.confidence=std::clamp(
@@ -1538,7 +2124,8 @@ void attach_planar_p_delocalised_families(
             0.10*topology_confidence+0.10*topology_coherence,0.0,1.0);
         std::ostringstream rationale;
         rationale<<"connected locally oriented main-group valence-p network; "
-                 <<bundle.size()<<" orientation channel(s); full-rank "
+                 <<bundle.networks.size()
+                 <<" orientation channel(s); full-rank "
                  <<"S-metric active subspace; exact spin- and "
                  <<"degeneracy-preserving selection including virtual members";
         if (cyclic) rationale<<"; globally coherent cyclic p topology";
@@ -1549,17 +2136,19 @@ void attach_planar_p_delocalised_families(
         for (const auto index:selected.orbitals) {
             auto& chemistry=wf.orbitals[index].chemistry;
             chemistry.valence_manifold=true;
-            chemistry.multicentre_label="delocalised-pi";
             chemistry.family_symbol="pi";
-            chemistry.participating_atoms=atoms.size();
-            chemistry.participating_electrons=electrons;
-            chemistry.participating_atom_indices=atoms;
+            chemistry.delocalised_participating_atoms=atoms.size();
+            chemistry.delocalised_participating_electrons=electrons;
+            chemistry.delocalised_participating_atom_indices=atoms;
             chemistry.delocalised_family_orbitals=assignment.orbitals;
             chemistry.delocalised_family_id=assignment.family_id;
             chemistry.delocalised_orientation_channels=
                 assignment.orientation_channels.size();
             chemistry.delocalised_cyclic_topology=
                 assignment.cyclic_topology;
+            chemistry.delocalised_pi_confidence=std::max(
+                chemistry.delocalised_pi_confidence,
+                assignment.confidence);
             const double pi_weight=std::clamp(
                 selected.weights[index],0.0,1.0);
             chemistry.channel.sigma=0.0;
@@ -2016,6 +2605,24 @@ void derive_directed_three_centre_assignments(
         triples.insert(atoms);
     }
 
+    // The density-only bond-analysis pass intentionally records permissive
+    // three-atom *candidates*.  Its old strict occupation heuristic also left
+    // provisional assignments behind, which could label ordinary tetrahedral
+    // X-H/X-F fragments as 3c2e before geometry had been considered.  From
+    // this point onward only geometry-qualified assignments (or an explicitly
+    // identified shared bridge subspace) are authoritative.  Candidate
+    // triples remain available below for full directed S-metric validation.
+    wf.multicentre_assignments.erase(
+        std::remove_if(
+            wf.multicentre_assignments.begin(),
+            wf.multicentre_assignments.end(),
+            [](const MulticentreAssignment& assignment) {
+                return assignment.provenance==DataProvenance::Derived &&
+                    !assignment.geometry_qualified_framework &&
+                    assignment.source_subspace_id.empty();
+            }),
+        wf.multicentre_assignments.end());
+
     // Canonical orbitals can delocalise several symmetry-equivalent bridges
     // over one joint subspace (the two B-H-B bridges in diborane are the
     // standard example).  Recover geometry-qualified hydrogen bridges from
@@ -2137,6 +2744,7 @@ void derive_directed_three_centre_assignments(
             assignment.source_subspace_fraction=
                 1.0/static_cast<double>(bridges.size());
             assignment.confidence=confidence;
+            assignment.geometry_qualified_framework=true;
             assignment.rationale=
                 "geometry- and Mayer-qualified equivalent hydrogen bridges; "
                 "full-rank joint bridge-localised S-metric projector; shared "
@@ -2220,6 +2828,7 @@ void derive_directed_three_centre_assignments(
         assignment.confidence=std::clamp(
             0.50+0.30*selected.coverage+
             0.20*std::min(1.0,selected.minimum_atom_coverage),0.0,1.0);
+        assignment.geometry_qualified_framework=true;
         assignment.rationale=
             "geometry-qualified three-centre framework; full-rank directed "
             "minimal-valence S-metric subspace; exact degeneracy-preserving "
@@ -2263,14 +2872,17 @@ void attach_multicentre_assignments(Wavefunction& wf) {
             if (index>=wf.orbitals.size()) continue;
             auto& chemistry=wf.orbitals[index].chemistry;
             chemistry.multicentre_label=label;
-            chemistry.participating_atoms=participating_atoms.size();
-            chemistry.participating_electrons=participating_electrons;
-            chemistry.participating_atom_indices=participating_atoms;
+            chemistry.multicentre_participating_atoms=participating_atoms.size();
+            chemistry.multicentre_participating_electrons=participating_electrons;
+            chemistry.multicentre_participating_atom_indices=participating_atoms;
             chemistry.multicentre_channel_count=channel_count;
             chemistry.multicentre_source_subspace_id=
                 assignment.source_subspace_id;
             chemistry.multicentre_source_electron_count=
                 assignment.source_subspace_electron_count;
+            chemistry.multicentre_confidence=std::max(
+                chemistry.multicentre_confidence,
+                assignment.confidence);
             chemistry.family_symbol=family_symbol(chemistry.channel.dominant);
         }
     }
@@ -2307,6 +2919,16 @@ void generic_three_centre_fallback(Wavefunction& wf) {
     }
     if (supported<2) return;
 
+    ThreeCentreAtoms triple{centres[0],centres[1],centres[2]};
+    std::sort(triple.begin(),triple.end());
+    const auto middle=three_centre_middle(wf,triple);
+    bool linear=false;
+    bool hydrogen_bridge=false;
+    if (!three_centre_geometry_supported(
+            wf,triple,middle,linear,hydrogen_bridge)) {
+        return;
+    }
+
     std::string label;
     if (near(electrons,2.0,0.20)) label="3c2e";
     else if (near(electrons,4.0,0.20)) label="3c4e";
@@ -2315,9 +2937,11 @@ void generic_three_centre_fallback(Wavefunction& wf) {
         auto& chemistry=wf.orbitals[i].chemistry;
         if (!chemistry.multicentre_label.empty()) continue;
         chemistry.multicentre_label=label;
-        chemistry.participating_atoms=3u;
-        chemistry.participating_electrons=electrons;
-        chemistry.participating_atom_indices=centres;
+        chemistry.multicentre_participating_atoms=3u;
+        chemistry.multicentre_participating_electrons=electrons;
+        chemistry.multicentre_participating_atom_indices=centres;
+        chemistry.multicentre_confidence=std::min(
+            chemistry.confidence,0.45);
         chemistry.family_symbol="sigma";
     }
 }
@@ -2529,10 +3153,21 @@ void derive_orbital_chemistry(
         }
     }
 
+    // Directional valence-p projectors must first be block-orthogonal to all
+    // lower-n p core/semicore functions on the same atom.  Without this step,
+    // third-row valence references leak strongly into S 2p core MOs, so a
+    // chemically complete SO2/thiourea p space can never pass the valence
+    // selector even though the topology and canonical orbitals are correct.
+    const auto directional_raw=
+        core_orthogonalised_valence_p_reference(wf,raw);
+    // Directed X--Y--X three-centre references must retain the full raw
+    // valence-p span.  Same-atom core orthogonalisation is required for the
+    // planar pi selector below, but applying it here removes the symmetry-
+    // adapted terminal combinations of heavy 3c4e systems such as XeF2.
     derive_directed_three_centre_assignments(wf,raw,options);
     attach_multicentre_assignments(wf);
     generic_three_centre_fallback(wf);
-    attach_planar_p_delocalised_families(wf,raw,options);
+    attach_planar_p_delocalised_families(wf,directional_raw,options);
 }
 
 } // namespace cov

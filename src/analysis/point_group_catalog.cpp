@@ -36,9 +36,9 @@ constexpr std::array<std::string_view, 1> d5h_aliases{"D_5h"};
 constexpr std::array<std::string_view, 1> d5d_aliases{"D_5d"};
 constexpr std::array<std::string_view, 2> td_aliases{"T_d", "tetrahedral"};
 constexpr std::array<std::string_view, 2> oh_aliases{"O_h", "octahedral"};
-constexpr std::array<std::string_view, 5> dinfh_aliases{
+constexpr std::array<std::string_view, 6> dinfh_aliases{
     "D_inf_h", "D-infinity-h", "D_infinity_h", "D∞h",
-    "linear-centrosymmetric"};
+    "linear-centrosymmetric", "D*H"};
 
 constexpr std::array<IrrepDefinition, 1> c1_irreps{{{"A", 1}}};
 constexpr std::array<IrrepDefinition, 2> cs_irreps{{{"A'", 1}, {"A''", 1}}};

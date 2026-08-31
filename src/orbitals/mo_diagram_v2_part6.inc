@@ -33,6 +33,10 @@
             electron_glyphs_for_orbital(
                 wavefunction.orbitals[index],
                 data.frontier.separate_spin_sets);
+        level.member_indices={index};
+        level.member_electrons={level.electrons};
+        level.total_occupation=wavefunction.orbitals[index].occupation;
+        level.chemistry=wavefunction.orbitals[index].chemistry;
         level.homo = data.frontier.homo && *data.frontier.homo == index;
         level.lumo = data.frontier.lumo && *data.frontier.lumo == index;
         level.layout_energy_hartree =
@@ -103,47 +107,6 @@ std::string orbital_type_svg(const OrbitalAnnotation& annotation) {
     return out;
 }
 
-void write_svg_symmetry(std::ostream& out,
-                        const double x,
-                        const double y,
-                        const std::string& raw,
-                        const char* colour,
-                        const int font_size = 10) {
-    const SymmetryNotation notation = parse_symmetry_notation(raw);
-    if (notation.base.empty()) {
-        out << "<text x=\"" << x << "\" y=\"" << y
-            << "\" text-anchor=\"middle\" fill=\"" << colour
-            << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"" << font_size
-            << "\">N/A</text>\n";
-        return;
-    }
-
-    const double suffix_size = std::max(6.0, static_cast<double>(font_size) * 0.70);
-    const double base_width = std::max(1.0, static_cast<double>(notation.base.size())) *
-                              static_cast<double>(font_size) * 0.58;
-    const double suffix_width = std::max(notation.subscript.size(), notation.superscript.size()) *
-                                suffix_size * 0.55;
-    const double start_x = x - (base_width + suffix_width) * 0.5;
-    const double suffix_x = start_x + base_width + 0.5;
-
-    // Use separate text nodes instead of SVG baseline-shift. This renders
-    // consistently in browsers, CairoSVG and print/PDF pipelines while still
-    // giving textbook subscript/superscript placement.
-    out << "<text x=\"" << start_x << "\" y=\"" << y
-        << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\""
-        << font_size << "\">" << xml_escape(notation.base) << "</text>\n";
-    if (!notation.subscript.empty()) {
-        out << "<text x=\"" << suffix_x << "\" y=\"" << y + 3.5
-            << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\""
-            << suffix_size << "\">" << xml_escape(notation.subscript) << "</text>\n";
-    }
-    if (!notation.superscript.empty()) {
-        out << "<text x=\"" << suffix_x << "\" y=\"" << y - 5.0
-            << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\""
-            << suffix_size << "\">" << xml_escape(notation.superscript) << "</text>\n";
-    }
-}
-
 void write_svg_electron(std::ostream& out,
                         const double x,
                         const double level_anchor_y,
@@ -169,6 +132,18 @@ void write_svg_electron(std::ostream& out,
         << "\" stroke=\"#151d28\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n";
 }
 
+const char* svg_pi_topology_id(const DelocalisedPiTopology topology) noexcept {
+    switch (topology) {
+        case DelocalisedPiTopology::Path: return "path";
+        case DelocalisedPiTopology::Cycle: return "cycle";
+        case DelocalisedPiTopology::BranchedResonance: return "branched-resonance";
+        case DelocalisedPiTopology::Spiro: return "spiro";
+        case DelocalisedPiTopology::HapticMetal: return "haptic-metal";
+        case DelocalisedPiTopology::SymmetryDirectSum: return "symmetry-direct-sum";
+        default: return "unknown";
+    }
+}
+
 void write_svg_delocalised_pi(std::ostream& out,
                               const double x,
                               const double y,
@@ -178,13 +153,16 @@ void write_svg_delocalised_pi(std::ostream& out,
     const double base_x = x - 4.0;
     out << "<g data-pi-topology-available=\""
         << (pi.topology_available ? "true" : "false")
-        << "\" data-pi-orientation-channels=\"";
+        << "\" data-pi-topology=\"";
+    if (pi.topology_available) out << svg_pi_topology_id(pi.topology);
+    out << "\" data-pi-orientation-channels=\"";
     if (pi.topology_available) out << pi.orientation_channels;
     out << "\" data-pi-cyclic=\"";
     if (pi.topology_available) out << (pi.cyclic_topology ? "true" : "false");
     out << "\">\n<title>delocalised pi; ";
     if (pi.topology_available) {
-        out << pi.orientation_channels << " orientation channel(s); "
+        out << svg_pi_topology_id(pi.topology) << "; "
+            << pi.orientation_channels << " orientation channel(s); "
             << (pi.cyclic_topology ? "cyclic" : "non-cyclic");
     } else {
         out << "topology unavailable";
@@ -202,11 +180,11 @@ void write_svg_delocalised_pi(std::ostream& out,
             << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"7\">"
             << static_cast<int>(std::lround(pi.participating_electrons)) << "</text>\n";
     }
-    if (pi.topology_available) {
+    const std::string topology_suffix=compact_pi_topology_suffix(pi);
+    if (!topology_suffix.empty()) {
         out << "<text x=\"" << base_x + 16.0 << "\" y=\"" << y
             << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily
-            << "\" font-size=\"7\">" << pi.orientation_channels << "ch"
-            << (pi.cyclic_topology ? " C" : " L") << "</text>\n";
+            << "\" font-size=\"7\">" << topology_suffix << "</text>\n";
     }
     out << "</g>\n";
 }
@@ -291,10 +269,12 @@ bool write_mo_diagram_svg(const MODiagramData& data,
          << "\" height=\"" << height << "\" viewBox=\"0 0 "
          << width << ' ' << height << "\" data-diagram-row-count=\""
          << data.levels.size() << "\" data-pi-interaction-count=\""
-         << data.pi_interactions.size() << "\">\n";
+         << data.pi_interactions.size() << "\" data-diagram-mode=\""
+         << mo_diagram_mode_name(data.mode) << "\">\n";
     out << "<rect width=\"100%\" height=\"100%\" fill=\"#fbfcfe\"/>\n";
     out << "<text x=\"36\" y=\"40\" fill=\"#182231\" font-family=\"" << kSvgFontFamily << "\" "
-           "font-size=\"24\" font-weight=\"600\">Valence MO diagram</text>\n";
+           "font-size=\"24\" font-weight=\"600\">"
+        << xml_escape(mo_diagram_mode_title(data.mode)) << "</text>\n";
     out << "<text x=\"36\" y=\"64\" fill=\"#68778b\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"12\">" << xml_escape(data.selection.summary) << "</text>\n";
     out << "<text x=\"36\" y=\"82\" fill=\"#7f8c9c\" font-family=\"" << kSvgFontFamily << "\" "
@@ -335,6 +315,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         const double x0 = item.x - 45.0;
         const double x1 = item.x + 45.0;
         out << "<line class=\"mo-level\" data-row-index=\"" << row_index
+            << "\" data-symmetry=\"" << xml_escape(level.metadata.symmetry)
             << "\" x1=\"" << x0 << "\" y1=\"" << item.y
             << "\" x2=\"" << x1 << "\" y2=\"" << item.y
             << "\" stroke=\"" << colour << "\" stroke-width=\""
@@ -348,9 +329,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         out << "<text x=\"" << item.x << "\" y=\"" << item.y + 16
             << "\" text-anchor=\"middle\" fill=\"#435166\" font-family=\"" << kSvgFontFamily << "\" "
                "font-size=\"10\">" << xml_escape(orbital_type_svg(level.annotation)) << "</text>\n";
-        write_svg_symmetry(out, item.x, item.y + 29, level.metadata.symmetry, "#68778b", 9);
         if (level.annotation.delocalised_pi.available) {
-            write_svg_delocalised_pi(out, item.x, item.y + 42,
+            write_svg_delocalised_pi(out, item.x, item.y + 29,
                                      level.annotation.delocalised_pi, "#5b6575");
         }
     }

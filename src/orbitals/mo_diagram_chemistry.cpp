@@ -154,11 +154,13 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
 
     if (!chemistry.multicentre_label.empty()) {
         result.multicentre.available=true;
-        result.multicentre.centres=chemistry.participating_atoms;
-        result.multicentre.electrons=chemistry.participating_electrons;
+        result.multicentre.centres=
+            chemistry.multicentre_participating_atoms;
+        result.multicentre.electrons=
+            chemistry.multicentre_participating_electrons;
         result.multicentre.atom_indices.assign(
-            chemistry.participating_atom_indices.begin(),
-            chemistry.participating_atom_indices.end());
+            chemistry.multicentre_participating_atom_indices.begin(),
+            chemistry.multicentre_participating_atom_indices.end());
         result.multicentre.label=chemistry.multicentre_label;
         result.multicentre.channel_count=chemistry.multicentre_channel_count;
         result.multicentre.source_subspace_id=
@@ -166,37 +168,40 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
         result.multicentre.source_subspace_electron_count=
             chemistry.multicentre_source_electron_count;
         result.multicentre.source=AnnotationSource::Derived;
-        result.multicentre.confidence=chemistry.confidence;
+        result.multicentre.confidence=chemistry.multicentre_confidence;
         result.multicentre.heuristic=false;
     }
 
     if (chemistry.channel.dominant==OrbitalAngularFamily::Pi &&
-        chemistry.participating_atoms>1u &&
-        (!chemistry.delocalised_family_id.empty() ||
-         chemistry.multicentre_label=="delocalised-pi")) {
+        chemistry.delocalised_participating_atoms>1u &&
+        !chemistry.delocalised_family_id.empty()) {
         result.delocalised_pi.available=true;
         result.delocalised_pi.participating_atoms=
-            chemistry.participating_atoms;
+            chemistry.delocalised_participating_atoms;
         result.delocalised_pi.participating_electrons=
-            chemistry.participating_electrons;
+            chemistry.delocalised_participating_electrons;
         result.delocalised_pi.atom_indices.assign(
-            chemistry.participating_atom_indices.begin(),
-            chemistry.participating_atom_indices.end());
+            chemistry.delocalised_participating_atom_indices.begin(),
+            chemistry.delocalised_participating_atom_indices.end());
         result.delocalised_pi.orbital_indices.assign(
             chemistry.delocalised_family_orbitals.begin(),
             chemistry.delocalised_family_orbitals.end());
         result.delocalised_pi.family_id=
             chemistry.delocalised_family_id;
-        result.delocalised_pi.topology_available=true;
+        // The generic orbital-chemistry record only establishes pi-family
+        // membership.  A topology is authoritative only when a concrete
+        // DelocalisedPiAssignment is matched below.
+        result.delocalised_pi.topology_available=false;
         result.delocalised_pi.orientation_channels=
             chemistry.delocalised_orientation_channels;
         result.delocalised_pi.cyclic_topology=
             chemistry.delocalised_cyclic_topology;
         result.delocalised_pi.label=delocalised_pi_label(
-            chemistry.participating_atoms,
-            chemistry.participating_electrons);
+            chemistry.delocalised_participating_atoms,
+            chemistry.delocalised_participating_electrons);
         result.delocalised_pi.source=AnnotationSource::Derived;
-        result.delocalised_pi.confidence=chemistry.confidence;
+        result.delocalised_pi.confidence=
+            chemistry.delocalised_pi_confidence;
         result.delocalised_pi.heuristic=false;
     }
     result.heuristic=false;
@@ -1303,13 +1308,16 @@ GroupCandidate make_group_candidate(
     const std::vector<OrbitalAnnotation>& annotations,
     const std::vector<OrbitalLabel>& labels,
     const std::size_t base,
-    const LigandScope* scope) {
+    const LigandScope* scope,
+    const std::size_t forced_group_size=0u) {
     GroupCandidate candidate;
     candidate.base_index=base;
     if (base>=wavefunction.orbitals.size() || base>=metadata.size() ||
         base>=labels.size()) return candidate;
 
-    const std::size_t requested=std::max<std::size_t>(1u,labels[base].group_size);
+    const std::size_t requested=forced_group_size>0u
+        ?forced_group_size
+        :std::max<std::size_t>(1u,labels[base].group_size);
     const std::size_t end=std::min(wavefunction.orbitals.size(),base+requested);
     auto& level=candidate.level;
     level.metadata=metadata[base];
@@ -1493,17 +1501,46 @@ GroupCandidate make_group_candidate(
         }
     }
 
-    if (std::abs(level.metal_ligand_overlap)<
-        options.weak_metal_ligand_overlap) {
-        level.annotation.bonding_class=BondingClass::Nonbonding;
-    } else if (level.metal_ligand_overlap>0.0) {
-        level.annotation.bonding_class=BondingClass::Bonding;
-    } else {
-        level.annotation.bonding_class=BondingClass::Antibonding;
+    // This aggregate is specifically a central-metal/first-shell ligand
+    // descriptor.  Outside a resolved ligand scope the accumulated overlap is
+    // identically zero, which is absence of evidence rather than evidence for
+    // a nonbonding MO.  Preserve the per-orbital chemistry annotation in that
+    // case instead of manufacturing a 0%-confidence "nonbonding" label for
+    // ordinary main-group and deep-core orbitals.
+    const bool measured_metal_ligand_channel=
+        scope!=nullptr && scope->available && channel_weight>1.0e-10 &&
+        metal_valence>1.0e-6 &&
+        (level.direct_ligand_p_weight+level.ligand_p_weight)>1.0e-6;
+    if (measured_metal_ligand_channel) {
+        const double magnitude=std::abs(level.metal_ligand_overlap);
+        const double evidence=std::clamp(
+            channel_weight/(count*donor_count*0.08),0.0,1.0);
+        BondingClass proposed=BondingClass::Unclassified;
+        double proposed_confidence=0.0;
+        if (magnitude<options.weak_metal_ligand_overlap) {
+            proposed=BondingClass::Nonbonding;
+            proposed_confidence=evidence*std::clamp(
+                1.0-magnitude/std::max(
+                    1.0e-12,options.weak_metal_ligand_overlap),0.0,1.0);
+        } else if (level.metal_ligand_overlap>0.0) {
+            proposed=BondingClass::Bonding;
+            proposed_confidence=evidence*std::clamp(
+                magnitude/0.10,0.0,1.0);
+        } else {
+            proposed=BondingClass::Antibonding;
+            proposed_confidence=evidence*std::clamp(
+                magnitude/0.10,0.0,1.0);
+        }
+        // A categorical word at 0% confidence is worse than an honest UND.
+        // Only promote this aggregate descriptor once the measured evidence
+        // clears the same human-readable confidence floor used elsewhere.
+        if (proposed_confidence>=0.20 &&
+            proposed_confidence>=level.annotation.bonding_confidence) {
+            level.annotation.bonding_class=proposed;
+            level.annotation.bonding_confidence=proposed_confidence;
+            level.annotation.bonding_source=AnnotationSource::Derived;
+        }
     }
-    level.annotation.bonding_source=AnnotationSource::Derived;
-    level.annotation.bonding_confidence=std::clamp(
-        std::abs(level.metal_ligand_overlap)/0.10,0.0,1.0);
     return candidate;
 }
 
@@ -1689,6 +1726,7 @@ std::vector<RawPiPair> find_pi_pairs(
             pair.split=split;
             pair.confidence=std::clamp(
                 1.0-split/options.weak_pi_split_hartree,0.0,1.0);
+            if (pair.confidence<0.20) continue;
             pair.retained=a.metal_d_weight>=b.metal_d_weight?first:second;
             pair.symmetry=tetrahedral?"E/T2":"Eg/T2g";
             scored.push_back({pair,10.0+pair.confidence});
@@ -1722,6 +1760,12 @@ std::vector<RawPiPair> find_pi_pairs(
             upper.approximate_nonbonding=true;
             lower.annotation.bonding_class=BondingClass::Nonbonding;
             upper.annotation.bonding_class=BondingClass::Nonbonding;
+            lower.annotation.bonding_source=AnnotationSource::Derived;
+            upper.annotation.bonding_source=AnnotationSource::Derived;
+            lower.annotation.bonding_confidence=std::max(
+                lower.annotation.bonding_confidence,item.pair.confidence);
+            upper.annotation.bonding_confidence=std::max(
+                upper.annotation.bonding_confidence,item.pair.confidence);
             const std::size_t dropped=item.pair.retained==item.pair.lower
                 ?item.pair.upper:item.pair.lower;
             if (options.hide_ligand_centred_intermediates ||
@@ -1734,7 +1778,157 @@ std::vector<RawPiPair> find_pi_pairs(
     return result;
 }
 
+bool compact_pi_family_eligible(
+    const Wavefunction& wavefunction,
+    const DelocalisedPiAssignment& assignment) {
+    if (assignment.orbitals.empty()) return false;
+    if (assignment.atoms.size()<3u) return false;
+
+    // A fully occupied transverse ligand-p manifold in XeF2/I3-/XeF4 is not
+    // the active 3c sigma space and must not take over the compact diagram.
+    const bool has_virtual=std::any_of(
+        assignment.orbitals.begin(),assignment.orbitals.end(),
+        [&](const auto orbital) {
+            return orbital<wavefunction.orbitals.size() &&
+                !occupied(wavefunction.orbitals[orbital],0.05);
+        });
+    if (!has_virtual) return false;
+    switch (assignment.topology) {
+        case DelocalisedPiTopology::Path:
+        case DelocalisedPiTopology::Cycle:
+        case DelocalisedPiTopology::Spiro:
+        case DelocalisedPiTopology::HapticMetal:
+        case DelocalisedPiTopology::SymmetryDirectSum:
+            return true;
+        case DelocalisedPiTopology::BranchedResonance:
+            // A three-arm donor star and a four-centre resonance projector are
+            // graph- and electron-count-isomorphic.  Use the measured
+            // occupation of the centre's selected oriented-p column: weak
+            // BF3-like donation remains in the full valence view, whereas a
+            // genuinely occupied carbonate/nitrate/guanidinium centre is a
+            // useful pi focus.  The interval below 0.90 is intentionally the
+            // conservative side of the cross-family calibration rather than
+            // an element or molecule-name exception.
+            return assignment.branch_centre_projected_occupation>=0.90;
+        default:
+            return assignment.cyclic_topology;
+    }
+}
+
+std::set<std::size_t> compact_pi_family_indices(
+    const Wavefunction& wavefunction) {
+    std::set<std::size_t> result;
+    for (const auto& assignment:wavefunction.delocalised_pi_assignments) {
+        if (!compact_pi_family_eligible(wavefunction,assignment)) continue;
+        for (const auto orbital:assignment.orbitals) {
+            if (orbital<wavefunction.orbitals.size()) result.insert(orbital);
+        }
+    }
+    return result;
+}
+
+std::set<std::size_t> compact_multicentre_indices(
+    const Wavefunction& wavefunction) {
+    std::set<std::size_t> result;
+    std::set<std::string> seen_subspaces;
+    const auto conjugated_pi=compact_pi_family_indices(wavefunction);
+    for (const auto& assignment:wavefunction.multicentre_assignments) {
+        if (assignment.orbitals.empty() ||
+            assignment.provenance==DataProvenance::Unavailable) continue;
+        const bool shared_bridge_subspace=
+            !assignment.source_subspace_id.empty();
+        if (!assignment.geometry_qualified_framework &&
+            !shared_bridge_subspace) {
+            continue;
+        }
+        // Generic three-centre fallback can overlap a complete conjugated-pi
+        // projector (acrolein is a real example).  Such an overlap is one
+        // active space described twice, so pi wins.  Genuine axial 3c4e sets
+        // in XeF2/I3- are disjoint from their fully occupied transverse p
+        // manifold, and equivalent bridge channels carry an explicit shared
+        // source id, so both retain multicentre priority without name rules.
+        const bool overlaps_conjugated_pi=std::any_of(
+            assignment.orbitals.begin(),assignment.orbitals.end(),
+            [&](const auto orbital){return conjugated_pi.count(orbital)!=0u;});
+        if (overlaps_conjugated_pi && !shared_bridge_subspace) {
+            continue;
+        }
+        if (shared_bridge_subspace &&
+            !seen_subspaces.insert(assignment.source_subspace_id).second) {
+            continue;
+        }
+        for (const auto orbital:assignment.orbitals) {
+            if (orbital<wavefunction.orbitals.size()) result.insert(orbital);
+        }
+    }
+    return result;
+}
+
+std::set<std::size_t> compact_active_indices(
+    const Wavefunction& wavefunction,
+    const MODiagramMode mode) {
+    if (mode==MODiagramMode::DelocalisedPiFamilyOnly) {
+        return compact_pi_family_indices(wavefunction);
+    }
+    if (mode==MODiagramMode::MulticentreActiveSpaceOnly) {
+        return compact_multicentre_indices(wavefunction);
+    }
+    return {};
+}
+
 } // namespace
+
+const char* mo_diagram_mode_name(const MODiagramMode mode) noexcept {
+    switch (mode) {
+        case MODiagramMode::DelocalisedPiFamilyOnly:
+            return "delocalised-pi-family-only";
+        case MODiagramMode::MulticentreActiveSpaceOnly:
+            return "multicentre-active-space-only";
+        default:
+            return "valence-central";
+    }
+}
+
+const char* mo_diagram_mode_title(const MODiagramMode mode) noexcept {
+    switch (mode) {
+        case MODiagramMode::DelocalisedPiFamilyOnly:
+            return "Delocalised pi MO diagram";
+        case MODiagramMode::MulticentreActiveSpaceOnly:
+            return "Multicentre active-space MO diagram";
+        default:
+            return "Valence MO diagram";
+    }
+}
+
+MODiagramMode preferred_compact_mo_diagram_mode(
+    const Wavefunction& wavefunction,
+    const bool compact) noexcept {
+    if (!compact) return MODiagramMode::ValenceCentral;
+    try {
+        const bool haptic_pi_focus=std::any_of(
+            wavefunction.delocalised_pi_assignments.begin(),
+            wavefunction.delocalised_pi_assignments.end(),
+            [&](const auto& assignment) {
+                return assignment.topology==
+                           DelocalisedPiTopology::HapticMetal &&
+                       compact_pi_family_eligible(wavefunction,assignment);
+            });
+        if (haptic_pi_focus) {
+            return MODiagramMode::DelocalisedPiFamilyOnly;
+        }
+        if (analyse_ligand_field_environment(wavefunction).available()) {
+            return MODiagramMode::ValenceCentral;
+        }
+        if (!compact_multicentre_indices(wavefunction).empty()) {
+            return MODiagramMode::MulticentreActiveSpaceOnly;
+        }
+        return compact_pi_family_indices(wavefunction).empty()
+            ?MODiagramMode::ValenceCentral
+            :MODiagramMode::DelocalisedPiFamilyOnly;
+    } catch (...) {
+        return MODiagramMode::ValenceCentral;
+    }
+}
 
 const char* pi_interaction_kind_name(const PiInteractionKind kind) noexcept {
     switch (kind) {
@@ -1763,13 +1957,36 @@ DiagramSelectionPlan build_valence_selection_plan(
     }
 
     DiagramSelectionPlan plan;
+    if (options.mode==MODiagramMode::DelocalisedPiFamilyOnly ||
+        options.mode==MODiagramMode::MulticentreActiveSpaceOnly) {
+        const auto family=compact_active_indices(wavefunction,options.mode);
+        plan.included_indices.assign(family.begin(),family.end());
+        plan.hidden_count=metadata.size()>plan.included_indices.size()
+            ?metadata.size()-plan.included_indices.size():0u;
+        for (const auto index:plan.included_indices) {
+            if (index>=wavefunction.orbitals.size()) continue;
+            if (occupied(wavefunction.orbitals[index],
+                         options.filter.occupation_threshold)) {
+                ++plan.valence_occupied_count;
+            } else {
+                ++plan.frontier_virtual_count;
+            }
+        }
+        plan.summary=plan.included_indices.empty()
+            ?"compact active space unavailable; valence fallback required"
+            :(options.mode==MODiagramMode::DelocalisedPiFamilyOnly
+                ?"complete delocalised pi family only"
+                :"complete multicentre active space only");
+        return plan;
+    }
     const LigandFieldEnvironment ligand_field=
         analyse_ligand_field_environment(wavefunction);
     const LigandScope ligand_scope=make_ligand_scope(
         wavefunction,ligand_field);
     const LigandScope* scope=ligand_scope.available?&ligand_scope:nullptr;
     const auto labels=build_orbital_labels(
-        wavefunction.orbitals,options.degeneracy);
+        wavefunction.orbitals,
+        point_group_limited_degeneracy(wavefunction,options.degeneracy));
     const auto frontier=find_frontier_orbitals(
         wavefunction.orbitals,options.filter.occupation_threshold);
     std::vector<std::size_t> cation_frontier;
@@ -1866,6 +2083,16 @@ DiagramSelectionPlan build_valence_selection_plan(
 MODiagramData build_mo_diagram_data(
     const Wavefunction& wavefunction,
     const MODiagramOptions& options) {
+    if ((options.mode==MODiagramMode::DelocalisedPiFamilyOnly ||
+         options.mode==MODiagramMode::MulticentreActiveSpaceOnly) &&
+        compact_active_indices(wavefunction,options.mode).empty()) {
+        MODiagramOptions fallback=options;
+        fallback.mode=MODiagramMode::ValenceCentral;
+        auto data=build_mo_diagram_data(wavefunction,fallback);
+        data.selection.summary=
+            "compact active space unavailable; "+data.selection.summary;
+        return data;
+    }
     if (!chemistry_available(wavefunction)) {
         auto data=build_mo_diagram_data_legacy(wavefunction,options);
         attach_local_geometry_metadata(wavefunction,data);
@@ -1874,7 +2101,7 @@ MODiagramData build_mo_diagram_data(
     }
 
     MODiagramData data;
-    data.mode=MODiagramMode::ValenceCentral;
+    data.mode=options.mode;
     data.plan=choose_diagram_plan(wavefunction);
     data.plan.machine_reason=
         "COV S-metric minimal atomic chemical-valence reference";
@@ -1917,7 +2144,9 @@ MODiagramData build_mo_diagram_data(
             auto& pi=data.annotations[orbital].delocalised_pi;
             if (!pi.available || pi.family_id!=assignment.family_id) continue;
             pi.topology_available=
-                assignment.provenance!=DataProvenance::Unavailable;
+                assignment.provenance!=DataProvenance::Unavailable &&
+                assignment.topology!=DelocalisedPiTopology::Unknown;
+            pi.topology=assignment.topology;
             pi.orientation_channels=assignment.orientation_channels.size();
             pi.cyclic_topology=assignment.cyclic_topology;
             pi.orientation_channel_details=assignment.orientation_channels;
@@ -1927,7 +2156,8 @@ MODiagramData build_mo_diagram_data(
     data.selection=build_valence_selection_plan(
         wavefunction,options,data.metadata);
     const auto labels=build_orbital_labels(
-        wavefunction.orbitals,options.degeneracy);
+        wavefunction.orbitals,
+        point_group_limited_degeneracy(wavefunction,options.degeneracy));
     std::vector<GroupCandidate> groups;
     groups.reserve(wavefunction.orbitals.size());
     for (std::size_t base=0;base<wavefunction.orbitals.size();) {
@@ -1938,6 +2168,26 @@ MODiagramData build_mo_diagram_data(
         const std::size_t step=base<labels.size()
             ?std::max<std::size_t>(1u,labels[base].group_size):1u;
         base+=step;
+    }
+
+    const bool active_space_mode=
+        options.mode==MODiagramMode::DelocalisedPiFamilyOnly ||
+        options.mode==MODiagramMode::MulticentreActiveSpaceOnly;
+    const auto compact_family=active_space_mode
+        ?compact_active_indices(wavefunction,options.mode)
+        :std::set<std::size_t>{};
+    if (active_space_mode) {
+        for (auto& group:groups) {
+            group.include=std::any_of(
+                group.level.member_indices.begin(),
+                group.level.member_indices.end(),
+                [&](const auto member){
+                    return compact_family.count(member)!=0u;
+                });
+            group.selected_by_reference=group.include;
+            group.selected_by_raw=false;
+            group.level.raw_data_fallback=false;
+        }
     }
 
     if (ligand_field.available()) {
@@ -2002,9 +2252,129 @@ MODiagramData build_mo_diagram_data(
         }
     }
 
-    const auto raw_pairs=find_pi_pairs(
-        wavefunction,groups,options,data.ligand_field_point_group,
-        ligand_scope.available?&ligand_scope:nullptr);
+    if (active_space_mode) {
+        // Degeneracy grouping is a display convenience, never permission to
+        // enlarge a chemically selected active space. Rebuild every retained
+        // row from exact family members after local-irrep recovery and spin
+        // collapse. This preserves valid grouping inside the family while an
+        // accidentally near-degenerate outsider cannot leak to screen or
+        // PNG/SVG/JSON/CSV exports.
+        const auto no_counterpart=std::numeric_limits<std::size_t>::max();
+        for (auto& group:groups) {
+            const GroupCandidate original=group;
+            std::vector<std::size_t> members;
+            for (const auto member:original.level.member_indices) {
+                if (compact_family.count(member)!=0u) members.push_back(member);
+            }
+            if (members.empty()) {
+                group.include=false;
+                continue;
+            }
+
+            GroupCandidate exact;
+            bool initialised=false;
+            for (const auto member:members) {
+                auto singleton=make_group_candidate(
+                    wavefunction,options,data.frontier,data.metadata,
+                    data.annotations,labels,member,
+                    ligand_scope.available?&ligand_scope:nullptr,1u);
+                if (!initialised) {
+                    exact=std::move(singleton);
+                    initialised=true;
+                } else {
+                    exact=merge_local_groups(wavefunction,exact,singleton);
+                }
+            }
+
+            exact.level.member_electrons.clear();
+            exact.level.member_spin_counterparts.clear();
+            exact.level.total_occupation=0.0;
+            for (const auto member:members) {
+                const auto found=std::find(
+                    original.level.member_indices.begin(),
+                    original.level.member_indices.end(),member);
+                const auto position=static_cast<std::size_t>(std::distance(
+                    original.level.member_indices.begin(),found));
+                const auto counterpart=
+                    found!=original.level.member_indices.end() &&
+                    position<original.level.member_spin_counterparts.size()
+                        ?original.level.member_spin_counterparts[position]
+                        :no_counterpart;
+                if (counterpart!=no_counterpart &&
+                    compact_family.count(counterpart)!=0u &&
+                    position<original.level.member_electrons.size()) {
+                    exact.level.member_electrons.push_back(
+                        original.level.member_electrons[position]);
+                    exact.level.member_spin_counterparts.push_back(counterpart);
+                    exact.level.total_occupation+=
+                        static_cast<double>(wavefunction.orbitals[member].occupation)+
+                        static_cast<double>(wavefunction.orbitals[counterpart].occupation);
+                } else {
+                    exact.level.member_electrons.push_back(
+                        electron_glyphs_for_orbital(
+                            wavefunction.orbitals[member],
+                            data.frontier.separate_spin_sets));
+                    exact.level.member_spin_counterparts.push_back(
+                        no_counterpart);
+                    exact.level.total_occupation+=static_cast<double>(
+                        wavefunction.orbitals[member].occupation);
+                }
+            }
+            exact.level.metadata.occupation=static_cast<float>(
+                exact.level.total_occupation/static_cast<double>(
+                    std::max<std::size_t>(1u,members.size())));
+            if (!exact.level.member_electrons.empty()) {
+                exact.level.electrons=exact.level.member_electrons.front();
+            }
+            const auto original_symmetry=normalised_symmetry(
+                original.level.metadata.symmetry);
+            if (!original_symmetry.empty() && original_symmetry!="?" &&
+                original_symmetry!="n/a") {
+                exact.level.metadata.symmetry=
+                    original.level.metadata.symmetry;
+            }
+            exact.include=original.include;
+            exact.selected_by_reference=original.selected_by_reference;
+            exact.selected_by_raw=false;
+            exact.suppressed_spin_counterpart=
+                original.suppressed_spin_counterpart;
+            exact.locally_grouped=members.size()>1u &&
+                original.locally_grouped;
+            exact.local_irrep_copy=original.local_irrep_copy;
+            exact.locally_classified=original.locally_classified;
+            group=std::move(exact);
+        }
+    }
+
+    std::vector<RawPiPair> raw_pairs;
+    if (!active_space_mode) {
+        raw_pairs=find_pi_pairs(
+            wavefunction,groups,options,data.ligand_field_point_group,
+            ligand_scope.available?&ligand_scope:nullptr);
+    } else {
+        // Pair detection may enrich labels and, in the ordinary valence view,
+        // deliberately brings both sides of a ligand-field interaction into
+        // view.  A requested family/active-space diagram has a stricter
+        // membership contract: run pairing on a copy, then retain only pairs
+        // whose two rows were already members of that exact active space.
+        // Thus neither screen nor export can leak an unrelated MO into a
+        // pi-only or multicentre-only diagram.
+        auto paired_groups=groups;
+        const auto candidates=find_pi_pairs(
+            wavefunction,paired_groups,options,data.ligand_field_point_group,
+            ligand_scope.available?&ligand_scope:nullptr);
+        for (const auto& pair:candidates) {
+            if (pair.lower>=groups.size() || pair.upper>=groups.size() ||
+                !groups[pair.lower].include || !groups[pair.upper].include) {
+                continue;
+            }
+            groups[pair.lower]=std::move(paired_groups[pair.lower]);
+            groups[pair.upper]=std::move(paired_groups[pair.upper]);
+            groups[pair.lower].include=true;
+            groups[pair.upper].include=true;
+            raw_pairs.push_back(pair);
+        }
+    }
     for (const auto& pair:raw_pairs) {
         for (const auto group_index:{pair.lower,pair.upper}) {
             if (group_index>=groups.size()) continue;
@@ -2035,8 +2405,12 @@ MODiagramData build_mo_diagram_data(
         :std::clamp<std::size_t>(2u*options.neighbourhood+1u,10u,48u);
     std::vector<bool> essential(groups.size(),false);
     for (std::size_t group=0;group<groups.size();++group) {
-        essential[group]=!options.hide_ligand_centred_intermediates &&
-                         groups[group].level.metadata.selected;
+        essential[group]=
+            (options.mode==MODiagramMode::DelocalisedPiFamilyOnly ||
+             options.mode==MODiagramMode::MulticentreActiveSpaceOnly)
+                ?groups[group].include
+                :(!options.hide_ligand_centred_intermediates &&
+                  groups[group].level.metadata.selected);
         for (const auto member:groups[group].level.member_indices) {
             if (member>=wavefunction.orbitals.size()) continue;
             const auto& orbital=wavefunction.orbitals[member];
@@ -2214,6 +2588,8 @@ MODiagramData build_mo_diagram_data(
         });
         const std::size_t available=row_budget>essential_count
             ?row_budget-essential_count:0u;
+        data.selection.protected_overflow_count=
+            essential_count>row_budget?essential_count-row_budget:0u;
         for (std::size_t i=0;i<std::min(available,ranked.size());++i) {
             groups[ranked[i].index].include=true;
         }
@@ -2268,7 +2644,11 @@ MODiagramData build_mo_diagram_data(
         data.spin_counterpart_pair_count>0u &&
         data.spin_counterpart_unmatched_visible>0u;
     std::ostringstream summary;
-    summary<<"ligand-field valence groups: "<<data.levels.size()
+    summary<<(options.mode==MODiagramMode::DelocalisedPiFamilyOnly
+              ?"delocalised pi family groups: "
+              :(options.mode==MODiagramMode::MulticentreActiveSpaceOnly
+                  ?"multicentre active-space groups: "
+                  :"ligand-field valence groups: "))<<data.levels.size()
            <<"; local field="<<(data.ligand_field_point_group.empty()
                  ?"unresolved":data.ligand_field_point_group)
            <<"; geometry="<<(data.ligand_field_geometry_id.empty()
@@ -2281,6 +2661,8 @@ MODiagramData build_mo_diagram_data(
            <<", unmatched-visible="<<data.spin_counterpart_unmatched_visible
            <<')'
            <<"; pi pairs="<<data.pi_interactions.size()
+           <<"; protected row overflow="
+           <<data.selection.protected_overflow_count
            <<"; raw-MO recovered groups="<<raw_groups
            <<"; intermediate groups hidden="<<hidden_intermediate_count
            <<"; degeneracies collapsed";

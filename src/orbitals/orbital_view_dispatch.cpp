@@ -1,7 +1,9 @@
 #include "cov/orbital_view.hpp"
 #include "cov/ligand_field.hpp"
+#include "cov/point_group_catalog.hpp"
 
 #include <algorithm>
+#include <cctype>
 
 namespace cov {
 
@@ -37,6 +39,39 @@ bool occupied(const MolecularOrbital& orbital,const double threshold) {
 }
 
 } // namespace
+
+DegeneracySettings point_group_limited_degeneracy(
+    const Wavefunction& wavefunction,
+    DegeneracySettings settings) {
+    const auto* definition=find_point_group(wavefunction.point_group_detected);
+    std::size_t group_maximum=0u;
+    if (definition==nullptr || definition->irreps.empty()) {
+        // Gaussian writes the heteronuclear linear group as C*V.  It is not a
+        // finite catalogue entry, but its Sigma/Pi/Delta irreps have the same
+        // one- or two-dimensional ceiling as Dinfh.  Applying that ceiling is
+        // enough to keep two nearby Pi copies from becoming a fake quartet.
+        std::string compact;
+        compact.reserve(wavefunction.point_group_detected.size());
+        for (const unsigned char character:wavefunction.point_group_detected) {
+            if (!std::isspace(character) && character!='_' && character!='-') {
+                compact.push_back(static_cast<char>(std::toupper(character)));
+            }
+        }
+        if (compact=="C*V" || compact=="CINFV") {
+            group_maximum=2u;
+        }
+    } else {
+        for (const auto& irrep:definition->irreps) {
+            group_maximum=std::max<std::size_t>(
+                group_maximum,irrep.dimension);
+        }
+    }
+    if (group_maximum==0u) return settings;
+    settings.maximum_group_size=settings.maximum_group_size==0u
+        ?group_maximum
+        :std::min(settings.maximum_group_size,group_maximum);
+    return settings;
+}
 
 bool confidently_deep_core_orbital(
     const MolecularOrbital& orbital,
@@ -123,8 +158,10 @@ std::vector<OrbitalMetadata> build_orbital_metadata(
     const std::size_t selected_index,
     const DegeneracySettings& degeneracy,
     const OrbitalFilterSettings& filter) {
+    const auto effective_degeneracy=point_group_limited_degeneracy(
+        wavefunction,degeneracy);
     auto result=build_orbital_metadata_legacy(
-        wavefunction,selected_index,degeneracy,filter);
+        wavefunction,selected_index,effective_degeneracy,filter);
     const auto frontier=find_frontier_orbitals(
         wavefunction.orbitals,filter.occupation_threshold);
     for (std::size_t i=0;i<result.size();++i) {
@@ -145,7 +182,7 @@ std::vector<OrbitalMetadata> build_orbital_metadata(
         (filter.mode==OrbitalFilterMode::AutoReasonable ||
          filter.mode==OrbitalFilterMode::Valence)) {
         const auto labels=build_orbital_labels(
-            wavefunction.orbitals,degeneracy);
+            wavefunction.orbitals,effective_degeneracy);
         const auto retain_group=[&](const std::optional<std::size_t>& seed) {
             if (!seed || *seed>=labels.size()) return;
             const std::size_t begin=*seed-labels[*seed].group_member_index;

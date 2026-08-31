@@ -221,6 +221,10 @@ std::vector<OrbitalLabel> build_orbital_labels(
     while (begin < orbitals.size()) {
         std::size_t end = begin + 1;
         while (end < orbitals.size()) {
+            if (settings.maximum_group_size > 0u &&
+                end - begin >= settings.maximum_group_size) {
+                break;
+            }
             const auto& first = orbitals[begin];
             const auto& current = orbitals[end];
             if (settings.require_same_spin && current.spin != first.spin) break;

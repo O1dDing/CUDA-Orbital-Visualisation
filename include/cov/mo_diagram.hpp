@@ -3,6 +3,7 @@
 #include "cov/model.hpp"
 #include "cov/orbital_view.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <filesystem>
 #include <string>
@@ -13,7 +14,23 @@ namespace cov {
 
 enum class MODiagramMode {
     ValenceCentral = 0,
+    DelocalisedPiFamilyOnly,
+    MulticentreActiveSpaceOnly,
 };
+
+// Stable machine and human labels shared by the live view and every export
+// format.  The built diagram is authoritative because a requested compact
+// mode may legitimately fall back to the valence view when no active space is
+// supported by the wavefunction.
+[[nodiscard]] const char* mo_diagram_mode_name(MODiagramMode mode) noexcept;
+[[nodiscard]] const char* mo_diagram_mode_title(MODiagramMode mode) noexcept;
+
+// Compact main-group conjugated systems are clearer as their complete
+// delocalised-pi active space.  Transition-metal ligand-field cases retain the
+// valence-central diagram even if a ligand happens to contain a pi family.
+[[nodiscard]] MODiagramMode preferred_compact_mo_diagram_mode(
+    const Wavefunction& wavefunction,
+    bool compact) noexcept;
 
 enum class EnergyAxisMode {
     Linear = 0,
@@ -86,6 +103,7 @@ struct DelocalisedPiDescriptor {
     // separate claim: parsed producer labels can establish the family without
     // establishing channel directions or cyclicity.
     bool topology_available = false;
+    DelocalisedPiTopology topology = DelocalisedPiTopology::Unknown;
     std::size_t orientation_channels = 0;
     bool cyclic_topology = false;
     std::vector<PiOrientationChannel> orientation_channel_details;
@@ -94,6 +112,28 @@ struct DelocalisedPiDescriptor {
     double confidence = 0.0;
     bool heuristic = false;
 };
+
+// The same compact topology suffix is used by the live diagram and bitmap/
+// vector exports. An empty suffix means that the family is known but a
+// concrete topology is not.
+[[nodiscard]] inline const char* compact_pi_topology_code(
+    const DelocalisedPiTopology topology) noexcept {
+    switch (topology) {
+        case DelocalisedPiTopology::Path: return "P";
+        case DelocalisedPiTopology::Cycle: return "C";
+        case DelocalisedPiTopology::BranchedResonance: return "B";
+        case DelocalisedPiTopology::Spiro: return "S";
+        case DelocalisedPiTopology::HapticMetal: return "H";
+        case DelocalisedPiTopology::SymmetryDirectSum: return "D";
+        default: return "?";
+    }
+}
+[[nodiscard]] inline std::string compact_pi_topology_suffix(
+    const DelocalisedPiDescriptor& descriptor) {
+    if (!descriptor.topology_available) return {};
+    return std::to_string(descriptor.orientation_channels)+"ch "+
+           compact_pi_topology_code(descriptor.topology);
+}
 
 struct OrbitalAnnotation {
     // Machine-friendly canonical family names: sigma / pi / delta / phi / unavailable.
@@ -123,6 +163,10 @@ struct DiagramSelectionPlan {
     std::size_t hidden_count = 0;
     std::size_t valence_occupied_count = 0;
     std::size_t frontier_virtual_count = 0;
+    // Complete protected manifolds may legitimately exceed the visual row
+    // target. This records only that unavoidable excess; it is never a
+    // licence to keep arbitrary unprotected rows.
+    std::size_t protected_overflow_count = 0;
     std::string summary;
 };
 
@@ -212,6 +256,24 @@ struct MODiagramLevel {
     bool raw_data_fallback = false;
     bool approximate_nonbonding = false;
 };
+
+// One visible row may represent an exactly-degenerate canonical-MO set and,
+// after UDFT spatial collapse, its matched opposite-spin counterparts.
+[[nodiscard]] inline bool mo_diagram_level_covers_orbital(
+    const MODiagramLevel& level,
+    const std::size_t orbital_index) noexcept {
+    if (std::find(level.member_indices.begin(),level.member_indices.end(),
+                  orbital_index)!=level.member_indices.end()) {
+        return true;
+    }
+    if (std::find(level.member_spin_counterparts.begin(),
+                  level.member_spin_counterparts.end(),orbital_index)!=
+            level.member_spin_counterparts.end()) {
+        return true;
+    }
+    return level.member_indices.empty() &&
+           level.metadata.orbital_index==orbital_index;
+}
 
 struct LocalGeometryDiagramDescriptor {
     std::size_t centre_atom = 0;

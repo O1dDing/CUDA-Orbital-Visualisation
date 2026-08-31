@@ -9,6 +9,21 @@ const char* machine_bonding_class(const BondingClass value) noexcept {
     }
 }
 
+const char* machine_pi_topology(
+    const DelocalisedPiTopology value) noexcept {
+    switch (value) {
+        case DelocalisedPiTopology::Path: return "path";
+        case DelocalisedPiTopology::Cycle: return "cycle";
+        case DelocalisedPiTopology::BranchedResonance:
+            return "branched-resonance";
+        case DelocalisedPiTopology::Spiro: return "spiro";
+        case DelocalisedPiTopology::HapticMetal: return "haptic-metal";
+        case DelocalisedPiTopology::SymmetryDirectSum:
+            return "symmetry-direct-sum";
+        default: return "unknown";
+    }
+}
+
 const char* machine_scf_status(const ScfConvergenceStatus value) noexcept {
     switch (value) {
         case ScfConvergenceStatus::Converged: return "converged";
@@ -152,7 +167,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
                                    data.selection.included_indices.end());
     out << "{\n";
     out << "  \"schema\": \"cov.mo-diagram.v2\",\n";
-    out << "  \"mode\": \"valence-central\",\n";
+    out << "  \"mode\": \"" << mo_diagram_mode_name(data.mode) << "\",\n";
     out << "  \"strict_salc_claimed\": false,\n";
     out << "  \"energy_unit\": \"" << json_escape(energy_unit_symbol(options.energy_unit)) << "\",\n";
     out << "  \"energy_axis_mode\": \"" << energy_axis_mode_name(options.energy_axis_mode) << "\",\n";
@@ -333,7 +348,13 @@ bool write_mo_diagram_json(const MODiagramData& data,
             << pi.participating_electrons
             << ",\"topology_available\":"
             << (pi.topology_available ? "true" : "false")
-            << ",\"orientation_channels\":";
+            << ",\"topology\":";
+        if (pi.topology_available) {
+            out << '"' << machine_pi_topology(pi.topology) << '"';
+        } else {
+            out << "null";
+        }
+        out << ",\"orientation_channels\":";
         if (pi.topology_available) out << pi.orientation_channels;
         else out << "null";
         out << ",\"cyclic_topology\":";
@@ -416,6 +437,14 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << "      \"delocalised_pi_participating_electrons\": " << annotation.delocalised_pi.participating_electrons << ",\n";
         out << "      \"delocalised_pi_topology_available\": "
             << (annotation.delocalised_pi.topology_available ? "true" : "false") << ",\n";
+        out << "      \"delocalised_pi_topology\": ";
+        if (annotation.delocalised_pi.topology_available) {
+            out << '"' << machine_pi_topology(
+                annotation.delocalised_pi.topology) << '"';
+        } else {
+            out << "null";
+        }
+        out << ",\n";
         out << "      \"delocalised_pi_orientation_channels\": ";
         if (annotation.delocalised_pi.topology_available) {
             out << annotation.delocalised_pi.orientation_channels;
@@ -462,7 +491,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
     }
     std::set<std::size_t> included(data.selection.included_indices.begin(),
                                    data.selection.included_indices.end());
-    out << "index,raw_mo,label,energy_hartree,energy_display,energy_unit,display_coordinate,"
+    out << "diagram_mode,index,raw_mo,label,energy_hartree,energy_display,energy_unit,display_coordinate,"
            "energy_axis_mode,transform_name,symmetry,symmetry_display,occupation,spin,"
            "degeneracy_size,region,included_in_diagram,visible,selected,orbital_family,"
            "family_source,family_confidence,bonding_class,bonding_source,bonding_confidence,"
@@ -474,7 +503,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "local_point_group,local_geometry_id,local_geometry_name,local_coordination_number,"
            "local_metal_atom_index,local_ligand_atom_indices,local_confidence,local_angular_rms,"
            "local_shape_measure,local_radial_cv,diagram_row_count,pi_interaction_count,"
-           "pi_interactions,delocalised_pi_topology_available,"
+           "pi_interactions,delocalised_pi_topology_available,delocalised_pi_topology,"
            "delocalised_pi_orientation_channels,delocalised_pi_cyclic_topology,"
            "delocalised_pi_orientation_channel_details,local_geometry_count,"
            "local_geometries,wavefunction_source,charge,charge_provenance,"
@@ -496,7 +525,8 @@ bool write_mo_diagram_csv(const MODiagramData& data,
         const auto& annotation = i < data.annotations.size() ? data.annotations[i] : OrbitalAnnotation{};
         const double coordinate = energy_display_coordinate(
             group_layout_energy(data.metadata, i), data.energy_transform);
-        out << item.orbital_index << ',' << item.raw_mo_number << ','
+        out << mo_diagram_mode_name(data.mode) << ','
+            << item.orbital_index << ',' << item.raw_mo_number << ','
             << csv_escape(item.display_label) << ',' << std::setprecision(14) << item.energy_hartree << ','
             << convert_hartree(item.energy_hartree, options.energy_unit) << ','
             << csv_escape(energy_unit_symbol(options.energy_unit)) << ',' << coordinate << ','
@@ -535,6 +565,10 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             << data.pi_interactions.size() << ','
             << csv_escape(pi_interactions) << ','
             << (annotation.delocalised_pi.topology_available ? 1 : 0) << ',';
+        if (annotation.delocalised_pi.topology_available) {
+            out << machine_pi_topology(annotation.delocalised_pi.topology);
+        }
+        out << ',';
         if (annotation.delocalised_pi.topology_available) {
             out << annotation.delocalised_pi.orientation_channels << ','
                 << (annotation.delocalised_pi.cyclic_topology ? 1 : 0);

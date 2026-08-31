@@ -87,6 +87,53 @@ int main() {
     }
     degeneracy.require_compatible_symmetry = true;
 
+    const std::vector<cov::MolecularOrbital> adjacent_doublets = {
+        mo(-1.0000000, 2.0f, cov::Spin::Alpha, ""),
+        mo(-0.9999999, 2.0f, cov::Spin::Alpha, ""),
+        mo(-0.9999992, 2.0f, cov::Spin::Alpha, ""),
+        mo(-0.9999991, 2.0f, cov::Spin::Alpha, ""),
+    };
+    degeneracy.maximum_group_size = 2u;
+    const auto capped_labels = cov::build_orbital_labels(
+        adjacent_doublets, degeneracy);
+    if (capped_labels[0].group_size != 2u ||
+        capped_labels[1].group_base_number != 1u ||
+        capped_labels[2].group_size != 2u ||
+        capped_labels[2].group_base_number != 3u) {
+        std::cerr << "point-group degeneracy ceiling failed\n";
+        return 18;
+    }
+    degeneracy.maximum_group_size = 0u;
+
+    cov::Wavefunction linear_wavefunction;
+    linear_wavefunction.point_group_detected="D*H";
+    if (cov::point_group_limited_degeneracy(
+            linear_wavefunction,degeneracy).maximum_group_size!=2u) {
+        std::cerr << "Gaussian D*H degeneracy ceiling failed\n";
+        return 19;
+    }
+    linear_wavefunction.point_group_detected="C*V";
+    if (cov::point_group_limited_degeneracy(
+            linear_wavefunction,degeneracy).maximum_group_size!=2u) {
+        std::cerr << "Gaussian C*V degeneracy ceiling failed\n";
+        return 20;
+    }
+    cov::Wavefunction octahedral_wavefunction;
+    octahedral_wavefunction.point_group_detected="Oh";
+    degeneracy.maximum_group_size=6u;
+    if (cov::point_group_limited_degeneracy(
+            octahedral_wavefunction,degeneracy).maximum_group_size!=3u) {
+        std::cerr<<"point-group ceiling did not constrain a looser user cap\n";
+        return 21;
+    }
+    degeneracy.maximum_group_size=2u;
+    if (cov::point_group_limited_degeneracy(
+            octahedral_wavefunction,degeneracy).maximum_group_size!=2u) {
+        std::cerr<<"point-group ceiling did not preserve a stricter user cap\n";
+        return 22;
+    }
+    degeneracy.maximum_group_size=0u;
+
     const auto frontier = cov::find_frontier_orbitals(orbitals);
     if (!frontier.homo || *frontier.homo != 3 || !frontier.lumo || *frontier.lumo != 4) {
         std::cerr << "frontier detection failed\n";

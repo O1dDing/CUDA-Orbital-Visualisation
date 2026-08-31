@@ -2,6 +2,7 @@
 #include "cov/ligand_field.hpp"
 #include "cov/local_orbital_symmetry.hpp"
 #include "cov/molecule_style.hpp"
+#include "cov/pi_topology.hpp"
 #include "cov/point_group_catalog.hpp"
 #include "cov/wavefunction_io.hpp"
 
@@ -12,6 +13,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <set>
 #include <sstream>
@@ -733,6 +735,25 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
     const auto data=cov::build_mo_diagram_data(wf,options);
     const auto browser_metadata=cov::build_orbital_metadata(
         wf,options.selected_index,options.degeneracy,options.filter);
+    if (wf.delocalised_pi_assignments.empty()) {
+        std::vector<std::pair<std::uint32_t,std::uint32_t>> topology_edges;
+        for (const auto& bond:cov::analyse_bonds(wf)) {
+            topology_edges.emplace_back(
+                static_cast<std::uint32_t>(bond.atom_a),
+                static_cast<std::uint32_t>(bond.atom_b));
+        }
+        const auto networks=cov::infer_oriented_pi_networks(
+            wf,topology_edges);
+        std::cout<<"  diagnostic-pi-networks="<<networks.size();
+        for (const auto& network:networks) {
+            std::cout<<" [atoms=";
+            for (const auto atom:network.atoms) std::cout<<atom+1u<<',';
+            std::cout<<" edges="<<network.edges.size()
+                     <<" cyclic="<<network.cyclic
+                     <<" coherence="<<network.orientation_coherence<<']';
+        }
+        std::cout<<'\n';
+    }
     std::cout<<"DIAGNOSTIC "<<path.filename().string()
              <<" point-group="<<wf.point_group_detected
              <<" alpha="<<wf.alpha_electrons
@@ -749,6 +770,10 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
              <<" spin-pairs="<<data.spin_counterpart_pair_count
              <<" spin-unmatched="<<data.spin_counterpart_unmatched_visible
              <<" pi-pairs="<<data.pi_interactions.size()<<'\n';
+    if (!wf.orbitals.empty() && !wf.orbitals.front().chemistry.available) {
+        std::cout<<"  diagnostic-chemistry-unavailable: "
+                 <<wf.orbitals.front().chemistry.note<<'\n';
+    }
     std::cout<<"  diagnostic-first-shell metal="<<data.ligand_field_metal_atom;
     for (const auto atom:data.ligand_field_ligand_atoms) {
         if (atom<wf.atoms.size()) {
@@ -774,8 +799,9 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
         const auto& level=data.levels[i];
         std::cout<<"  diagnostic-row "<<i
                  <<" MO"<<level.metadata.raw_mo_number
-                 <<" spin="<<static_cast<int>(
-                        wf.orbitals[level.member_indices.front()].spin)
+                 <<" spin="<<(level.member_indices.empty()
+                        ?-1:static_cast<int>(
+                            wf.orbitals[level.member_indices.front()].spin))
                  <<" sym="<<level.metadata.symmetry
                  <<" deg="<<level.member_indices.size()
                  <<" E="<<level.layout_energy_hartree
@@ -810,12 +836,12 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
             return false;
         }
     }
-    const std::size_t row_budget=std::clamp<std::size_t>(
-        2u*options.neighbourhood+1u,10u,48u);
-    if (data.levels.size()>row_budget ||
-        data.levels.size()>=data.selection.included_indices.size()) {
+    const std::size_t row_budget=options.max_levels>0u
+        ?std::max<std::size_t>(4u,options.max_levels)
+        :std::clamp<std::size_t>(2u*options.neighbourhood+1u,10u,48u);
+    if (data.levels.size()>data.selection.included_indices.size()) {
         std::cerr<<path.filename().string()
-                 <<": valence reduction did not reduce the raw MO set\n";
+                 <<": valence reduction produced an invalid row set\n";
         return false;
     }
     // Producer-derived ligand-field manifolds can be complete without using
@@ -823,8 +849,117 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
     // recovery path, not a correctness requirement for every fixture.
     auto compact_options=options;
     compact_options.hide_ligand_centred_intermediates=true;
+    compact_options.mode=cov::preferred_compact_mo_diagram_mode(wf,true);
     const auto compact=cov::build_mo_diagram_data(wf,compact_options);
+    const std::size_t actual_overflow=compact.levels.size()>row_budget
+        ?compact.levels.size()-row_budget:0u;
+    if (compact.levels.size()>compact.selection.included_indices.size() ||
+        compact.selection.protected_overflow_count!=actual_overflow) {
+        std::cerr<<path.filename().string()
+                 <<": compact row budget/protected-overflow contract failed\n";
+        return false;
+    }
+    if ((compact_options.mode==cov::MODiagramMode::DelocalisedPiFamilyOnly ||
+         compact_options.mode==cov::MODiagramMode::MulticentreActiveSpaceOnly) &&
+        compact.levels.empty()) {
+        std::cerr<<path.filename().string()
+                 <<": preferred active-space mode produced no rows\n";
+        return false;
+    }
     const std::string filename=path.filename().string();
+    auto pi_contract=[&](const std::size_t atoms,
+                         const std::size_t channels,
+                         const std::size_t orbitals,
+                         const cov::DelocalisedPiTopology topology,
+                         const double electrons) {
+        return std::any_of(
+            wf.delocalised_pi_assignments.begin(),
+            wf.delocalised_pi_assignments.end(),
+            [&](const auto& assignment) {
+                return assignment.atoms.size()==atoms &&
+                       assignment.orientation_channels.size()==channels &&
+                       assignment.orbitals.size()==orbitals &&
+                       assignment.topology==topology &&
+                       std::abs(assignment.electron_count-electrons)<0.25;
+            });
+    };
+    auto require_pi_mode=[&](const bool expected,const char* contract) {
+        const bool actual=compact.mode==
+            cov::MODiagramMode::DelocalisedPiFamilyOnly;
+        if (actual==expected) return true;
+        std::cerr<<filename<<": "<<contract<<" compact-mode contract failed\n";
+        return false;
+    };
+    if (filename.find("057_hexatriene")!=std::string::npos &&
+        (!require_pi_mode(true,"conjugated path") ||
+         !pi_contract(6u,1u,6u,cov::DelocalisedPiTopology::Path,6.0))) {
+        std::cerr<<filename<<": complete path pi family missing\n";
+        return false;
+    }
+    if ((filename.find("086_carbonate")!=std::string::npos ||
+         filename.find("087_nitrate")!=std::string::npos ||
+         filename.find("117_guanidinium")!=std::string::npos) &&
+        (!require_pi_mode(true,"branched resonance") ||
+         !pi_contract(4u,1u,4u,
+             cov::DelocalisedPiTopology::BranchedResonance,6.0))) {
+        std::cerr<<filename<<": occupied branched-resonance family missing\n";
+        return false;
+    }
+    if ((filename.find("029_bf3")!=std::string::npos ||
+         filename.find("039_xef4")!=std::string::npos) &&
+        !require_pi_mode(false,"donor/full ligand-p star")) {
+        return false;
+    }
+    if (filename.find("069_spiropentadiene")!=std::string::npos &&
+        (!require_pi_mode(true,"orthogonal spiro") ||
+         !pi_contract(4u,2u,4u,
+             cov::DelocalisedPiTopology::Spiro,4.0))) {
+        std::cerr<<filename<<": orthogonal spiro direct-sum family missing\n";
+        return false;
+    }
+    if (filename.find("092_ferrocene")!=std::string::npos &&
+        (!require_pi_mode(true,"haptic-metal") ||
+         !pi_contract(10u,2u,10u,
+             cov::DelocalisedPiTopology::HapticMetal,12.0))) {
+        std::cerr<<filename<<": joint eta5-Cp active subspace missing\n";
+        return false;
+    }
+    if (filename.find("133_tetrakis_pentafluorophenyl_borate")!=
+            std::string::npos &&
+        (!require_pi_mode(true,"multi-ring direct sum") ||
+         !pi_contract(24u,4u,24u,
+             cov::DelocalisedPiTopology::SymmetryDirectSum,24.0))) {
+        std::cerr<<filename<<": four-ring pi direct sum missing\n";
+        return false;
+    }
+    if (filename.find("001_so2")!=std::string::npos &&
+        (!require_pi_mode(true,"SO2 valence-p") ||
+         !pi_contract(3u,1u,3u,cov::DelocalisedPiTopology::Path,4.0))) {
+        std::cerr<<filename<<": S-core-orthogonal SO2 family missing\n";
+        return false;
+    }
+    if (filename.find("006_thiourea")!=std::string::npos &&
+        (!require_pi_mode(true,"thiourea valence-p") ||
+         !pi_contract(4u,1u,4u,
+             cov::DelocalisedPiTopology::BranchedResonance,6.0))) {
+        std::cerr<<filename<<": S-core-orthogonal thiourea family missing\n";
+        return false;
+    }
+    if ((filename.find("009_urea_planar_start")!=std::string::npos ||
+         filename.find("010_urea_nonplanar_start")!=std::string::npos) &&
+        (!require_pi_mode(true,"optimised urea") ||
+         !pi_contract(4u,1u,4u,
+             cov::DelocalisedPiTopology::BranchedResonance,6.0))) {
+        std::cerr<<filename<<": optimised urea pi family missing\n";
+        return false;
+    }
+    if ((filename.find("090_feco5")!=std::string::npos ||
+         filename.find("091_crco6")!=std::string::npos) &&
+        (!wf.delocalised_pi_assignments.empty() ||
+         compact.mode!=cov::MODiagramMode::ValenceCentral)) {
+        std::cerr<<filename<<": separate CO ligands were bundled as one pi family\n";
+        return false;
+    }
     const std::size_t encoded_coordination_number=
         coordination_number_encoded_in_filename(filename);
     if (encoded_coordination_number>0u &&
@@ -901,6 +1036,7 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
                  <<" ML="<<level.metal_ligand_overlap<<'\n';
     }
     std::cout<<"COMPACT "<<path.filename().string()
+             <<" mode="<<cov::mo_diagram_mode_name(compact.mode)
              <<" geometry="<<compact.ligand_field_geometry_id
              <<" CN="<<compact.ligand_field_coordination_number
              <<" point-group="<<compact.ligand_field_point_group
@@ -1467,6 +1603,72 @@ int main(int argc,char** argv) {
     if (!validate_equal_count_unrestricted_collapse()) return 13;
     if (!validate_general_spin_counterpart_matching()) return 19;
 
+    // A modern main-group row has no central-metal/ligand scope.  Zero in the
+    // metal-ligand accumulator is therefore unavailable evidence, not a
+    // 0%-confidence nonbonding classification.
+    {
+        cov::Wavefunction main_group;
+        main_group.atoms.push_back({"C",6,0.0,0.0,0.0});
+        cov::MolecularOrbital valence;
+        valence.energy_hartree=-0.45;
+        valence.occupation=2.0f;
+        valence.chemistry.available=true;
+        valence.chemistry.valence_manifold=true;
+        valence.chemistry.valence_weight=1.0;
+        main_group.orbitals.push_back(std::move(valence));
+        cov::MODiagramOptions main_group_options;
+        const auto main_group_data=cov::build_mo_diagram_data(
+            main_group,main_group_options);
+        if (main_group_data.levels.size()!=1u ||
+            main_group_data.levels.front().annotation.bonding_class!=
+                cov::BondingClass::Unclassified ||
+            main_group_data.levels.front().annotation.bonding_confidence!=0.0) {
+            std::cerr<<"unavailable metal-ligand evidence became nonbonding\n";
+            return 21;
+        }
+    }
+
+    // One canonical MO may contribute to both a geometry-qualified/generic
+    // multicentre subspace and a wider delocalised-pi family.  Their atom and
+    // electron counts are independent evidence and must never overwrite one
+    // another (the real acrolein fixture exercises this overlap).
+    {
+        cov::MolecularOrbital overlap;
+        auto& chemistry=overlap.chemistry;
+        chemistry.available=true;
+        chemistry.confidence=0.88;
+        chemistry.channel.dominant=cov::OrbitalAngularFamily::Pi;
+        chemistry.channel.status=cov::ChemistryStatus::Determined;
+        chemistry.multicentre_label="3c2e";
+        chemistry.multicentre_participating_atoms=3u;
+        chemistry.multicentre_participating_electrons=2.0;
+        chemistry.multicentre_participating_atom_indices={0u,1u,3u};
+        chemistry.multicentre_confidence=0.61;
+        chemistry.delocalised_family_id="pi-overlap";
+        chemistry.delocalised_family_orbitals={1u,3u,5u,6u};
+        chemistry.delocalised_participating_atoms=4u;
+        chemistry.delocalised_participating_electrons=4.0;
+        chemistry.delocalised_participating_atom_indices={0u,1u,2u,3u};
+        chemistry.delocalised_pi_confidence=0.93;
+        const auto annotation=cov::annotate_orbital(overlap);
+        if (!annotation.multicentre.available ||
+            annotation.multicentre.centres!=3u ||
+            std::abs(annotation.multicentre.electrons-2.0)>1.0e-8 ||
+            annotation.multicentre.atom_indices!=
+                std::vector<std::size_t>{0u,1u,3u} ||
+            std::abs(annotation.multicentre.confidence-0.61)>1.0e-8 ||
+            !annotation.delocalised_pi.available ||
+            annotation.delocalised_pi.participating_atoms!=4u ||
+            std::abs(annotation.delocalised_pi.participating_electrons-4.0)>
+                1.0e-8 ||
+            annotation.delocalised_pi.atom_indices!=
+                std::vector<std::size_t>{0u,1u,2u,3u} ||
+            std::abs(annotation.delocalised_pi.confidence-0.93)>1.0e-8) {
+            std::cerr<<"multicentre/pi overlap metadata was conflated\n";
+            return 22;
+        }
+    }
+
     cov::Wavefunction wf;
     wf.atoms.resize(4);
 
@@ -1544,10 +1746,284 @@ int main(int argc,char** argv) {
         return 6;
     }
 
-    const auto temp = std::filesystem::temp_directory_path() /
-                      "cov_mo_diagram_smoke.fchk";
-    const auto normalised_temp = std::filesystem::temp_directory_path() /
-                                 "cov_mo_diagram_smoke";
+    // Compact active-space modes contain exactly the derived family members;
+    // changing the MO inspected in 3-D must not change the compact row set.
+    {
+        cov::Wavefunction active;
+        for (int i=0;i<4;++i) {
+            cov::Atom atom;
+            atom.symbol="C";
+            atom.atomic_number=6;
+            atom.x=2.5*static_cast<double>(i);
+            active.atoms.push_back(atom);
+        }
+        for (std::size_t i=0;i<6u;++i) {
+            cov::MolecularOrbital orbital;
+            orbital.energy_hartree=-0.6+0.18*static_cast<double>(i);
+            orbital.occupation=i<3u?2.0f:0.0f;
+            orbital.chemistry.available=true;
+            orbital.chemistry.valence_manifold=true;
+            orbital.chemistry.valence_weight=0.9;
+            active.orbitals.push_back(std::move(orbital));
+        }
+        for (std::uint32_t i=0;i<3u;++i) {
+            cov::BondOrderRecord bond;
+            bond.atom_a=i;
+            bond.atom_b=i+1u;
+            bond.mayer_order=1.0;
+            active.bond_orders.push_back(bond);
+        }
+        active.bond_order_provenance=cov::DataProvenance::Derived;
+        cov::DelocalisedPiAssignment pi;
+        pi.atoms={0u,1u,2u,3u};
+        pi.orbitals={1u,3u,5u};
+        pi.electron_count=2.0;
+        pi.topology=cov::DelocalisedPiTopology::Path;
+        pi.provenance=cov::DataProvenance::Derived;
+        active.delocalised_pi_assignments.push_back(pi);
+        cov::MulticentreAssignment generic_fallback;
+        generic_fallback.kind=cov::MulticentreKind::ThreeCentreTwoElectron;
+        generic_fallback.atoms={0u,1u,2u};
+        generic_fallback.orbitals={1u,4u,5u};
+        generic_fallback.electron_count=2.0;
+        generic_fallback.provenance=cov::DataProvenance::Derived;
+        generic_fallback.rationale=
+            "unique three-orbital active subspace; generic fallback";
+        active.multicentre_assignments.push_back(generic_fallback);
+        if (cov::preferred_compact_mo_diagram_mode(active,true)!=
+            cov::MODiagramMode::DelocalisedPiFamilyOnly) {
+            std::cerr<<"pi compact mode was not selected\n";
+            return 30;
+        }
+        cov::MODiagramOptions compact;
+        compact.mode=cov::MODiagramMode::DelocalisedPiFamilyOnly;
+        compact.hide_ligand_centred_intermediates=true;
+        compact.selected_index=0u;
+        const auto first=cov::build_mo_diagram_data(active,compact);
+        compact.selected_index=4u;
+        const auto second=cov::build_mo_diagram_data(active,compact);
+        const std::vector<std::size_t> expected_pi{1u,3u,5u};
+        if (first.mode!=cov::MODiagramMode::DelocalisedPiFamilyOnly ||
+            first.selection.included_indices!=expected_pi ||
+            second.selection.included_indices!=expected_pi ||
+            first.levels.size()!=3u || second.levels.size()!=3u) {
+            std::cerr<<"pi compact family membership or selection invariance failed\n";
+            return 31;
+        }
+
+        auto mixed_degeneracy=active;
+        mixed_degeneracy.point_group_detected="C3V";
+        mixed_degeneracy.orbitals[1].energy_hartree=-0.24;
+        mixed_degeneracy.orbitals[2].energy_hartree=-0.24;
+        mixed_degeneracy.orbitals[1].symmetry="E";
+        mixed_degeneracy.orbitals[2].symmetry="E";
+        mixed_degeneracy.orbitals[1].symmetry_provenance=
+            cov::DataProvenance::Producer;
+        mixed_degeneracy.orbitals[2].symmetry_provenance=
+            cov::DataProvenance::Producer;
+        const auto exact=cov::build_mo_diagram_data(
+            mixed_degeneracy,compact);
+        std::vector<std::size_t> exact_rows;
+        for (const auto& level:exact.levels) {
+            exact_rows.insert(exact_rows.end(),level.member_indices.begin(),
+                              level.member_indices.end());
+        }
+        std::sort(exact_rows.begin(),exact_rows.end());
+        if (exact_rows!=expected_pi ||
+            std::any_of(exact.levels.begin(),exact.levels.end(),
+                [](const auto& level) {
+                    return std::find(level.member_indices.begin(),
+                                     level.member_indices.end(),2u)!=
+                           level.member_indices.end();
+                })) {
+            std::cerr<<"near-degenerate outsider leaked into compact family rows\n";
+            return 38;
+        }
+        const auto exact_json=std::filesystem::temp_directory_path()/
+            "cov_exact_active_membership.json";
+        std::string exact_error;
+        if (!cov::write_mo_diagram_json(
+                exact,compact,exact_json,&exact_error)) {
+            std::cerr<<"exact active-space JSON export failed: "
+                     <<exact_error<<'\n';
+            return 39;
+        }
+        std::ifstream exact_json_file(exact_json,std::ios::binary);
+        std::ostringstream exact_json_buffer;
+        exact_json_buffer<<exact_json_file.rdbuf();
+        const auto exact_json_text=exact_json_buffer.str();
+        std::error_code exact_ec;
+        std::filesystem::remove(exact_json,exact_ec);
+        if (exact_json_text.find("\"member_orbitals\":[1,2]")!=
+                std::string::npos ||
+            exact_json_text.find("\"member_orbitals\":[1]")==
+                std::string::npos) {
+            std::cerr<<"compact JSON diagram rows leaked a family outsider\n";
+            return 40;
+        }
+
+        // Exact-family rebuilding happens after unrestricted alpha/beta
+        // spatial-row collapse.  The compact row must retain the matched beta
+        // occupation and local symmetry as well as the two arrow glyphs.
+        auto active_spin=synthetic_spin_matching_wavefunction(2u,"C2v");
+        active_spin.atoms.resize(3u);
+        for (std::size_t atom=0u;atom<active_spin.atoms.size();++atom) {
+            active_spin.atoms[atom].symbol="C";
+            active_spin.atoms[atom].atomic_number=6;
+            active_spin.atoms[atom].x=2.5*static_cast<double>(atom);
+        }
+        add_spin_matching_orbital(
+            active_spin,cov::Spin::Alpha,-0.20,"A1",{1.0f,0.0f},1);
+        add_spin_matching_orbital(
+            active_spin,cov::Spin::Alpha, 0.10,"B1",{0.0f,1.0f},1);
+        add_spin_matching_orbital(
+            active_spin,cov::Spin::Beta,-0.19,"A1",{1.0f,0.0f},1);
+        add_spin_matching_orbital(
+            active_spin,cov::Spin::Beta, 0.11,"B1",{0.0f,1.0f},1);
+        active_spin.orbitals[1].occupation=0.0f;
+        active_spin.orbitals[3].occupation=0.0f;
+        active_spin.alpha_electrons=1u;
+        active_spin.beta_electrons=1u;
+        for (std::uint32_t atom=0u;atom<2u;++atom) {
+            cov::BondOrderRecord bond;
+            bond.atom_a=atom;
+            bond.atom_b=atom+1u;
+            bond.mayer_order=1.0;
+            active_spin.bond_orders.push_back(bond);
+        }
+        active_spin.bond_order_provenance=cov::DataProvenance::Derived;
+        cov::DelocalisedPiAssignment spin_pi;
+        spin_pi.family_id="udft-pi-family";
+        spin_pi.atoms={0u,1u,2u};
+        spin_pi.orbitals={0u,1u,2u,3u};
+        spin_pi.electron_count=2.0;
+        spin_pi.topology=cov::DelocalisedPiTopology::Path;
+        spin_pi.provenance=cov::DataProvenance::Derived;
+        active_spin.delocalised_pi_assignments.push_back(spin_pi);
+        const auto spin_compact=cov::build_mo_diagram_data(
+            active_spin,compact);
+        const auto occupied_spatial=std::find_if(
+            spin_compact.levels.begin(),spin_compact.levels.end(),
+            [](const auto& level) {
+                return !level.member_indices.empty() &&
+                       level.member_indices.front()==0u;
+            });
+        if (!spin_compact.spin_counterparts_collapsed ||
+            occupied_spatial==spin_compact.levels.end() ||
+            occupied_spatial->member_spin_counterparts.size()!=1u ||
+            occupied_spatial->member_spin_counterparts.front()!=2u ||
+            occupied_spatial->electrons.alpha!=1 ||
+            occupied_spatial->electrons.beta!=1 ||
+            std::abs(occupied_spatial->total_occupation-2.0)>1.0e-6 ||
+            std::abs(occupied_spatial->metadata.occupation-2.0f)>1.0e-6f ||
+            occupied_spatial->metadata.symmetry!="A1") {
+            std::cerr<<"UDFT compact row lost beta occupation or symmetry\n";
+            return 41;
+        }
+
+        active.delocalised_pi_assignments.clear();
+        active.multicentre_assignments.clear();
+        active.multicentre_assignments.push_back(generic_fallback);
+        if (cov::preferred_compact_mo_diagram_mode(active,true)!=
+            cov::MODiagramMode::ValenceCentral) {
+            std::cerr<<"generic three-centre candidate incorrectly selected "
+                       "multicentre-only mode\n";
+            return 32;
+        }
+        active.multicentre_assignments.clear();
+        cov::MulticentreAssignment multicentre;
+        multicentre.kind=cov::MulticentreKind::ThreeCentreFourElectron;
+        multicentre.atoms={0u,1u,2u};
+        multicentre.orbitals={0u,2u,4u};
+        multicentre.electron_count=4.0;
+        multicentre.provenance=cov::DataProvenance::Derived;
+        multicentre.source_subspace_id="synthetic-3c4e";
+        multicentre.geometry_qualified_framework=true;
+        multicentre.rationale=
+            "geometry-qualified three-centre framework; synthetic fixture";
+        active.multicentre_assignments.push_back(multicentre);
+        if (cov::preferred_compact_mo_diagram_mode(active,true)!=
+            cov::MODiagramMode::MulticentreActiveSpaceOnly) {
+            std::cerr<<"multicentre compact mode was not selected\n";
+            return 33;
+        }
+        compact.mode=cov::MODiagramMode::MulticentreActiveSpaceOnly;
+        const auto mc=cov::build_mo_diagram_data(active,compact);
+        const std::vector<std::size_t> expected_mc{0u,2u,4u};
+        if (mc.selection.included_indices!=expected_mc || mc.levels.size()!=3u) {
+            std::cerr<<"multicentre compact membership failed\n";
+            return 34;
+        }
+
+        // A non-cyclic, star-shaped ligand p family is not an automatic pi
+        // focus.  This protects BF3/XeF4-like main-group geometries.
+        active.multicentre_assignments.clear();
+        active.bond_orders.clear();
+        active.atoms[0].x=0.0; active.atoms[0].y=0.0;
+        active.atoms[1].x=2.5; active.atoms[1].y=0.0;
+        active.atoms[2].x=-1.25; active.atoms[2].y=2.165063509461;
+        active.atoms[3].x=-1.25; active.atoms[3].y=-2.165063509461;
+        for (std::uint32_t leaf=1u;leaf<4u;++leaf) {
+            cov::BondOrderRecord bond;
+            bond.atom_a=0u;
+            bond.atom_b=leaf;
+            bond.mayer_order=1.0;
+            active.bond_orders.push_back(bond);
+        }
+        active.delocalised_pi_assignments.push_back(pi);
+        active.delocalised_pi_assignments.back().topology=
+            cov::DelocalisedPiTopology::BranchedResonance;
+        active.delocalised_pi_assignments.back().
+            branch_centre_projected_occupation=0.78;
+        if (cov::preferred_compact_mo_diagram_mode(active,true)!=
+            cov::MODiagramMode::ValenceCentral) {
+            std::cerr<<"star-shaped p family incorrectly selected pi-only mode\n";
+            return 35;
+        }
+        active.delocalised_pi_assignments.back().
+            branch_centre_projected_occupation=1.10;
+        if (cov::preferred_compact_mo_diagram_mode(active,true)!=
+            cov::MODiagramMode::DelocalisedPiFamilyOnly) {
+            std::cerr<<"electronically occupied resonance star was not focused\n";
+            return 36;
+        }
+
+        // Haptic pi chemistry takes precedence over a geometrically available
+        // metal first shell; otherwise a valid eta-ring assignment can be
+        // hidden merely because the same contacts also fit a CN template.
+        auto haptic_lf=synthetic_oh_environment();
+        haptic_lf.bond_order_provenance=cov::DataProvenance::Derived;
+        for (std::size_t i=0u;i<6u;++i) {
+            cov::MolecularOrbital orbital;
+            orbital.energy_hartree=-0.5+0.2*static_cast<double>(i);
+            orbital.occupation=i<3u?2.0f:0.0f;
+            orbital.chemistry.available=true;
+            orbital.chemistry.valence_manifold=true;
+            orbital.chemistry.valence_weight=0.9;
+            haptic_lf.orbitals.push_back(std::move(orbital));
+        }
+        cov::DelocalisedPiAssignment haptic;
+        haptic.atoms={1u,2u,3u,4u,5u,6u};
+        haptic.orbitals={0u,2u,4u};
+        haptic.electron_count=4.0;
+        haptic.topology=cov::DelocalisedPiTopology::HapticMetal;
+        haptic.provenance=cov::DataProvenance::Derived;
+        haptic_lf.delocalised_pi_assignments.push_back(std::move(haptic));
+        if (!cov::analyse_ligand_field_environment(haptic_lf).available() ||
+            cov::preferred_compact_mo_diagram_mode(haptic_lf,true)!=
+                cov::MODiagramMode::DelocalisedPiFamilyOnly) {
+            std::cerr<<"haptic pi focus lost to ligand-field precedence\n";
+            return 37;
+        }
+    }
+
+    const auto build_id=std::hash<std::string>{}(
+        std::filesystem::absolute(std::filesystem::current_path()).string());
+    const auto temp_stem=std::string("cov_mo_diagram_smoke_")+
+                         std::to_string(build_id);
+    const auto temp=std::filesystem::temp_directory_path()/
+                    (temp_stem+".fchk");
+    const auto normalised_temp=std::filesystem::temp_directory_path()/temp_stem;
     const auto result = cov::export_mo_diagram_bundle(wf, options, temp);
     if (!result.svg || !result.png || !result.json || !result.csv) {
         std::cerr << "diagram export failed: " << result.error << '\n';

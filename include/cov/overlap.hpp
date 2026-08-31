@@ -23,6 +23,9 @@ struct OverlapDerivationResult {
 [[nodiscard]] OverlapDerivationResult derive_ao_overlap_from_mos(
     const Wavefunction& wavefunction,
     double relative_pivot_tolerance = 1.0e-11,
-    std::size_t maximum_basis = 768);
+    // 1024 keeps the dense recovery workspace comfortably below 128 MiB
+    // while covering large, chemically relevant multi-ring/ECP validation
+    // systems. Callers analysing still larger matrices may opt in explicitly.
+    std::size_t maximum_basis = 1024);
 
 } // namespace cov

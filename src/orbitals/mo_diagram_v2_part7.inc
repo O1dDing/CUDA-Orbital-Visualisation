@@ -6,81 +6,6 @@ int bitmap_text_width(const std::string& text, const int scale) {
     return width;
 }
 
-void draw_small_lowercase(Canvas& canvas, const int x, const int y, const char c,
-                          const std::uint8_t r, const std::uint8_t g,
-                          const std::uint8_t b) {
-    std::array<std::uint8_t, 7> rows{};
-    if (c == 'g') rows = {0,14,17,17,15,1,14};
-    else if (c == 'u') rows = {0,0,17,17,17,19,13};
-    else return;
-    for (int row = 0; row < 7; ++row) {
-        for (int col = 0; col < 5; ++col) {
-            if ((rows[static_cast<std::size_t>(row)] & (1u << (4 - col))) != 0) {
-                canvas.pixel(x + col, y + row, r, g, b);
-            }
-        }
-    }
-}
-
-void draw_small_subscript(Canvas& canvas, int x, const int y,
-                          const std::string& value) {
-    for (const char c : value) {
-        if (c == 'g' || c == 'u') {
-            draw_small_lowercase(canvas, x, y, c, 91, 105, 124);
-        } else {
-            draw_text(canvas, x, y, std::string(1, c), 91, 105, 124, 1);
-        }
-        x += 6;
-    }
-}
-
-void draw_prime_marks(Canvas& canvas, int x, const int y,
-                      const std::string& raw) {
-    int count = 0;
-    for (const char c : raw) {
-        if (c == '\'') ++count;
-        else if (c == '"') count += 2;
-    }
-    for (int i = 0; i < count; ++i) {
-        canvas.line(x + i * 4, y, x + i * 4 - 2, y + 5, 91, 105, 124, 1);
-    }
-    if (raw.find('*') != std::string::npos) {
-        draw_text(canvas, x + count * 4 + 1, y - 1, "*", 91, 105, 124, 1);
-    }
-}
-
-void draw_symmetry_png(Canvas& canvas,
-                       const int centre_x,
-                       const int baseline_y,
-                       const std::string& raw) {
-    const SymmetryNotation notation = parse_symmetry_notation(raw);
-    if (notation.base.empty()) {
-        const std::string na = "N/A";
-        draw_text(canvas, centre_x - bitmap_text_width(na, 1) / 2,
-                  baseline_y, na, 91, 105, 124, 1);
-        return;
-    }
-    const int base_scale = 1;
-    const int base_w = bitmap_text_width(notation.base, base_scale);
-    const int sub_w = static_cast<int>(notation.subscript.size()) * 6;
-    int prime_count = 0;
-    for (const char c : raw) {
-        if (c == '\'') ++prime_count;
-        else if (c == '"') prime_count += 2;
-    }
-    const int sup_w = prime_count * 4 + (raw.find('*') != std::string::npos ? 7 : 0);
-    const int total = base_w + std::max(sub_w, sup_w);
-    int x = centre_x - total / 2;
-    draw_text(canvas, x, baseline_y, notation.base, 91, 105, 124, base_scale);
-    x += base_w;
-    if (!notation.subscript.empty()) {
-        draw_small_subscript(canvas, x, baseline_y + 5, notation.subscript);
-    }
-    if (!notation.superscript.empty()) {
-        draw_prime_marks(canvas, x + std::max(0, sub_w - 2), baseline_y - 4, raw);
-    }
-}
-
 void draw_delta_pi_png(Canvas& canvas,
                        const int right_x,
                        const int centre_y,
@@ -136,7 +61,13 @@ bool write_mo_diagram_png(const MODiagramData& data,
     Canvas canvas(width, height);
     const auto positioned = position_levels(data, width, height);
 
-    draw_text(canvas, 36, 28, "VALENCE MO DIAGRAM", 24, 34, 49, 2);
+    const char* diagram_title="VALENCE MO DIAGRAM";
+    if (data.mode==MODiagramMode::DelocalisedPiFamilyOnly) {
+        diagram_title="DELOCALISED PI MO DIAGRAM";
+    } else if (data.mode==MODiagramMode::MulticentreActiveSpaceOnly) {
+        diagram_title="MULTICENTRE ACTIVE-SPACE MO DIAGRAM";
+    }
+    draw_text(canvas, 36, 28, diagram_title, 24, 34, 49, 2);
     draw_text(canvas, 36, 55,
               options.energy_axis_mode == EnergyAxisMode::Linear
                   ? "ENERGY AXIS: LINEAR"
@@ -181,9 +112,6 @@ bool write_mo_diagram_png(const MODiagramData& data,
         if (type == "N/A | N/A") type = "N/A";
         const int type_x = static_cast<int>(item.x) - bitmap_text_width(type, 1) / 2;
         draw_text(canvas, type_x, y + 13, type, 67, 81, 102, 1);
-        draw_symmetry_png(canvas, static_cast<int>(item.x), y + 24,
-                          level.metadata.symmetry);
-
         if (level.annotation.delocalised_pi.available) {
             std::ostringstream pi;
             pi << "PI";
@@ -194,15 +122,15 @@ bool write_mo_diagram_png(const MODiagramData& data,
                 pi << "_" << static_cast<int>(std::lround(
                     level.annotation.delocalised_pi.participating_electrons));
             }
-            if (level.annotation.delocalised_pi.topology_available) {
-                pi << " " << level.annotation.delocalised_pi.orientation_channels
-                   << "CH "
-                   << (level.annotation.delocalised_pi.cyclic_topology ? "C" : "L");
+            const std::string topology_suffix=compact_pi_topology_suffix(
+                level.annotation.delocalised_pi);
+            if (!topology_suffix.empty()) {
+                pi << " " << topology_suffix;
             }
             const std::string value = pi.str();
             draw_text(canvas,
                       static_cast<int>(item.x) - bitmap_text_width(value, 1) / 2,
-                      y + 34, value, 91, 101, 117, 1);
+                      y + 25, value, 91, 101, 117, 1);
         }
     }
 

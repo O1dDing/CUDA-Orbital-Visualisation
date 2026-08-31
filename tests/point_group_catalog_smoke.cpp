@@ -106,10 +106,12 @@ int main() {
 
     const auto* oh = cov::find_point_group("O_h");
     const auto* linear = cov::find_point_group("D-infinity-h");
+    const auto* gaussian_linear = cov::find_point_group("D*H");
     if (cov::point_group_catalog().size() != 20u ||
         !oh || oh->canonical_name != "Oh" || !oh->centrosymmetric ||
         !linear || linear->canonical_name != "Dinfh" || !linear->linear ||
-        linear->order != 0u || cov::find_point_group("not-a-group")) {
+        gaussian_linear != linear || linear->order != 0u ||
+        cov::find_point_group("not-a-group")) {
         std::cerr << "point-group alias/canonical lookup regression\n";
         return EXIT_FAILURE;
     }

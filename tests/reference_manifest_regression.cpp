@@ -415,8 +415,9 @@ void validate_shared_multicentre_sources(
                 chemistry.multicentre_source_subspace_id!=id ||
                 std::abs(chemistry.multicentre_source_electron_count-
                          source_electrons)>0.05 ||
-                chemistry.participating_atom_indices!=source_atoms ||
-                std::abs(chemistry.participating_electrons-source_electrons)>0.05 ||
+                chemistry.multicentre_participating_atom_indices!=source_atoms ||
+                std::abs(chemistry.multicentre_participating_electrons-
+                         source_electrons)>0.05 ||
                 chemistry.multicentre_label.find("shared")==std::string::npos) {
                 append_failure(failures,
                     "shared multicentre source is not preserved in orbital chemistry: "+id);
@@ -736,8 +737,10 @@ std::vector<std::string> validate_semantics(const Row& row,
 } // namespace
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cout << "usage: cov_reference_manifest_regression <manifest.tsv>\n";
+    const bool dump_chemistry=argc==3 && std::string_view(argv[2])=="--dump-chemistry";
+    if (argc != 2 && !dump_chemistry) {
+        std::cout << "usage: cov_reference_manifest_regression <manifest.tsv> "
+                     "[--dump-chemistry]\n";
         return 2;
     }
 
@@ -858,6 +861,65 @@ int main(int argc, char** argv) {
                 options.gaussian_log_path = log_path;
             }
             const cov::Wavefunction wavefunction = cov::parse_wavefunction(fchk_path, options);
+            if (dump_chemistry) {
+                std::cout<<"CHEM\t"<<case_id<<"\tPG="
+                         <<wavefunction.point_group_detected<<"\tPI=";
+                if (wavefunction.delocalised_pi_assignments.empty()) {
+                    std::cout<<"none";
+                }
+                for (std::size_t assignment_index=0u;
+                     assignment_index<wavefunction.delocalised_pi_assignments.size();
+                     ++assignment_index) {
+                    if (assignment_index!=0u) std::cout<<';';
+                    const auto& assignment=
+                        wavefunction.delocalised_pi_assignments[assignment_index];
+                    std::cout<<'[';
+                    for (std::size_t atom=0u;atom<assignment.atoms.size();++atom) {
+                        if (atom!=0u) std::cout<<',';
+                        std::cout<<(assignment.atoms[atom]+1u);
+                    }
+                    std::cout<<"]e="<<assignment.electron_count
+                             <<",ch="<<assignment.orientation_channels.size()
+                             <<",cyc="<<(assignment.cyclic_topology?1:0)
+                             <<",MO=";
+                    for (std::size_t orbital=0u;
+                         orbital<assignment.orbitals.size();++orbital) {
+                        if (orbital!=0u) std::cout<<',';
+                        std::cout<<(assignment.orbitals[orbital]+1u);
+                    }
+                }
+                std::cout<<"\tMC=";
+                if (wavefunction.multicentre_assignments.empty()) {
+                    std::cout<<"none";
+                }
+                for (std::size_t assignment_index=0u;
+                     assignment_index<wavefunction.multicentre_assignments.size();
+                     ++assignment_index) {
+                    if (assignment_index!=0u) std::cout<<';';
+                    const auto& assignment=
+                        wavefunction.multicentre_assignments[assignment_index];
+                    std::cout<<cov::multicentre_kind_name(assignment.kind)<<'[';
+                    for (std::size_t atom=0u;atom<assignment.atoms.size();++atom) {
+                        if (atom!=0u) std::cout<<',';
+                        std::cout<<(assignment.atoms[atom]+1u);
+                    }
+                    std::cout<<"]e="<<assignment.electron_count<<",MO=";
+                    for (std::size_t orbital=0u;
+                         orbital<assignment.orbitals.size();++orbital) {
+                        if (orbital!=0u) std::cout<<',';
+                        std::cout<<(assignment.orbitals[orbital]+1u);
+                    }
+                }
+                const auto graph=cov::build_interaction_graph(wavefunction);
+                std::cout<<"\tEDGES=";
+                for (std::size_t edge_index=0u;edge_index<graph.edges.size();++edge_index) {
+                    if (edge_index!=0u) std::cout<<';';
+                    const auto& edge=graph.edges[edge_index];
+                    std::cout<<(edge.atom_a+1u)<<'-'<<(edge.atom_b+1u)<<':'
+                             <<cov::interaction_kind_name(edge.kind);
+                }
+                std::cout<<'\n';
+            }
             const auto failures = validate_semantics(row, manifest, wavefunction);
             if (failures.empty()) {
                 ++passed;

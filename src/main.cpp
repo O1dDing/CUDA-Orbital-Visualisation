@@ -644,6 +644,8 @@ int main(int argc, char** argv) {
             const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
             if (export_requested && wavefunction) {
                 cov::MODiagramOptions options;
+                options.mode=cov::preferred_compact_mo_diagram_mode(
+                    *wavefunction,orbital_ui.hide_ligand_centred_intermediates);
                 options.energy_unit = orbital_ui.energy_unit;
                 options.energy_axis_mode = orbital_ui.energy_axis_mode;
                 options.degeneracy = orbital_ui.degeneracy;

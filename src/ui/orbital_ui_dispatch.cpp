@@ -138,6 +138,7 @@ struct ChemistryText {
     const char* family;
     const char* bonding;
     const char* multicentre;
+    const char* delocalised;
     const char* members;
     const char* atoms;
     const char* electrons;
@@ -153,7 +154,7 @@ ChemistryText chemistry_text(const Language language) {
         case Language::ChineseSimplified:
             return {"所选 MO 化学性质","化学价层轨道组","是","否",
                     "价层 AO 组成","原子对相互作用","轨道类型",
-                    "成键性质","多中心 / 离域族","成员 MO","参与原子","参与电子",
+                    "成键性质","多中心族","离域 π 族","成员 MO","参与原子","参与电子",
                     "给体 / 受体方向",
                     "分析方法","MO 贡献",
                     "MO 贡献来自重叠布居；Mayer 为总密度原子对指数。",
@@ -161,7 +162,7 @@ ChemistryText chemistry_text(const Language language) {
         case Language::Japanese:
             return {"選択 MO の化学的性質","化学原子価軌道群","はい","いいえ",
                     "原子価 AO 組成","原子対相互作用","軌道型",
-                    "結合性","多中心 / 非局在化族","構成 MO","参加原子","参加電子",
+                    "結合性","多中心族","非局在化 π 族","構成 MO","参加原子","参加電子",
                     "供与体 / 受容体",
                     "解析法","MO 寄与",
                     "MO 寄与は重なり密度由来、Mayer は全密度の原子対指数。",
@@ -171,7 +172,7 @@ ChemistryText chemistry_text(const Language language) {
                     "Espace orbitalaire de valence chimique","oui","non",
                     "Composition AO de valence","Interactions par paire atomique",
                     "Type orbitalaire","Caractère liant",
-                    "Famille multicentrique / délocalisée",
+                    "Famille multicentrique","Famille π délocalisée",
                     "OM membres","Atomes participants","Électrons participants",
                     "Direction donneur / accepteur","Méthode",
                     "Contribution OM",
@@ -181,7 +182,7 @@ ChemistryText chemistry_text(const Language language) {
             return {"Selected MO chemistry","Chemical-valence manifold","yes","no",
                     "Valence AO composition","Atom-pair interactions",
                     "Orbital family","Bonding role",
-                    "Multicentre / delocalised family",
+                    "Multicentre family","Delocalised π family",
                     "Member MOs","Participating atoms","Participating electrons",
                     "Donor / acceptor direction","Method","MO contribution",
                     "MO contribution is overlap-population based; Mayer is the total density-level pair index.",
@@ -336,15 +337,27 @@ std::string subscript_number(const int value) {
     return out;
 }
 
-std::string family_descriptor(const OrbitalChemistry& chemistry) {
-    if (chemistry.multicentre_label.empty()) return "UND";
-    std::string symbol = chemistry.channel.dominant == OrbitalAngularFamily::Pi &&
-                         !chemistry.delocalised_family_id.empty()
-        ? "Π" : family_symbol(chemistry.channel.dominant);
-    symbol+=superscript_number(chemistry.participating_atoms);
-    symbol+=subscript_number(static_cast<int>(
-        std::lround(chemistry.participating_electrons)));
-    return symbol+" · "+chemistry.multicentre_label;
+std::string multicentre_descriptor(const OrbitalChemistry& chemistry) {
+    if (chemistry.multicentre_label.empty()) return "N/A";
+    std::ostringstream out;
+    out<<chemistry.multicentre_label;
+    if (chemistry.multicentre_participating_atoms>0u) {
+        out<<" · "<<chemistry.multicentre_participating_atoms<<"c/"
+           <<std::max(0LL,std::llround(
+                  chemistry.multicentre_participating_electrons))
+           <<"e";
+    }
+    return out.str();
+}
+
+std::string delocalised_descriptor(const OrbitalChemistry& chemistry) {
+    if (chemistry.delocalised_family_id.empty()) return "N/A";
+    std::string symbol="Π";
+    symbol+=superscript_number(
+        chemistry.delocalised_participating_atoms);
+    symbol+=subscript_number(static_cast<int>(std::lround(
+        chemistry.delocalised_participating_electrons)));
+    return symbol+" · delocalised-pi";
 }
 
 std::string delocalised_orbital_members(const OrbitalChemistry& chemistry) {
@@ -356,15 +369,35 @@ std::string delocalised_orbital_members(const OrbitalChemistry& chemistry) {
     return result.str();
 }
 
-std::string delocalised_atom_members(const Wavefunction& wf,
-                                     const OrbitalChemistry& chemistry) {
+std::string atom_members(const Wavefunction& wf,
+                         const std::vector<std::uint32_t>& atom_indices) {
     std::ostringstream result;
-    for (const auto atom_index : chemistry.participating_atom_indices) {
+    for (const auto atom_index : atom_indices) {
         if (result.tellp() > 0) result << ", ";
         if (atom_index < wf.atoms.size()) result << wf.atoms[atom_index].symbol;
         result << atom_index + 1u;
     }
     return result.str();
+}
+
+void draw_participation(const Wavefunction& wf,
+                        const ChemistryText& text,
+                        const std::size_t atom_count,
+                        const double electron_count,
+                        const std::vector<std::uint32_t>& atom_indices,
+                        const ImU32 colour) {
+    if (!atom_indices.empty()) {
+        draw_label_value(text.atoms,
+                         std::to_string(atom_count)+" · "+
+                             atom_members(wf,atom_indices),
+                         colour);
+    }
+    if (atom_count>0u) {
+        draw_label_value(text.electrons,
+                         std::to_string(std::max(
+                             0LL,std::llround(electron_count))),
+                         colour);
+    }
 }
 
 void draw_selected_chemistry(const Wavefunction& wf,
@@ -389,25 +422,33 @@ void draw_selected_chemistry(const Wavefunction& wf,
     draw_channel_value(text.family, chemistry.channel);
     draw_bonding_value(text.bonding, chemistry.bonding);
 
-    const std::string descriptor = family_descriptor(chemistry);
-    const bool delocalised_pi = chemistry.channel.dominant == OrbitalAngularFamily::Pi &&
-                                chemistry.participating_atoms > 2u;
-    draw_label_value(text.multicentre, descriptor,
-                     descriptor == "UND" ? kUnavailableColour :
-                     (delocalised_pi ? kPiColour : kMulticentreColour));
-    if (!chemistry.delocalised_family_orbitals.empty()) {
-        draw_label_value(text.members, delocalised_orbital_members(chemistry), kPiColour);
+    const bool has_multicentre=!chemistry.multicentre_label.empty();
+    draw_label_value(text.multicentre,
+                     multicentre_descriptor(chemistry),
+                     has_multicentre?kMulticentreColour:kUnavailableColour);
+    if (has_multicentre) {
+        draw_participation(
+            wf,text,chemistry.multicentre_participating_atoms,
+            chemistry.multicentre_participating_electrons,
+            chemistry.multicentre_participating_atom_indices,
+            kMulticentreColour);
     }
-    if (!chemistry.participating_atom_indices.empty()) {
-        draw_label_value(text.atoms,
-                         std::to_string(chemistry.participating_atoms) + " · " +
-                             delocalised_atom_members(wf, chemistry),
-                         kNumericColour);
-    }
-    if (chemistry.participating_atoms > 0u) {
-        draw_label_value(text.electrons,
-                         std::to_string(static_cast<int>(std::lround(chemistry.participating_electrons))),
-                         kNumericColour);
+
+    const bool has_delocalised=!chemistry.delocalised_family_id.empty();
+    draw_label_value(text.delocalised,
+                     delocalised_descriptor(chemistry),
+                     has_delocalised?kPiColour:kUnavailableColour);
+    if (has_delocalised) {
+        if (!chemistry.delocalised_family_orbitals.empty()) {
+            draw_label_value(text.members,
+                             delocalised_orbital_members(chemistry),
+                             kPiColour);
+        }
+        draw_participation(
+            wf,text,chemistry.delocalised_participating_atoms,
+            chemistry.delocalised_participating_electrons,
+            chemistry.delocalised_participating_atom_indices,
+            kPiColour);
     }
 
     ImGui::TextDisabled("%s",text.ao);

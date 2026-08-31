@@ -68,7 +68,8 @@ bool is_coordination_centre_element(const int z) noexcept {
 
 bool is_coordination_donor_element(const int z) noexcept {
     switch (z) {
-        case 1:  // hydride and sigma-H ligands
+        // Hydrogen-bearing structural links remain ordinary connectivity;
+        // multicentre H semantics are carried by their independent hyperedge.
         case 5:  case 6:  case 7:  case 8:  case 9:
         case 14: case 15: case 16: case 17:
         case 32: case 33: case 34: case 35:
@@ -147,11 +148,6 @@ bool has_pair(const EdgeIndicesByPair& edge_by_pair,
     return edge_by_pair.find(ordered_pair(a, b)) != edge_by_pair.end();
 }
 
-bool is_support_kind(const InteractionKind kind) noexcept {
-    return kind == InteractionKind::MulticentreSupport ||
-           kind == InteractionKind::PolyhedralCageSupport;
-}
-
 void add_or_replace_strong_edge(
     InteractionGraph& graph,
     EdgeIndicesByPair& edge_by_pair,
@@ -174,34 +170,10 @@ void add_or_replace_strong_edge(
         }
     }
 
-    if (is_support_kind(edge.kind)) {
-        // A support layer is a higher-level interpretation of an ordinary
-        // pairwise connection, so it replaces that connection. Distinct
-        // support layers are independent: an electron-deficient cage edge may
-        // simultaneously support a multicentre hyperedge and the global cage
-        // skeleton, and both must survive for independent UI filtering.
-        for (const auto index : found->second) {
-            if (index < graph.edges.size() &&
-                !is_support_kind(graph.edges[index].kind)) {
-                graph.edges[index] = std::move(edge);
-                return;
-            }
-        }
-        found->second.push_back(static_cast<std::uint32_t>(graph.edges.size()));
-        graph.edges.push_back(std::move(edge));
-        return;
-    }
-
-    // Once a higher-level support interpretation exists, a later ordinary
-    // candidate must not reintroduce a two-centre bond underneath it.
-    if (std::any_of(found->second.begin(), found->second.end(),
-                    [&](const auto index) {
-                        return index < graph.edges.size() &&
-                               is_support_kind(graph.edges[index].kind);
-                    })) {
-        return;
-    }
-
+    // Strong structural connectivity and higher-level support are independent
+    // semantic layers. A 3c/4c or cage interpretation must not erase the
+    // ordinary molecular skeleton; keeping both also lets the UI filter the
+    // support overlay without making the molecule fall apart.
     for (const auto index : found->second) {
         if (index < graph.edges.size() &&
             graph.edges[index].strength == InteractionStrength::WeakContact) {
@@ -209,6 +181,8 @@ void add_or_replace_strong_edge(
             return;
         }
     }
+    found->second.push_back(static_cast<std::uint32_t>(graph.edges.size()));
+    graph.edges.push_back(std::move(edge));
 }
 
 bool donor_is_shielded(
@@ -677,13 +651,36 @@ InteractionGraph build_interaction_graph(const Wavefunction& wf,
                                       suppressed_multicentre_pairs.end()));
 
     // Reuse the renderer's already regression-tested structural-neighbour
-    // envelope, while assigning richer semantics here.
-    for (const auto& bond : analyse_bonds(wf)) {
+    // envelope, while assigning richer semantics here. Determine X-H ligand
+    // membership from the complete structural skeleton before classifying any
+    // M...H edge, so the result cannot depend on bond-record iteration order.
+    const auto structural_bonds=analyse_bonds(wf);
+    std::set<std::uint32_t> ligand_bound_hydrogens;
+    for (const auto& bond:structural_bonds) {
+        const auto a=static_cast<std::uint32_t>(bond.atom_a);
+        const auto b=static_cast<std::uint32_t>(bond.atom_b);
+        if (wf.atoms[a].atomic_number==1 &&
+            !is_coordination_centre_element(wf.atoms[b].atomic_number)) {
+            ligand_bound_hydrogens.insert(a);
+        }
+        if (wf.atoms[b].atomic_number==1 &&
+            !is_coordination_centre_element(wf.atoms[a].atomic_number)) {
+            ligand_bound_hydrogens.insert(b);
+        }
+    }
+    for (const auto& bond : structural_bonds) {
         const std::uint32_t a = static_cast<std::uint32_t>(bond.atom_a);
         const std::uint32_t b = static_cast<std::uint32_t>(bond.atom_b);
         if (suppressed_multicentre_pairs.count(ordered_pair(a, b)) != 0u) continue;
         const bool a_centre = is_coordination_centre_element(wf.atoms[a].atomic_number);
         const bool b_centre = is_coordination_centre_element(wf.atoms[b].atomic_number);
+        const bool ligand_bound_metal_hydrogen=
+            a_centre!=b_centre &&
+            ((wf.atoms[a].atomic_number==1 &&
+              ligand_bound_hydrogens.count(a)!=0u) ||
+             (wf.atoms[b].atomic_number==1 &&
+              ligand_bound_hydrogens.count(b)!=0u));
+        if (ligand_bound_metal_hydrogen) continue;
         const bool metal_donor =
             (a_centre && !b_centre && is_coordination_donor_element(wf.atoms[b].atomic_number)) ||
             (b_centre && !a_centre && is_coordination_donor_element(wf.atoms[a].atomic_number));
@@ -739,12 +736,39 @@ InteractionGraph build_interaction_graph(const Wavefunction& wf,
         if (a_centre == b_centre) continue;
         const std::uint32_t centre = a_centre ? pair.first : pair.second;
         const std::uint32_t donor = a_centre ? pair.second : pair.first;
-        if (!is_coordination_donor_element(wf.atoms[donor].atomic_number)) continue;
         const double distance = distance_bohr(wf.atoms[centre], wf.atoms[donor]);
         if (distance > options.coordination_distance_factor *
                            radius_sum_bohr(wf.atoms[centre], wf.atoms[donor])) {
             continue;
         }
+        if (wf.atoms[donor].atomic_number==1) {
+            // A low-order but electronically supported direct M-H link is a
+            // structural bond, not a dashed coordination contact.  Hydrogen
+            // is deliberately excluded from the generic donor list, so this
+            // dedicated path preserves weak terminal hydrides.  A hydrogen
+            // already attached to another ordinary covalent neighbour is a
+            // ligand C-H/O-H/H-H atom, however; its small through-space
+            // metal population is agostic/dihydrogen interaction evidence,
+            // not a second structural bond.
+            const bool already_ligand_bound=
+                ligand_bound_hydrogens.count(donor)!=0u || std::any_of(
+                covalent_adjacency[donor].begin(),
+                covalent_adjacency[donor].end(),
+                [&](const std::uint32_t neighbour) {
+                    return neighbour!=centre;
+                });
+            if (already_ligand_bound) continue;
+            auto edge=make_edge(
+                wf,records,centre,donor,
+                InteractionKind::CovalentConnectivity,
+                InteractionStrength::StrongConnectivity,
+                std::clamp(0.55+0.8*record->mayer_order,0.55,0.82));
+            add_or_replace_strong_edge(graph,edge_by_pair,std::move(edge));
+            covalent_adjacency[centre].push_back(donor);
+            covalent_adjacency[donor].push_back(centre);
+            continue;
+        }
+        if (!is_coordination_donor_element(wf.atoms[donor].atomic_number)) continue;
         if (is_electropositive_main_group_metal(
                 wf.atoms[centre].atomic_number) &&
             opposite_atomic_charge_pair(resolved_evidence, wf.atoms.size(), centre, donor, options) &&

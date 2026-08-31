@@ -85,8 +85,13 @@ std::string subscript_number_ui(const int value) {
 }
 
 std::string pi_descriptor_ui(const DelocalisedPiDescriptor& descriptor) {
-    return std::string("Π") + superscript_number_ui(descriptor.participating_atoms) +
-           subscript_number_ui(static_cast<int>(std::lround(descriptor.participating_electrons)));
+    std::string result=std::string("Π")+
+        superscript_number_ui(descriptor.participating_atoms)+
+        subscript_number_ui(static_cast<int>(
+            std::lround(descriptor.participating_electrons)));
+    const std::string topology_suffix=compact_pi_topology_suffix(descriptor);
+    if (!topology_suffix.empty()) result+=' '+topology_suffix;
+    return result;
 }
 
 struct DelocalisedLabels {
@@ -115,19 +120,51 @@ DelocalisedLabels delocalised_labels(const Language language) {
 const char* pi_topology_value(const DelocalisedPiDescriptor& descriptor,
                               const Language language) {
     if (!descriptor.topology_available) return "N/A";
-    if (descriptor.cyclic_topology) {
-        switch (language) {
-            case Language::ChineseSimplified: return "环状离域";
-            case Language::Japanese: return "環状非局在";
-            case Language::French: return "délocalisée cyclique";
-            default: return "cyclic delocalised";
-        }
-    }
-    switch (language) {
-        case Language::ChineseSimplified: return "非环状";
-        case Language::Japanese: return "非環状";
-        case Language::French: return "non cyclique";
-        default: return "non-cyclic";
+    switch (descriptor.topology) {
+        case DelocalisedPiTopology::Path:
+            switch (language) {
+                case Language::ChineseSimplified: return "链状 π 离域";
+                case Language::Japanese: return "鎖状 π 非局在";
+                case Language::French: return "chemin π délocalisé";
+                default: return "path-delocalised pi";
+            }
+        case DelocalisedPiTopology::Cycle:
+            switch (language) {
+                case Language::ChineseSimplified: return "环状 π 离域";
+                case Language::Japanese: return "環状 π 非局在";
+                case Language::French: return "cycle π délocalisé";
+                default: return "cyclic-delocalised pi";
+            }
+        case DelocalisedPiTopology::BranchedResonance:
+            switch (language) {
+                case Language::ChineseSimplified: return "支化共振 π 网络";
+                case Language::Japanese: return "分岐共鳴 π ネットワーク";
+                case Language::French: return "réseau π résonant ramifié";
+                default: return "branched-resonance pi network";
+            }
+        case DelocalisedPiTopology::Spiro:
+            switch (language) {
+                case Language::ChineseSimplified: return "螺环正交 π 网络";
+                case Language::Japanese: return "スピロ直交 π ネットワーク";
+                case Language::French: return "réseau π spiro orthogonal";
+                default: return "orthogonal spiro pi network";
+            }
+        case DelocalisedPiTopology::HapticMetal:
+            switch (language) {
+                case Language::ChineseSimplified: return "多触点金属–π";
+                case Language::Japanese: return "多点金属–π";
+                case Language::French: return "contact haptique métal–π";
+                default: return "haptic metal-pi";
+            }
+        case DelocalisedPiTopology::SymmetryDirectSum:
+            switch (language) {
+                case Language::ChineseSimplified: return "对称等价 π 子系统直和";
+                case Language::Japanese: return "対称等価 π 部分系の直和";
+                case Language::French: return "somme directe de sous-systèmes π équivalents";
+                default: return "symmetry-equivalent pi direct sum";
+            }
+        default:
+            return "N/A";
     }
 }
 
@@ -640,9 +677,20 @@ void draw_pi_groups(ImDrawList* draw,
     for (const auto& [key, group] : groups) {
         (void)key;
         if (!group.descriptor || group.points.size() < 2u) continue;
-        if (!group.descriptor->orbital_indices.empty() &&
-            group.points.size() != group.descriptor->orbital_indices.size()) {
-            continue;
+        if (!group.descriptor->orbital_indices.empty()) {
+            const bool complete=std::all_of(
+                group.descriptor->orbital_indices.begin(),
+                group.descriptor->orbital_indices.end(),
+                [&](const std::size_t orbital_index) {
+                    return std::any_of(
+                        group.points.begin(),group.points.end(),
+                        [&](const DiagramPoint* point) {
+                            return point && point->level &&
+                                mo_diagram_level_covers_orbital(
+                                    *point->level,orbital_index);
+                        });
+                });
+            if (!complete) continue;
         }
         float upper = group.points.front()->y;
         float lower = group.points.front()->y;
@@ -783,7 +831,8 @@ bool same_degeneracy_settings(const DegeneracySettings& left,
                               const DegeneracySettings& right) noexcept {
     return left.tolerance_hartree==right.tolerance_hartree &&
         left.require_same_spin==right.require_same_spin &&
-        left.require_compatible_symmetry==right.require_compatible_symmetry;
+        left.require_compatible_symmetry==right.require_compatible_symmetry &&
+        left.maximum_group_size==right.maximum_group_size;
 }
 
 bool same_filter_settings(const OrbitalFilterSettings& left,
@@ -826,6 +875,16 @@ bool diagram_cache_matches(const OrbitalUIDiagramCache& cache,
         cache.atom_count==wavefunction.atoms.size() &&
         cache.orbital_count==wavefunction.orbitals.size() &&
         same_diagram_options(*cache.options,options);
+}
+
+bool diagram_cache_wavefunction_matches(
+    const OrbitalUIDiagramCache& cache,
+    const Wavefunction& wavefunction) noexcept {
+    return cache.options.has_value() &&
+        cache.wavefunction==&wavefunction &&
+        cache.orbital_data==wavefunction.orbitals.data() &&
+        cache.atom_count==wavefunction.atoms.size() &&
+        cache.orbital_count==wavefunction.orbitals.size();
 }
 
 bool browser_cache_matches(const OrbitalUIBrowserCache& cache,
@@ -984,6 +1043,13 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     }
 
     MODiagramOptions options;
+    const bool compact=state.hide_ligand_centred_intermediates;
+    if (diagram_cache_wavefunction_matches(state.diagram_cache,wavefunction) &&
+        state.diagram_cache.options->hide_ligand_centred_intermediates==compact) {
+        options.mode=state.diagram_cache.options->mode;
+    } else {
+        options.mode=preferred_compact_mo_diagram_mode(wavefunction,compact);
+    }
     options.energy_unit = state.energy_unit;
     options.energy_axis_mode = state.energy_axis_mode;
     options.degeneracy = state.degeneracy;
@@ -993,11 +1059,10 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     // rows.  The live selected_index is still used below for member
     // highlighting and CUDA dispatch; an out-of-range sentinel keeps the
     // expensive structural build independent of inspection state.
-    options.selected_index = state.hide_ligand_centred_intermediates
+    options.selected_index = compact
         ?wavefunction.orbitals.size():selected_index;
     options.neighbourhood = static_cast<std::size_t>(std::max(3, state.diagram_neighbourhood));
-    options.hide_ligand_centred_intermediates=
-        state.hide_ligand_centred_intermediates;
+    options.hide_ligand_centred_intermediates=compact;
     options.nonlinear_minimum_gap_weight = 0.055;
     if (!diagram_cache_matches(state.diagram_cache,wavefunction,options)) {
         state.diagram_cache.wavefunction=&wavefunction;

@@ -90,6 +90,11 @@ struct DegeneracySettings {
     // not automatically collapsed into one set merely because the printed
     // energies happen to coincide.
     bool require_compatible_symmetry = true;
+    // Zero leaves the generic energy-label helper unrestricted.  Callers that
+    // know the molecular point group set this to the largest allowed irrep
+    // dimension, so two nearby E/Pi copies cannot be merged into an
+    // unphysical fourfold set merely because producer labels are absent.
+    std::size_t maximum_group_size = 0;
 };
 
 struct OrbitalLabel {
@@ -104,6 +109,13 @@ struct OrbitalLabel {
 [[nodiscard]] std::vector<OrbitalLabel> build_orbital_labels(
     const std::vector<MolecularOrbital>& orbitals,
     const DegeneracySettings& settings = {});
+
+// Apply the exact representation-dimension ceiling of the detected molecular
+// point group while preserving an explicit user ceiling.  Unknown groups keep
+// the caller's setting unchanged.
+[[nodiscard]] DegeneracySettings point_group_limited_degeneracy(
+    const Wavefunction& wavefunction,
+    DegeneracySettings settings = {});
 
 [[nodiscard]] std::string degeneracy_suffix(std::size_t member_index);
 

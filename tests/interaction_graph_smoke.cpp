@@ -1,11 +1,14 @@
 #include "cov/interaction_graph.hpp"
+#include "cov/wavefunction_io.hpp"
 
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -36,9 +39,42 @@ bool has_pair(const cov::InteractionGraph& graph,
     });
 }
 
+bool has_strong_pair(const cov::InteractionGraph& graph,
+                     const std::uint32_t a,
+                     const std::uint32_t b) {
+    return std::any_of(graph.edges.begin(), graph.edges.end(), [&](const auto& edge) {
+        return cov::interaction_merges_fragments(edge.kind) &&
+               ((edge.atom_a == a && edge.atom_b == b) ||
+                (edge.atom_a == b && edge.atom_b == a));
+    });
+}
+
+bool check_real_structural_layers(
+    const std::filesystem::path& path,
+    const std::vector<std::pair<std::uint32_t, std::uint32_t>>& required_covalent,
+    const std::vector<std::pair<std::uint32_t, std::uint32_t>>& forbidden_strong) {
+    cov::WavefunctionParseOptions options;
+    options.max_atoms = 256u;
+    const auto wf = cov::parse_wavefunction(path, options);
+    const auto graph = cov::build_interaction_graph(wf);
+    for (const auto [a, b] : required_covalent) {
+        if (!has_pair(graph, a, b, cov::InteractionKind::CovalentConnectivity)) {
+            return false;
+        }
+    }
+    for (const auto [a, b] : forbidden_strong) {
+        if (has_strong_pair(graph, a, b)) return false;
+    }
+    return std::none_of(graph.edges.begin(), graph.edges.end(), [&](const auto& edge) {
+        return edge.kind == cov::InteractionKind::CoordinationContact &&
+               (wf.atoms[edge.atom_a].atomic_number == 1 ||
+                wf.atoms[edge.atom_b].atomic_number == 1);
+    });
+}
+
 } // namespace
 
-int main() {
+int main(const int argc, char** argv) {
     // Zero- and one-atom inputs are ordinary graph boundaries, not errors.
     if (!cov::build_interaction_graph({}).fragment_analysis.fragments.empty()) {
         std::cerr << "empty wavefunction produced a fragment\n";
@@ -72,9 +108,12 @@ int main() {
     const auto hf2_graph = cov::build_interaction_graph(hf2);
     if (hf2_graph.fragment_analysis.fragments.size() != 1u ||
         hf2_graph.multicentre_groups.size() != 1u ||
+        count_kind(hf2_graph, cov::InteractionKind::CovalentConnectivity) != 2u ||
         count_kind(hf2_graph, cov::InteractionKind::MulticentreSupport) != 2u ||
+        !has_pair(hf2_graph, 0, 1, cov::InteractionKind::CovalentConnectivity) ||
+        !has_pair(hf2_graph, 1, 2, cov::InteractionKind::CovalentConnectivity) ||
         has_pair(hf2_graph, 0, 2, cov::InteractionKind::MulticentreSupport)) {
-        std::cerr << "HF2-type multicentre support graph regressed\n";
+        std::cerr << "HF2 structural/support layer separation regressed\n";
         return EXIT_FAILURE;
     }
     for (const auto& edge : hf2_graph.edges) {
@@ -118,7 +157,10 @@ int main() {
         {0, 1, 2}, {0, 1, 2}, 2.0, 0.90,
         "synthetic bridge active subspace", cov::DataProvenance::Derived});
     const auto bhb_graph = cov::build_interaction_graph(bhb);
-    if (count_kind(bhb_graph, cov::InteractionKind::MulticentreSupport) != 2u ||
+    if (count_kind(bhb_graph, cov::InteractionKind::CovalentConnectivity) != 2u ||
+        count_kind(bhb_graph, cov::InteractionKind::MulticentreSupport) != 2u ||
+        !has_pair(bhb_graph, 0, 1, cov::InteractionKind::CovalentConnectivity) ||
+        !has_pair(bhb_graph, 1, 2, cov::InteractionKind::CovalentConnectivity) ||
         has_pair(bhb_graph, 0, 2, cov::InteractionKind::MulticentreSupport) ||
         has_pair(bhb_graph, 0, 2, cov::InteractionKind::CovalentConnectivity)) {
         std::cerr << "B-H-B support added a terminal B-B ordinary bond\n";
@@ -142,6 +184,112 @@ int main() {
         count_kind(sbf6_graph, cov::InteractionKind::CoordinationContact) != 0u ||
         sbf6_graph.edges.size() != 6u) {
         std::cerr << "SbF6-type internal connectivity regressed\n";
+        return EXIT_FAILURE;
+    }
+
+    // A p-block hypervalent framework may carry two independent 3c4e axes,
+    // but its four Xe-F structural edges remain ordinary solid connectivity.
+    cov::Wavefunction xef4;
+    xef4.atoms = {
+        {"Xe", 54, 0.0, 0.0, 0.0},
+        {"F", 9, 1.95 * cov::kAngstromToBohr, 0.0, 0.0},
+        {"F", 9, -1.95 * cov::kAngstromToBohr, 0.0, 0.0},
+        {"F", 9, 0.0, 1.95 * cov::kAngstromToBohr, 0.0},
+        {"F", 9, 0.0, -1.95 * cov::kAngstromToBohr, 0.0},
+    };
+    for (std::uint32_t fluorine = 1u; fluorine <= 4u; ++fluorine) {
+        add_record(xef4, 0u, fluorine, 0.32);
+    }
+    xef4.multicentre_assignments.push_back({
+        cov::MulticentreKind::ThreeCentreFourElectron,
+        {0, 1, 2}, {0, 1, 2}, 4.0, 0.90,
+        "synthetic x-axis active subspace", cov::DataProvenance::Derived});
+    xef4.multicentre_assignments.push_back({
+        cov::MulticentreKind::ThreeCentreFourElectron,
+        {0, 3, 4}, {3, 4, 5}, 4.0, 0.90,
+        "synthetic y-axis active subspace", cov::DataProvenance::Derived});
+    const auto xef4_graph = cov::build_interaction_graph(xef4);
+    if (xef4_graph.multicentre_groups.size() != 2u ||
+        count_kind(xef4_graph, cov::InteractionKind::CovalentConnectivity) != 4u ||
+        count_kind(xef4_graph, cov::InteractionKind::MulticentreSupport) != 4u ||
+        count_kind(xef4_graph, cov::InteractionKind::CoordinationContact) != 0u) {
+        std::cerr << "XeF4 structural/support layer separation regressed\n";
+        return EXIT_FAILURE;
+    }
+    for (std::uint32_t fluorine = 1u; fluorine <= 4u; ++fluorine) {
+        if (!has_pair(xef4_graph, 0u, fluorine,
+                      cov::InteractionKind::CovalentConnectivity)) {
+            std::cerr << "XeF4 lost a solid Xe-F structural edge\n";
+            return EXIT_FAILURE;
+        }
+        for (std::uint32_t other = fluorine + 1u; other <= 4u; ++other) {
+            if (std::any_of(xef4_graph.edges.begin(), xef4_graph.edges.end(),
+                            [&](const auto& edge) {
+                                return cov::interaction_merges_fragments(edge.kind) &&
+                                       ((edge.atom_a == fluorine && edge.atom_b == other) ||
+                                        (edge.atom_a == other && edge.atom_b == fluorine));
+                            })) {
+                std::cerr << "XeF4 acquired a fluorine-fluorine structural edge\n";
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
+    // Hydrogen is not a generic coordination donor. A metal-hydrogen bond is
+    // structural connectivity unless a separate, explicit interaction layer
+    // supplies different evidence.
+    cov::Wavefunction metal_hydride;
+    metal_hydride.atoms = {
+        {"Fe", 26, 0.0, 0.0, 0.0},
+        {"H", 1, 1.55 * cov::kAngstromToBohr, 0.0, 0.0},
+    };
+    add_record(metal_hydride, 0u, 1u, 0.35);
+    const auto hydride_graph = cov::build_interaction_graph(metal_hydride);
+    if (!has_pair(hydride_graph, 0u, 1u,
+                  cov::InteractionKind::CovalentConnectivity) ||
+        count_kind(hydride_graph, cov::InteractionKind::CoordinationContact) != 0u) {
+        std::cerr << "hydrogen was misclassified as a coordination donor\n";
+        return EXIT_FAILURE;
+    }
+
+    // Direct weak hydrides below the ordinary renderer's Mayer floor still
+    // retain solid structural connectivity.  The same electronic value at a
+    // non-bonding distance is not enough to fabricate an M-H edge.
+    cov::Wavefunction weak_hydride=metal_hydride;
+    weak_hydride.bond_orders.clear();
+    add_record(weak_hydride,0u,1u,0.03);
+    const auto weak_hydride_graph=cov::build_interaction_graph(weak_hydride);
+    if (!has_pair(weak_hydride_graph,0u,1u,
+                  cov::InteractionKind::CovalentConnectivity) ||
+        count_kind(weak_hydride_graph,
+                   cov::InteractionKind::CoordinationContact)!=0u) {
+        std::cerr<<"low-Mayer direct hydride lost structural connectivity\n";
+        return EXIT_FAILURE;
+    }
+    weak_hydride.atoms[1].x=3.80*cov::kAngstromToBohr;
+    const auto remote_hydrogen_graph=cov::build_interaction_graph(weak_hydride);
+    if (has_strong_pair(remote_hydrogen_graph,0u,1u)) {
+        std::cerr<<"remote low-Mayer hydrogen became a structural bond\n";
+        return EXIT_FAILURE;
+    }
+
+    // A close ligand C-H contact can carry a small positive Fe...H Mayer
+    // population (agostic interaction).  Because H already has an ordinary
+    // C-H neighbour, that population must not fabricate a second solid M-H
+    // bond.  This is the general shielding boundary for every X-H ligand.
+    cov::Wavefunction agostic;
+    agostic.atoms = {
+        {"Fe",26,0.0,0.0,0.0},
+        {"H",1,1.60*cov::kAngstromToBohr,0.0,0.0},
+        {"C",6,2.65*cov::kAngstromToBohr,0.0,0.0},
+    };
+    add_record(agostic,0u,1u,0.10);
+    add_record(agostic,1u,2u,0.82);
+    const auto agostic_graph=cov::build_interaction_graph(agostic);
+    if (!has_pair(agostic_graph,1u,2u,
+                  cov::InteractionKind::CovalentConnectivity) ||
+        has_strong_pair(agostic_graph,0u,1u)) {
+        std::cerr<<"ligand-bound agostic hydrogen became a structural M-H bond\n";
         return EXIT_FAILURE;
     }
 
@@ -347,16 +495,16 @@ int main() {
             const double dz = cage.atoms[a].z - cage.atoms[b].z;
             if (std::sqrt(dx * dx + dy * dy + dz * dz) < 2.05 * scale) {
                 // One real-looking cage edge is above the ordinary renderer
-                // floor; the higher-level cage interpretation must replace it.
+                // floor; the higher-level cage interpretation coexists with it.
                 add_record(cage, a, b, a == 0u && b == 1u ? 0.30 : 0.03);
             }
         }
     }
     // One triangular face also carries a local 3c2e assignment. Its three
     // pairs must retain both independent support semantics: the local
-    // multicentre hyperedge and the global cage skeleton. Neither layer is an
-    // ordinary two-centre bond, and either can be hidden independently by the
-    // renderer.
+    // multicentre hyperedge and the global cage skeleton. The one separately
+    // evidenced ordinary edge also survives, and every layer can be filtered
+    // independently by the renderer.
     cage.multicentre_assignments.push_back({
         cov::MulticentreKind::ThreeCentreTwoElectron,
         {0, 1, 8}, {0}, 2.0, 0.90,
@@ -373,8 +521,36 @@ int main() {
         !has_pair(cage_graph, 0, 8, cov::InteractionKind::PolyhedralCageSupport) ||
         !has_pair(cage_graph, 1, 8, cov::InteractionKind::MulticentreSupport) ||
         !has_pair(cage_graph, 1, 8, cov::InteractionKind::PolyhedralCageSupport) ||
-        count_kind(cage_graph, cov::InteractionKind::CovalentConnectivity) != 0u) {
+        count_kind(cage_graph, cov::InteractionKind::CovalentConnectivity) != 1u ||
+        !has_pair(cage_graph, 0, 1, cov::InteractionKind::CovalentConnectivity)) {
         std::cerr << "overlapping multicentre/polyhedral support regression\n";
+        return EXIT_FAILURE;
+    }
+
+    if (argc == 6) {
+        const std::vector<std::pair<std::uint32_t, std::uint32_t>> linear_required{
+            {0u, 1u}, {1u, 2u}};
+        const std::vector<std::pair<std::uint32_t, std::uint32_t>> linear_forbidden{
+            {0u, 2u}};
+        const std::vector<std::pair<std::uint32_t, std::uint32_t>> diborane_required{
+            {0u, 2u}, {0u, 3u}, {0u, 6u}, {0u, 7u},
+            {1u, 4u}, {1u, 5u}, {1u, 6u}, {1u, 7u}};
+        const std::vector<std::pair<std::uint32_t, std::uint32_t>> xef4_required{
+            {0u, 1u}, {0u, 2u}, {0u, 3u}, {0u, 4u}};
+        const std::vector<std::pair<std::uint32_t, std::uint32_t>> xef4_forbidden{
+            {1u, 2u}, {1u, 3u}, {1u, 4u},
+            {2u, 3u}, {2u, 4u}, {3u, 4u}};
+        if (!check_real_structural_layers(argv[1], linear_required, linear_forbidden) ||
+            !check_real_structural_layers(argv[2], diborane_required, {}) ||
+            !check_real_structural_layers(argv[3], linear_required, linear_forbidden) ||
+            !check_real_structural_layers(argv[4], xef4_required, xef4_forbidden) ||
+            !check_real_structural_layers(argv[5], linear_required, linear_forbidden)) {
+            std::cerr << "real hypervalent structural-layer regression\n";
+            return EXIT_FAILURE;
+        }
+    } else if (argc != 1) {
+        std::cerr << "usage: cov_interaction_graph_smoke "
+                     "[XeF2 B2H6 I3- XeF4 HF2-]\n";
         return EXIT_FAILURE;
     }
 

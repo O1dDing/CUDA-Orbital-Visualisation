@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <map>
 #include <queue>
 #include <vector>
 
@@ -20,44 +21,138 @@ constexpr double kMayerRenderFloor = 0.05;
 // terms.
 constexpr double kElectronicAdjacencyFactor = 1.50;
 
+// A positive pair index is not sufficient to make two atoms structural
+// neighbours: delocalised density commonly gives a small Mayer value to the
+// diagonal of a four- or five-membered ring.  Such a diagonal lies in the
+// two-hop "lune" of two much shorter, already electronically supported local
+// edges.  The constants below deliberately describe that topology rather than
+// a particular molecule.  Near-equilateral three-membered rings do not meet
+// the distance ratio, while a genuinely strong direct edge can override the
+// weak/non-local test.
+constexpr double kTwoHopLuneDistanceRatio = 0.82;
+constexpr double kLocalLegRadiusFactor = 1.25;
+constexpr double kLocalLegMayerFloor = 0.20;
+constexpr double kDirectMayerOverride = 0.30;
+constexpr double kRelativeDirectMayerOverride = 0.55;
+// A weak edge can still close a genuine, distorted three-membered ring.  Such
+// an edge has exactly one local two-hop witness, remains geometrically compact,
+// and carries electronic support comparable with both legs.  By contrast a
+// square diagonal has two witnesses, ordinary ring chords are too open, and a
+// linear XY2 terminal--terminal contact is nearly the sum of its two legs.
+constexpr double kCompactTriangleLongestEdgeRatio = 1.55;
+constexpr double kCompactTriangleMaximumAngleDegrees = 105.0;
+constexpr double kCompactTriangleRelativeMayerFloor = 0.75;
+
 double electronic_adjacency_factor(const double mayer_order) noexcept {
+    const double magnitude=std::abs(mayer_order);
     const double strong_fraction=std::clamp(
-        (mayer_order-0.20)/0.30,0.0,1.0);
+        (magnitude-0.20)/0.30,0.0,1.0);
     return kElectronicAdjacencyFactor+0.35*strong_fraction;
 }
 
-// Covalent radii are structural data, not element-colour cosmetics: an
-// incomplete table can silently remove genuine metal--ligand bonds at the
-// electronic-adjacency gate below. Values through Cm follow Cordero et al.,
-// Dalton Trans. 2008, 2832 (DOI:10.1039/B801115J), matching the values this
-// renderer already used. The remaining super-heavy elements use the
-// single-bond radii of Pyykko and Atsumi, Chem. Eur. J. 2009, 15, 186
-// (DOI:10.1002/chem.200800987), so every real atomic number accepted by the
-// parser has a defined radius. Index zero is a ghost/unknown sentinel.
-constexpr std::array<double, 119> kCovalentRadiiAngstrom = {
-    0.85,
-    // H--Ne
-    0.31, 0.28, 1.28, 0.96, 0.84, 0.76, 0.71, 0.66, 0.57, 0.58,
-    // Na--Ar
-    1.66, 1.41, 1.21, 1.11, 1.07, 1.05, 1.02, 1.06,
-    // K--Kr
-    2.03, 1.76, 1.70, 1.60, 1.53, 1.39, 1.39, 1.32, 1.26, 1.24,
-    1.32, 1.22, 1.22, 1.20, 1.19, 1.20, 1.20, 1.16,
-    // Rb--Xe
-    2.20, 1.95, 1.90, 1.75, 1.64, 1.54, 1.47, 1.46, 1.42, 1.39,
-    1.45, 1.44, 1.42, 1.39, 1.39, 1.38, 1.39, 1.40,
-    // Cs--Rn
-    2.44, 2.15, 2.07, 2.04, 2.03, 2.01, 1.99, 1.98, 1.98, 1.96,
-    1.94, 1.92, 1.92, 1.89, 1.90, 1.87, 1.87, 1.75, 1.70, 1.62,
-    1.51, 1.44, 1.41, 1.36, 1.36, 1.32, 1.45, 1.46, 1.48, 1.40,
-    1.50, 1.50,
-    // Fr--Cm
-    2.60, 2.21, 2.15, 2.06, 2.00, 1.96, 1.90, 1.87, 1.80, 1.69,
-    // Bk--Og (Pyykko--Atsumi single-bond radii)
-    1.68, 1.68, 1.65, 1.67, 1.73, 1.76, 1.61, 1.57, 1.49, 1.43,
-    1.41, 1.34, 1.29, 1.28, 1.21, 1.22, 1.36, 1.43, 1.62, 1.75,
-    1.65, 1.57,
-};
+void prune_two_hop_electronic_chords(const Wavefunction& wavefunction,
+                                     std::vector<BondVisual>& bonds) {
+    const std::size_t atom_count = wavefunction.atoms.size();
+    if (atom_count < 3u || bonds.size() < 3u) return;
+
+    using AtomPair=std::pair<std::size_t,std::size_t>;
+    const auto canonical_pair=[](const std::size_t a,const std::size_t b) {
+        return a<b?AtomPair{a,b}:AtomPair{b,a};
+    };
+    std::map<AtomPair,std::size_t> pair_index;
+    for (std::size_t index = 0u; index < bonds.size(); ++index) {
+        const auto& bond = bonds[index];
+        if (bond.atom_a >= atom_count || bond.atom_b >= atom_count) continue;
+        pair_index[canonical_pair(bond.atom_a,bond.atom_b)]=index;
+    }
+    std::vector<std::vector<std::pair<std::size_t,std::size_t>>> adjacency(
+        atom_count);
+    for (const auto& [pair,index]:pair_index) {
+        adjacency[pair.first].push_back({pair.second,index});
+        adjacency[pair.second].push_back({pair.first,index});
+    }
+
+    const auto locally_credible = [&](const BondVisual& bond) {
+        const Atom& a = wavefunction.atoms[bond.atom_a];
+        const Atom& b = wavefunction.atoms[bond.atom_b];
+        const double radius_sum_bohr =
+            (covalent_radius_angstrom(a.atomic_number) +
+             covalent_radius_angstrom(b.atomic_number)) * kAngstromToBohr;
+        const double radius_ratio =
+            bond.distance_bohr / std::max(1.0e-12, radius_sum_bohr);
+        return radius_ratio <= kLocalLegRadiusFactor ||
+               bond.bond_order >= kLocalLegMayerFloor;
+    };
+
+    std::vector<bool> remove(bonds.size(), false);
+    for (std::size_t edge_index = 0u; edge_index < bonds.size(); ++edge_index) {
+        const auto& edge = bonds[edge_index];
+        if (edge.atom_a>=adjacency.size() || edge.atom_b>=adjacency.size()) {
+            continue;
+        }
+        std::vector<std::pair<std::size_t,std::size_t>> two_hop_witnesses;
+        for (const auto& [middle,left_index]:adjacency[edge.atom_a]) {
+            if (middle == edge.atom_a || middle == edge.atom_b) continue;
+            const auto right_found=pair_index.find(
+                canonical_pair(middle,edge.atom_b));
+            if (right_found==pair_index.end()) continue;
+            const std::size_t right_index=right_found->second;
+            const auto& left = bonds[left_index];
+            const auto& right = bonds[right_index];
+            if (!locally_credible(left) || !locally_credible(right)) continue;
+            if (std::max(left.distance_bohr, right.distance_bohr) >
+                kTwoHopLuneDistanceRatio * edge.distance_bohr) {
+                continue;
+            }
+            two_hop_witnesses.push_back({left_index,right_index});
+        }
+
+        if (two_hop_witnesses.empty()) continue;
+
+        const auto& [left_index,right_index]=two_hop_witnesses.front();
+        const auto& left=bonds[left_index];
+        const auto& right=bonds[right_index];
+        const double weaker_leg=std::min(left.bond_order,right.bond_order);
+        const bool independently_strong=
+            edge.bond_order>=kDirectMayerOverride &&
+            edge.bond_order>=kRelativeDirectMayerOverride*weaker_leg;
+        if (independently_strong) continue;
+
+        bool compact_three_cycle=false;
+        if (two_hop_witnesses.size()==1u &&
+            edge.bond_order>=kCompactTriangleRelativeMayerFloor*weaker_leg) {
+            const std::size_t middle=
+                left.atom_a==edge.atom_a?left.atom_b:left.atom_a;
+            const Atom& a=wavefunction.atoms[edge.atom_a];
+            const Atom& b=wavefunction.atoms[edge.atom_b];
+            const Atom& m=wavefunction.atoms[middle];
+            const double am=left.distance_bohr;
+            const double bm=right.distance_bohr;
+            const double longest_leg=std::max(am,bm);
+            const double dot=(a.x-m.x)*(b.x-m.x)+
+                             (a.y-m.y)*(b.y-m.y)+
+                             (a.z-m.z)*(b.z-m.z);
+            const double cosine=std::clamp(
+                dot/std::max(1.0e-12,am*bm),-1.0,1.0);
+            const double maximum_angle_cosine=std::cos(
+                kCompactTriangleMaximumAngleDegrees*
+                3.14159265358979323846/180.0);
+            compact_three_cycle=
+                edge.distance_bohr<=
+                    kCompactTriangleLongestEdgeRatio*longest_leg &&
+                cosine>=maximum_angle_cosine;
+        }
+        remove[edge_index]=!compact_three_cycle;
+    }
+
+    std::size_t output = 0u;
+    for (std::size_t index = 0u; index < bonds.size(); ++index) {
+        if (remove[index]) continue;
+        if (output != index) bonds[output] = std::move(bonds[index]);
+        ++output;
+    }
+    bonds.resize(output);
+}
 
 bool likely_pi_element(const int z) noexcept {
     switch (z) {
@@ -209,13 +304,6 @@ void mark_conservative_ring_delocalisation(const Wavefunction& wavefunction,
 
 } // namespace
 
-double covalent_radius_angstrom(const int z) noexcept {
-    if (z > 0 && static_cast<std::size_t>(z) < kCovalentRadiiAngstrom.size()) {
-        return kCovalentRadiiAngstrom[static_cast<std::size_t>(z)];
-    }
-    return kCovalentRadiiAngstrom[0];
-}
-
 std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction) {
     std::vector<BondVisual> bonds;
     const std::size_t atom_count = wavefunction.atoms.size();
@@ -228,24 +316,37 @@ std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction) {
         for (const auto& record : wavefunction.bond_orders) {
             const std::size_t i = record.atom_a;
             const std::size_t j = record.atom_b;
+            const double electronic_strength=std::abs(record.mayer_order);
             if (i >= atom_count || j >= atom_count || i == j ||
-                record.mayer_order < kMayerRenderFloor) {
+                electronic_strength < kMayerRenderFloor) {
                 continue;
             }
             const Atom& a = wavefunction.atoms[i];
             const Atom& b = wavefunction.atoms[j];
             const double distance_bohr = atom_distance_bohr(a, b);
-            const double sanity_bohr =
-                electronic_adjacency_factor(record.mayer_order) *
+            const double radius_sum_bohr =
                 (covalent_radius_angstrom(a.atomic_number) +
                  covalent_radius_angstrom(b.atomic_number)) * kAngstromToBohr;
+            // A negative pair contribution can rescue an obvious first-shell
+            // skeleton edge, but it is not positive bonding evidence and must
+            // never receive the relaxed electronic distance envelope.
+            const double adjacency_factor=record.mayer_order<0.0
+                ?kLocalLegRadiusFactor
+                :electronic_adjacency_factor(electronic_strength);
+            const double sanity_bohr =
+                adjacency_factor*radius_sum_bohr;
             if (distance_bohr > sanity_bohr) continue;
 
             BondVisual bond;
             bond.atom_a = i;
             bond.atom_b = j;
             bond.distance_bohr = distance_bohr;
-            bond.bond_order = record.mayer_order;
+            // A signed Mayer contribution can be negative in diffuse or
+            // heavily delocalised bases even for a short first-neighbour
+            // contact. Connectivity uses its magnitude only inside the strict
+            // geometry gate above; positive evidence alone gets the wider
+            // adaptive envelope.
+            bond.bond_order = electronic_strength;
             bond.provenance = record.provenance;
             bonds.push_back(bond);
         }
@@ -272,6 +373,9 @@ std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction) {
         }
     }
 
+    if (wavefunction.bond_order_provenance != DataProvenance::Unavailable) {
+        prune_two_hop_electronic_chords(wavefunction, bonds);
+    }
     mark_conservative_ring_delocalisation(wavefunction, bonds);
     return bonds;
 }

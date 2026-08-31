@@ -74,7 +74,7 @@ int main(const int argc, char** argv) {
         std::abs(defaults.bond_scale - 1.0f) > 1.0e-6f ||
         defaults.molecule_opacity < 0.95f ||
         !defaults.show_coordination_contacts ||
-        !defaults.show_multicentre_support ||
+        defaults.show_multicentre_support ||
         !defaults.show_polyhedral_cage_support ||
         defaults.show_weak_interactions) {
         std::cerr << "1.0 molecular-size reference defaults regressed\n";
@@ -89,7 +89,7 @@ int main(const int argc, char** argv) {
             cov::InteractionVisualStyle::CoordinationDash ||
         cov::interaction_visual_style(cov::InteractionKind::MulticentreSupport,
                                        defaults) !=
-            cov::InteractionVisualStyle::MulticentreDash ||
+            cov::InteractionVisualStyle::Hidden ||
         cov::interaction_visual_style(cov::InteractionKind::PolyhedralCageSupport,
                                        defaults) !=
             cov::InteractionVisualStyle::PolyhedralCageDash ||
@@ -111,7 +111,7 @@ int main(const int argc, char** argv) {
 
     cov::MoleculeRenderSettings optional_layers = defaults;
     optional_layers.show_coordination_contacts = false;
-    optional_layers.show_multicentre_support = false;
+    optional_layers.show_multicentre_support = true;
     optional_layers.show_polyhedral_cage_support = false;
     optional_layers.show_weak_interactions = true;
     if (cov::interaction_visual_style(cov::InteractionKind::CoordinationContact,
@@ -119,7 +119,7 @@ int main(const int argc, char** argv) {
             cov::InteractionVisualStyle::Hidden ||
         cov::interaction_visual_style(cov::InteractionKind::MulticentreSupport,
                                        optional_layers) !=
-            cov::InteractionVisualStyle::Hidden ||
+            cov::InteractionVisualStyle::MulticentreDash ||
         cov::interaction_visual_style(cov::InteractionKind::PolyhedralCageSupport,
                                        optional_layers) !=
             cov::InteractionVisualStyle::Hidden ||
@@ -167,6 +167,78 @@ int main(const int argc, char** argv) {
         }
     }
 
+    // The exact five-membered-ring failure mode requires electronic evidence:
+    // all-pair delocalised Mayer coupling places each short diagonal just
+    // inside the broad 1.50 radius envelope. The two-hop lune filter must keep
+    // only the five structural perimeter edges.
+    cov::Wavefunction electronic_five_ring = wf;
+    add_all_pair_mayer_records(electronic_five_ring, 0.06);
+    const auto electronic_five_bonds = cov::analyse_bonds(electronic_five_ring);
+    if (!check_carbon_graph(electronic_five_ring, electronic_five_bonds, 5u,
+                            std::vector<int>(5u, 2))) {
+        std::cerr << "five-membered electronic coupling created ring chords\n";
+        return 23;
+    }
+
+    // A weak but electronically coherent, distorted three-membered ring must
+    // not lose its longest edge merely because that edge has a two-hop route.
+    // These sides are 1.2/1.2/1.8 A and all three Mayer indices are 0.10.
+    cov::Wavefunction distorted_c3;
+    const double distorted_height=std::sqrt(1.20*1.20-0.90*0.90);
+    distorted_c3.atoms = {
+        {"C", 6, -0.90*cov::kAngstromToBohr, 0.0, 0.0},
+        {"C", 6,  0.90*cov::kAngstromToBohr, 0.0, 0.0},
+        {"C", 6, 0.0, distorted_height*cov::kAngstromToBohr, 0.0},
+    };
+    add_all_pair_mayer_records(distorted_c3,0.10);
+    const auto distorted_c3_bonds=cov::analyse_bonds(distorted_c3);
+    if (!check_carbon_graph(distorted_c3,distorted_c3_bonds,3u,{2,2,2})) {
+        std::cerr << "weak distorted three-membered ring lost an edge\n";
+        return 30;
+    }
+
+    // A linear XY2 candidate can carry the same weak all-pair electronic
+    // coupling, but its terminal--terminal pair is a non-local two-hop chord.
+    // Only the two X--Y legs may survive.
+    cov::Wavefunction linear_xy2;
+    linear_xy2.atoms = {
+        {"C", 6, 0.0, 0.0, 0.0},
+        {"Si", 14, -1.60*cov::kAngstromToBohr, 0.0, 0.0},
+        {"Si", 14,  1.60*cov::kAngstromToBohr, 0.0, 0.0},
+    };
+    add_all_pair_mayer_records(linear_xy2,0.10);
+    const auto linear_xy2_bonds=cov::analyse_bonds(linear_xy2);
+    if (linear_xy2_bonds.size()!=2u ||
+        std::any_of(linear_xy2_bonds.begin(),linear_xy2_bonds.end(),
+                    [](const cov::BondVisual& bond) {
+                        return bond.atom_a!=0u && bond.atom_b!=0u;
+                    })) {
+        std::cerr << "linear XY2 retained a terminal--terminal chord\n";
+        return 31;
+    }
+
+    // A square four-membered ring has two especially short diagonals. They
+    // are non-local coupling, not structural bonds, even when every pair has a
+    // small positive Mayer value.
+    cov::Wavefunction electronic_square;
+    electronic_square.atoms = {
+        {"C", 6, -0.72 * cov::kAngstromToBohr,
+         -0.72 * cov::kAngstromToBohr, 0.0},
+        {"C", 6,  0.72 * cov::kAngstromToBohr,
+         -0.72 * cov::kAngstromToBohr, 0.0},
+        {"C", 6,  0.72 * cov::kAngstromToBohr,
+          0.72 * cov::kAngstromToBohr, 0.0},
+        {"C", 6, -0.72 * cov::kAngstromToBohr,
+          0.72 * cov::kAngstromToBohr, 0.0},
+    };
+    add_all_pair_mayer_records(electronic_square, 0.06);
+    const auto square_bonds = cov::analyse_bonds(electronic_square);
+    if (!check_carbon_graph(electronic_square, square_bonds, 4u,
+                            std::vector<int>(4u, 2))) {
+        std::cerr << "four-membered electronic coupling created diagonals\n";
+        return 24;
+    }
+
     cov::Wavefunction saturated = wf;
     // Stretch the ring into a single-bond-like regime. The conservative
     // detector must stop claiming delocalisation.
@@ -199,6 +271,38 @@ int main(const int argc, char** argv) {
         std::abs(electronic_bonds[0].bond_order - 0.18) > 1.0e-12) {
         std::cerr << "Mayer connectivity did not outrank geometry fallback\n";
         return 5;
+    }
+
+    // Signed Mayer decompositions may assign a negative contribution to a
+    // short, directly bonded pair. Its magnitude remains structural evidence,
+    // while the same contribution at a remote distance must remain invisible.
+    cov::Wavefunction signed_direct;
+    signed_direct.atoms = {
+        {"C", 6, 0.0, 0.0, 0.0},
+        {"F", 9, 1.34 * cov::kAngstromToBohr, 0.0, 0.0},
+    };
+    signed_direct.bond_order_provenance = cov::DataProvenance::Derived;
+    signed_direct.bond_orders.push_back(
+        {0, 1, -0.15, cov::DataProvenance::Derived});
+    const auto signed_direct_bonds=cov::analyse_bonds(signed_direct);
+    if (signed_direct_bonds.size()!=1u ||
+        std::abs(signed_direct_bonds.front().bond_order-0.15)>1.0e-12) {
+        std::cerr << "short signed Mayer contact was not retained\n";
+        return 27;
+    }
+
+    cov::Wavefunction signed_crowded=signed_direct;
+    signed_crowded.atoms[1].x=1.70*cov::kAngstromToBohr;
+    if (!cov::analyse_bonds(signed_crowded).empty()) {
+        std::cerr << "negative Mayer coupling escaped the strict geometry gate\n";
+        return 29;
+    }
+
+    cov::Wavefunction signed_remote=signed_direct;
+    signed_remote.atoms[1].x=3.50*cov::kAngstromToBohr;
+    if (!cov::analyse_bonds(signed_remote).empty()) {
+        std::cerr << "remote signed Mayer coupling became a structural bond\n";
+        return 28;
     }
 
     // Conversely, electronic availability with no supported pair must not
@@ -396,7 +500,7 @@ int main(const int argc, char** argv) {
         return 16;
     }
 
-    if (argc == 3) {
+    if (argc == 3 || argc == 5) {
         if (!check_real_topology(argv[1], 12u, 6u)) {
             std::cerr << "real benzene topology regression\n";
             return 17;
@@ -404,6 +508,16 @@ int main(const int argc, char** argv) {
         if (!check_real_topology(argv[2], 19u, 11u)) {
             std::cerr << "real naphthalene topology regression\n";
             return 18;
+        }
+    }
+    if (argc == 5) {
+        if (!check_real_topology(argv[3], 10u, 5u)) {
+            std::cerr << "real cyclopentadienyl topology regression\n";
+            return 25;
+        }
+        if (!check_real_topology(argv[4], 19u, 11u)) {
+            std::cerr << "real azulene topology regression\n";
+            return 26;
         }
     }
 

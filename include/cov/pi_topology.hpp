@@ -15,6 +15,11 @@ namespace cov {
 struct PiTopologyOptions {
     double linear_rank_tolerance = 0.08;
     double planar_rank_tolerance = 0.12;
+    // Slight pyramidalisation specifically contributed by attached hydrogens
+    // must reduce confidence, not sever an otherwise electronically complete
+    // amide/resonance p network. Heavy-atom tetrahedral/spiro centres retain
+    // the stricter ordinary threshold.
+    double hydrogen_pyramidal_rank_tolerance = 0.16;
     double common_direction_tolerance = 0.12;
     double adjacent_direction_cosine = 0.90;
     double cyclic_global_coherence = 0.86;

@@ -126,10 +126,32 @@ bool possible_main_group_p_centre(const Atom& atom) {
     const auto z = atom.atomic_number;
     if (z <= 2) return false;
     if ((z >= 21 && z <= 30) || (z >= 39 && z <= 48) ||
-        (z >= 57 && z <= 80) || z >= 89) {
+        (z >= 57 && z <= 80) || (z >= 89 && z <= 112)) {
         return false;
     }
     return true;
+}
+
+bool transition_or_f_block(const Atom& atom) {
+    const auto z=atom.atomic_number;
+    return (z>=21 && z<=30) || (z>=39 && z<=48) ||
+           (z>=57 && z<=80) || (z>=89 && z<=112);
+}
+
+double absolute_pair_mayer(const Wavefunction& wavefunction,
+                           std::uint32_t atom_a,
+                           std::uint32_t atom_b) {
+    if (atom_b<atom_a) std::swap(atom_a,atom_b);
+    double strongest=0.0;
+    for (const auto& record:wavefunction.bond_orders) {
+        auto first=record.atom_a;
+        auto second=record.atom_b;
+        if (second<first) std::swap(first,second);
+        if (first==atom_a && second==atom_b) {
+            strongest=std::max(strongest,std::abs(record.mayer_order));
+        }
+    }
+    return strongest;
 }
 
 struct LocalPSpace {
@@ -154,8 +176,17 @@ LocalPSpace local_p_space(
 
     Mat3 direction_covariance = zero_matrix();
     std::size_t valid_directions = 0;
+    bool has_hydrogen_neighbour=false;
     for (const auto neighbour : neighbours[atom]) {
         if (neighbour >= wavefunction.atoms.size()) continue;
+        // A metal above a ligand p system is an interaction partner, not a
+        // substituent defining the ligand atom's local hybridisation plane.
+        // Including Fe in every Cp-carbon covariance makes a planar eta5 ring
+        // look tetrahedral and destroys both ring channels before electronic
+        // validation can run.
+        if (transition_or_f_block(wavefunction.atoms[neighbour])) continue;
+        has_hydrogen_neighbour=has_hydrogen_neighbour ||
+            wavefunction.atoms[neighbour].atomic_number==1;
         const Vec3 direction = normalised(subtract(
             wavefunction.atoms[neighbour], wavefunction.atoms[atom]));
         if (norm(direction) <= kTiny) continue;
@@ -174,11 +205,15 @@ LocalPSpace local_p_space(
         add_outer(result.projector, eigen.vectors[1]);
         result.confidence = std::clamp(1.0 - second /
             std::max(kTiny, options.linear_rank_tolerance), 0.0, 1.0);
-    } else if (first <= options.planar_rank_tolerance) {
+    } else {
+        const double planar_limit=has_hydrogen_neighbour
+            ?options.hydrogen_pyramidal_rank_tolerance
+            :options.planar_rank_tolerance;
+        if (first>planar_limit) return result;
         result.rank = 1;
         add_outer(result.projector, eigen.vectors[0]);
         result.confidence = std::clamp(1.0 - first /
-            std::max(kTiny, options.planar_rank_tolerance), 0.0, 1.0);
+            std::max(kTiny, planar_limit), 0.0, 1.0);
     }
     return result;
 }
@@ -312,6 +347,78 @@ std::vector<OrientedPiNetwork> infer_oriented_pi_networks(
         network.globally_oriented = coherence >= options.cyclic_global_coherence;
         network.cyclic = network.globally_oriented &&
                          network.edges.size() >= network.atoms.size();
+        if (network.cyclic) {
+            // Pendant atoms whose p lone pairs happen to align with a cyclic
+            // core (for example C6F5) are not members of the ring pi active
+            // space.  Extract the graph 2-core only after a cycle has been
+            // established; paths, allylic chains and resonance stars retain
+            // their terminal atoms unchanged.
+            const auto original_edges=network.edges;
+            std::map<std::uint32_t,std::set<std::uint32_t>> adjacency;
+            for (const auto& edge:network.edges) {
+                adjacency[edge.first].insert(edge.second);
+                adjacency[edge.second].insert(edge.first);
+            }
+            std::vector<std::uint32_t> leaf_queue;
+            for (const auto& [atom,edge_neighbours]:adjacency) {
+                if (edge_neighbours.size()<2u) leaf_queue.push_back(atom);
+            }
+            while (!leaf_queue.empty()) {
+                const auto atom=leaf_queue.back();
+                leaf_queue.pop_back();
+                const auto found=adjacency.find(atom);
+                if (found==adjacency.end() || found->second.size()>=2u) {
+                    continue;
+                }
+                const auto edge_neighbours=found->second;
+                adjacency.erase(found);
+                for (const auto neighbour:edge_neighbours) {
+                    const auto other=adjacency.find(neighbour);
+                    if (other==adjacency.end()) continue;
+                    other->second.erase(atom);
+                    if (other->second.size()<2u) leaf_queue.push_back(neighbour);
+                }
+            }
+            if (adjacency.size()>=3u) {
+                std::set<std::uint32_t> core_atoms;
+                for (const auto& [atom,edge_neighbours]:adjacency) {
+                    (void)edge_neighbours;
+                    core_atoms.insert(atom);
+                }
+                // The graph 2-core deliberately removes aligned pendant lone
+                // pairs, but a genuinely conjugated exocyclic multiple bond
+                // (fulvene, quinones, exocyclic imines, ...) belongs to the
+                // same pi active space. Reattach only tails supported by a
+                // strong direct electronic bond. Weak C--F p/lone-pair
+                // coupling therefore remains outside aryl pi cores.
+                bool extended=true;
+                while (extended) {
+                    extended=false;
+                    for (const auto& edge:original_edges) {
+                        const bool first_in=core_atoms.count(edge.first)!=0u;
+                        const bool second_in=core_atoms.count(edge.second)!=0u;
+                        if (first_in==second_in ||
+                            absolute_pair_mayer(wavefunction,edge.first,
+                                                edge.second)<0.80) {
+                            continue;
+                        }
+                        core_atoms.insert(first_in?edge.second:edge.first);
+                        extended=true;
+                    }
+                }
+                std::vector<std::pair<std::uint32_t,std::uint32_t>> core_edges;
+                for (const auto& edge:original_edges) {
+                    if (core_atoms.count(edge.first)!=0u &&
+                        core_atoms.count(edge.second)!=0u) {
+                        core_edges.push_back(edge);
+                    }
+                }
+                if (core_edges.size()>=core_atoms.size()) {
+                    network.atoms.assign(core_atoms.begin(),core_atoms.end());
+                    network.edges=std::move(core_edges);
+                }
+            }
+        }
         network.confidence = std::clamp(
             0.55 * coherence + 0.45 * confidence_sum /
                 static_cast<double>(members.size()), 0.0, 1.0);

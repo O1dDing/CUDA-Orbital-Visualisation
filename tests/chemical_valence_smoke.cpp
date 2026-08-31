@@ -212,8 +212,9 @@ int main() {
         return EXIT_FAILURE;
     }
     if (wf.orbitals[0].chemistry.multicentre_label!="3c2e" ||
-        wf.orbitals[0].chemistry.participating_atoms!=3u ||
-        std::abs(wf.orbitals[0].chemistry.participating_electrons-2.0)>1.0e-8) {
+        wf.orbitals[0].chemistry.multicentre_participating_atoms!=3u ||
+        std::abs(wf.orbitals[0].chemistry.
+                 multicentre_participating_electrons-2.0)>1.0e-8) {
         std::cerr<<"H3 3c2e family was not attached to the valence manifold\n";
         return EXIT_FAILURE;
     }
@@ -265,6 +266,38 @@ int main() {
     cov::derive_orbital_chemistry(negative_3c);
     if (!negative_3c.multicentre_assignments.empty()) {
         std::cerr<<"negative Mayer edge became structural 3c support\n";
+        return EXIT_FAILURE;
+    }
+
+    // A density-only three-orbital coincidence is provisional, not a 3c
+    // assignment.  Once the same three atoms are bent/branched rather than a
+    // supported linear or hydrogen-bridge framework, orbital chemistry must
+    // discard the provisional label instead of exposing false 3c2e metadata.
+    auto branched_provisional=make_local_linear_three_centre_case(false);
+    branched_provisional.atoms[2].x=0.0;
+    branched_provisional.atoms[2].y=1.5;
+    cov::MulticentreAssignment provisional;
+    provisional.kind=cov::MulticentreKind::ThreeCentreTwoElectron;
+    provisional.atoms={0u,1u,2u};
+    provisional.orbitals={0u,1u,2u};
+    provisional.electron_count=2.0;
+    provisional.rationale="density-only provisional assignment";
+    provisional.provenance=cov::DataProvenance::Derived;
+    branched_provisional.multicentre_assignments.push_back(provisional);
+    cov::derive_orbital_chemistry(branched_provisional);
+    if (!branched_provisional.multicentre_assignments.empty()) {
+        std::cerr<<"branched density-only fragment retained a false 3c label\n";
+        return EXIT_FAILURE;
+    }
+    auto producer_multicentre=make_local_linear_three_centre_case(false);
+    producer_multicentre.atoms[2].x=0.0;
+    producer_multicentre.atoms[2].y=1.5;
+    provisional.provenance=cov::DataProvenance::Producer;
+    producer_multicentre.multicentre_assignments.push_back(provisional);
+    cov::derive_orbital_chemistry(producer_multicentre);
+    if (producer_multicentre.multicentre_assignments.size()!=1u ||
+        producer_multicentre.orbitals[0].chemistry.multicentre_label!="3c2e") {
+        std::cerr<<"producer multicentre assignment was not preserved\n";
         return EXIT_FAILURE;
     }
 
