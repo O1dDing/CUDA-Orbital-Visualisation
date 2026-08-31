@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <map>
 #include <queue>
+#include <utility>
 #include <vector>
 
 namespace cov {
