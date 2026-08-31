@@ -49,7 +49,7 @@ jobs:
         with:
           cuda: '12.8.2'
           method: network
-          sub-packages: '["nvcc", "cudart", "cublas", "cusolver", "cusparse", "cuobjdump", "visual_studio_integration"]'
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "cusolver", "cusolver_dev", "cusparse", "cusparse_dev", "cuobjdump", "visual_studio_integration"]'
       - name: Configure Blackwell Release viewer
         shell: pwsh
         run: >-
