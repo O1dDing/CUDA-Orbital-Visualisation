@@ -1,5 +1,6 @@
 #include "cov/orbital_view.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <string>
