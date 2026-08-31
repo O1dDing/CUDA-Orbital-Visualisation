@@ -1,4 +1,5 @@
 #include "cov/molden_parser.hpp"
+#include "cov/wavefunction_io.hpp"
 
 #include <cstdlib>
 #include <filesystem>
@@ -54,11 +55,157 @@ bool test_no_sym_mo_boundaries() {
             std::cerr << "no-Sym MO metadata regression\n";
             return false;
         }
+        if (wf.alpha_electrons != 1u || wf.beta_electrons != 1u ||
+            wf.electron_counts_provenance != cov::DataProvenance::Derived) {
+            std::cerr << "restricted Molden electron-count provenance regression\n";
+            return false;
+        }
         return true;
     } catch (const std::exception& e) {
         std::error_code ec;
         std::filesystem::remove(path, ec);
         std::cerr << "no-Sym MO parsing failed: " << e.what() << '\n';
+        return false;
+    }
+}
+
+bool test_unrestricted_electron_count_derivation() {
+    const auto path = std::filesystem::temp_directory_path() /
+                      "cov_molden_unrestricted_count_regression.molden";
+    {
+        std::ofstream out(path, std::ios::binary);
+        if (!out) return false;
+        out << "[Molden Format]\n"
+               "[Atoms] Angs\n"
+               "H 1 1 0.0 0.0 0.0\n"
+               "H 2 1 0.0 0.0 0.74\n"
+               "[GTO]\n"
+               "1 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "2 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "[MO]\n"
+               "Ene= -0.500000\n"
+               "Spin= Alpha\n"
+               "Occup= 1.0\n"
+               "1 0.70710678\n"
+               "2 0.70710678\n"
+               "Ene= -0.480000\n"
+               "Spin= Beta\n"
+               "Occup= 1.0\n"
+               "1 0.70710678\n"
+               "2 0.70710678\n";
+    }
+    try {
+        const auto wf = cov::parse_wavefunction(path);
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        if (wf.alpha_electrons != 1u || wf.beta_electrons != 1u ||
+            wf.electron_counts_provenance != cov::DataProvenance::Derived) {
+            std::cerr << "unrestricted Molden electron-count provenance regression\n";
+            return false;
+        }
+        return true;
+    } catch (const std::exception& e) {
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        std::cerr << "unrestricted Molden count derivation failed: " << e.what() << '\n';
+        return false;
+    }
+}
+
+bool test_unrestricted_double_occupation_stays_unavailable() {
+    const auto path = std::filesystem::temp_directory_path() /
+                      "cov_molden_unrestricted_double_occupation.molden";
+    {
+        std::ofstream out(path, std::ios::binary);
+        if (!out) return false;
+        out << "[Molden Format]\n"
+               "[Atoms] Angs\n"
+               "H 1 1 0.0 0.0 0.0\n"
+               "H 2 1 0.0 0.0 0.74\n"
+               "[GTO]\n"
+               "1 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "2 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "[MO]\n"
+               "Ene= -0.500000\n"
+               "Spin= Alpha\n"
+               "Occup= 2.0\n"
+               "1 0.70710678\n"
+               "2 0.70710678\n"
+               "Ene= -0.480000\n"
+               "Spin= Beta\n"
+               "Occup= 0.0\n"
+               "1 0.70710678\n"
+               "2 0.70710678\n";
+    }
+    try {
+        const auto wf=cov::parse_wavefunction(path);
+        std::error_code ec;
+        std::filesystem::remove(path,ec);
+        if (wf.electron_counts_provenance!=cov::DataProvenance::Unavailable) {
+            std::cerr<<"invalid explicit-spin Occup=2 produced electron counts\n";
+            return false;
+        }
+        return true;
+    } catch (const std::exception& e) {
+        std::error_code ec;
+        std::filesystem::remove(path,ec);
+        std::cerr<<"explicit-spin occupation validity test failed: "<<e.what()<<'\n';
+        return false;
+    }
+}
+
+bool test_missing_occupation_stays_unavailable() {
+    const auto path = std::filesystem::temp_directory_path() /
+                      "cov_molden_missing_occupation_regression.molden";
+    {
+        std::ofstream out(path, std::ios::binary);
+        if (!out) return false;
+        out << "[Molden Format]\n"
+               "[Atoms] Angs\n"
+               "H 1 1 0.0 0.0 0.0\n"
+               "H 2 1 0.0 0.0 0.74\n"
+               "[GTO]\n"
+               "1 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "2 0\n"
+               "s 1 1.0\n"
+               "1.0 1.0\n"
+               "[MO]\n"
+               "Ene= -0.500000\n"
+               "Spin= Alpha\n"
+               "Occup= 2.0\n"
+               "1 0.70710678\n"
+               "2 0.70710678\n"
+               "Ene= 0.200000\n"
+               "Spin= Alpha\n"
+               "1 0.70710678\n"
+               "2 -0.70710678\n";
+    }
+    try {
+        const auto wf = cov::parse_molden(path);
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        if (wf.orbitals.size()!=2u ||
+            wf.orbitals[0].occupation_provenance!=cov::DataProvenance::Producer ||
+            wf.orbitals[1].occupation_provenance!=cov::DataProvenance::Unavailable ||
+            wf.electron_counts_provenance!=cov::DataProvenance::Unavailable) {
+            std::cerr << "missing Molden Occup was promoted to derived electron counts\n";
+            return false;
+        }
+        return true;
+    } catch (const std::exception& e) {
+        std::error_code ec;
+        std::filesystem::remove(path, ec);
+        std::cerr << "missing Molden occupation test failed: " << e.what() << '\n';
         return false;
     }
 }
@@ -151,6 +298,15 @@ int main(int argc, char** argv) {
             return EXIT_FAILURE;
         }
         if (!test_omitted_7f_marker_inference()) {
+            return EXIT_FAILURE;
+        }
+        if (!test_unrestricted_electron_count_derivation()) {
+            return EXIT_FAILURE;
+        }
+        if (!test_missing_occupation_stays_unavailable()) {
+            return EXIT_FAILURE;
+        }
+        if (!test_unrestricted_double_occupation_stays_unavailable()) {
             return EXIT_FAILURE;
         }
         std::cout << "parser smoke test passed\n";

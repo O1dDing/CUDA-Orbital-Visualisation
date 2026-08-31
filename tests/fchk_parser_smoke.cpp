@@ -1,6 +1,7 @@
 #include "cov/fchk_parser.hpp"
 #include "cov/wavefunction_io.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
@@ -19,6 +20,19 @@ void field_prefix(std::ofstream& out, const std::string& label, const char type)
 void scalar_i(std::ofstream& out, const std::string& label, const long long value) {
     field_prefix(out, label, 'I');
     out << std::right << std::setw(16) << value << '\n';
+}
+
+void array_c(std::ofstream& out,
+             const std::string& label,
+             std::string value) {
+    const std::size_t count = (value.size() + 11u) / 12u;
+    value.resize(count * 12u, ' ');
+    field_prefix(out, label, 'C');
+    out << "   N=" << std::right << std::setw(12) << count << '\n';
+    for (std::size_t i = 0; i < count; i += 5u) {
+        const std::size_t chunks = std::min<std::size_t>(5u, count - i);
+        out << value.substr(i * 12u, chunks * 12u) << '\n';
+    }
 }
 
 void array_i(std::ofstream& out,
@@ -49,6 +63,13 @@ std::filesystem::path make_restricted_h2_fixture() {
     std::ofstream out(path, std::ios::binary);
     out << "H2 FCHK parser regression\n"
            "SP        RHF STO-3G\n";
+    // A legal Gaussian C array whose first continuation line contains an 'I'
+    // in column 41.  It must be consumed as fixed-width A12 data rather than
+    // misidentified as an integer record header.
+    array_c(out, "Full Title",
+            "0123456789012345678901234567890123456789I1234567890123456789012345678901");
+    scalar_i(out, "Charge", 0);
+    scalar_i(out, "Multiplicity", 1);
     scalar_i(out, "Number of atoms", 2);
     scalar_i(out, "Number of alpha electrons", 1);
     scalar_i(out, "Number of beta electrons", 1);
@@ -56,6 +77,7 @@ std::filesystem::path make_restricted_h2_fixture() {
     scalar_i(out, "Number of independent functions", 2);
     array_i(out, "Atomic numbers", {1, 1});
     array_r(out, "Current cartesian coordinates", {0.0, 0.0, -0.7, 0.0, 0.0, 0.7});
+    array_r(out, "Mulliken Charges", {0.10, -0.10});
     array_i(out, "Shell types", {0, 0});
     array_i(out, "Number of primitives per shell", {1, 1});
     array_i(out, "Shell to atom map", {1, 2});
@@ -74,6 +96,8 @@ std::filesystem::path make_unrestricted_h_fixture() {
     std::ofstream out(path, std::ios::binary);
     out << "H unrestricted FCHK parser regression\n"
            "SP        UHF STO-3G\n";
+    scalar_i(out, "Charge", 0);
+    scalar_i(out, "Multiplicity", 2);
     scalar_i(out, "Number of atoms", 1);
     scalar_i(out, "Number of alpha electrons", 1);
     scalar_i(out, "Number of beta electrons", 0);
@@ -149,6 +173,17 @@ std::filesystem::path make_cartesian_g_fixture() {
     return path;
 }
 
+std::filesystem::path make_invalid_integer_fixture() {
+    const auto path = std::filesystem::temp_directory_path() /
+                      "cov_invalid_integer_context.fchk";
+    std::ofstream out(path, std::ios::binary);
+    out << "Invalid integer context regression\n"
+           "SP        RHF synthetic\n";
+    field_prefix(out, "Broken integer", 'I');
+    out << "      not-an-integer\n";
+    return path;
+}
+
 bool approximately(const double a, const double b, const double eps = 1.0e-6) {
     return std::abs(a - b) <= eps;
 }
@@ -161,13 +196,37 @@ int main() {
     const auto h = make_unrestricted_h_fixture();
     const auto shells = make_shell_convention_fixture();
     const auto cart_g = make_cartesian_g_fixture();
+    const auto invalid_integer = make_invalid_integer_fixture();
 
     try {
+        bool contextual_error = false;
+        try {
+            (void)cov::parse_fchk(invalid_integer);
+        } catch (const std::exception& error) {
+            const std::string message = error.what();
+            contextual_error = message.find("Broken integer") != std::string::npos &&
+                               message.find("line 3") != std::string::npos;
+        }
+        std::filesystem::remove(invalid_integer, ec);
+        if (!contextual_error) {
+            std::cerr << "FCHK integer error lacked field/line context\n";
+            return EXIT_FAILURE;
+        }
+
         const auto restricted = cov::parse_fchk(h2);
         if (restricted.source != cov::WavefunctionSource::Fchk ||
             restricted.atoms.size() != 2u || restricted.basis_count != 2u ||
             restricted.orbitals.size() != 2u ||
-            restricted.alpha_electrons != 1u || restricted.beta_electrons != 1u) {
+            restricted.alpha_electrons != 1u || restricted.beta_electrons != 1u ||
+            restricted.electron_counts_provenance !=
+                cov::DataProvenance::Producer ||
+            restricted.charge != 0 || restricted.multiplicity != 1u ||
+            restricted.charge_provenance != cov::DataProvenance::Producer ||
+            restricted.multiplicity_provenance != cov::DataProvenance::Producer ||
+            restricted.atomic_partial_charge_provenance !=
+                cov::DataProvenance::Producer ||
+            restricted.atomic_partial_charge_scheme != "Mulliken" ||
+            restricted.atomic_partial_charges != std::vector<double>{0.10, -0.10}) {
             std::cerr << "restricted FCHK metadata regression\n";
             return EXIT_FAILURE;
         }
@@ -196,7 +255,10 @@ int main() {
             unrestricted.orbitals[0].spin != cov::Spin::Alpha ||
             unrestricted.orbitals[1].spin != cov::Spin::Beta ||
             unrestricted.orbitals[0].occupation != 1.0f ||
-            unrestricted.orbitals[1].occupation != 0.0f) {
+            unrestricted.orbitals[1].occupation != 0.0f ||
+            unrestricted.charge != 0 || unrestricted.multiplicity != 2u ||
+            unrestricted.charge_provenance != cov::DataProvenance::Producer ||
+            unrestricted.multiplicity_provenance != cov::DataProvenance::Producer) {
             std::cerr << "unrestricted alpha/beta orbital regression\n";
             return EXIT_FAILURE;
         }
@@ -242,6 +304,7 @@ int main() {
         std::filesystem::remove(h, ec);
         std::filesystem::remove(shells, ec);
         std::filesystem::remove(cart_g, ec);
+        std::filesystem::remove(invalid_integer, ec);
         std::cout << "fchk parser smoke test passed\n";
         return EXIT_SUCCESS;
     } catch (const std::exception& e) {
@@ -249,6 +312,7 @@ int main() {
         std::filesystem::remove(h, ec);
         std::filesystem::remove(shells, ec);
         std::filesystem::remove(cart_g, ec);
+        std::filesystem::remove(invalid_integer, ec);
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }

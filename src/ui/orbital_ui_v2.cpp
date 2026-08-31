@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <iomanip>
 #include <map>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -91,15 +93,59 @@ struct DelocalisedLabels {
     const char* members;
     const char* atoms;
     const char* electrons;
+    const char* channels;
+    const char* topology;
 };
 
 DelocalisedLabels delocalised_labels(const Language language) {
     switch (language) {
-        case Language::ChineseSimplified: return {"成员 MO", "参与原子", "参与电子"};
-        case Language::Japanese: return {"構成 MO", "参加原子", "参加電子"};
-        case Language::French: return {"OM membres", "Atomes participants", "Électrons participants"};
-        default: return {"Member MOs", "Participating atoms", "Participating electrons"};
+        case Language::ChineseSimplified:
+            return {"成员 MO", "参与原子", "参与电子", "取向通道", "拓扑"};
+        case Language::Japanese:
+            return {"構成 MO", "参加原子", "参加電子", "配向チャネル", "トポロジー"};
+        case Language::French:
+            return {"OM membres", "Atomes participants", "Électrons participants",
+                    "Canaux orientés", "Topologie"};
+        default:
+            return {"Member MOs", "Participating atoms", "Participating electrons",
+                    "Orientation channels", "Topology"};
     }
+}
+
+const char* pi_topology_value(const DelocalisedPiDescriptor& descriptor,
+                              const Language language) {
+    if (!descriptor.topology_available) return "N/A";
+    if (descriptor.cyclic_topology) {
+        switch (language) {
+            case Language::ChineseSimplified: return "环状离域";
+            case Language::Japanese: return "環状非局在";
+            case Language::French: return "délocalisée cyclique";
+            default: return "cyclic delocalised";
+        }
+    }
+    switch (language) {
+        case Language::ChineseSimplified: return "非环状";
+        case Language::Japanese: return "非環状";
+        case Language::French: return "non cyclique";
+        default: return "non-cyclic";
+    }
+}
+
+std::string pi_channel_detail(const DelocalisedPiDescriptor& descriptor) {
+    std::ostringstream out;
+    out << std::fixed << std::setprecision(3);
+    for (std::size_t index=0;index<descriptor.orientation_channel_details.size();++index) {
+        if (index) out << " | ";
+        const auto& channel=descriptor.orientation_channel_details[index];
+        out << (index+1u) << ": atoms ";
+        for (std::size_t atom=0;atom<channel.atoms.size();++atom) {
+            if (atom) out << '-';
+            out << (channel.atoms[atom]+1u);
+        }
+        out << "; n=(" << channel.direction[0] << ',' << channel.direction[1]
+            << ',' << channel.direction[2] << "); coherence=" << channel.coherence;
+    }
+    return out.str();
 }
 
 const char* intermediate_toggle_label(const Language language) {
@@ -388,6 +434,42 @@ void draw_level_tooltip(const MODiagramData& data,
         labelled_number("radial variation",
                         fixed_number(100.0*data.ligand_field_radial_cv,2)+"%");
     }
+    if (!data.local_geometries.empty()) {
+        labelled_number("local molecular geometries",
+                        std::to_string(data.local_geometries.size()));
+        std::set<std::size_t> relevant_centres;
+        for (const auto& contribution:level.chemistry.ao_contributions) {
+            if (contribution.weight>=0.08) {
+                relevant_centres.insert(contribution.atom_index);
+            }
+        }
+        std::size_t relevant_geometry_count=0u;
+        for (const auto& geometry:data.local_geometries) {
+            if (relevant_centres.empty() ||
+                relevant_centres.contains(geometry.centre_atom)) {
+                ++relevant_geometry_count;
+            }
+        }
+        std::size_t shown=0u;
+        for (const auto& geometry:data.local_geometries) {
+            if (!relevant_centres.empty() &&
+                !relevant_centres.contains(geometry.centre_atom)) {
+                continue;
+            }
+            std::ostringstream value;
+            value << "atom " << (geometry.centre_atom+1u) << ": "
+                  << geometry.geometry_name << " (" << geometry.geometry_id
+                  << ", " << geometry.point_group << ", CN"
+                  << geometry.neighbour_atoms.size() << ")";
+            labelled_value("local geometry",value.str(),kSymmetryColour);
+            if (++shown==6u) break;
+        }
+        if (shown==0u) {
+            labelled_value("local geometry","not centred on this MO",kUnavailableColour);
+        } else if (shown<relevant_geometry_count) {
+            ImGui::TextDisabled("…");
+        }
+    }
 
     labelled_number(tr(Text::DegenerateSet, language), std::to_string(level.metadata.degeneracy_size));
     if (level.metadata.degeneracy_size > 1) {
@@ -473,6 +555,15 @@ void draw_level_tooltip(const MODiagramData& data,
         labelled_number(labels.atoms, atom_value);
         labelled_number(labels.electrons,
                         std::to_string(static_cast<int>(std::lround(descriptor.participating_electrons))));
+        labelled_number(labels.channels,
+                        descriptor.topology_available
+                            ?std::to_string(descriptor.orientation_channels):"N/A");
+        if (descriptor.topology_available &&
+            !descriptor.orientation_channel_details.empty()) {
+            ImGui::TextWrapped("%s",pi_channel_detail(descriptor).c_str());
+        }
+        labelled_value(labels.topology,pi_topology_value(descriptor,language),
+                       descriptor.topology_available?kPiColour:kUnavailableColour);
         tooltip_source_confidence(level.annotation.delocalised_pi.source,
                                   level.annotation.delocalised_pi.confidence,
                                   level.annotation.delocalised_pi.heuristic, language);

@@ -13,10 +13,18 @@ namespace {
 constexpr double kMayerRenderFloor = 0.05;
 // Mayer indices also contain non-local through-bond and pi-system coupling.
 // Keep the electronic value as bond evidence, but do not turn those remote
-// couplings into structural chords. 1.50 still admits unusually long genuine
-// bonds such as the equal H--H contacts in H3+ while separating the next
-// neighbour shell in ordinary carbon rings.
+// couplings into structural chords. The base 1.50 separates the next-neighbour
+// shell in ordinary carbon rings. Strong direct electronic evidence can relax
+// the envelope smoothly (needed by weakly bound one-electron bonds such as
+// equilibrium H2+) without granting the same range to small remote pi Mayer
+// terms.
 constexpr double kElectronicAdjacencyFactor = 1.50;
+
+double electronic_adjacency_factor(const double mayer_order) noexcept {
+    const double strong_fraction=std::clamp(
+        (mayer_order-0.20)/0.30,0.0,1.0);
+    return kElectronicAdjacencyFactor+0.35*strong_fraction;
+}
 
 // Covalent radii are structural data, not element-colour cosmetics: an
 // incomplete table can silently remove genuine metal--ligand bonds at the
@@ -228,7 +236,7 @@ std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction) {
             const Atom& b = wavefunction.atoms[j];
             const double distance_bohr = atom_distance_bohr(a, b);
             const double sanity_bohr =
-                kElectronicAdjacencyFactor *
+                electronic_adjacency_factor(record.mayer_order) *
                 (covalent_radius_angstrom(a.atomic_number) +
                  covalent_radius_angstrom(b.atomic_number)) * kAngstromToBohr;
             if (distance_bohr > sanity_bohr) continue;

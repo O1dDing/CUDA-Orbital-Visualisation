@@ -1,4 +1,5 @@
 #include "cov/orbital_chemistry.hpp"
+#include "cov/pi_topology.hpp"
 
 #include <algorithm>
 #include <array>
@@ -920,11 +921,15 @@ bool pi_connectivity_evidence(const Wavefunction& wf,
     const double distance=distance_bohr(wf.atoms[a],wf.atoms[b]);
 
     if (wf.bond_order_provenance!=DataProvenance::Unavailable) {
-        if (distance>1.80*radii_bohr) return false;
+        // Pi topology must follow the structural first-neighbour graph.  A
+        // long or antibonding pair can carry a non-zero signed Mayer coupling
+        // (for example the two terminal O atoms in CO2), but it must not close
+        // a fictitious aromatic cycle.
+        if (distance>1.45*radii_bohr) return false;
         for (const auto& record:wf.bond_orders) {
             if ((record.atom_a==a && record.atom_b==b) ||
                 (record.atom_a==b && record.atom_b==a)) {
-                return std::abs(record.mayer_order)>=0.05;
+                return record.mayer_order>=0.05;
             }
         }
         return false;
@@ -1145,6 +1150,118 @@ std::vector<ReferenceColumn> perpendicular_p_subspace(
     return orthonormal;
 }
 
+struct OrientedPColumn {
+    std::uint32_t atom=0;
+    std::array<double,3> direction{0.0,0.0,1.0};
+};
+
+std::vector<ReferenceColumn> oriented_p_subspace(
+    const Wavefunction& wf,
+    const std::vector<OrientedPColumn>& requested,
+    const std::vector<AtomicPReference>& p_reference) {
+    std::vector<ReferenceColumn> raw_oriented;
+    raw_oriented.reserve(requested.size());
+    for (const auto& requested_column:requested) {
+        const auto found=std::find_if(
+            p_reference.begin(),p_reference.end(),
+            [&](const auto& candidate){
+                return candidate.atom==requested_column.atom;
+            });
+        if (found==p_reference.end()) return {};
+        ReferenceColumn column;
+        column.coefficients.assign(wf.basis_count,0.0);
+        column.atom=requested_column.atom;
+        column.n=found->principal_n;
+        column.l=1;
+        column.component=2;
+        column.space=ReferenceClass::ChemicalValence;
+        column.label=reference_label(
+            wf,column.atom,column.n,column.l)+" p_oriented";
+        for (std::size_t axis=0;axis<3u;++axis) {
+            const auto* source=found->component[axis];
+            if (source==nullptr ||
+                source->coefficients.size()!=column.coefficients.size()) {
+                return {};
+            }
+            for (std::size_t mu=0;mu<column.coefficients.size();++mu) {
+                column.coefficients[mu]+=
+                    requested_column.direction[axis]*source->coefficients[mu];
+            }
+        }
+        raw_oriented.push_back(std::move(column));
+    }
+    auto orthonormal=orthonormalise_reference(std::move(raw_oriented),wf);
+    if (orthonormal.size()!=requested.size()) return {};
+    return orthonormal;
+}
+
+std::vector<std::pair<std::uint32_t,std::uint32_t>>
+pi_topology_bonded_pairs(const Wavefunction& wf) {
+    std::vector<std::pair<std::uint32_t,std::uint32_t>> result;
+    for (std::uint32_t a=0;a<wf.atoms.size();++a) {
+        for (std::uint32_t b=a+1u;b<wf.atoms.size();++b) {
+            if (pi_connectivity_evidence(wf,a,b)) result.emplace_back(a,b);
+        }
+    }
+    return result;
+}
+
+bool networks_share_atom(const OrientedPiNetwork& a,
+                         const OrientedPiNetwork& b) {
+    return std::any_of(a.atoms.begin(),a.atoms.end(),[&](const auto atom){
+        return std::find(b.atoms.begin(),b.atoms.end(),atom)!=b.atoms.end();
+    });
+}
+
+std::vector<std::vector<std::size_t>> pi_network_bundles(
+    const std::vector<OrientedPiNetwork>& networks) {
+    std::vector<std::vector<std::size_t>> result;
+    std::vector<bool> visited(networks.size(),false);
+    for (std::size_t seed=0;seed<networks.size();++seed) {
+        if (visited[seed]) continue;
+        std::vector<std::size_t> bundle;
+        std::vector<std::size_t> pending{seed};
+        visited[seed]=true;
+        while (!pending.empty()) {
+            const auto current=pending.back();
+            pending.pop_back();
+            bundle.push_back(current);
+            for (std::size_t candidate=0;candidate<networks.size();++candidate) {
+                if (visited[candidate] ||
+                    !networks_share_atom(networks[current],networks[candidate])) {
+                    continue;
+                }
+                visited[candidate]=true;
+                pending.push_back(candidate);
+            }
+        }
+        result.push_back(std::move(bundle));
+    }
+    return result;
+}
+
+std::vector<OrientedPColumn> oriented_columns_for_bundle(
+    const std::vector<OrientedPiNetwork>& networks,
+    const std::vector<std::size_t>& bundle) {
+    std::vector<OrientedPColumn> result;
+    for (const auto network_index:bundle) {
+        if (network_index>=networks.size()) continue;
+        const auto& network=networks[network_index];
+        for (const auto atom:network.atoms) {
+            const bool duplicate=std::any_of(
+                result.begin(),result.end(),[&](const auto& existing){
+                    return existing.atom==atom &&
+                        std::abs(dot3(existing.direction,
+                                      network.representative_direction))>0.985;
+                });
+            if (!duplicate) {
+                result.push_back({atom,network.representative_direction});
+            }
+        }
+    }
+    return result;
+}
+
 struct PiOrbitalSelection {
     std::vector<std::size_t> orbitals;
     std::vector<double> weights;
@@ -1157,19 +1274,22 @@ struct PiOrbitalSelection {
 PiOrbitalSelection select_perpendicular_p_orbitals(
     const Wavefunction& wf,
     const std::vector<ReferenceColumn>& perpendicular,
-    const double degeneracy_tolerance) {
+    const double degeneracy_tolerance,
+    const std::set<std::size_t>& excluded) {
     PiOrbitalSelection result;
     const std::size_t target=perpendicular.size();
     if (target==0u || wf.orbitals.empty()) return result;
-    if (std::any_of(wf.orbitals.begin(),wf.orbitals.end(),
-                    [](const auto& mo){return mo.spin==Spin::Beta;})) {
-        return result;
-    }
+
+    const bool has_beta=std::any_of(
+        wf.orbitals.begin(),wf.orbitals.end(),
+        [](const auto& mo){return mo.spin==Spin::Beta;});
+    std::vector<Spin> spins{Spin::Alpha};
+    if (has_beta) spins.push_back(Spin::Beta);
 
     result.weights.assign(wf.orbitals.size(),0.0);
     result.projection.assign(
         wf.orbitals.size(),std::vector<double>(target,0.0));
-    double complete_weight=0.0;
+    std::map<Spin,double> complete_weight;
     for (std::size_t i=0;i<wf.orbitals.size();++i) {
         const auto& mo=wf.orbitals[i];
         if (mo.coefficients.size()!=wf.basis_count) continue;
@@ -1180,111 +1300,133 @@ PiOrbitalSelection select_perpendicular_p_orbitals(
             result.projection[i][p]=amplitude;
             result.weights[i]+=amplitude*amplitude;
         }
-        complete_weight+=result.weights[i];
+        complete_weight[mo.spin]+=result.weights[i];
     }
-    if (complete_weight<0.80*static_cast<double>(target) ||
-        complete_weight>1.20*static_cast<double>(target)) {
-        return {};
+    for (const auto spin:spins) {
+        const double weight=complete_weight[spin];
+        if (weight<0.80*static_cast<double>(target) ||
+            weight>1.20*static_cast<double>(target)) {
+            return {};
+        }
     }
 
     auto groups=degeneracy_groups(wf,degeneracy_tolerance);
-    std::vector<std::size_t> candidates;
-    for (std::size_t g=0;g<groups.size();++g) {
-        auto& group=groups[g];
-        bool eligible=group.spin==Spin::Alpha;
-        for (const auto index:group.orbitals) {
-            if (index>=wf.orbitals.size() ||
-                (!wf.orbitals[index].chemistry.valence_manifold &&
-                 wf.orbitals[index].chemistry.valence_weight<0.10)) {
-                eligible=false;
-                break;
+    std::map<Spin,std::vector<std::size_t>> selected_by_spin;
+    for (const auto spin:spins) {
+        std::vector<std::size_t> candidates;
+        for (std::size_t g=0;g<groups.size();++g) {
+            auto& group=groups[g];
+            bool eligible=group.spin==spin;
+            group.score=0.0;
+            for (const auto index:group.orbitals) {
+                if (index>=wf.orbitals.size() ||
+                    excluded.count(index)!=0u ||
+                    (!wf.orbitals[index].chemistry.valence_manifold &&
+                     wf.orbitals[index].chemistry.valence_weight<0.10)) {
+                    eligible=false;
+                    break;
+                }
+                group.score+=result.weights[index];
             }
-            group.score+=result.weights[index];
+            if (eligible && group.orbitals.size()<=target) {
+                candidates.push_back(g);
+            }
         }
-        if (eligible && group.orbitals.size()<=target) candidates.push_back(g);
-    }
 
-    const double negative=-std::numeric_limits<double>::infinity();
-    std::vector<double> dp(target+1u,negative);
-    std::vector<std::vector<std::size_t>> chosen(target+1u);
-    dp[0]=0.0;
-    for (const auto group_index:candidates) {
-        const auto size=groups[group_index].orbitals.size();
-        for (std::size_t used=target+1u;used-- > size;) {
-            if (!std::isfinite(dp[used-size])) continue;
-            const double trial=dp[used-size]+groups[group_index].score;
-            if (trial>dp[used]+1.0e-12) {
-                dp[used]=trial;
-                chosen[used]=chosen[used-size];
-                chosen[used].push_back(group_index);
+        const double negative=-std::numeric_limits<double>::infinity();
+        std::vector<double> dp(target+1u,negative);
+        std::vector<std::vector<std::size_t>> chosen(target+1u);
+        dp[0]=0.0;
+        for (const auto group_index:candidates) {
+            const auto size=groups[group_index].orbitals.size();
+            for (std::size_t used=target+1u;used-- > size;) {
+                if (!std::isfinite(dp[used-size])) continue;
+                const double trial=dp[used-size]+groups[group_index].score;
+                if (trial>dp[used]+1.0e-12) {
+                    dp[used]=trial;
+                    chosen[used]=chosen[used-size];
+                    chosen[used].push_back(group_index);
+                }
             }
         }
-    }
-    if (!std::isfinite(dp[target])) return {};
-    for (const auto group_index:chosen[target]) {
+        if (!std::isfinite(dp[target])) return {};
+        auto& spin_selection=selected_by_spin[spin];
+        for (const auto group_index:chosen[target]) {
+            spin_selection.insert(
+                spin_selection.end(),
+                groups[group_index].orbitals.begin(),
+                groups[group_index].orbitals.end());
+        }
+        std::sort(spin_selection.begin(),spin_selection.end());
+        if (spin_selection.size()!=target) return {};
         result.orbitals.insert(
-            result.orbitals.end(),
-            groups[group_index].orbitals.begin(),
-            groups[group_index].orbitals.end());
+            result.orbitals.end(),spin_selection.begin(),spin_selection.end());
     }
     std::sort(result.orbitals.begin(),result.orbitals.end());
-    if (result.orbitals.size()!=target) return {};
+    if (result.orbitals.size()!=target*spins.size()) return {};
 
     double selected_weight=0.0;
-    for (const auto index:result.orbitals) {
-        if (result.weights[index]<0.12) return {};
-        selected_weight+=result.weights[index];
+    for (const auto spin:spins) {
+        double spin_weight=0.0;
+        for (const auto index:selected_by_spin[spin]) {
+            if (result.weights[index]<0.12) return {};
+            spin_weight+=result.weights[index];
+        }
+        if (spin_weight/complete_weight[spin]<0.62) return {};
+        selected_weight+=spin_weight;
     }
-    result.coverage=selected_weight/static_cast<double>(target);
-    if (result.coverage<0.62 || selected_weight/complete_weight<0.62) {
-        return {};
-    }
+    result.coverage=selected_weight/
+        static_cast<double>(target*spins.size());
+    if (result.coverage<0.62) return {};
 
     result.minimum_atom_coverage=std::numeric_limits<double>::infinity();
-    for (std::size_t p=0;p<target;++p) {
-        double atom_coverage=0.0;
-        for (const auto index:result.orbitals) {
-            const double amplitude=result.projection[index][p];
-            atom_coverage+=amplitude*amplitude;
+    for (const auto spin:spins) {
+        for (std::size_t p=0;p<target;++p) {
+            double atom_coverage=0.0;
+            for (const auto index:selected_by_spin[spin]) {
+                const double amplitude=result.projection[index][p];
+                atom_coverage+=amplitude*amplitude;
+            }
+            result.minimum_atom_coverage=std::min(
+                result.minimum_atom_coverage,atom_coverage);
         }
-        result.minimum_atom_coverage=std::min(
-            result.minimum_atom_coverage,atom_coverage);
     }
     if (result.minimum_atom_coverage<0.30) return {};
 
-    // Pivoted Gram-Schmidt on the N selected projections rejects a high-trace
-    // but rank-deficient set which happens to represent the same p direction
-    // more than once.
-    std::vector<std::vector<double>> residuals;
-    residuals.reserve(target);
-    for (const auto index:result.orbitals) {
-        residuals.push_back(result.projection[index]);
-    }
     result.minimum_pivot=std::numeric_limits<double>::infinity();
-    for (std::size_t pivot=0;pivot<target;++pivot) {
-        std::size_t best=pivot;
-        double best_norm2=-1.0;
-        for (std::size_t candidate=pivot;candidate<target;++candidate) {
-            const double norm2=std::inner_product(
-                residuals[candidate].begin(),residuals[candidate].end(),
-                residuals[candidate].begin(),0.0);
-            if (norm2>best_norm2) {
-                best_norm2=norm2;
-                best=candidate;
-            }
+    for (const auto spin:spins) {
+        // Per-spin pivoted Gram-Schmidt rejects a high-trace but rank-deficient
+        // selection. Alpha and beta subspaces are independently complete.
+        std::vector<std::vector<double>> residuals;
+        residuals.reserve(target);
+        for (const auto index:selected_by_spin[spin]) {
+            residuals.push_back(result.projection[index]);
         }
-        if (best_norm2<0.04) return {};
-        std::swap(residuals[pivot],residuals[best]);
-        result.minimum_pivot=std::min(result.minimum_pivot,best_norm2);
-        const double inverse=1.0/std::sqrt(best_norm2);
-        for (double& value:residuals[pivot]) value*=inverse;
-        for (std::size_t candidate=pivot+1u;candidate<target;++candidate) {
-            const double projection=std::inner_product(
-                residuals[pivot].begin(),residuals[pivot].end(),
-                residuals[candidate].begin(),0.0);
-            for (std::size_t p=0;p<target;++p) {
-                residuals[candidate][p]-=
-                    projection*residuals[pivot][p];
+        for (std::size_t pivot=0;pivot<target;++pivot) {
+            std::size_t best=pivot;
+            double best_norm2=-1.0;
+            for (std::size_t candidate=pivot;candidate<target;++candidate) {
+                const double norm2=std::inner_product(
+                    residuals[candidate].begin(),residuals[candidate].end(),
+                    residuals[candidate].begin(),0.0);
+                if (norm2>best_norm2) {
+                    best_norm2=norm2;
+                    best=candidate;
+                }
+            }
+            if (best_norm2<0.04) return {};
+            std::swap(residuals[pivot],residuals[best]);
+            result.minimum_pivot=std::min(result.minimum_pivot,best_norm2);
+            const double inverse=1.0/std::sqrt(best_norm2);
+            for (double& value:residuals[pivot]) value*=inverse;
+            for (std::size_t candidate=pivot+1u;candidate<target;++candidate) {
+                const double projection=std::inner_product(
+                    residuals[pivot].begin(),residuals[pivot].end(),
+                    residuals[candidate].begin(),0.0);
+                for (std::size_t p=0;p<target;++p) {
+                    residuals[candidate][p]-=
+                        projection*residuals[pivot][p];
+                }
             }
         }
     }
@@ -1292,10 +1434,12 @@ PiOrbitalSelection select_perpendicular_p_orbitals(
 }
 
 std::string delocalised_pi_family_id(
-    const std::vector<std::uint32_t>& atoms) {
+    const std::vector<std::uint32_t>& atoms,
+    const std::size_t bundle_index) {
     std::ostringstream out;
     out<<"delocalised-pi";
     for (const auto atom:atoms) out<<':'<<(atom+1u);
+    out<<":channel-bundle-"<<(bundle_index+1u);
     return out.str();
 }
 
@@ -1304,17 +1448,33 @@ void attach_planar_p_delocalised_families(
     const std::vector<ReferenceColumn>& raw,
     const OrbitalChemistryOptions& options) {
     const auto p_reference=atomic_valence_p_references(wf,raw);
-    if (p_reference.size()<3u) return;
+    if (p_reference.size()<2u) return;
 
-    for (const auto& atoms:planar_p_components(wf,p_reference)) {
-        const auto plane=fit_pi_plane(wf,atoms);
-        if (!plane.valid || !substituents_follow_plane(wf,atoms,plane)) continue;
-        const auto perpendicular=perpendicular_p_subspace(
-            wf,atoms,plane,p_reference);
-        if (perpendicular.size()!=atoms.size()) continue;
+    const auto networks=infer_oriented_pi_networks(
+        wf,pi_topology_bonded_pairs(wf));
+    if (networks.empty()) return;
+    const auto bundles=pi_network_bundles(networks);
+    std::set<std::size_t> excluded;
+    for (std::size_t index=0;index<wf.orbitals.size();++index) {
+        const auto& label=wf.orbitals[index].chemistry.multicentre_label;
+        if (!label.empty() && label!="delocalised-pi") excluded.insert(index);
+    }
+
+    for (std::size_t bundle_index=0;bundle_index<bundles.size();
+         ++bundle_index) {
+        const auto& bundle=bundles[bundle_index];
+        const auto requested=oriented_columns_for_bundle(networks,bundle);
+        if (requested.size()<2u) continue;
+        const auto oriented=oriented_p_subspace(wf,requested,p_reference);
+        if (oriented.size()!=requested.size()) continue;
         const auto selected=select_perpendicular_p_orbitals(
-            wf,perpendicular,options.degeneracy_tolerance_hartree);
-        if (selected.orbitals.size()!=atoms.size()) continue;
+            wf,oriented,options.degeneracy_tolerance_hartree,excluded);
+        const bool has_beta=std::any_of(
+            wf.orbitals.begin(),wf.orbitals.end(),
+            [](const auto& mo){return mo.spin==Spin::Beta;});
+        const std::size_t expected_orbitals=
+            oriented.size()*(has_beta?2u:1u);
+        if (selected.orbitals.size()!=expected_orbitals) continue;
 
         bool conflict=false;
         for (const auto index:selected.orbitals) {
@@ -1334,29 +1494,56 @@ void attach_planar_p_delocalised_families(
         for (const auto index:selected.orbitals) {
             electrons+=static_cast<double>(wf.orbitals[index].occupation);
         }
-        const double maximum_electrons=2.0*static_cast<double>(atoms.size());
+        const double maximum_electrons=
+            2.0*static_cast<double>(oriented.size());
         if (electrons<0.5 || electrons>maximum_electrons+0.20) continue;
 
+        std::set<std::uint32_t> atom_set;
+        for (const auto& column:requested) atom_set.insert(column.atom);
+        const std::vector<std::uint32_t> atoms(atom_set.begin(),atom_set.end());
+        double topology_confidence=0.0;
+        double topology_coherence=0.0;
+        bool cyclic=false;
+        for (const auto network_index:bundle) {
+            topology_confidence+=networks[network_index].confidence;
+            topology_coherence+=networks[network_index].orientation_coherence;
+            cyclic=cyclic || networks[network_index].cyclic;
+        }
+        topology_confidence/=static_cast<double>(bundle.size());
+        topology_coherence/=static_cast<double>(bundle.size());
+
         DelocalisedPiAssignment assignment;
-        assignment.family_id=delocalised_pi_family_id(atoms);
+        assignment.family_id=delocalised_pi_family_id(atoms,bundle_index);
         assignment.atoms=atoms;
         for (const auto index:selected.orbitals) {
             assignment.orbitals.push_back(static_cast<std::uint32_t>(index));
         }
         assignment.electron_count=electrons;
-        assignment.plane_normal=plane.normal;
-        assignment.plane_rms_bohr=plane.rms_bohr;
+        for (const auto network_index:bundle) {
+            PiOrientationChannel channel;
+            channel.atoms=networks[network_index].atoms;
+            channel.direction=networks[network_index].representative_direction;
+            channel.coherence=networks[network_index].orientation_coherence;
+            channel.cyclic=networks[network_index].cyclic;
+            assignment.orientation_channels.push_back(std::move(channel));
+        }
+        assignment.cyclic_topology=cyclic;
+        assignment.plane_normal=
+            networks[bundle.front()].representative_direction;
+        assignment.plane_rms_bohr=0.0;
         assignment.subspace_coverage=selected.coverage;
-        const double planarity=1.0-std::clamp(
-            plane.rms_bohr/std::max(0.12,0.035*plane.span_bohr),0.0,1.0);
         assignment.confidence=std::clamp(
-            0.45+0.30*selected.coverage+
+            0.35+0.30*selected.coverage+
             0.15*std::min(1.0,selected.minimum_atom_coverage)+
-            0.10*planarity,0.0,1.0);
-        assignment.rationale=
-            "connected near-planar main-group valence-p centres; full-rank "
-            "S-metric p_perpendicular subspace; exact degeneracy-preserving "
-            "N-orbital selection including virtual members";
+            0.10*topology_confidence+0.10*topology_coherence,0.0,1.0);
+        std::ostringstream rationale;
+        rationale<<"connected locally oriented main-group valence-p network; "
+                 <<bundle.size()<<" orientation channel(s); full-rank "
+                 <<"S-metric active subspace; exact spin- and "
+                 <<"degeneracy-preserving selection including virtual members";
+        if (cyclic) rationale<<"; globally coherent cyclic p topology";
+        else rationale<<"; no aromaticity claim";
+        assignment.rationale=rationale.str();
         assignment.provenance=DataProvenance::Derived;
 
         for (const auto index:selected.orbitals) {
@@ -1369,6 +1556,10 @@ void attach_planar_p_delocalised_families(
             chemistry.participating_atom_indices=atoms;
             chemistry.delocalised_family_orbitals=assignment.orbitals;
             chemistry.delocalised_family_id=assignment.family_id;
+            chemistry.delocalised_orientation_channels=
+                assignment.orientation_channels.size();
+            chemistry.delocalised_cyclic_topology=
+                assignment.cyclic_topology;
             const double pi_weight=std::clamp(
                 selected.weights[index],0.0,1.0);
             chemistry.channel.sigma=0.0;
@@ -1382,13 +1573,659 @@ void attach_planar_p_delocalised_families(
                 :ChemistryStatus::Percentages;
             chemistry.confidence=std::max(
                 chemistry.confidence,assignment.confidence);
-            if (chemistry.method.find("planar p_perpendicular")==
+            if (chemistry.method.find("oriented p active-subspace")==
                 std::string::npos) {
                 chemistry.method+=
-                    "; planar p_perpendicular active-subspace family";
+                    "; oriented p active-subspace family";
             }
+            excluded.insert(index);
         }
         wf.delocalised_pi_assignments.push_back(std::move(assignment));
+    }
+}
+
+const ReferenceColumn* outer_valence_s_reference(
+    const std::vector<ReferenceColumn>& raw,
+    const std::uint32_t atom) {
+    const ReferenceColumn* result=nullptr;
+    for (const auto& column:raw) {
+        if (column.atom!=atom || column.l!=0 ||
+            column.space!=ReferenceClass::ChemicalValence) {
+            continue;
+        }
+        if (result==nullptr || column.n>result->n) result=&column;
+    }
+    return result;
+}
+
+PiOrbitalSelection select_occupied_projector_subspace(
+    const Wavefunction& wf,
+    const std::vector<ReferenceColumn>& reference,
+    const std::set<std::uint32_t>& active_atoms,
+    const double degeneracy_tolerance,
+    const std::set<std::size_t>& excluded) {
+    PiOrbitalSelection result;
+    const std::size_t target=reference.size();
+    if (target==0u || wf.orbitals.empty()) return result;
+
+    const bool has_beta=std::any_of(
+        wf.orbitals.begin(),wf.orbitals.end(),
+        [](const auto& mo){return mo.spin==Spin::Beta;});
+    std::vector<Spin> spins{Spin::Alpha};
+    if (has_beta) spins.push_back(Spin::Beta);
+    result.weights.assign(wf.orbitals.size(),0.0);
+    result.projection.assign(
+        wf.orbitals.size(),std::vector<double>(target,0.0));
+    std::vector<double> domain_weights(wf.orbitals.size(),0.0);
+    for (const auto& candidate:wf.multicentre_candidates) {
+        if (candidate.orbital_index>=domain_weights.size()) continue;
+        for (std::size_t p=0;p<candidate.atoms.size() &&
+             p<candidate.participation.size();++p) {
+            if (active_atoms.count(candidate.atoms[p])!=0u) {
+                domain_weights[candidate.orbital_index]+=candidate.participation[p];
+            }
+        }
+    }
+    for (std::size_t i=0;i<wf.orbitals.size();++i) {
+        const auto& mo=wf.orbitals[i];
+        if (mo.coefficients.size()!=wf.basis_count) continue;
+        for (std::size_t p=0;p<target;++p) {
+            const double amplitude=mo_s_dot(
+                reference[p].coefficients,mo,
+                wf.ao_overlap,wf.basis_count);
+            result.projection[i][p]=amplitude;
+            result.weights[i]+=amplitude*amplitude;
+        }
+    }
+
+    auto groups=degeneracy_groups(wf,degeneracy_tolerance);
+    std::map<Spin,std::vector<std::size_t>> selected_by_spin;
+    for (const auto spin:spins) {
+        std::vector<std::size_t> candidates;
+        for (std::size_t g=0;g<groups.size();++g) {
+            auto& group=groups[g];
+            bool eligible=group.spin==spin;
+            group.score=0.0;
+            for (const auto index:group.orbitals) {
+                if (index>=wf.orbitals.size() || excluded.count(index)!=0u ||
+                    wf.orbitals[index].occupation<=0.25 ||
+                    (!wf.orbitals[index].chemistry.valence_manifold &&
+                     wf.orbitals[index].chemistry.valence_weight<0.05)) {
+                    eligible=false;
+                    break;
+                }
+                // The active-domain population selects the canonical source
+                // span; the signed S-metric projector below verifies that the
+                // selected span can actually resolve every equivalent bridge.
+                group.score+=domain_weights[index]+0.10*result.weights[index];
+            }
+            if (eligible && group.orbitals.size()<=target) candidates.push_back(g);
+        }
+
+        const double negative=-std::numeric_limits<double>::infinity();
+        std::vector<double> dp(target+1u,negative);
+        std::vector<std::vector<std::size_t>> chosen(target+1u);
+        dp[0]=0.0;
+        for (const auto group_index:candidates) {
+            const auto size=groups[group_index].orbitals.size();
+            for (std::size_t used=target+1u;used-- > size;) {
+                if (!std::isfinite(dp[used-size])) continue;
+                const double trial=dp[used-size]+groups[group_index].score;
+                if (trial>dp[used]+1.0e-12) {
+                    dp[used]=trial;
+                    chosen[used]=chosen[used-size];
+                    chosen[used].push_back(group_index);
+                }
+            }
+        }
+        if (!std::isfinite(dp[target])) return {};
+        auto& spin_selection=selected_by_spin[spin];
+        for (const auto group_index:chosen[target]) {
+            spin_selection.insert(
+                spin_selection.end(),groups[group_index].orbitals.begin(),
+                groups[group_index].orbitals.end());
+        }
+        std::sort(spin_selection.begin(),spin_selection.end());
+        if (spin_selection.size()!=target) return {};
+        result.orbitals.insert(
+            result.orbitals.end(),spin_selection.begin(),spin_selection.end());
+    }
+    std::sort(result.orbitals.begin(),result.orbitals.end());
+
+    double selected_weight=0.0;
+    result.minimum_atom_coverage=std::numeric_limits<double>::infinity();
+    result.minimum_pivot=std::numeric_limits<double>::infinity();
+    for (const auto spin:spins) {
+        const auto& selected=selected_by_spin[spin];
+        double spin_weight=0.0;
+        for (const auto index:selected) spin_weight+=result.weights[index];
+        if (spin_weight<1.0e-5*static_cast<double>(target)) return {};
+        selected_weight+=spin_weight;
+        for (std::size_t p=0;p<target;++p) {
+            double column_coverage=0.0;
+            for (const auto index:selected) {
+                const double amplitude=result.projection[index][p];
+                column_coverage+=amplitude*amplitude;
+            }
+            result.minimum_atom_coverage=std::min(
+                result.minimum_atom_coverage,column_coverage);
+        }
+
+        std::vector<std::vector<double>> residuals;
+        residuals.reserve(target);
+        for (const auto index:selected) residuals.push_back(result.projection[index]);
+        for (std::size_t pivot=0;pivot<target;++pivot) {
+            std::size_t best=pivot;
+            double best_norm2=-1.0;
+            for (std::size_t candidate=pivot;candidate<target;++candidate) {
+                const double norm2=std::inner_product(
+                    residuals[candidate].begin(),residuals[candidate].end(),
+                    residuals[candidate].begin(),0.0);
+                if (norm2>best_norm2) {
+                    best_norm2=norm2;
+                    best=candidate;
+                }
+            }
+            if (best_norm2<1.0e-8) return {};
+            std::swap(residuals[pivot],residuals[best]);
+            result.minimum_pivot=std::min(result.minimum_pivot,best_norm2);
+            const double inverse=1.0/std::sqrt(best_norm2);
+            for (double& value:residuals[pivot]) value*=inverse;
+            for (std::size_t candidate=pivot+1u;candidate<target;++candidate) {
+                const double projection=std::inner_product(
+                    residuals[pivot].begin(),residuals[pivot].end(),
+                    residuals[candidate].begin(),0.0);
+                for (std::size_t p=0;p<target;++p) {
+                    residuals[candidate][p]-=
+                        projection*residuals[pivot][p];
+                }
+            }
+        }
+    }
+    if (result.minimum_atom_coverage<1.0e-6) return {};
+    result.coverage=selected_weight/
+        static_cast<double>(target*spins.size());
+    return result;
+}
+
+const AtomicPReference* outer_valence_p_reference(
+    const std::vector<AtomicPReference>& references,
+    const std::uint32_t atom) {
+    const auto found=std::find_if(
+        references.begin(),references.end(),
+        [atom](const auto& reference){return reference.atom==atom;});
+    return found==references.end()?nullptr:&*found;
+}
+
+ReferenceColumn directed_three_centre_column(
+    const Wavefunction& wf,
+    const std::vector<ReferenceColumn>& raw,
+    const std::vector<AtomicPReference>& p_reference,
+    const std::uint32_t atom,
+    const std::array<double,3>& direction,
+    const bool use_hybrid) {
+    ReferenceColumn result;
+    result.atom=atom;
+    result.space=ReferenceClass::ChemicalValence;
+    result.coefficients.assign(wf.basis_count,0.0);
+    const auto* s=outer_valence_s_reference(raw,atom);
+    const auto* p=outer_valence_p_reference(p_reference,atom);
+    if (wf.atoms[atom].atomic_number<=2) {
+        if (s==nullptr) return {};
+        result=*s;
+        result.label=reference_label(wf,atom,result.n,0)+" directed-s";
+        return result;
+    }
+    if (p==nullptr) return {};
+    result.n=p->principal_n;
+    result.l=1;
+    result.component=2;
+    result.label=reference_label(wf,atom,result.n,1)+
+        (use_hybrid?" directed-sp":" directed-p");
+    const double p_scale=use_hybrid?std::sqrt(0.65):1.0;
+    const double s_scale=use_hybrid?std::sqrt(0.35):0.0;
+    if (use_hybrid && s==nullptr) return {};
+    for (std::size_t axis=0;axis<3u;++axis) {
+        const auto* source=p->component[axis];
+        if (source==nullptr ||
+            source->coefficients.size()!=result.coefficients.size()) {
+            return {};
+        }
+        for (std::size_t mu=0;mu<result.coefficients.size();++mu) {
+            result.coefficients[mu]+=
+                p_scale*direction[axis]*source->coefficients[mu];
+        }
+    }
+    if (use_hybrid) {
+        for (std::size_t mu=0;mu<result.coefficients.size();++mu) {
+            result.coefficients[mu]+=s_scale*s->coefficients[mu];
+        }
+    }
+    return result;
+}
+
+using ThreeCentreAtoms=std::array<std::uint32_t,3>;
+
+std::size_t three_centre_middle(const Wavefunction& wf,
+                                const ThreeCentreAtoms& atoms) {
+    std::size_t best=0u;
+    double best_sum=std::numeric_limits<double>::infinity();
+    for (std::size_t candidate=0;candidate<3u;++candidate) {
+        double sum=0.0;
+        for (std::size_t other=0;other<3u;++other) {
+            if (other!=candidate) {
+                sum+=distance_bohr(wf.atoms[atoms[candidate]],
+                                   wf.atoms[atoms[other]]);
+            }
+        }
+        if (sum<best_sum) {
+            best_sum=sum;
+            best=candidate;
+        }
+    }
+    return best;
+}
+
+bool three_centre_geometry_supported(const Wavefunction& wf,
+                                     const ThreeCentreAtoms& atoms,
+                                     const std::size_t middle,
+                                     bool& linear,
+                                     bool& hydrogen_bridge) {
+    std::array<std::size_t,2> terminal{};
+    std::size_t out=0u;
+    for (std::size_t i=0;i<3u;++i) {
+        if (i!=middle) terminal[out++]=i;
+    }
+    const auto centre=atoms[middle];
+    const auto left=atoms[terminal[0]];
+    const auto right=atoms[terminal[1]];
+    const auto a=unit_axis(wf.atoms[centre],wf.atoms[left]);
+    const auto b=unit_axis(wf.atoms[centre],wf.atoms[right]);
+    const double cosine=dot3(a,b);
+    linear=cosine<=-0.88;
+
+    const double d_left=distance_bohr(wf.atoms[centre],wf.atoms[left]);
+    const double d_right=distance_bohr(wf.atoms[centre],wf.atoms[right]);
+    const double d_terminal=distance_bohr(wf.atoms[left],wf.atoms[right]);
+    hydrogen_bridge=wf.atoms[centre].atomic_number==1 &&
+        d_terminal>1.15*std::max(d_left,d_right) &&
+        std::max(d_left,d_right)<=1.40*std::max(1.0e-12,std::min(d_left,d_right));
+
+    const double minimum=std::min({d_left,d_right,d_terminal});
+    const double maximum=std::max({d_left,d_right,d_terminal});
+    const bool all_hydrogen=
+        wf.atoms[atoms[0]].atomic_number==1 &&
+        wf.atoms[atoms[1]].atomic_number==1 &&
+        wf.atoms[atoms[2]].atomic_number==1;
+    const bool symmetric_h3=all_hydrogen && minimum>1.0e-12 &&
+        maximum/minimum<=1.12;
+    if (symmetric_h3) return true;
+    if (hydrogen_bridge) return true;
+    if (!linear) return false;
+
+    // Treat the three atoms as a local unit rather than requiring the entire
+    // molecule to be triatomic.  Positive, moderate centre--terminal support
+    // admits substituted/spectator-bearing 3c4e units; ordinary multiple-bond
+    // chains are rejected by their stronger centre--terminal pair orders.
+    // A delocalised canonical density may give the remote terminal pair a
+    // non-negligible positive Mayer index (notably I3-), so that value is
+    // interpreted relative to both centre--terminal links and only after the
+    // geometry has established well-separated collinear terminals.
+    const double left_mayer=pair_mayer(wf,centre,left);
+    const double right_mayer=pair_mayer(wf,centre,right);
+    const double terminal_mayer=pair_mayer(wf,left,right);
+    const bool separated_terminals=
+        d_terminal>=1.65*std::max(d_left,d_right);
+    const double weakest_central=std::min(left_mayer,right_mayer);
+    return separated_terminals && left_mayer>=0.02 && right_mayer>=0.02 &&
+        0.5*(left_mayer+right_mayer)<=0.95 && terminal_mayer>=0.0 &&
+        terminal_mayer<0.55*weakest_central;
+}
+
+int three_centre_pair_support(const Wavefunction& wf,
+                              const ThreeCentreAtoms& atoms) {
+    int result=0;
+    for (std::size_t i=0;i<3u;++i) {
+        for (std::size_t j=i+1u;j<3u;++j) {
+            if (pair_mayer(wf,atoms[i],atoms[j])>=0.02) ++result;
+        }
+    }
+    return result;
+}
+
+bool has_three_centre_assignment(const Wavefunction& wf,
+                                 const ThreeCentreAtoms& atoms) {
+    return std::any_of(
+        wf.multicentre_assignments.begin(),wf.multicentre_assignments.end(),
+        [&](const auto& assignment){
+            if (assignment.atoms.size()!=3u) return false;
+            auto existing=assignment.atoms;
+            std::sort(existing.begin(),existing.end());
+            return std::equal(existing.begin(),existing.end(),atoms.begin());
+        });
+}
+
+std::array<std::uint32_t,2> three_centre_terminals(
+    const ThreeCentreAtoms& atoms,
+    const std::size_t middle) {
+    std::array<std::uint32_t,2> result{};
+    std::size_t out=0u;
+    for (std::size_t position=0;position<atoms.size();++position) {
+        if (position!=middle) result[out++]=atoms[position];
+    }
+    if (result[1]<result[0]) std::swap(result[0],result[1]);
+    return result;
+}
+
+ReferenceColumn hydrogen_bridge_bonding_reference(
+    const Wavefunction& wf,
+    const std::vector<ReferenceColumn>& raw,
+    const std::vector<AtomicPReference>& p_reference,
+    const ThreeCentreAtoms& atoms,
+    const std::size_t middle) {
+    ReferenceColumn result;
+    result.atom=atoms[middle];
+    result.space=ReferenceClass::ChemicalValence;
+    result.label="derived hydrogen-bridge bonding projector";
+    result.coefficients.assign(wf.basis_count,0.0);
+
+    std::vector<ReferenceColumn> components;
+    components.reserve(3u);
+    for (std::size_t position=0;position<atoms.size();++position) {
+        const auto atom=atoms[position];
+        std::array<double,3> direction{1.0,0.0,0.0};
+        if (position==middle) {
+            std::size_t terminal=position==0u?1u:0u;
+            if (terminal==middle) terminal=2u;
+            direction=unit_axis(wf.atoms[atom],wf.atoms[atoms[terminal]]);
+        } else {
+            direction=unit_axis(wf.atoms[atom],wf.atoms[atoms[middle]]);
+        }
+        auto component=directed_three_centre_column(
+            wf,raw,p_reference,atom,direction,position!=middle);
+        if (component.coefficients.size()!=wf.basis_count) return {};
+        components.push_back(std::move(component));
+    }
+
+    // One projector represents one bridge-localised 3c bonding combination.
+    // Several symmetry-equivalent bridges are orthogonalised and selected as
+    // one joint active subspace below.  This is an analysis-only rotation: the
+    // canonical MO coefficients, energies, symmetry labels and indices remain
+    // untouched.
+    const double scale=1.0/std::sqrt(static_cast<double>(components.size()));
+    for (const auto& component:components) {
+        for (std::size_t mu=0;mu<wf.basis_count;++mu) {
+            result.coefficients[mu]+=scale*component.coefficients[mu];
+        }
+    }
+    return result;
+}
+
+bool equivalent_hydrogen_bridge_group(
+    const Wavefunction& wf,
+    const std::vector<ThreeCentreAtoms>& bridges) {
+    if (bridges.size()<2u) return false;
+    std::array<double,4> reference{};
+    bool have_reference=false;
+    for (const auto& atoms:bridges) {
+        const auto middle=three_centre_middle(wf,atoms);
+        if (wf.atoms[atoms[middle]].atomic_number!=1) return false;
+        const auto terminals=three_centre_terminals(atoms,middle);
+        std::array<double,2> distances{
+            distance_bohr(wf.atoms[atoms[middle]],wf.atoms[terminals[0]]),
+            distance_bohr(wf.atoms[atoms[middle]],wf.atoms[terminals[1]])};
+        std::array<double,2> mayer{
+            pair_mayer(wf,atoms[middle],terminals[0]),
+            pair_mayer(wf,atoms[middle],terminals[1])};
+        if (mayer[0]<0.02 || mayer[1]<0.02) return false;
+        std::sort(distances.begin(),distances.end());
+        std::sort(mayer.begin(),mayer.end());
+        const std::array<double,4> signature{
+            distances[0],distances[1],mayer[0],mayer[1]};
+        if (!have_reference) {
+            reference=signature;
+            have_reference=true;
+            continue;
+        }
+        for (std::size_t i=0;i<signature.size();++i) {
+            const double scale=std::max({
+                std::abs(reference[i]),std::abs(signature[i]),1.0e-8});
+            // A joint rotation is only valid for electronically and
+            // geometrically equivalent channels.  Inequivalent bridges fall
+            // back to independent analysis instead of being force-partitioned.
+            if (std::abs(signature[i]-reference[i])/scale>0.12) return false;
+        }
+    }
+    return true;
+}
+
+void derive_directed_three_centre_assignments(
+    Wavefunction& wf,
+    const std::vector<ReferenceColumn>& raw,
+    const OrbitalChemistryOptions& options) {
+    std::set<ThreeCentreAtoms> triples;
+    for (const auto& candidate:wf.multicentre_candidates) {
+        if (candidate.atoms.size()<3u || candidate.participation.size()<3u ||
+            candidate.participation[0]+candidate.participation[1]+
+                candidate.participation[2]<0.72) {
+            continue;
+        }
+        ThreeCentreAtoms atoms{
+            candidate.atoms[0],candidate.atoms[1],candidate.atoms[2]};
+        std::sort(atoms.begin(),atoms.end());
+        triples.insert(atoms);
+    }
+
+    // Canonical orbitals can delocalise several symmetry-equivalent bridges
+    // over one joint subspace (the two B-H-B bridges in diborane are the
+    // standard example).  Recover geometry-qualified hydrogen bridges from
+    // atom-pair electronic evidence so a bridge is not lost merely because it
+    // is fourth, rather than third, in every individual canonical MO.
+    for (std::uint32_t hydrogen=0;hydrogen<wf.atoms.size();++hydrogen) {
+        if (wf.atoms[hydrogen].atomic_number!=1) continue;
+        std::vector<std::uint32_t> supported_terminals;
+        for (std::uint32_t atom=0;atom<wf.atoms.size();++atom) {
+            if (atom==hydrogen || wf.atoms[atom].atomic_number==1) continue;
+            if (pair_mayer(wf,hydrogen,atom)>=0.02) {
+                supported_terminals.push_back(atom);
+            }
+        }
+        for (std::size_t i=0;i<supported_terminals.size();++i) {
+            for (std::size_t j=i+1u;j<supported_terminals.size();++j) {
+                ThreeCentreAtoms atoms{
+                    hydrogen,supported_terminals[i],supported_terminals[j]};
+                std::sort(atoms.begin(),atoms.end());
+                const auto middle=three_centre_middle(wf,atoms);
+                bool linear=false;
+                bool hydrogen_bridge=false;
+                if (atoms[middle]==hydrogen &&
+                    three_centre_geometry_supported(
+                        wf,atoms,middle,linear,hydrogen_bridge) &&
+                    hydrogen_bridge) {
+                    triples.insert(atoms);
+                }
+            }
+        }
+    }
+    if (triples.empty()) return;
+
+    const auto p_reference=atomic_valence_p_references(wf,raw);
+    std::set<std::size_t> excluded;
+    for (const auto& assignment:wf.multicentre_assignments) {
+        for (const auto orbital:assignment.orbitals) excluded.insert(orbital);
+    }
+
+    std::map<std::array<std::uint32_t,2>,std::vector<ThreeCentreAtoms>>
+        hydrogen_bridge_groups;
+    for (const auto& atoms:triples) {
+        const auto middle=three_centre_middle(wf,atoms);
+        bool linear=false;
+        bool hydrogen_bridge=false;
+        if (three_centre_geometry_supported(
+                wf,atoms,middle,linear,hydrogen_bridge) && hydrogen_bridge) {
+            hydrogen_bridge_groups[three_centre_terminals(atoms,middle)]
+                .push_back(atoms);
+        }
+    }
+
+    std::set<ThreeCentreAtoms> jointly_handled;
+    for (const auto& [terminals,bridges]:hydrogen_bridge_groups) {
+        if (!equivalent_hydrogen_bridge_group(wf,bridges)) continue;
+        if (std::any_of(bridges.begin(),bridges.end(),[&](const auto& atoms){
+                return has_three_centre_assignment(wf,atoms) ||
+                    three_centre_pair_support(wf,atoms)<2;
+            })) {
+            continue;
+        }
+
+        std::vector<ReferenceColumn> requested;
+        requested.reserve(bridges.size());
+        for (const auto& atoms:bridges) {
+            const auto middle=three_centre_middle(wf,atoms);
+            auto column=hydrogen_bridge_bonding_reference(
+                wf,raw,p_reference,atoms,middle);
+            if (column.coefficients.size()!=wf.basis_count) {
+                requested.clear();
+                break;
+            }
+            requested.push_back(std::move(column));
+        }
+        if (requested.size()!=bridges.size()) continue;
+        auto reference=orthonormalise_reference(std::move(requested),wf);
+        if (reference.size()!=bridges.size()) continue;
+        std::set<std::uint32_t> active_atoms;
+        for (const auto& atoms:bridges) {
+            active_atoms.insert(atoms.begin(),atoms.end());
+        }
+        const auto selected=select_occupied_projector_subspace(
+            wf,reference,active_atoms,
+            options.degeneracy_tolerance_hartree,excluded);
+        const bool has_beta=std::any_of(
+            wf.orbitals.begin(),wf.orbitals.end(),
+            [](const auto& mo){return mo.spin==Spin::Beta;});
+        const std::size_t expected_orbitals=
+            bridges.size()*(has_beta?2u:1u);
+        if (selected.orbitals.size()!=expected_orbitals) continue;
+
+        double joint_electrons=0.0;
+        for (const auto orbital:selected.orbitals) {
+            joint_electrons+=static_cast<double>(wf.orbitals[orbital].occupation);
+        }
+        const double expected_electrons=2.0*static_cast<double>(bridges.size());
+        if (!near(joint_electrons,expected_electrons,0.20)) continue;
+
+        const double confidence=std::clamp(
+            0.50+0.30*selected.coverage+
+            0.20*std::min(1.0,selected.minimum_atom_coverage),0.0,1.0);
+        std::ostringstream shared_id;
+        shared_id<<"equivalent-hydrogen-bridges:"
+                 <<(terminals[0]+1u)<<':'<<(terminals[1]+1u)<<":source";
+        for (const auto orbital:selected.orbitals) {
+            shared_id<<':'<<(orbital+1u);
+        }
+        for (const auto& atoms:bridges) {
+            MulticentreAssignment assignment;
+            assignment.kind=MulticentreKind::ThreeCentreTwoElectron;
+            assignment.atoms.assign(atoms.begin(),atoms.end());
+            for (const auto orbital:selected.orbitals) {
+                assignment.orbitals.push_back(
+                    static_cast<std::uint32_t>(orbital));
+            }
+            assignment.electron_count=2.0;
+            assignment.source_subspace_id=shared_id.str();
+            assignment.source_subspace_electron_count=joint_electrons;
+            assignment.source_subspace_fraction=
+                1.0/static_cast<double>(bridges.size());
+            assignment.confidence=confidence;
+            assignment.rationale=
+                "geometry- and Mayer-qualified equivalent hydrogen bridges; "
+                "full-rank joint bridge-localised S-metric projector; shared "
+                "canonical source subspace with partitioned 2e channels; "
+                "canonical orbitals unchanged; no molecule template";
+            assignment.provenance=DataProvenance::Derived;
+            wf.multicentre_assignments.push_back(std::move(assignment));
+            jointly_handled.insert(atoms);
+        }
+        for (const auto orbital:selected.orbitals) excluded.insert(orbital);
+    }
+
+    for (const auto& atoms:triples) {
+        if (jointly_handled.count(atoms)!=0u) continue;
+        if (has_three_centre_assignment(wf,atoms) ||
+            three_centre_pair_support(wf,atoms)<2) {
+            continue;
+        }
+        const std::size_t middle=three_centre_middle(wf,atoms);
+        bool linear=false;
+        bool hydrogen_bridge=false;
+        if (!three_centre_geometry_supported(
+                wf,atoms,middle,linear,hydrogen_bridge)) {
+            continue;
+        }
+
+        std::vector<ReferenceColumn> requested;
+        requested.reserve(3u);
+        for (std::size_t position=0;position<3u;++position) {
+            const auto atom=atoms[position];
+            std::array<double,3> direction{1.0,0.0,0.0};
+            if (position==middle) {
+                std::size_t terminal=position==0u?1u:0u;
+                if (terminal==middle) terminal=2u;
+                direction=unit_axis(wf.atoms[atom],wf.atoms[atoms[terminal]]);
+            } else {
+                direction=unit_axis(wf.atoms[atom],wf.atoms[atoms[middle]]);
+            }
+            const bool hybrid=hydrogen_bridge && !linear &&
+                wf.atoms[atom].atomic_number>2;
+            auto column=directed_three_centre_column(
+                wf,raw,p_reference,atom,direction,hybrid);
+            if (column.coefficients.size()!=wf.basis_count) {
+                requested.clear();
+                break;
+            }
+            requested.push_back(std::move(column));
+        }
+        if (requested.size()!=3u) continue;
+        auto reference=orthonormalise_reference(std::move(requested),wf);
+        if (reference.size()!=3u) continue;
+        const auto selected=select_perpendicular_p_orbitals(
+            wf,reference,options.degeneracy_tolerance_hartree,excluded);
+        const bool has_beta=std::any_of(
+            wf.orbitals.begin(),wf.orbitals.end(),
+            [](const auto& mo){return mo.spin==Spin::Beta;});
+        if (selected.orbitals.size()!=(has_beta?6u:3u)) continue;
+
+        double electrons=0.0;
+        for (const auto orbital:selected.orbitals) {
+            electrons+=static_cast<double>(wf.orbitals[orbital].occupation);
+        }
+        MulticentreKind kind=MulticentreKind::Unclassified;
+        if (near(electrons,2.0,0.20)) {
+            kind=MulticentreKind::ThreeCentreTwoElectron;
+        } else if (near(electrons,4.0,0.20)) {
+            kind=MulticentreKind::ThreeCentreFourElectron;
+        } else {
+            continue;
+        }
+
+        MulticentreAssignment assignment;
+        assignment.kind=kind;
+        assignment.atoms.assign(atoms.begin(),atoms.end());
+        for (const auto orbital:selected.orbitals) {
+            assignment.orbitals.push_back(
+                static_cast<std::uint32_t>(orbital));
+            excluded.insert(orbital);
+        }
+        assignment.electron_count=electrons;
+        assignment.confidence=std::clamp(
+            0.50+0.30*selected.coverage+
+            0.20*std::min(1.0,selected.minimum_atom_coverage),0.0,1.0);
+        assignment.rationale=
+            "geometry-qualified three-centre framework; full-rank directed "
+            "minimal-valence S-metric subspace; exact degeneracy-preserving "
+            "occupation count; no molecule template";
+        assignment.provenance=DataProvenance::Derived;
+        wf.multicentre_assignments.push_back(std::move(assignment));
     }
 }
 
@@ -1398,13 +2235,42 @@ void attach_multicentre_assignments(Wavefunction& wf) {
         if (assignment.kind==MulticentreKind::ThreeCentreTwoElectron) label="3c2e";
         else if (assignment.kind==MulticentreKind::ThreeCentreFourElectron) label="3c4e";
         else continue;
+        std::vector<std::uint32_t> participating_atoms=assignment.atoms;
+        double participating_electrons=assignment.electron_count;
+        std::size_t channel_count=1u;
+        if (!assignment.source_subspace_id.empty()) {
+            participating_atoms.clear();
+            participating_electrons=assignment.source_subspace_electron_count;
+            channel_count=0u;
+            for (const auto& channel:wf.multicentre_assignments) {
+                if (channel.source_subspace_id!=assignment.source_subspace_id) continue;
+                ++channel_count;
+                participating_atoms.insert(
+                    participating_atoms.end(),channel.atoms.begin(),channel.atoms.end());
+            }
+            std::sort(participating_atoms.begin(),participating_atoms.end());
+            participating_atoms.erase(
+                std::unique(participating_atoms.begin(),participating_atoms.end()),
+                participating_atoms.end());
+            std::ostringstream shared_label;
+            shared_label<<channel_count<<"×"<<label<<" (shared "
+                        <<participating_atoms.size()<<"c/"
+                        <<std::max(0LL,std::llround(participating_electrons))
+                        <<"e source)";
+            label=shared_label.str();
+        }
         for (const auto index:assignment.orbitals) {
             if (index>=wf.orbitals.size()) continue;
             auto& chemistry=wf.orbitals[index].chemistry;
             chemistry.multicentre_label=label;
-            chemistry.participating_atoms=assignment.atoms.size();
-            chemistry.participating_electrons=assignment.electron_count;
-            chemistry.participating_atom_indices=assignment.atoms;
+            chemistry.participating_atoms=participating_atoms.size();
+            chemistry.participating_electrons=participating_electrons;
+            chemistry.participating_atom_indices=participating_atoms;
+            chemistry.multicentre_channel_count=channel_count;
+            chemistry.multicentre_source_subspace_id=
+                assignment.source_subspace_id;
+            chemistry.multicentre_source_electron_count=
+                assignment.source_subspace_electron_count;
             chemistry.family_symbol=family_symbol(chemistry.channel.dominant);
         }
     }
@@ -1436,7 +2302,7 @@ void generic_three_centre_fallback(Wavefunction& wf) {
     std::vector<std::uint32_t> centres(atoms.begin(),atoms.end());
     for (std::size_t a=0;a<centres.size();++a) {
         for (std::size_t b=a+1u;b<centres.size();++b) {
-            if (std::abs(pair_mayer(wf,centres[a],centres[b]))>=0.02) ++supported;
+            if (pair_mayer(wf,centres[a],centres[b])>=0.02) ++supported;
         }
     }
     if (supported<2) return;
@@ -1663,6 +2529,7 @@ void derive_orbital_chemistry(
         }
     }
 
+    derive_directed_three_centre_assignments(wf,raw,options);
     attach_multicentre_assignments(wf);
     generic_three_centre_fallback(wf);
     attach_planar_p_delocalised_families(wf,raw,options);

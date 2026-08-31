@@ -65,6 +65,13 @@ enum class OrbitalRegion {
     const MolecularOrbital& orbital,
     const OrbitalFilterSettings& settings) noexcept;
 
+// True only when both the S-metric chemical reference and the orbital energy
+// support a deep-core assignment.  Occupation by itself, or a weak projection
+// onto the selected minimal valence manifold, is never enough to hide an MO.
+[[nodiscard]] bool confidently_deep_core_orbital(
+    const MolecularOrbital& orbital,
+    const OrbitalFilterSettings& settings) noexcept;
+
 [[nodiscard]] bool orbital_visible(
     const std::vector<MolecularOrbital>& orbitals,
     std::size_t index,

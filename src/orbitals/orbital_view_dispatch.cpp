@@ -38,17 +38,40 @@ bool occupied(const MolecularOrbital& orbital,const double threshold) {
 
 } // namespace
 
+bool confidently_deep_core_orbital(
+    const MolecularOrbital& orbital,
+    const OrbitalFilterSettings& settings) noexcept {
+    if (!orbital.chemistry.available ||
+        !occupied(orbital,settings.occupation_threshold) ||
+        orbital.energy_hartree>=settings.core_energy_cutoff_hartree) {
+        return false;
+    }
+
+    // A large, dominant projection onto the explicit deep-core reference is
+    // required.  Semicore, unresolved/diffuse occupied, and SOMO levels remain
+    // visible even when they were not selected by the minimal valence rank.
+    const auto& chemistry=orbital.chemistry;
+    const double competing=chemistry.semicore_weight+
+                           chemistry.valence_weight+
+                           chemistry.unresolved_weight;
+    return chemistry.deep_core_weight>=0.70 &&
+           chemistry.deep_core_weight>=competing+0.10;
+}
+
 OrbitalRegion classify_orbital_region(
     const MolecularOrbital& orbital,
     const OrbitalFilterSettings& settings) noexcept {
     if (!orbital.chemistry.available) {
         return classify_orbital_region_legacy(orbital,settings);
     }
+    if (confidently_deep_core_orbital(orbital,settings)) {
+        return OrbitalRegion::Core;
+    }
     if (orbital.chemistry.valence_manifold) return OrbitalRegion::Valence;
     if (!occupied(orbital,settings.occupation_threshold)) {
         return OrbitalRegion::Virtual;
     }
-    return OrbitalRegion::Core;
+    return OrbitalRegion::Valence;
 }
 
 bool orbital_visible(
@@ -75,7 +98,8 @@ bool orbital_visible(
         case OrbitalFilterMode::Valence:
         case OrbitalFilterMode::AutoReasonable:
         default:
-            return orbital.chemistry.available &&
+            if (region==OrbitalRegion::Valence) return true;
+            return region==OrbitalRegion::Virtual &&
                    orbital.chemistry.valence_manifold;
     }
 }
@@ -108,6 +132,29 @@ std::vector<OrbitalMetadata> build_orbital_metadata(
             wavefunction.orbitals[i],filter);
         result[i].visible=orbital_visible(
             wavefunction.orbitals,i,frontier,filter);
+    }
+
+
+    // A positive-ion calculation can leave the chemically important vacancy
+    // just outside a minimal-rank valence projection.  Preserve the complete
+    // lowest virtual degeneracy group for each available spin channel.  This
+    // is driven only by producer charge, occupations, energies and degeneracy;
+    // no molecule identity is involved.
+    if (wavefunction.charge>0 &&
+        wavefunction.charge_provenance!=DataProvenance::Unavailable &&
+        (filter.mode==OrbitalFilterMode::AutoReasonable ||
+         filter.mode==OrbitalFilterMode::Valence)) {
+        const auto labels=build_orbital_labels(
+            wavefunction.orbitals,degeneracy);
+        const auto retain_group=[&](const std::optional<std::size_t>& seed) {
+            if (!seed || *seed>=labels.size()) return;
+            const std::size_t begin=*seed-labels[*seed].group_member_index;
+            const std::size_t end=std::min(
+                result.size(),begin+labels[*seed].group_size);
+            for (std::size_t i=begin;i<end;++i) result[i].visible=true;
+        };
+        retain_group(frontier.alpha_lumo);
+        if (frontier.separate_spin_sets) retain_group(frontier.beta_lumo);
     }
     apply_local_ligand_field_symmetry(wavefunction,result);
     return result;

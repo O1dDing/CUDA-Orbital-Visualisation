@@ -26,25 +26,59 @@ std::string trim(std::string value) {
     return value;
 }
 
-double parse_real(std::string token) {
+std::string field_context(const std::string& label,
+                          const std::size_t line_number) {
+    return " for field '" + label + "' near line " +
+           std::to_string(line_number);
+}
+
+double parse_real(std::string token,
+                  const std::string& label,
+                  const std::size_t line_number) {
     for (char& c : token) {
         if (c == 'D' || c == 'd') c = 'E';
     }
     std::size_t used = 0;
-    const double value = std::stod(token, &used);
-    if (used != token.size()) {
-        throw std::runtime_error("Invalid FCHK real value: " + token);
+    try {
+        const double value = std::stod(token, &used);
+        if (used != token.size()) {
+            throw std::runtime_error("Invalid FCHK real value" +
+                                     field_context(label, line_number) +
+                                     ": '" + token + "'");
+        }
+        return value;
+    } catch (const std::invalid_argument&) {
+        throw std::runtime_error("Invalid FCHK real value" +
+                                 field_context(label, line_number) +
+                                 ": '" + token + "'");
+    } catch (const std::out_of_range&) {
+        throw std::runtime_error("Out-of-range FCHK real value" +
+                                 field_context(label, line_number) +
+                                 ": '" + token + "'");
     }
-    return value;
 }
 
-long long parse_integer(const std::string& token) {
+long long parse_integer(const std::string& token,
+                        const std::string& label,
+                        const std::size_t line_number) {
     std::size_t used = 0;
-    const long long value = std::stoll(token, &used);
-    if (used != token.size()) {
-        throw std::runtime_error("Invalid FCHK integer value: " + token);
+    try {
+        const long long value = std::stoll(token, &used);
+        if (used != token.size()) {
+            throw std::runtime_error("Invalid FCHK integer value" +
+                                     field_context(label, line_number) +
+                                     ": '" + token + "'");
+        }
+        return value;
+    } catch (const std::invalid_argument&) {
+        throw std::runtime_error("Invalid FCHK integer value" +
+                                 field_context(label, line_number) +
+                                 ": '" + token + "'");
+    } catch (const std::out_of_range&) {
+        throw std::runtime_error("Out-of-range FCHK integer value" +
+                                 field_context(label, line_number) +
+                                 ": '" + token + "'");
     }
-    return value;
 }
 
 struct Header {
@@ -99,33 +133,55 @@ struct FchkRecords {
 FchkRecords read_records(std::ifstream& input) {
     FchkRecords records;
     std::string line;
+    std::size_t line_number = 2u; // title and route-method lines were consumed
     while (std::getline(input, line)) {
+        ++line_number;
         Header header;
         if (!parse_header(line, header)) continue;
 
         if (!header.array) {
             if (header.type == 'I') {
-                records.integers[header.label] = parse_integer(header.scalar);
+                records.integers[header.label] =
+                    parse_integer(header.scalar, header.label, line_number);
             } else if (header.type == 'R') {
-                records.reals[header.label] = parse_real(header.scalar);
+                records.reals[header.label] =
+                    parse_real(header.scalar, header.label, line_number);
             } else {
                 records.strings[header.label] = header.scalar;
             }
             continue;
         }
 
-        // Numeric arrays are the authoritative wavefunction payload we need.
-        // Character/logical arrays are intentionally ignored here; their data
-        // lines naturally fail parse_header() and are skipped by the outer loop.
-        if (header.type != 'I' && header.type != 'R') continue;
+        // Gaussian character arrays are fixed-width A12 values, five values
+        // per physical line.  Consume them even though COV does not currently
+        // retain them: a continuation line can legitimately contain I/R/C/L
+        // in column 41 and must never be mistaken for a new record header.
+        if (header.type == 'C') {
+            std::size_t values = 0;
+            while (values < header.count && std::getline(input, line)) {
+                ++line_number;
+                values += (line.size() + 11u) / 12u;
+            }
+            if (values < header.count) {
+                throw std::runtime_error(
+                    "Unexpected end of FCHK character array '" + header.label +
+                    "' near line " + std::to_string(line_number));
+            }
+            continue;
+        }
 
-        std::vector<std::string> tokens;
+        struct TokenAtLine {
+            std::string value;
+            std::size_t line = 0;
+        };
+        std::vector<TokenAtLine> tokens;
         tokens.reserve(header.count);
         while (tokens.size() < header.count && std::getline(input, line)) {
+            ++line_number;
             std::istringstream values(line);
             std::string token;
             while (values >> token) {
-                tokens.push_back(token);
+                tokens.push_back({token, line_number});
                 if (tokens.size() == header.count) break;
             }
         }
@@ -133,14 +189,24 @@ FchkRecords read_records(std::ifstream& input) {
             throw std::runtime_error("Unexpected end of FCHK array: " + header.label);
         }
 
+        if (header.type == 'L') {
+            // Logical arrays have already been consumed token-for-token.
+            continue;
+        }
         if (header.type == 'I') {
             auto& values = records.integer_arrays[header.label];
             values.reserve(header.count);
-            for (const auto& token : tokens) values.push_back(parse_integer(token));
+            for (const auto& token : tokens) {
+                values.push_back(parse_integer(
+                    token.value, header.label, token.line));
+            }
         } else {
             auto& values = records.real_arrays[header.label];
             values.reserve(header.count);
-            for (const auto& token : tokens) values.push_back(parse_real(token));
+            for (const auto& token : tokens) {
+                values.push_back(parse_real(
+                    token.value, header.label, token.line));
+            }
         }
     }
     return records;
@@ -170,6 +236,11 @@ long long require_integer(const FchkRecords& records, const char* label) {
         throw std::runtime_error(std::string("Required FCHK field is missing: ") + label);
     }
     return it->second;
+}
+
+const long long* find_integer(const FchkRecords& records, const char* label) {
+    const auto it = records.integers.find(label);
+    return it == records.integers.end() ? nullptr : &it->second;
 }
 
 const std::vector<double>* find_real_array(const FchkRecords& records,
@@ -205,6 +276,14 @@ std::uint32_t checked_u32(const long long value, const char* label) {
         throw std::runtime_error(std::string("FCHK integer is out of range: ") + label);
     }
     return static_cast<std::uint32_t>(value);
+}
+
+std::int32_t checked_i32(const long long value, const char* label) {
+    if (value < std::numeric_limits<std::int32_t>::min() ||
+        value > std::numeric_limits<std::int32_t>::max()) {
+        throw std::runtime_error(std::string("FCHK integer is out of range: ") + label);
+    }
+    return static_cast<std::int32_t>(value);
 }
 
 void append_shell(Wavefunction& wf,
@@ -353,6 +432,7 @@ void append_orbital_set(Wavefunction& wf,
         } else {
             mo.occupation = i < occupied_count ? 1.0f : 0.0f;
         }
+        mo.occupation_provenance = DataProvenance::Derived;
         mo.coefficients.resize(basis);
         const std::size_t offset = i * basis;
         for (std::size_t internal = 0; internal < basis; ++internal) {
@@ -422,6 +502,27 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
                                      "Number of alpha electrons");
     wf.beta_electrons = checked_u32(require_integer(records, "Number of beta electrons"),
                                     "Number of beta electrons");
+    wf.electron_counts_provenance = DataProvenance::Producer;
+    if (const auto* charge = find_integer(records, "Charge")) {
+        wf.charge = checked_i32(*charge, "Charge");
+        wf.charge_provenance = DataProvenance::Producer;
+    }
+    if (const auto* multiplicity = find_integer(records, "Multiplicity")) {
+        if (*multiplicity <= 0) {
+            throw std::runtime_error("FCHK Multiplicity must be positive");
+        }
+        wf.multiplicity = checked_u32(*multiplicity, "Multiplicity");
+        wf.multiplicity_provenance = DataProvenance::Producer;
+    }
+    if (const auto* charges = find_real_array(records, "Mulliken Charges")) {
+        if (charges->size() == atom_count &&
+            std::all_of(charges->begin(), charges->end(),
+                        [](const double value) { return std::isfinite(value); })) {
+            wf.atomic_partial_charges = *charges;
+            wf.atomic_partial_charge_scheme = "Mulliken";
+            wf.atomic_partial_charge_provenance = DataProvenance::Producer;
+        }
+    }
 
     const auto& shell_types = require_int_array(records, "Shell types");
     const auto& primitive_counts = require_int_array(records, "Number of primitives per shell");

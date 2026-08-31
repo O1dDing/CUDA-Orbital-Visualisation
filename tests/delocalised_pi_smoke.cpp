@@ -143,6 +143,55 @@ cov::Wavefunction make_planar_c5_case(const bool distort_out_of_plane) {
     return wf;
 }
 
+cov::Wavefunction make_uhf_o2_case() {
+    cov::Wavefunction wf;
+    wf.atoms={
+        {"O",8,-1.15,0.0,0.0,8.0},
+        {"O",8, 1.15,0.0,0.0,8.0}};
+    for (std::uint32_t atom=0;atom<2u;++atom) {
+        append_shell(wf,atom,0u,0u,1.2f);
+        append_shell(wf,atom,1u,0u,0.8f);
+    }
+    const std::size_t n=wf.basis_count;
+    wf.ao_overlap.assign(n*n,0.0);
+    for (std::size_t i=0;i<n;++i) wf.ao_overlap[i*n+i]=1.0;
+    wf.ao_overlap_provenance=cov::DataProvenance::Derived;
+
+    // Complete orthonormal spatial set: s+/s-, px+/-, py+/-, pz+/-.  Both
+    // spin blocks contain the same complete basis; the pi bonding and
+    // antibonding pairs are exactly degenerate within each spin.
+    const std::array<std::array<std::size_t,2>,8> pairs{{
+        {0u,4u},{0u,4u},{1u,5u},{2u,6u},
+        {3u,7u},{1u,5u},{2u,6u},{3u,7u}}};
+    const std::array<double,8> energies{
+        -1.0,-0.82,-0.70,-0.55,-0.55,0.35,0.10,0.10};
+    wf.orbitals.resize(2u*n);
+    for (std::size_t spin_block=0;spin_block<2u;++spin_block) {
+        for (std::size_t spatial=0;spatial<n;++spatial) {
+            auto& mo=wf.orbitals[spin_block*n+spatial];
+            mo.spin=spin_block==0u?cov::Spin::Alpha:cov::Spin::Beta;
+            mo.energy_hartree=energies[spatial]+0.01*spin_block;
+            mo.symmetry=(spatial==3u || spatial==4u)?"Pi_u":
+                        ((spatial==6u || spatial==7u)?"Pi_g":"Sigma");
+            mo.coefficients.assign(n,0.0f);
+            const double sign=spatial==1u || spatial>=5u?-1.0:1.0;
+            mo.coefficients[pairs[spatial][0]]=
+                static_cast<float>(1.0/std::sqrt(2.0));
+            mo.coefficients[pairs[spatial][1]]=
+                static_cast<float>(sign/std::sqrt(2.0));
+            const bool alpha_occupied=spatial<=4u || spatial>=6u;
+            const bool beta_occupied=spatial<=4u;
+            mo.occupation=(spin_block==0u?alpha_occupied:beta_occupied)
+                ?1.0f:0.0f;
+            mo.occupation_provenance=cov::DataProvenance::Producer;
+        }
+    }
+    wf.bond_orders.push_back(
+        {0u,1u,1.5,cov::DataProvenance::Derived});
+    wf.bond_order_provenance=cov::DataProvenance::Derived;
+    return wf;
+}
+
 std::vector<std::size_t> detected_members(const cov::Wavefunction& wf) {
     std::vector<std::size_t> result;
     for (std::size_t i=0;i<wf.orbitals.size();++i) {
@@ -176,6 +225,9 @@ bool validate_cp_family(const cov::Wavefunction& wf,const char* context) {
     if (assignment.family_id.empty() || assignment.atoms!=expected_atoms ||
         assignment.orbitals!=expected_orbitals ||
         std::abs(assignment.electron_count-6.0)>1.0e-8 ||
+        assignment.orientation_channels.size()!=1u ||
+        !assignment.orientation_channels.front().cyclic ||
+        !assignment.cyclic_topology ||
         assignment.provenance!=cov::DataProvenance::Derived) {
         std::cerr<<context<<": wavefunction-level Π^5_6 assignment is incomplete\n";
         return false;
@@ -241,8 +293,41 @@ int main(const int argc,char** argv) {
 
     auto nonplanar=make_planar_c5_case(true);
     cov::derive_orbital_chemistry(nonplanar);
-    if (!detected_members(nonplanar).empty()) {
-        std::cerr<<"non-planar C5 negative control was classified as delocalised pi\n";
+    // Local aligned fragments may remain valid after puckering; the forbidden
+    // claim is one globally coherent five-centre cyclic pi family.  Requiring
+    // zero local pi assignments would incorrectly reject butadiene-like
+    // fragments inside a non-planar ring (the same boundary used by tub-COT).
+    for (const auto& assignment:nonplanar.delocalised_pi_assignments) {
+        if (assignment.cyclic_topology || assignment.atoms.size()==5u) {
+            std::cerr<<"non-planar C5 negative control became one cyclic/full-ring pi family\n";
+            return EXIT_FAILURE;
+        }
+    }
+
+    auto open_shell=make_uhf_o2_case();
+    cov::derive_orbital_chemistry(open_shell);
+    if (open_shell.delocalised_pi_assignments.size()!=1u) {
+        std::cerr<<"UHF O2 fixture did not produce one bundled orthogonal-p family\n";
+        return EXIT_FAILURE;
+    }
+    const auto& open_assignment=open_shell.delocalised_pi_assignments.front();
+    if (open_assignment.atoms!=std::vector<std::uint32_t>{0u,1u} ||
+        open_assignment.orbitals.size()!=8u ||
+        std::abs(open_assignment.electron_count-6.0)>1.0e-8 ||
+        open_assignment.orientation_channels.size()!=2u ||
+        open_assignment.cyclic_topology ||
+        open_assignment.rationale.find("2 orientation channel(s)")==
+            std::string::npos) {
+        std::cerr<<"UHF O2 alpha/beta orthogonal-p subspace is incomplete\n";
+        return EXIT_FAILURE;
+    }
+    double direction_dot=0.0;
+    for (std::size_t axis=0;axis<3u;++axis) {
+        direction_dot+=open_assignment.orientation_channels[0].direction[axis]*
+            open_assignment.orientation_channels[1].direction[axis];
+    }
+    if (std::abs(direction_dot)>1.0e-6) {
+        std::cerr<<"UHF O2 orientation channels are not orthogonal\n";
         return EXIT_FAILURE;
     }
 

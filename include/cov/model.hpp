@@ -26,6 +26,21 @@ enum class DataProvenance : std::uint8_t {
     Derived = 2,
 };
 
+// Optional producer diagnostics are deliberately tri-state.  Absence means
+// that no reliable statement was present in the input; it must not be
+// presented as either success or failure.
+enum class ScfConvergenceStatus : std::uint8_t {
+    Unavailable = 0,
+    Converged,
+    Failed,
+};
+
+enum class WavefunctionStabilityStatus : std::uint8_t {
+    Unavailable = 0,
+    Stable,
+    Unstable,
+};
+
 struct Atom {
     std::string symbol;
     int atomic_number = 0;
@@ -141,6 +156,9 @@ struct OrbitalChemistry {
     std::string family_symbol;
     std::size_t participating_atoms = 0;
     double participating_electrons = 0.0;
+    std::size_t multicentre_channel_count = 0;
+    std::string multicentre_source_subspace_id;
+    double multicentre_source_electron_count = 0.0;
 
     // A delocalised family is a property of a complete active subspace, not
     // of one canonical MO in isolation.  Repeating the stable identity and
@@ -149,6 +167,8 @@ struct OrbitalChemistry {
     std::vector<std::uint32_t> participating_atom_indices;
     std::vector<std::uint32_t> delocalised_family_orbitals;
     std::string delocalised_family_id;
+    std::size_t delocalised_orientation_channels = 0;
+    bool delocalised_cyclic_topology = false;
 
     // FCHK-only canonical-MO evidence cannot always define a unique
     // donor/acceptor direction. In that case this remains "UND".
@@ -207,6 +227,21 @@ struct MulticentreAssignment {
     double confidence = 0.0;
     std::string rationale;
     DataProvenance provenance = DataProvenance::Unavailable;
+    // Equivalent local channels may be obtained by a derived rotation inside
+    // one shared canonical source span.  In that case every channel carries
+    // the same non-empty id, the total source electron count, and a partition
+    // fraction.  This makes shared orbitals explicit and prevents downstream
+    // consumers from summing their canonical occupations once per channel.
+    std::string source_subspace_id;
+    double source_subspace_electron_count = 0.0;
+    double source_subspace_fraction = 1.0;
+};
+
+struct PiOrientationChannel {
+    std::vector<std::uint32_t> atoms;
+    std::array<double, 3> direction{0.0, 0.0, 1.0};
+    double coherence = 0.0;
+    bool cyclic = false;
 };
 
 struct DelocalisedPiAssignment {
@@ -214,6 +249,15 @@ struct DelocalisedPiAssignment {
     std::vector<std::uint32_t> atoms;
     std::vector<std::uint32_t> orbitals;
     double electron_count = 0.0;
+    // A family can contain one planar channel, two degenerate perpendicular
+    // channels (acetylene/O2/CO2), or several orthogonal channels meeting at a
+    // shared sp centre (cumulenes). Individual canonical MOs are not assigned
+    // to an arbitrary direction inside a degenerate subspace.
+    std::vector<PiOrientationChannel> orientation_channels;
+    bool cyclic_topology = false;
+    // Backward-compatible representative plane data. For a non-planar bundle,
+    // plane_normal is only the first channel direction and plane_rms_bohr is 0;
+    // consumers must inspect orientation_channels before making a plane claim.
     std::array<double, 3> plane_normal{0.0, 0.0, 1.0};
     double plane_rms_bohr = 0.0;
     double subspace_coverage = 0.0;
@@ -237,12 +281,40 @@ struct Wavefunction {
     WavefunctionSource source = WavefunctionSource::Unknown;
     std::uint32_t alpha_electrons = 0;
     std::uint32_t beta_electrons = 0;
+    DataProvenance electron_counts_provenance = DataProvenance::Unavailable;
+    // Gaussian FCHK carries these independently of alpha/beta counts.  Charge
+    // zero is meaningful, so provenance rather than a magic value records
+    // whether a producer actually supplied it.  Multiplicity zero remains the
+    // harmless default for formats that do not report an electronic state.
+    std::int32_t charge = 0;
+    std::uint32_t multiplicity = 0;
+    DataProvenance charge_provenance = DataProvenance::Unavailable;
+    DataProvenance multiplicity_provenance = DataProvenance::Unavailable;
+    // Optional producer atom-resolved population analysis. These values are
+    // representation-dependent evidence for fragment/contact classification,
+    // not formal oxidation states or integer atomic charges.
+    std::vector<double> atomic_partial_charges;
+    std::string atomic_partial_charge_scheme;
+    DataProvenance atomic_partial_charge_provenance = DataProvenance::Unavailable;
     std::string source_title;
     std::string source_route;
     std::string enrichment_source;
     std::string point_group_detected;
     std::string point_group_used;
     DataProvenance point_group_provenance = DataProvenance::Unavailable;
+
+    // Optional Gaussian LOG/OUT diagnostics.  These fields are populated only
+    // from explicit final producer statements; route keywords and inferred
+    // spin values are never used as substitutes.
+    ScfConvergenceStatus scf_convergence = ScfConvergenceStatus::Unavailable;
+    DataProvenance scf_convergence_provenance = DataProvenance::Unavailable;
+    WavefunctionStabilityStatus stability =
+        WavefunctionStabilityStatus::Unavailable;
+    DataProvenance stability_provenance = DataProvenance::Unavailable;
+    std::string stability_detail;
+    double spin_squared_before_annihilation = 0.0;
+    double spin_squared_after_annihilation = 0.0;
+    DataProvenance spin_squared_provenance = DataProvenance::Unavailable;
 
     // Packed lower-triangular AO density matrices when present or safely
     // reconstructable. Size is basis_count*(basis_count+1)/2.

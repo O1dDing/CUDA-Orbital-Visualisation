@@ -247,6 +247,20 @@ bool validate_shell_extraction() {
         std::cerr << "shell extractor silently cropped an >10 diagnostic shell\n";
         return false;
     }
+
+    auto negative = shell_wavefunction({}, 0.0);
+    negative.atoms.push_back({"F", 9, 2.0, 0.0, 0.0, 9.0});
+    negative.atoms.push_back({"F", 9, 0.0, 0.0, 8.0, 9.0});
+    negative.bond_orders.push_back({
+        0u, 1u, -0.40, cov::DataProvenance::Derived,
+    });
+    negative.bond_orders.push_back({
+        0u, 2u, -0.80, cov::DataProvenance::Derived,
+    });
+    if (!cov::extract_coordination_shell(negative, 0).contacts.empty()) {
+        std::cerr << "negative Mayer evidence became a coordination neighbour\n";
+        return false;
+    }
     return true;
 }
 

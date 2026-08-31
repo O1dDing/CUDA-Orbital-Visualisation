@@ -4,6 +4,9 @@
 #include "cov/molecule_style.hpp"
 
 #include <cstdint>
+#include <map>
+#include <utility>
+#include <vector>
 
 namespace cov {
 
@@ -34,6 +37,11 @@ public:
     VolumeRenderer& operator=(const VolumeRenderer&) = delete;
 
     void resize_volume(int nx, int ny, int nz);
+    // Call after replacing or mutating the wavefunction stored at an existing
+    // address.  Interaction analysis is intentionally cached because the
+    // layered graph contains an O(N^2) weak-contact pass and must not run once
+    // per rendered frame.
+    void invalidate_geometry_cache() noexcept;
 
     [[nodiscard]] unsigned int volume_texture() const noexcept { return texture_; }
     [[nodiscard]] int nx() const noexcept { return nx_; }
@@ -61,6 +69,11 @@ private:
     int nx_ = 0;
     int ny_ = 0;
     int nz_ = 0;
+    const Wavefunction* geometry_cache_wavefunction_ = nullptr;
+    std::vector<BondVisual> geometry_bonds_;
+    std::map<std::pair<std::size_t,std::size_t>,std::size_t>
+        geometry_bond_indices_;
+    InteractionGraph geometry_interactions_;
 };
 
 } // namespace cov

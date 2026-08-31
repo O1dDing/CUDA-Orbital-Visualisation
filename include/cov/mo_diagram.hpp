@@ -67,6 +67,9 @@ struct MulticentreDescriptor {
     double electrons = 0.0;
     std::vector<std::size_t> atom_indices;
     std::string label;
+    std::size_t channel_count = 0;
+    std::string source_subspace_id;
+    double source_subspace_electron_count = 0.0;
     AnnotationSource source = AnnotationSource::Unavailable;
     double confidence = 0.0;
     bool heuristic = false;
@@ -79,6 +82,13 @@ struct DelocalisedPiDescriptor {
     std::vector<std::size_t> atom_indices;
     std::vector<std::size_t> orbital_indices;
     std::string family_id;
+    // `available` says that a delocalised-pi family is known.  Topology is a
+    // separate claim: parsed producer labels can establish the family without
+    // establishing channel directions or cyclicity.
+    bool topology_available = false;
+    std::size_t orientation_channels = 0;
+    bool cyclic_topology = false;
+    std::vector<PiOrientationChannel> orientation_channel_details;
     std::string label;
     AnnotationSource source = AnnotationSource::Unavailable;
     double confidence = 0.0;
@@ -203,6 +213,48 @@ struct MODiagramLevel {
     bool approximate_nonbonding = false;
 };
 
+struct LocalGeometryDiagramDescriptor {
+    std::size_t centre_atom = 0;
+    std::string geometry_id;
+    std::string geometry_name;
+    std::string point_group;
+    std::vector<std::size_t> neighbour_atoms;
+    double confidence = 0.0;
+    double angular_rms = 0.0;
+    double shape_measure = 0.0;
+    double radial_cv = 0.0;
+};
+
+struct ElectronicStateDiagramMetadata {
+    WavefunctionSource source = WavefunctionSource::Unknown;
+    std::int32_t charge = 0;
+    std::uint32_t multiplicity = 0;
+    std::uint32_t alpha_electrons = 0;
+    std::uint32_t beta_electrons = 0;
+    DataProvenance charge_provenance = DataProvenance::Unavailable;
+    DataProvenance multiplicity_provenance = DataProvenance::Unavailable;
+    DataProvenance electron_counts_provenance = DataProvenance::Unavailable;
+    ScfConvergenceStatus scf_convergence = ScfConvergenceStatus::Unavailable;
+    DataProvenance scf_convergence_provenance = DataProvenance::Unavailable;
+    WavefunctionStabilityStatus stability =
+        WavefunctionStabilityStatus::Unavailable;
+    DataProvenance stability_provenance = DataProvenance::Unavailable;
+    std::string stability_detail;
+    double spin_squared_before = 0.0;
+    double spin_squared_after = 0.0;
+    DataProvenance spin_squared_provenance = DataProvenance::Unavailable;
+    std::vector<double> atomic_partial_charges;
+    std::string atomic_partial_charge_scheme;
+    DataProvenance atomic_partial_charge_provenance =
+        DataProvenance::Unavailable;
+    std::string point_group_detected;
+    std::string point_group_used;
+    DataProvenance point_group_provenance = DataProvenance::Unavailable;
+    std::string source_title;
+    std::string source_route;
+    std::string enrichment_source;
+};
+
 struct MODiagramData {
     DiagramPlan plan;
     FrontierOrbitals frontier;
@@ -211,6 +263,11 @@ struct MODiagramData {
     std::vector<OrbitalMetadata> metadata;
     std::vector<OrbitalAnnotation> annotations;
     std::vector<PiInteractionDescriptor> pi_interactions;
+    ElectronicStateDiagramMetadata electronic_state;
+    // Every unambiguous Mayer-supported CN2--CN10 centre, including main-group
+    // and non-metal centres.  This is structural metadata and never creates a
+    // transition-metal ligand-field diagram by itself.
+    std::vector<LocalGeometryDiagramDescriptor> local_geometries;
     MODiagramMode mode = MODiagramMode::ValenceCentral;
     EnergyTransform energy_transform;
 
@@ -250,6 +307,10 @@ struct MODiagramExportResult {
     bool png = false;
     bool json = false;
     bool csv = false;
+    std::filesystem::path svg_path;
+    std::filesystem::path png_path;
+    std::filesystem::path json_path;
+    std::filesystem::path csv_path;
     std::string error;
 };
 

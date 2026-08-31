@@ -2,6 +2,7 @@
 #include "cov/orbital_chemistry.hpp"
 #include "cov/orbital_view.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdlib>
@@ -103,6 +104,87 @@ cov::Wavefunction make_h3_reference_case() {
     return wf;
 }
 
+cov::Wavefunction make_cation_visibility_case() {
+    cov::Wavefunction wf;
+    wf.atoms={{"H",1,0.0,0.0,0.0,1.0}};
+    wf.charge=1;
+    wf.multiplicity=2u;
+    wf.charge_provenance=cov::DataProvenance::Producer;
+    wf.multiplicity_provenance=cov::DataProvenance::Producer;
+
+    const auto orbital=[](const double energy,
+                          const float occupation,
+                          const double deep_core,
+                          const double valence,
+                          const double unresolved) {
+        cov::MolecularOrbital mo;
+        mo.energy_hartree=energy;
+        mo.occupation=occupation;
+        mo.chemistry.available=true;
+        mo.chemistry.deep_core_weight=deep_core;
+        mo.chemistry.valence_weight=valence;
+        mo.chemistry.unresolved_weight=unresolved;
+        return mo;
+    };
+    wf.orbitals={
+        orbital(-5.0,2.0f,0.92,0.02,0.06), // explicit deep core
+        orbital(-0.7,2.0f,0.05,0.03,0.92), // diffuse/unresolved occupied
+        orbital(-0.4,1.0f,0.00,0.02,0.98), // SOMO outside minimal rank
+        orbital(-0.2,0.0f,0.00,0.03,0.97), // cation vacancy / LUMO
+        orbital( 0.8,0.0f,0.00,0.01,0.99), // unrelated high virtual
+    };
+    return wf;
+}
+
+cov::Wavefunction make_local_linear_three_centre_case(const bool negative_edge) {
+    cov::Wavefunction wf;
+    // The fourth atom is a spectator: the 3c4e detector must reason over a
+    // local linear unit rather than requiring the whole molecule to be
+    // triatomic.
+    wf.atoms={
+        {"H",1,-1.5,0.0,0.0,1.0},
+        {"He",2,0.0,0.0,0.0,2.0},
+        {"H",1,1.5,0.0,0.0,1.0},
+        {"H",1,0.0,10.0,0.0,1.0},
+    };
+    for (std::uint32_t atom=0;atom<4u;++atom) {
+        const auto primitive_offset=static_cast<std::uint32_t>(wf.primitives.size());
+        wf.primitives.push_back(primitive(1.0f));
+        wf.shells.push_back({atom,primitive_offset,1u,wf.basis_count,0u,0u});
+        ++wf.basis_count;
+    }
+    wf.ao_overlap.assign(16u,0.0);
+    for (std::size_t i=0;i<4u;++i) wf.ao_overlap[i*4u+i]=1.0;
+
+    const auto orbital=[](const double energy,const float occupation,
+                          const std::array<float,4>& coefficients) {
+        cov::MolecularOrbital mo;
+        mo.energy_hartree=energy;
+        mo.occupation=occupation;
+        mo.coefficients.assign(coefficients.begin(),coefficients.end());
+        return mo;
+    };
+    constexpr float inv_two=0.5f;
+    constexpr float inv_sqrt_two=0.7071067811865475f;
+    wf.orbitals={
+        orbital(-0.50,2.0f,{inv_two,inv_sqrt_two,inv_two,0.0f}),
+        orbital(-0.20,2.0f,{inv_sqrt_two,0.0f,-inv_sqrt_two,0.0f}),
+        orbital( 0.20,0.0f,{inv_two,-inv_sqrt_two,inv_two,0.0f}),
+        orbital( 1.00,0.0f,{0.0f,0.0f,0.0f,1.0f}),
+    };
+    wf.bond_orders={
+        {0u,1u,0.45,cov::DataProvenance::Derived},
+        {1u,2u,negative_edge?-0.45:0.45,cov::DataProvenance::Derived},
+        {0u,2u,0.00,cov::DataProvenance::Derived},
+    };
+    wf.bond_order_provenance=cov::DataProvenance::Derived;
+    wf.multicentre_candidates.push_back({
+        0u,{1u,0u,2u},{0.50,0.25,0.25},2.0,
+        cov::DataProvenance::Derived,
+    });
+    return wf;
+}
+
 } // namespace
 
 int main() {
@@ -160,6 +242,75 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    std::cout<<"chemical valence H3 smoke test passed\n";
+    auto local_3c4e=make_local_linear_three_centre_case(false);
+    cov::derive_orbital_chemistry(local_3c4e);
+    const bool local_assignment=std::any_of(
+        local_3c4e.multicentre_assignments.begin(),
+        local_3c4e.multicentre_assignments.end(),[](const auto& assignment){
+            return assignment.kind==cov::MulticentreKind::ThreeCentreFourElectron &&
+                assignment.atoms==std::vector<std::uint32_t>{0u,1u,2u};
+        });
+    if (!local_assignment) {
+        std::cerr<<"spectator-bearing local linear 3c4e unit was not recognised\n";
+        return EXIT_FAILURE;
+    }
+    auto remote_terminal_density=make_local_linear_three_centre_case(false);
+    remote_terminal_density.bond_orders[2].mayer_order=0.20;
+    cov::derive_orbital_chemistry(remote_terminal_density);
+    if (remote_terminal_density.multicentre_assignments.empty()) {
+        std::cerr<<"remote terminal Mayer density suppressed a linear 3c4e unit\n";
+        return EXIT_FAILURE;
+    }
+    auto negative_3c=make_local_linear_three_centre_case(true);
+    cov::derive_orbital_chemistry(negative_3c);
+    if (!negative_3c.multicentre_assignments.empty()) {
+        std::cerr<<"negative Mayer edge became structural 3c support\n";
+        return EXIT_FAILURE;
+    }
+
+    auto ion=make_cation_visibility_case();
+    cov::OrbitalFilterSettings ion_filter;
+    ion_filter.mode=cov::OrbitalFilterMode::AutoReasonable;
+    const auto ion_frontier=cov::find_frontier_orbitals(ion.orbitals);
+    const auto ion_visible=cov::visible_orbital_indices(
+        ion.orbitals,ion_frontier,ion_filter);
+    if (ion_visible!=std::vector<std::size_t>{1u,2u}) {
+        std::cerr<<"non-core occupied/SOMO visibility safeguard regression\n";
+        return EXIT_FAILURE;
+    }
+    if (!cov::confidently_deep_core_orbital(ion.orbitals[0],ion_filter) ||
+        cov::confidently_deep_core_orbital(ion.orbitals[1],ion_filter)) {
+        std::cerr<<"deep-core confidence gate regression\n";
+        return EXIT_FAILURE;
+    }
+
+    const auto ion_metadata=cov::build_orbital_metadata(
+        ion,1u,{},ion_filter);
+    if (ion_metadata.size()!=5u || ion_metadata[0].visible ||
+        !ion_metadata[1].visible || !ion_metadata[2].visible ||
+        !ion_metadata[3].visible || ion_metadata[4].visible) {
+        std::cerr<<"positive-ion frontier-vacancy visibility regression\n";
+        return EXIT_FAILURE;
+    }
+
+    cov::MODiagramOptions ion_options;
+    ion_options.selected_index=1u;
+    const auto ion_diagram=cov::build_mo_diagram_data(ion,ion_options);
+    if (ion_diagram.selection.included_indices!=
+            std::vector<std::size_t>{1u,2u,3u} ||
+        ion_diagram.levels.size()!=3u) {
+        std::cerr<<"central diagram silently dropped occupied/SOMO or cation vacancy\n";
+        return EXIT_FAILURE;
+    }
+
+    ion_filter.mode=cov::OrbitalFilterMode::All;
+    const auto all_indices=cov::visible_orbital_indices(
+        ion.orbitals,ion_frontier,ion_filter);
+    if (all_indices!=std::vector<std::size_t>{0u,1u,2u,3u,4u}) {
+        std::cerr<<"full canonical MO accessibility regression\n";
+        return EXIT_FAILURE;
+    }
+
+    std::cout<<"chemical valence/ion visibility smoke test passed\n";
     return EXIT_SUCCESS;
 }

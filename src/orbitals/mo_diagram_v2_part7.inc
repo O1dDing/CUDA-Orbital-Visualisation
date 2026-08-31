@@ -194,6 +194,11 @@ bool write_mo_diagram_png(const MODiagramData& data,
                 pi << "_" << static_cast<int>(std::lround(
                     level.annotation.delocalised_pi.participating_electrons));
             }
+            if (level.annotation.delocalised_pi.topology_available) {
+                pi << " " << level.annotation.delocalised_pi.orientation_channels
+                   << "CH "
+                   << (level.annotation.delocalised_pi.cyclic_topology ? "C" : "L");
+            }
             const std::string value = pi.str();
             draw_text(canvas,
                       static_cast<int>(item.x) - bitmap_text_width(value, 1) / 2,

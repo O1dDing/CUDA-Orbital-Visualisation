@@ -1,6 +1,7 @@
 #include "cov/molecule_style.hpp"
 #include "cov/wavefunction_io.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
@@ -71,9 +72,71 @@ int main(const int argc, char** argv) {
     const cov::MoleculeRenderSettings defaults;
     if (std::abs(defaults.atom_scale - 1.0f) > 1.0e-6f ||
         std::abs(defaults.bond_scale - 1.0f) > 1.0e-6f ||
-        defaults.molecule_opacity < 0.95f) {
+        defaults.molecule_opacity < 0.95f ||
+        !defaults.show_coordination_contacts ||
+        !defaults.show_multicentre_support ||
+        !defaults.show_polyhedral_cage_support ||
+        defaults.show_weak_interactions) {
         std::cerr << "1.0 molecular-size reference defaults regressed\n";
         return 1;
+    }
+
+    if (cov::interaction_visual_style(cov::InteractionKind::CovalentConnectivity,
+                                      defaults) !=
+            cov::InteractionVisualStyle::OrdinaryBond ||
+        cov::interaction_visual_style(cov::InteractionKind::CoordinationContact,
+                                      defaults) !=
+            cov::InteractionVisualStyle::CoordinationDash ||
+        cov::interaction_visual_style(cov::InteractionKind::MulticentreSupport,
+                                       defaults) !=
+            cov::InteractionVisualStyle::MulticentreDash ||
+        cov::interaction_visual_style(cov::InteractionKind::PolyhedralCageSupport,
+                                       defaults) !=
+            cov::InteractionVisualStyle::PolyhedralCageDash ||
+        cov::interaction_visual_style(cov::InteractionKind::HydrogenBond,
+                                      defaults) !=
+            cov::InteractionVisualStyle::Hidden ||
+        cov::interaction_visual_style(cov::InteractionKind::NoncovalentContact,
+                                      defaults) !=
+            cov::InteractionVisualStyle::Hidden ||
+        cov::interaction_visual_style(cov::InteractionKind::IonicContact,
+                                      defaults) !=
+            cov::InteractionVisualStyle::Hidden ||
+        cov::interaction_visual_style(cov::InteractionKind::AmbiguousContact,
+                                      defaults) !=
+            cov::InteractionVisualStyle::Hidden) {
+        std::cerr << "default interaction visual mapping regressed\n";
+        return 19;
+    }
+
+    cov::MoleculeRenderSettings optional_layers = defaults;
+    optional_layers.show_coordination_contacts = false;
+    optional_layers.show_multicentre_support = false;
+    optional_layers.show_polyhedral_cage_support = false;
+    optional_layers.show_weak_interactions = true;
+    if (cov::interaction_visual_style(cov::InteractionKind::CoordinationContact,
+                                      optional_layers) !=
+            cov::InteractionVisualStyle::Hidden ||
+        cov::interaction_visual_style(cov::InteractionKind::MulticentreSupport,
+                                       optional_layers) !=
+            cov::InteractionVisualStyle::Hidden ||
+        cov::interaction_visual_style(cov::InteractionKind::PolyhedralCageSupport,
+                                       optional_layers) !=
+            cov::InteractionVisualStyle::Hidden ||
+        cov::interaction_visual_style(cov::InteractionKind::HydrogenBond,
+                                      optional_layers) !=
+            cov::InteractionVisualStyle::HydrogenBondDots ||
+        cov::interaction_visual_style(cov::InteractionKind::NoncovalentContact,
+                                      optional_layers) !=
+            cov::InteractionVisualStyle::NoncovalentDots ||
+        cov::interaction_visual_style(cov::InteractionKind::IonicContact,
+                                      optional_layers) !=
+            cov::InteractionVisualStyle::IonicDash ||
+        cov::interaction_visual_style(cov::InteractionKind::AmbiguousContact,
+                                      optional_layers) !=
+            cov::InteractionVisualStyle::Hidden) {
+        std::cerr << "optional interaction visual mapping regressed\n";
+        return 20;
     }
 
     cov::Wavefunction wf;
@@ -177,6 +240,17 @@ int main(const int argc, char** argv) {
             return 8;
         }
     }
+    const auto benzene_interactions = cov::build_interaction_graph(benzene);
+    if (benzene_interactions.edges.size() != 6u ||
+        !std::all_of(benzene_interactions.edges.begin(),
+                     benzene_interactions.edges.end(),
+                     [&](const cov::InteractionEdge& edge) {
+                         return cov::interaction_visual_style(edge.kind, defaults) ==
+                                cov::InteractionVisualStyle::OrdinaryBond;
+                     })) {
+        std::cerr << "benzene perimeter changed in the layered render graph\n";
+        return 21;
+    }
 
     // Two regular fused six-membered rings: the carbon skeleton has exactly
     // eleven edges. Only the two shared-edge atoms have degree three.
@@ -212,6 +286,17 @@ int main(const int argc, char** argv) {
             std::cerr << "naphthalene fused-ring perimeter was not marked delocalised\n";
             return 10;
         }
+    }
+    const auto naphthalene_interactions = cov::build_interaction_graph(naphthalene);
+    if (naphthalene_interactions.edges.size() != 11u ||
+        !std::all_of(naphthalene_interactions.edges.begin(),
+                     naphthalene_interactions.edges.end(),
+                     [&](const cov::InteractionEdge& edge) {
+                         return cov::interaction_visual_style(edge.kind, defaults) ==
+                                cov::InteractionVisualStyle::OrdinaryBond;
+                     })) {
+        std::cerr << "naphthalene fused perimeter changed in the layered render graph\n";
+        return 22;
     }
 
     // All real elements supported by the parser must have a defined radius.
@@ -281,6 +366,22 @@ int main(const int argc, char** argv) {
         return 14;
     }
 
+    // An equilibrium one-electron H2+ bond is longer than the ordinary H--H
+    // covalent-radius envelope but has direct Mayer evidence. The adaptive
+    // envelope must keep it as one molecular fragment without relaxing weak
+    // remote couplings in general.
+    cov::Wavefunction h2_plus;
+    h2_plus.atoms = {
+        {"H", 1, -0.53 * cov::kAngstromToBohr, 0.0, 0.0},
+        {"H", 1,  0.53 * cov::kAngstromToBohr, 0.0, 0.0},
+    };
+    h2_plus.bond_order_provenance = cov::DataProvenance::Derived;
+    h2_plus.bond_orders.push_back({0, 1, 0.50, cov::DataProvenance::Derived});
+    if (cov::analyse_bonds(h2_plus).size() != 1u) {
+        std::cerr << "electronically supported one-electron H2+ bond was lost\n";
+        return 15;
+    }
+
     // A complete heavy-element table must not make genuinely remote Mayer
     // coupling drawable. The existing adjacency envelope remains authoritative.
     cov::Wavefunction remote_hf_o;
@@ -292,17 +393,17 @@ int main(const int argc, char** argv) {
     remote_hf_o.bond_orders.push_back({0, 1, 0.06, cov::DataProvenance::Derived});
     if (!cov::analyse_bonds(remote_hf_o).empty()) {
         std::cerr << "remote heavy-element Mayer coupling became a structural bond\n";
-        return 15;
+        return 16;
     }
 
     if (argc == 3) {
         if (!check_real_topology(argv[1], 12u, 6u)) {
             std::cerr << "real benzene topology regression\n";
-            return 16;
+            return 17;
         }
         if (!check_real_topology(argv[2], 19u, 11u)) {
             std::cerr << "real naphthalene topology regression\n";
-            return 17;
+            return 18;
         }
     }
 

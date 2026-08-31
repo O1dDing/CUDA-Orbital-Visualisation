@@ -1,5 +1,6 @@
 #include "cov/mo_diagram.hpp"
 #include "cov/ligand_field.hpp"
+#include "cov/local_geometry.hpp"
 #include "cov/local_orbital_symmetry.hpp"
 #include "cov/point_group_catalog.hpp"
 
@@ -34,6 +35,58 @@ bool chemistry_available(const Wavefunction& wavefunction) {
         [](const MolecularOrbital& orbital) {
             return orbital.chemistry.available;
         });
+}
+
+void attach_local_geometry_metadata(const Wavefunction& wavefunction,
+                                    MODiagramData& data) {
+    data.local_geometries.clear();
+    for (const auto& environment:analyse_local_molecular_geometries(wavefunction)) {
+        const auto* descriptor=coordination_geometry_descriptor(
+            environment.geometry_id);
+        if (descriptor==nullptr) continue;
+        LocalGeometryDiagramDescriptor item;
+        item.centre_atom=environment.centre_atom;
+        item.geometry_id=std::string(descriptor->machine_id);
+        item.geometry_name=std::string(descriptor->name);
+        item.point_group=std::string(descriptor->point_group);
+        item.neighbour_atoms=environment.neighbour_atoms;
+        item.confidence=environment.confidence;
+        item.angular_rms=environment.angular_rms;
+        item.shape_measure=environment.shape_measure;
+        item.radial_cv=environment.radial_cv;
+        data.local_geometries.push_back(std::move(item));
+    }
+}
+
+void attach_electronic_state_metadata(const Wavefunction& wavefunction,
+                                      MODiagramData& data) {
+    auto& state=data.electronic_state;
+    state.source=wavefunction.source;
+    state.charge=wavefunction.charge;
+    state.multiplicity=wavefunction.multiplicity;
+    state.alpha_electrons=wavefunction.alpha_electrons;
+    state.beta_electrons=wavefunction.beta_electrons;
+    state.charge_provenance=wavefunction.charge_provenance;
+    state.multiplicity_provenance=wavefunction.multiplicity_provenance;
+    state.electron_counts_provenance=wavefunction.electron_counts_provenance;
+    state.scf_convergence=wavefunction.scf_convergence;
+    state.scf_convergence_provenance=wavefunction.scf_convergence_provenance;
+    state.stability=wavefunction.stability;
+    state.stability_provenance=wavefunction.stability_provenance;
+    state.stability_detail=wavefunction.stability_detail;
+    state.spin_squared_before=wavefunction.spin_squared_before_annihilation;
+    state.spin_squared_after=wavefunction.spin_squared_after_annihilation;
+    state.spin_squared_provenance=wavefunction.spin_squared_provenance;
+    state.atomic_partial_charges=wavefunction.atomic_partial_charges;
+    state.atomic_partial_charge_scheme=wavefunction.atomic_partial_charge_scheme;
+    state.atomic_partial_charge_provenance=
+        wavefunction.atomic_partial_charge_provenance;
+    state.point_group_detected=wavefunction.point_group_detected;
+    state.point_group_used=wavefunction.point_group_used;
+    state.point_group_provenance=wavefunction.point_group_provenance;
+    state.source_title=wavefunction.source_title;
+    state.source_route=wavefunction.source_route;
+    state.enrichment_source=wavefunction.enrichment_source;
 }
 
 bool occupied(const MolecularOrbital& orbital,const double threshold) {
@@ -107,13 +160,18 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
             chemistry.participating_atom_indices.begin(),
             chemistry.participating_atom_indices.end());
         result.multicentre.label=chemistry.multicentre_label;
+        result.multicentre.channel_count=chemistry.multicentre_channel_count;
+        result.multicentre.source_subspace_id=
+            chemistry.multicentre_source_subspace_id;
+        result.multicentre.source_subspace_electron_count=
+            chemistry.multicentre_source_electron_count;
         result.multicentre.source=AnnotationSource::Derived;
         result.multicentre.confidence=chemistry.confidence;
         result.multicentre.heuristic=false;
     }
 
     if (chemistry.channel.dominant==OrbitalAngularFamily::Pi &&
-        chemistry.participating_atoms>2u &&
+        chemistry.participating_atoms>1u &&
         (!chemistry.delocalised_family_id.empty() ||
          chemistry.multicentre_label=="delocalised-pi")) {
         result.delocalised_pi.available=true;
@@ -129,6 +187,11 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
             chemistry.delocalised_family_orbitals.end());
         result.delocalised_pi.family_id=
             chemistry.delocalised_family_id;
+        result.delocalised_pi.topology_available=true;
+        result.delocalised_pi.orientation_channels=
+            chemistry.delocalised_orientation_channels;
+        result.delocalised_pi.cyclic_topology=
+            chemistry.delocalised_cyclic_topology;
         result.delocalised_pi.label=delocalised_pi_label(
             chemistry.participating_atoms,
             chemistry.participating_electrons);
@@ -1265,6 +1328,8 @@ GroupCandidate make_group_candidate(
     double overlap=0.0;
     double valence_weight=0.0;
     bool all_valence=true;
+    bool protected_occupied=false;
+    bool cation_frontier_group=false;
 
     for (std::size_t index=base;index<end;++index) {
         const auto& orbital=wavefunction.orbitals[index];
@@ -1280,7 +1345,20 @@ GroupCandidate make_group_candidate(
         level.metadata.selected=level.metadata.selected ||
                                 options.selected_index==index;
         candidate.selected_by_reference=candidate.selected_by_reference ||
-            (orbital.chemistry.available && orbital.chemistry.valence_manifold);
+            (orbital.chemistry.available &&
+             orbital.chemistry.valence_manifold &&
+             !confidently_deep_core_orbital(orbital,options.filter));
+        protected_occupied=protected_occupied ||
+            (occupied(orbital,options.filter.occupation_threshold) &&
+             !confidently_deep_core_orbital(orbital,options.filter));
+        if (wavefunction.charge>0 &&
+            wavefunction.charge_provenance!=DataProvenance::Unavailable &&
+            !occupied(orbital,options.filter.occupation_threshold)) {
+            cation_frontier_group=cation_frontier_group ||
+                (frontier.alpha_lumo && *frontier.alpha_lumo==index) ||
+                (frontier.separate_spin_sets && frontier.beta_lumo &&
+                 *frontier.beta_lumo==index);
+        }
         all_valence=all_valence && orbital.chemistry.available &&
                     orbital.chemistry.valence_manifold;
         valence_weight+=orbital.chemistry.valence_weight;
@@ -1389,6 +1467,8 @@ GroupCandidate make_group_candidate(
                            options.filter.core_energy_cutoff_hartree &&
                        energy_relevant) ||
                       candidate.selected_by_raw ||
+                      protected_occupied ||
+                      cation_frontier_group ||
                       (level.metadata.selected && !selected_inspection_only);
 
     // A sigma-framework group that the minimal canonical manifold missed is
@@ -1688,12 +1768,45 @@ DiagramSelectionPlan build_valence_selection_plan(
     const LigandScope ligand_scope=make_ligand_scope(
         wavefunction,ligand_field);
     const LigandScope* scope=ligand_scope.available?&ligand_scope:nullptr;
+    const auto labels=build_orbital_labels(
+        wavefunction.orbitals,options.degeneracy);
+    const auto frontier=find_frontier_orbitals(
+        wavefunction.orbitals,options.filter.occupation_threshold);
+    std::vector<std::size_t> cation_frontier;
+    if (wavefunction.charge>0 &&
+        wavefunction.charge_provenance!=DataProvenance::Unavailable) {
+        if (frontier.alpha_lumo) cation_frontier.push_back(*frontier.alpha_lumo);
+        if (frontier.separate_spin_sets && frontier.beta_lumo) {
+            cation_frontier.push_back(*frontier.beta_lumo);
+        }
+        cation_frontier=expand_degenerate(
+            std::move(cation_frontier),labels);
+    }
     std::size_t raw_supplements=0u;
+    std::size_t occupied_safeguards=0u;
+    std::size_t cation_vacancies=0u;
     for (std::size_t i=0;i<wavefunction.orbitals.size();++i) {
         const auto& orbital=wavefunction.orbitals[i];
         if (orbital.chemistry.available &&
-            orbital.chemistry.valence_manifold) {
+            orbital.chemistry.valence_manifold &&
+            !confidently_deep_core_orbital(orbital,options.filter)) {
             plan.included_indices.push_back(i);
+            continue;
+        }
+
+        // The minimal S-metric reference chooses a compact chemical subspace;
+        // it is not permission to discard occupied canonical MOs.  Only a
+        // confidently assigned deep-core level may be folded automatically.
+        if (occupied(orbital,options.filter.occupation_threshold) &&
+            !confidently_deep_core_orbital(orbital,options.filter)) {
+            plan.included_indices.push_back(i);
+            ++occupied_safeguards;
+            continue;
+        }
+        if (std::binary_search(cation_frontier.begin(),
+                               cation_frontier.end(),i)) {
+            plan.included_indices.push_back(i);
+            ++cation_vacancies;
             continue;
         }
 
@@ -1722,8 +1835,6 @@ DiagramSelectionPlan build_valence_selection_plan(
             ++raw_supplements;
         }
     }
-    const auto labels=build_orbital_labels(
-        wavefunction.orbitals,options.degeneracy);
     plan.included_indices=expand_degenerate(
         std::move(plan.included_indices),labels);
     plan.hidden_count=metadata.size()>plan.included_indices.size()
@@ -1745,7 +1856,9 @@ DiagramSelectionPlan build_valence_selection_plan(
            <<" canonical MOs; occupied="<<plan.valence_occupied_count
            <<"; virtual="<<plan.frontier_virtual_count
            <<"; raw-MO supplements="<<raw_supplements
-           <<"; core/polarisation/Rydberg hidden";
+           <<"; occupied safeguards="<<occupied_safeguards
+           <<"; cation vacancies="<<cation_vacancies
+           <<"; confident deep-core/polarisation/Rydberg hidden";
     plan.summary=summary.str();
     return plan;
 }
@@ -1754,7 +1867,10 @@ MODiagramData build_mo_diagram_data(
     const Wavefunction& wavefunction,
     const MODiagramOptions& options) {
     if (!chemistry_available(wavefunction)) {
-        return build_mo_diagram_data_legacy(wavefunction,options);
+        auto data=build_mo_diagram_data_legacy(wavefunction,options);
+        attach_local_geometry_metadata(wavefunction,data);
+        attach_electronic_state_metadata(wavefunction,data);
+        return data;
     }
 
     MODiagramData data;
@@ -1785,10 +1901,27 @@ MODiagramData build_mo_diagram_data(
         data.ligand_field_shape_measure=ligand_field.shape_measure;
         data.ligand_field_radial_cv=ligand_field.radial_cv;
     }
+    attach_local_geometry_metadata(wavefunction,data);
+    attach_electronic_state_metadata(wavefunction,data);
 
     data.annotations.reserve(wavefunction.orbitals.size());
     for (const auto& orbital:wavefunction.orbitals) {
         data.annotations.push_back(annotate_orbital(orbital));
+    }
+    // Preserve the full family-level orientation evidence in every canonical
+    // member annotation.  Canonical members inside a degenerate subspace are
+    // deliberately not assigned arbitrary individual directions.
+    for (const auto& assignment:wavefunction.delocalised_pi_assignments) {
+        for (const auto orbital:assignment.orbitals) {
+            if (orbital>=data.annotations.size()) continue;
+            auto& pi=data.annotations[orbital].delocalised_pi;
+            if (!pi.available || pi.family_id!=assignment.family_id) continue;
+            pi.topology_available=
+                assignment.provenance!=DataProvenance::Unavailable;
+            pi.orientation_channels=assignment.orientation_channels.size();
+            pi.cyclic_topology=assignment.cyclic_topology;
+            pi.orientation_channel_details=assignment.orientation_channels;
+        }
     }
 
     data.selection=build_valence_selection_plan(
@@ -1904,6 +2037,26 @@ MODiagramData build_mo_diagram_data(
     for (std::size_t group=0;group<groups.size();++group) {
         essential[group]=!options.hide_ligand_centred_intermediates &&
                          groups[group].level.metadata.selected;
+        for (const auto member:groups[group].level.member_indices) {
+            if (member>=wavefunction.orbitals.size()) continue;
+            const auto& orbital=wavefunction.orbitals[member];
+            if (!options.hide_ligand_centred_intermediates &&
+                occupied(orbital,options.filter.occupation_threshold) &&
+                !confidently_deep_core_orbital(orbital,options.filter)) {
+                essential[group]=true;
+            }
+            if (wavefunction.charge>0 &&
+                wavefunction.charge_provenance!=DataProvenance::Unavailable &&
+                ((!data.frontier.separate_spin_sets && data.frontier.alpha_lumo &&
+                  *data.frontier.alpha_lumo==member) ||
+                 (data.frontier.separate_spin_sets &&
+                  ((data.frontier.alpha_lumo &&
+                    *data.frontier.alpha_lumo==member) ||
+                   (data.frontier.beta_lumo &&
+                    *data.frontier.beta_lumo==member))))) {
+                essential[group]=true;
+            }
+        }
     }
     for (const auto& pair:raw_pairs) {
         essential[pair.retained]=true;

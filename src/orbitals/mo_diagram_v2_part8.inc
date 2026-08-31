@@ -9,12 +9,50 @@ const char* machine_bonding_class(const BondingClass value) noexcept {
     }
 }
 
+const char* machine_scf_status(const ScfConvergenceStatus value) noexcept {
+    switch (value) {
+        case ScfConvergenceStatus::Converged: return "converged";
+        case ScfConvergenceStatus::Failed: return "failed";
+        default: return "unavailable";
+    }
+}
+
+const char* machine_stability_status(
+    const WavefunctionStabilityStatus value) noexcept {
+    switch (value) {
+        case WavefunctionStabilityStatus::Stable: return "stable";
+        case WavefunctionStabilityStatus::Unstable: return "unstable";
+        default: return "unavailable";
+    }
+}
+
 void write_json_index_array(std::ostream& out,
                             const std::vector<std::size_t>& values) {
     out << '[';
     for (std::size_t i = 0; i < values.size(); ++i) {
         if (i) out << ',';
         out << values[i];
+    }
+    out << ']';
+}
+
+void write_json_pi_channels(
+    std::ostream& out,
+    const std::vector<PiOrientationChannel>& channels) {
+    out << '[';
+    for (std::size_t index=0;index<channels.size();++index) {
+        if (index) out << ',';
+        const auto& channel=channels[index];
+        out << "{\"atoms\":[";
+        for (std::size_t atom=0;atom<channel.atoms.size();++atom) {
+            if (atom) out << ',';
+            out << channel.atoms[atom];
+        }
+        out << "],\"direction\":[" << std::setprecision(14)
+            << channel.direction[0] << ',' << channel.direction[1] << ','
+            << channel.direction[2] << "],\"coherence\":"
+            << channel.coherence << ",\"cyclic\":"
+            << (channel.cyclic ? "true" : "false") << '}';
     }
     out << ']';
 }
@@ -45,6 +83,55 @@ std::string csv_pi_interaction_summary(const MODiagramData& data) {
             << ";confidence=" << interaction.confidence
             << ";lower_visible=" << (interaction.lower_visible ? 1 : 0)
             << ";upper_visible=" << (interaction.upper_visible ? 1 : 0);
+    }
+    return out.str();
+}
+
+std::string csv_pi_channel_summary(const DelocalisedPiDescriptor& descriptor) {
+    if (!descriptor.topology_available) return {};
+    std::ostringstream out;
+    out << std::setprecision(14);
+    for (std::size_t index=0;index<descriptor.orientation_channel_details.size();++index) {
+        if (index) out << " || ";
+        const auto& channel=descriptor.orientation_channel_details[index];
+        out << "atoms=";
+        for (std::size_t atom=0;atom<channel.atoms.size();++atom) {
+            if (atom) out << ';';
+            out << channel.atoms[atom];
+        }
+        out << ";direction=" << channel.direction[0] << ';'
+            << channel.direction[1] << ';' << channel.direction[2]
+            << ";coherence=" << channel.coherence
+            << ";cyclic=" << (channel.cyclic ? 1 : 0);
+    }
+    return out.str();
+}
+
+std::string csv_local_geometry_summary(const MODiagramData& data) {
+    std::ostringstream out;
+    out << std::setprecision(14);
+    for (std::size_t index=0;index<data.local_geometries.size();++index) {
+        if (index) out << " || ";
+        const auto& geometry=data.local_geometries[index];
+        out << "centre=" << geometry.centre_atom
+            << ";geometry_id=" << geometry.geometry_id
+            << ";name=" << geometry.geometry_name
+            << ";point_group=" << geometry.point_group
+            << ";neighbours=" << csv_index_list(geometry.neighbour_atoms)
+            << ";confidence=" << geometry.confidence
+            << ";angular_rms=" << geometry.angular_rms
+            << ";shape_measure=" << geometry.shape_measure
+            << ";radial_cv=" << geometry.radial_cv;
+    }
+    return out.str();
+}
+
+std::string csv_real_list(const std::vector<double>& values) {
+    std::ostringstream out;
+    out << std::setprecision(14);
+    for (std::size_t index=0;index<values.size();++index) {
+        if (index) out << ';';
+        out << values[index];
     }
     return out.str();
 }
@@ -89,6 +176,72 @@ bool write_mo_diagram_json(const MODiagramData& data,
     out << "  \"hidden_orbitals\": " << data.selection.hidden_count << ",\n";
     out << "  \"valence_occupied_count\": " << data.selection.valence_occupied_count << ",\n";
     out << "  \"frontier_virtual_count\": " << data.selection.frontier_virtual_count << ",\n";
+    const auto& state=data.electronic_state;
+    out << "  \"electronic_state\": {\n";
+    out << "    \"wavefunction_source\": \""
+        << wavefunction_source_name(state.source) << "\",\n";
+    out << "    \"charge\": ";
+    if (state.charge_provenance==DataProvenance::Unavailable) out << "null";
+    else out << state.charge;
+    out << ",\n    \"charge_provenance\": \""
+        << data_provenance_name(state.charge_provenance) << "\",\n";
+    out << "    \"multiplicity\": ";
+    if (state.multiplicity_provenance==DataProvenance::Unavailable) out << "null";
+    else out << state.multiplicity;
+    out << ",\n    \"multiplicity_provenance\": \""
+        << data_provenance_name(state.multiplicity_provenance) << "\",\n";
+    out << "    \"alpha_electrons\": ";
+    if (state.electron_counts_provenance==DataProvenance::Unavailable) out << "null";
+    else out << state.alpha_electrons;
+    out << ",\n    \"beta_electrons\": ";
+    if (state.electron_counts_provenance==DataProvenance::Unavailable) out << "null";
+    else out << state.beta_electrons;
+    out << ",\n    \"electron_counts_provenance\": \""
+        << data_provenance_name(state.electron_counts_provenance) << "\",\n";
+    out << "    \"scf_convergence\": \""
+        << machine_scf_status(state.scf_convergence) << "\",\n";
+    out << "    \"scf_convergence_provenance\": \""
+        << data_provenance_name(state.scf_convergence_provenance) << "\",\n";
+    out << "    \"wavefunction_stability\": \""
+        << machine_stability_status(state.stability) << "\",\n";
+    out << "    \"stability_provenance\": \""
+        << data_provenance_name(state.stability_provenance) << "\",\n";
+    out << "    \"stability_detail\": \""
+        << json_escape(state.stability_detail) << "\",\n";
+    out << "    \"spin_squared_before_annihilation\": ";
+    if (state.spin_squared_provenance==DataProvenance::Unavailable) out << "null";
+    else out << std::setprecision(14) << state.spin_squared_before;
+    out << ",\n    \"spin_squared_after_annihilation\": ";
+    if (state.spin_squared_provenance==DataProvenance::Unavailable) out << "null";
+    else out << std::setprecision(14) << state.spin_squared_after;
+    out << ",\n    \"spin_squared_provenance\": \""
+        << data_provenance_name(state.spin_squared_provenance) << "\",\n";
+    out << "    \"atomic_partial_charge_scheme\": \""
+        << json_escape(state.atomic_partial_charge_scheme) << "\",\n";
+    out << "    \"atomic_partial_charge_provenance\": \""
+        << data_provenance_name(state.atomic_partial_charge_provenance) << "\",\n";
+    out << "    \"atomic_partial_charges\": ";
+    if (state.atomic_partial_charge_provenance==DataProvenance::Unavailable) {
+        out << "null";
+    } else {
+        out << '[';
+        for (std::size_t index=0;index<state.atomic_partial_charges.size();++index) {
+            if (index) out << ',';
+            out << std::setprecision(14) << state.atomic_partial_charges[index];
+        }
+        out << ']';
+    }
+    out << ",\n    \"point_group_detected\": \""
+        << json_escape(state.point_group_detected) << "\",\n";
+    out << "    \"point_group_used\": \""
+        << json_escape(state.point_group_used) << "\",\n";
+    out << "    \"point_group_provenance\": \""
+        << data_provenance_name(state.point_group_provenance) << "\",\n";
+    out << "    \"source_title\": \"" << json_escape(state.source_title)
+        << "\",\n    \"source_route\": \"" << json_escape(state.source_route)
+        << "\",\n    \"enrichment_source\": \""
+        << json_escape(state.enrichment_source) << "\"\n";
+    out << "  },\n";
     out << "  \"local_coordination\": {\n";
     out << "    \"available\": "
         << (!data.ligand_field_geometry_id.empty() &&
@@ -111,6 +264,23 @@ bool write_mo_diagram_json(const MODiagramData& data,
     out << "    \"shape_measure\": " << data.ligand_field_shape_measure << ",\n";
     out << "    \"radial_cv\": " << data.ligand_field_radial_cv << "\n";
     out << "  },\n";
+    out << "  \"local_molecular_geometries\": [\n";
+    for (std::size_t index=0;index<data.local_geometries.size();++index) {
+        const auto& geometry=data.local_geometries[index];
+        out << "    {\"centre_atom_index\":" << geometry.centre_atom
+            << ",\"geometry_id\":\"" << json_escape(geometry.geometry_id)
+            << "\",\"geometry_name\":\"" << json_escape(geometry.geometry_name)
+            << "\",\"point_group\":\"" << json_escape(geometry.point_group)
+            << "\",\"neighbour_atom_indices\":";
+        write_json_index_array(out,geometry.neighbour_atoms);
+        out << ",\"confidence\":" << std::setprecision(14)
+            << geometry.confidence << ",\"angular_rms\":"
+            << geometry.angular_rms << ",\"shape_measure\":"
+            << geometry.shape_measure << ",\"radial_cv\":"
+            << geometry.radial_cv << '}'
+            << (index+1u<data.local_geometries.size()?",":"") << "\n";
+    }
+    out << "  ],\n";
     out << "  \"pi_interactions\": [\n";
     for (std::size_t i = 0; i < data.pi_interactions.size(); ++i) {
         const auto& interaction = data.pi_interactions[i];
@@ -143,6 +313,41 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << "    }" << (i + 1 < data.pi_interactions.size() ? "," : "") << "\n";
     }
     out << "  ],\n";
+    out << "  \"delocalised_pi_families\": [\n";
+    std::set<std::string> exported_pi_families;
+    bool first_pi_family=true;
+    for (const auto& annotation:data.annotations) {
+        const auto& pi=annotation.delocalised_pi;
+        if (!pi.available || pi.family_id.empty() ||
+            !exported_pi_families.insert(pi.family_id).second) {
+            continue;
+        }
+        if (!first_pi_family) out << ",\n";
+        first_pi_family=false;
+        out << "    {\"family_id\":\"" << json_escape(pi.family_id)
+            << "\",\"atom_indices\":";
+        write_json_index_array(out,pi.atom_indices);
+        out << ",\"orbital_indices\":";
+        write_json_index_array(out,pi.orbital_indices);
+        out << ",\"electron_count\":" << std::setprecision(14)
+            << pi.participating_electrons
+            << ",\"topology_available\":"
+            << (pi.topology_available ? "true" : "false")
+            << ",\"orientation_channels\":";
+        if (pi.topology_available) out << pi.orientation_channels;
+        else out << "null";
+        out << ",\"cyclic_topology\":";
+        if (pi.topology_available) out << (pi.cyclic_topology ? "true" : "false");
+        else out << "null";
+        out << ",\"channel_details\":";
+        if (pi.topology_available) {
+            write_json_pi_channels(out,pi.orientation_channel_details);
+        } else {
+            out << "null";
+        }
+        out << '}';
+    }
+    out << "\n  ],\n";
     out << "  \"diagram_rows\": [\n";
     for (std::size_t i = 0; i < data.levels.size(); ++i) {
         const auto& level = data.levels[i];
@@ -197,12 +402,40 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << "      \"multicentre_centres\": " << annotation.multicentre.centres << ",\n";
         out << "      \"multicentre_electrons\": " << annotation.multicentre.electrons << ",\n";
         out << "      \"multicentre_label\": \"" << json_escape(annotation.multicentre.label) << "\",\n";
+        out << "      \"multicentre_channel_count\": "
+            << annotation.multicentre.channel_count << ",\n";
+        out << "      \"multicentre_source_subspace_id\": \""
+            << json_escape(annotation.multicentre.source_subspace_id) << "\",\n";
+        out << "      \"multicentre_source_subspace_electron_count\": "
+            << annotation.multicentre.source_subspace_electron_count << ",\n";
         out << "      \"multicentre_source\": \"" << annotation_source_name(annotation.multicentre.source) << "\",\n";
         out << "      \"multicentre_confidence\": " << annotation.multicentre.confidence << ",\n";
         out << "      \"multicentre_heuristic\": " << (annotation.multicentre.heuristic ? "true" : "false") << ",\n";
         out << "      \"delocalised_pi_available\": " << (annotation.delocalised_pi.available ? "true" : "false") << ",\n";
         out << "      \"delocalised_pi_participating_atoms\": " << annotation.delocalised_pi.participating_atoms << ",\n";
         out << "      \"delocalised_pi_participating_electrons\": " << annotation.delocalised_pi.participating_electrons << ",\n";
+        out << "      \"delocalised_pi_topology_available\": "
+            << (annotation.delocalised_pi.topology_available ? "true" : "false") << ",\n";
+        out << "      \"delocalised_pi_orientation_channels\": ";
+        if (annotation.delocalised_pi.topology_available) {
+            out << annotation.delocalised_pi.orientation_channels;
+        } else {
+            out << "null";
+        }
+        out << ",\n      \"delocalised_pi_cyclic_topology\": ";
+        if (annotation.delocalised_pi.topology_available) {
+            out << (annotation.delocalised_pi.cyclic_topology ? "true" : "false");
+        } else {
+            out << "null";
+        }
+        out << ",\n      \"delocalised_pi_orientation_channel_details\": ";
+        if (annotation.delocalised_pi.topology_available) {
+            write_json_pi_channels(
+                out,annotation.delocalised_pi.orientation_channel_details);
+        } else {
+            out << "null";
+        }
+        out << ",\n";
         out << "      \"delocalised_pi_label\": \"" << json_escape(annotation.delocalised_pi.label) << "\",\n";
         out << "      \"delocalised_pi_source\": \"" << annotation_source_name(annotation.delocalised_pi.source) << "\",\n";
         out << "      \"delocalised_pi_confidence\": " << annotation.delocalised_pi.confidence << ",\n";
@@ -241,9 +474,22 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "local_point_group,local_geometry_id,local_geometry_name,local_coordination_number,"
            "local_metal_atom_index,local_ligand_atom_indices,local_confidence,local_angular_rms,"
            "local_shape_measure,local_radial_cv,diagram_row_count,pi_interaction_count,"
-           "pi_interactions\n";
+           "pi_interactions,delocalised_pi_topology_available,"
+           "delocalised_pi_orientation_channels,delocalised_pi_cyclic_topology,"
+           "delocalised_pi_orientation_channel_details,local_geometry_count,"
+           "local_geometries,wavefunction_source,charge,charge_provenance,"
+           "multiplicity,multiplicity_provenance,alpha_electrons,beta_electrons,"
+           "electron_counts_provenance,scf_convergence,scf_convergence_provenance,"
+           "wavefunction_stability,stability_provenance,spin_squared_before,"
+           "spin_squared_after,spin_squared_provenance,atomic_partial_charge_scheme,"
+           "atomic_partial_charge_provenance,atomic_partial_charges,point_group_detected,"
+           "point_group_used,point_group_provenance,multicentre_channel_count,"
+           "multicentre_source_subspace_id,multicentre_source_subspace_electron_count,"
+           "stability_detail,source_title,source_route,enrichment_source\n";
     const std::string ligand_atoms = csv_index_list(data.ligand_field_ligand_atoms);
     const std::string pi_interactions = csv_pi_interaction_summary(data);
+    const std::string local_geometries = csv_local_geometry_summary(data);
+    const auto& state=data.electronic_state;
     for (std::size_t i = 0; i < data.metadata.size(); ++i) {
         if (!options.include_hidden_in_metadata && !included.count(i)) continue;
         const auto& item = data.metadata[i];
@@ -287,7 +533,59 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             << data.ligand_field_radial_cv << ','
             << data.levels.size() << ','
             << data.pi_interactions.size() << ','
-            << csv_escape(pi_interactions) << '\n';
+            << csv_escape(pi_interactions) << ','
+            << (annotation.delocalised_pi.topology_available ? 1 : 0) << ',';
+        if (annotation.delocalised_pi.topology_available) {
+            out << annotation.delocalised_pi.orientation_channels << ','
+                << (annotation.delocalised_pi.cyclic_topology ? 1 : 0);
+        } else {
+            out << ',';
+        }
+        out << ',' << csv_escape(csv_pi_channel_summary(annotation.delocalised_pi))
+            << ',' << data.local_geometries.size() << ','
+            << csv_escape(local_geometries) << ','
+            << wavefunction_source_name(state.source) << ',';
+        if (state.charge_provenance!=DataProvenance::Unavailable) out << state.charge;
+        out << ',' << data_provenance_name(state.charge_provenance) << ',';
+        if (state.multiplicity_provenance!=DataProvenance::Unavailable) {
+            out << state.multiplicity;
+        }
+        out << ',' << data_provenance_name(state.multiplicity_provenance) << ',';
+        if (state.electron_counts_provenance!=DataProvenance::Unavailable) {
+            out << state.alpha_electrons;
+        }
+        out << ',';
+        if (state.electron_counts_provenance!=DataProvenance::Unavailable) {
+            out << state.beta_electrons;
+        }
+        out << ',' << data_provenance_name(state.electron_counts_provenance) << ','
+            << machine_scf_status(state.scf_convergence) << ','
+            << data_provenance_name(state.scf_convergence_provenance) << ','
+            << machine_stability_status(state.stability) << ','
+            << data_provenance_name(state.stability_provenance) << ',';
+        if (state.spin_squared_provenance!=DataProvenance::Unavailable) {
+            out << state.spin_squared_before;
+        }
+        out << ',';
+        if (state.spin_squared_provenance!=DataProvenance::Unavailable) {
+            out << state.spin_squared_after;
+        }
+        out << ',' << data_provenance_name(state.spin_squared_provenance) << ','
+            << csv_escape(state.atomic_partial_charge_scheme) << ','
+            << data_provenance_name(state.atomic_partial_charge_provenance) << ',';
+        if (state.atomic_partial_charge_provenance!=DataProvenance::Unavailable) {
+            out << csv_escape(csv_real_list(state.atomic_partial_charges));
+        }
+        out << ',' << csv_escape(state.point_group_detected) << ','
+            << csv_escape(state.point_group_used) << ','
+            << data_provenance_name(state.point_group_provenance) << ','
+            << annotation.multicentre.channel_count << ','
+            << csv_escape(annotation.multicentre.source_subspace_id) << ','
+            << annotation.multicentre.source_subspace_electron_count << ','
+            << csv_escape(state.stability_detail) << ','
+            << csv_escape(state.source_title) << ','
+            << csv_escape(state.source_route) << ','
+            << csv_escape(state.enrichment_source) << '\n';
     }
     if (!out) {
         if (error) *error = "Failed while writing CSV";
@@ -299,21 +597,99 @@ bool write_mo_diagram_csv(const MODiagramData& data,
 MODiagramExportResult export_mo_diagram_bundle(const Wavefunction& wavefunction,
                                                const MODiagramOptions& options,
                                                const std::filesystem::path& base_path) {
+    static std::mutex bundle_mutex;
+    static std::atomic<std::uint64_t> generation{0u};
+    const std::lock_guard lock(bundle_mutex);
+
     MODiagramExportResult result;
     const MODiagramData data = build_mo_diagram_data(wavefunction, options);
-    const std::filesystem::path svg = base_path.string() + ".mo.svg";
-    const std::filesystem::path png = base_path.string() + ".mo.png";
-    const std::filesystem::path json = base_path.string() + ".mo.json";
-    const std::filesystem::path csv = base_path.string() + ".mo.csv";
+    std::filesystem::path normalised_base=base_path;
+    if (normalised_base.has_extension()) normalised_base.replace_extension();
+    result.svg_path=normalised_base.string()+".mo.svg";
+    result.png_path=normalised_base.string()+".mo.png";
+    result.json_path=normalised_base.string()+".mo.json";
+    result.csv_path=normalised_base.string()+".mo.csv";
+    const std::array<std::filesystem::path,4> targets{
+        result.svg_path,result.png_path,result.json_path,result.csv_path};
+
+    std::error_code ec;
+    for (const auto& target:targets) {
+        if (std::filesystem::exists(target,ec) &&
+            !std::filesystem::is_regular_file(target,ec)) {
+            result.error="Export target exists and is not a regular file: "+
+                target.string();
+            return result;
+        }
+        ec.clear();
+    }
+
+    const auto time_tag=static_cast<std::uint64_t>(
+        std::chrono::high_resolution_clock::now().time_since_epoch().count());
+    const std::string suffix=".covtmp."+std::to_string(time_tag)+"."+
+        std::to_string(generation.fetch_add(1u,std::memory_order_relaxed));
+    std::array<std::filesystem::path,4> temporary{};
+    std::array<std::filesystem::path,4> backup{};
+    for (std::size_t i=0;i<targets.size();++i) {
+        temporary[i]=targets[i].string()+suffix;
+        backup[i]=targets[i].string()+suffix+".bak";
+    }
+    const auto cleanup_temporaries=[&] {
+        for (const auto& path:temporary) {
+            ec.clear();
+            std::filesystem::remove(path,ec);
+        }
+    };
     std::string error;
-    result.svg = write_mo_diagram_svg(data, options, svg, &error);
-    if (!result.svg) { result.error = error; return result; }
-    result.png = write_mo_diagram_png(data, options, png, &error);
-    if (!result.png) { result.error = error; return result; }
-    result.json = write_mo_diagram_json(data, options, json, &error);
-    if (!result.json) { result.error = error; return result; }
-    result.csv = write_mo_diagram_csv(data, options, csv, &error);
-    if (!result.csv) result.error = error;
+    if (!write_mo_diagram_svg(data,options,temporary[0],&error) ||
+        !write_mo_diagram_png(data,options,temporary[1],&error) ||
+        !write_mo_diagram_json(data,options,temporary[2],&error) ||
+        !write_mo_diagram_csv(data,options,temporary[3],&error)) {
+        cleanup_temporaries();
+        result.error=error;
+        return result;
+    }
+
+    std::array<bool,4> backed_up{};
+    std::array<bool,4> installed{};
+    for (std::size_t i=0;i<targets.size();++i) {
+        ec.clear();
+        if (std::filesystem::exists(targets[i],ec)) {
+            std::filesystem::rename(targets[i],backup[i],ec);
+            if (ec) {
+                result.error="Unable to stage existing export: "+ec.message();
+                break;
+            }
+            backed_up[i]=true;
+        }
+        ec.clear();
+        std::filesystem::rename(temporary[i],targets[i],ec);
+        if (ec) {
+            result.error="Unable to install export bundle: "+ec.message();
+            break;
+        }
+        installed[i]=true;
+    }
+    if (!result.error.empty()) {
+        for (std::size_t reverse=targets.size();reverse>0u;--reverse) {
+            const std::size_t i=reverse-1u;
+            if (installed[i]) {
+                ec.clear();
+                std::filesystem::remove(targets[i],ec);
+            }
+            if (backed_up[i]) {
+                ec.clear();
+                std::filesystem::rename(backup[i],targets[i],ec);
+            }
+        }
+        cleanup_temporaries();
+        return result;
+    }
+    for (std::size_t i=0;i<targets.size();++i) {
+        if (!backed_up[i]) continue;
+        ec.clear();
+        std::filesystem::remove(backup[i],ec);
+    }
+    result.svg=result.png=result.json=result.csv=true;
     return result;
 }
 

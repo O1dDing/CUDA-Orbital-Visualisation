@@ -1544,21 +1544,32 @@ int main(int argc,char** argv) {
         return 6;
     }
 
-    const auto temp = std::filesystem::temp_directory_path() / "cov_mo_diagram_smoke";
+    const auto temp = std::filesystem::temp_directory_path() /
+                      "cov_mo_diagram_smoke.fchk";
+    const auto normalised_temp = std::filesystem::temp_directory_path() /
+                                 "cov_mo_diagram_smoke";
     const auto result = cov::export_mo_diagram_bundle(wf, options, temp);
     if (!result.svg || !result.png || !result.json || !result.csv) {
         std::cerr << "diagram export failed: " << result.error << '\n';
         return 7;
     }
 
-    const auto png_path = std::filesystem::path(temp.string() + ".mo.png");
+    const auto png_path = std::filesystem::path(normalised_temp.string() + ".mo.png");
+    const auto svg_path = std::filesystem::path(normalised_temp.string() + ".mo.svg");
+    const auto json_path = std::filesystem::path(normalised_temp.string() + ".mo.json");
+    const auto csv_path = std::filesystem::path(normalised_temp.string() + ".mo.csv");
+    if (result.png_path!=png_path || result.svg_path!=svg_path ||
+        result.json_path!=json_path || result.csv_path!=csv_path ||
+        result.png_path.string().find(".fchk.mo.")!=std::string::npos) {
+        std::cerr << "normalised export bundle paths failed\n";
+        return 20;
+    }
     std::ifstream png(png_path, std::ios::binary);
     std::array<std::uint8_t, 8> signature{};
     png.read(reinterpret_cast<char*>(signature.data()), static_cast<std::streamsize>(signature.size()));
     const std::array<std::uint8_t, 8> expected{137,80,78,71,13,10,26,10};
     if (signature != expected) return 8;
 
-    const auto svg_path = std::filesystem::path(temp.string() + ".mo.svg");
     std::ifstream svg_file(svg_path, std::ios::binary);
     std::ostringstream svg_buffer;
     svg_buffer << svg_file.rdbuf();
@@ -1570,7 +1581,6 @@ int main(int argc,char** argv) {
         return 9;
     }
 
-    const auto json_path = std::filesystem::path(temp.string() + ".mo.json");
     std::ifstream json_file(json_path, std::ios::binary);
     std::ostringstream json_buffer;
     json_buffer << json_file.rdbuf();
@@ -1583,11 +1593,31 @@ int main(int argc,char** argv) {
         return 10;
     }
 
+    // A bundle is all-or-nothing.  A bad destination discovered during
+    // preflight must not replace any already-existing sibling export.
+    {
+        std::ofstream sentinel(svg_path,std::ios::binary|std::ios::trunc);
+        sentinel<<"preserve-existing-svg";
+    }
     std::error_code ec;
+    std::filesystem::remove(png_path,ec);
+    ec.clear();
+    std::filesystem::create_directory(png_path,ec);
+    const auto rejected=cov::export_mo_diagram_bundle(wf,options,temp);
+    std::ifstream sentinel(svg_path,std::ios::binary);
+    std::ostringstream sentinel_buffer;
+    sentinel_buffer<<sentinel.rdbuf();
+    if (rejected.svg || rejected.png || rejected.json || rejected.csv ||
+        rejected.error.empty() ||
+        sentinel_buffer.str()!="preserve-existing-svg") {
+        std::cerr<<"transactional export preflight modified an existing sibling\n";
+        return 21;
+    }
+    std::filesystem::remove(png_path,ec);
+
     std::filesystem::remove(svg_path, ec);
-    std::filesystem::remove(png_path, ec);
     std::filesystem::remove(json_path, ec);
-    std::filesystem::remove(std::filesystem::path(temp.string() + ".mo.csv"), ec);
+    std::filesystem::remove(csv_path, ec);
 
     if (!failed_real_fchk.empty()) {
         return 11;

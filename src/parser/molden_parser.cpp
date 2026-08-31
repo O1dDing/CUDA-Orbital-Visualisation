@@ -2,7 +2,9 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <fstream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -525,6 +527,9 @@ Wavefunction parse_molden(const std::filesystem::path& path,
             }
             if (!have_mo) begin_mo();
             current_mo.symmetry = value_after_equals(t);
+            if (!current_mo.symmetry.empty()) {
+                current_mo.symmetry_provenance = DataProvenance::Producer;
+            }
             continue;
         }
 
@@ -559,6 +564,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         } else if (starts_with_ci(t, "occup=")) {
             current_mo.occupation =
                 static_cast<float>(parse_fortran_double(value_after_equals(t)));
+            current_mo.occupation_provenance = DataProvenance::Producer;
         } else {
             std::istringstream css(t);
             int coefficient_index = 0;
@@ -593,6 +599,51 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         if (mo.coefficients.size() != wf.basis_count) {
             throw std::runtime_error("MO/basis consistency check failed");
         }
+    }
+
+    // Molden has no mandatory molecule-level electron counters, but valid MO
+    // occupations contain the same information.  Preserve the distinction
+    // between a derived count and the harmless zero defaults used when the
+    // occupation metadata is incomplete or malformed.
+    const bool has_explicit_beta = std::any_of(
+        wf.orbitals.begin(), wf.orbitals.end(),
+        [](const MolecularOrbital& mo) { return mo.spin == Spin::Beta; });
+    double alpha_count = 0.0;
+    double beta_count = 0.0;
+    bool occupations_valid = !wf.orbitals.empty();
+    for (const auto& mo : wf.orbitals) {
+        if (mo.occupation_provenance == DataProvenance::Unavailable) {
+            occupations_valid = false;
+            break;
+        }
+        const double occupation = static_cast<double>(mo.occupation);
+        const double maximum_occupation=has_explicit_beta?1.0:2.0;
+        if (!std::isfinite(occupation) || occupation < -1.0e-4 ||
+            occupation > maximum_occupation + 1.0e-4) {
+            occupations_valid = false;
+            break;
+        }
+        const double clipped = std::clamp(occupation, 0.0, maximum_occupation);
+        if (has_explicit_beta) {
+            if (mo.spin == Spin::Beta) {
+                beta_count += clipped;
+            } else {
+                alpha_count += clipped;
+            }
+        } else {
+            alpha_count += std::min(clipped, 1.0);
+            beta_count += std::max(clipped - 1.0, 0.0);
+        }
+    }
+    const auto near_integer = [](const double value) {
+        return value >= 0.0 &&
+               value <= static_cast<double>(std::numeric_limits<std::uint32_t>::max()) &&
+               std::abs(value - std::round(value)) <= 1.0e-3;
+    };
+    if (occupations_valid && near_integer(alpha_count) && near_integer(beta_count)) {
+        wf.alpha_electrons = static_cast<std::uint32_t>(std::llround(alpha_count));
+        wf.beta_electrons = static_cast<std::uint32_t>(std::llround(beta_count));
+        wf.electron_counts_provenance = DataProvenance::Derived;
     }
 
     return wf;

@@ -33,6 +33,7 @@ add_library(cov_parser
     src/analysis/orbital_symmetry.cpp
     src/analysis/orbital_symmetry_final.cpp
     src/analysis/orbital_chemistry.cpp
+    src/analysis/pi_topology.cpp
 )
 set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
     COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
@@ -47,6 +48,8 @@ target_compile_features(cov_parser PUBLIC cxx_std_20)
 
 add_library(cov_orbitals
     src/analysis/local_orbital_symmetry.cpp
+    src/analysis/local_geometry.cpp
+    src/analysis/orbital_tracking.cpp
     src/orbitals/orbital_view.cpp
     src/orbitals/orbital_view_dispatch.cpp
     src/orbitals/coordination_geometry.cpp
@@ -68,6 +71,7 @@ target_link_libraries(cov_orbitals PUBLIC cov_parser)
 target_compile_features(cov_orbitals PUBLIC cxx_std_20)
 
 add_library(cov_molecule
+    src/analysis/interaction_graph.cpp
     src/render/molecule_style.cpp
 )
 target_include_directories(cov_molecule PUBLIC
@@ -260,6 +264,15 @@ if(COV_BUILD_TESTS)
         COMMAND cov_fchk_real_regression ${CMAKE_BINARY_DIR}/real_gaussian16_dvb_sp.fchk)
     set_tests_properties(fchk_real_regression PROPERTIES SKIP_RETURN_CODE 77)
 
+    add_executable(cov_fchk_batch_regression tests/fchk_batch_regression.cpp)
+    target_link_libraries(cov_fchk_batch_regression PRIVATE
+        cov_parser cov_orbitals cov_molecule)
+
+    add_executable(cov_reference_manifest_regression
+        tests/reference_manifest_regression.cpp)
+    target_link_libraries(cov_reference_manifest_regression PRIVATE
+        cov_molecule cov_orbitals cov_parser)
+
     add_executable(cov_gaussian_log_smoke tests/gaussian_log_smoke.cpp)
     target_link_libraries(cov_gaussian_log_smoke PRIVATE cov_parser)
     add_test(NAME gaussian_log_smoke COMMAND cov_gaussian_log_smoke)
@@ -298,6 +311,30 @@ if(COV_BUILD_TESTS)
     add_executable(cov_local_orbital_symmetry_smoke tests/local_orbital_symmetry_smoke.cpp)
     target_link_libraries(cov_local_orbital_symmetry_smoke PRIVATE cov_orbitals)
     add_test(NAME local_orbital_symmetry_smoke COMMAND cov_local_orbital_symmetry_smoke)
+
+    add_executable(cov_local_geometry_smoke tests/local_geometry_smoke.cpp)
+    target_link_libraries(cov_local_geometry_smoke PRIVATE cov_orbitals)
+    add_test(NAME local_geometry_smoke COMMAND cov_local_geometry_smoke)
+
+    add_executable(cov_orbital_tracking_smoke tests/orbital_tracking_smoke.cpp)
+    target_link_libraries(cov_orbital_tracking_smoke PRIVATE cov_orbitals)
+    add_test(NAME orbital_tracking_smoke COMMAND cov_orbital_tracking_smoke)
+
+    # Manual external-corpus regression. It is intentionally not registered
+    # with CTest because the Gaussian scan fixtures live outside the source
+    # tree and are not available on ordinary developer/CI hosts.
+    add_executable(cov_scan_manifest_regression
+        tests/scan_manifest_regression.cpp)
+    target_link_libraries(cov_scan_manifest_regression PRIVATE
+        cov_parser cov_orbitals)
+
+    add_executable(cov_pi_topology_smoke tests/pi_topology_smoke.cpp)
+    target_link_libraries(cov_pi_topology_smoke PRIVATE cov_orbitals)
+    add_test(NAME pi_topology_smoke COMMAND cov_pi_topology_smoke)
+
+    add_executable(cov_interaction_graph_smoke tests/interaction_graph_smoke.cpp)
+    target_link_libraries(cov_interaction_graph_smoke PRIVATE cov_molecule)
+    add_test(NAME interaction_graph_smoke COMMAND cov_interaction_graph_smoke)
 
     add_executable(cov_coordination_frame_contract_smoke
         tests/coordination_frame_contract_smoke.cpp)

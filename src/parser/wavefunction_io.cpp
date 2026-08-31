@@ -43,15 +43,11 @@ bool looks_like_molden(const std::filesystem::path& path) {
 void postprocess_wavefunction(Wavefunction& wf,
                               const WavefunctionParseOptions& options) {
     for (auto& mo : wf.orbitals) {
-        if (wf.source == WavefunctionSource::Molden) {
-            if (mo.occupation_provenance == DataProvenance::Unavailable) {
-                mo.occupation_provenance = DataProvenance::Producer;
-            }
-            if (!mo.symmetry.empty() &&
-                mo.symmetry_provenance == DataProvenance::Unavailable) {
-                mo.symmetry_provenance = DataProvenance::Producer;
-            }
-        } else if (wf.source == WavefunctionSource::Fchk &&
+        // Format parsers, not this shared post-processing stage, know whether
+        // an optional per-MO field was actually present.  In particular, a
+        // missing Molden Occup= line must remain unavailable rather than being
+        // promoted from its numeric zero default to producer data.
+        if (wf.source == WavefunctionSource::Fchk &&
                    mo.occupation_provenance == DataProvenance::Unavailable) {
             mo.occupation_provenance = DataProvenance::Derived;
         }

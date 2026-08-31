@@ -9,8 +9,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #ifndef GL_TEXTURE_3D
@@ -483,9 +485,10 @@ void draw_dashed_cylinder(const Vec3 a,
                           const float radius,
                           const Vec3 colour,
                           const float alpha,
-                          const CameraBasis& camera) {
-    constexpr int dash_count = 8;
-    constexpr float dash_fraction = 0.55f;
+                          const CameraBasis& camera,
+                          const int dash_count = 8,
+                          const float dash_fraction = 0.55f) {
+    if (dash_count <= 0 || dash_fraction <= 0.0f) return;
     const Vec3 delta = b - a;
     for (int i = 0; i < dash_count; ++i) {
         const float t0 = static_cast<float>(i) / static_cast<float>(dash_count);
@@ -493,6 +496,11 @@ void draw_dashed_cylinder(const Vec3 a,
         draw_cylinder(a + delta * t0, a + delta * t1,
                       radius, colour, alpha, camera);
     }
+}
+
+std::pair<std::size_t, std::size_t> ordered_atom_pair(const std::size_t a,
+                                                       const std::size_t b) {
+    return a < b ? std::pair{a, b} : std::pair{b, a};
 }
 
 Vec3 heavy_atom_centroid(const Wavefunction& wavefunction,
@@ -545,6 +553,13 @@ VolumeRenderer::VolumeRenderer() {
 VolumeRenderer::~VolumeRenderer() {
     if (program_) gl::DeleteProgram(program_);
     if (texture_) glDeleteTextures(1, &texture_);
+}
+
+void VolumeRenderer::invalidate_geometry_cache() noexcept {
+    geometry_cache_wavefunction_ = nullptr;
+    geometry_bonds_.clear();
+    geometry_bond_indices_.clear();
+    geometry_interactions_ = {};
 }
 
 void VolumeRenderer::resize_volume(const int nx, const int ny, const int nz) {
@@ -652,7 +667,21 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     std::vector<Vec3> points;
     points.reserve(wavefunction.atoms.size());
     for (const Atom& atom : wavefunction.atoms) points.push_back(to_texture(atom, box));
-    const auto bonds = analyse_bonds(wavefunction);
+    if (geometry_cache_wavefunction_ != &wavefunction) {
+        auto bonds = analyse_bonds(wavefunction);
+        auto interactions = build_interaction_graph(wavefunction);
+        geometry_bonds_ = std::move(bonds);
+        geometry_interactions_ = std::move(interactions);
+        geometry_bond_indices_.clear();
+        for (std::size_t index=0;index<geometry_bonds_.size();++index) {
+            const auto& bond=geometry_bonds_[index];
+            geometry_bond_indices_[ordered_atom_pair(
+                bond.atom_a,bond.atom_b)]=index;
+        }
+        geometry_cache_wavefunction_ = &wavefunction;
+    }
+    const auto& bonds = geometry_bonds_;
+    const auto& interactions = geometry_interactions_;
     const Vec3 molecular_centre = heavy_atom_centroid(wavefunction, points);
 
     gl::UseProgram(0);
@@ -674,25 +703,84 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
                               std::clamp(settings.bond_scale, 0.35f, 3.0f);
     const Vec3 bond_colour{0.73f, 0.76f, 0.81f};
     const Vec3 delocalised_colour{0.46f, 0.69f, 0.98f};
+    const Vec3 coordination_colour{0.35f, 0.77f, 0.92f};
+    const Vec3 multicentre_colour{0.98f, 0.66f, 0.24f};
+    const Vec3 polyhedral_cage_colour{0.42f, 0.88f, 0.62f};
+    const Vec3 hydrogen_bond_colour{0.43f, 0.84f, 1.00f};
+    const Vec3 noncovalent_colour{0.61f, 0.69f, 0.81f};
+    const Vec3 ionic_colour{0.77f, 0.55f, 0.98f};
 
-    for (const auto& bond : bonds) {
-        const Atom& atom_a = wavefunction.atoms[bond.atom_a];
-        const Atom& atom_b = wavefunction.atoms[bond.atom_b];
+    for (const auto& interaction : interactions.edges) {
+        if (interaction.atom_a >= wavefunction.atoms.size() ||
+            interaction.atom_b >= wavefunction.atoms.size()) {
+            continue;
+        }
+        const auto visual_style = interaction_visual_style(interaction.kind, settings);
+        if (visual_style == InteractionVisualStyle::Hidden) continue;
+
+        const Atom& atom_a = wavefunction.atoms[interaction.atom_a];
+        const Atom& atom_b = wavefunction.atoms[interaction.atom_b];
         if (!settings.show_hydrogens &&
             (atom_a.atomic_number == 1 || atom_b.atomic_number == 1)) {
             continue;
         }
 
-        const Vec3 a = points[bond.atom_a];
-        const Vec3 c = points[bond.atom_b];
-        draw_cylinder(a, c, bond_radius, bond_colour, opacity * 0.94f, b);
-
-        if (bond.delocalised) {
-            const Vec3 inward = inward_delocalisation_offset(
-                a, c, molecular_centre, bond_radius * 2.35f);
-            draw_dashed_cylinder(a + inward, c + inward,
-                                 bond_radius * 0.58f,
-                                 delocalised_colour, opacity * 0.96f, b);
+        const Vec3 a = points[interaction.atom_a];
+        const Vec3 c = points[interaction.atom_b];
+        switch (visual_style) {
+            case InteractionVisualStyle::OrdinaryBond: {
+                draw_cylinder(a, c, bond_radius, bond_colour, opacity * 0.94f, b);
+                const auto found = geometry_bond_indices_.find(ordered_atom_pair(
+                    interaction.atom_a, interaction.atom_b));
+                if (found != geometry_bond_indices_.end() &&
+                    found->second<geometry_bonds_.size() &&
+                    geometry_bonds_[found->second].delocalised) {
+                    const Vec3 inward = inward_delocalisation_offset(
+                        a, c, molecular_centre, bond_radius * 2.35f);
+                    draw_dashed_cylinder(a + inward, c + inward,
+                                         bond_radius * 0.58f,
+                                         delocalised_colour, opacity * 0.96f, b);
+                }
+                break;
+            }
+            case InteractionVisualStyle::CoordinationDash:
+                // Long, close-spaced segments read as a definite structural
+                // connection while remaining distinct from a covalent stick.
+                draw_dashed_cylinder(a, c, bond_radius * 0.78f,
+                                     coordination_colour, opacity * 0.92f, b,
+                                     6, 0.76f);
+                break;
+            case InteractionVisualStyle::MulticentreDash:
+                // A thinner/finer support line avoids reducing a true
+                // multicentre hyperedge to an ordinary pairwise bond.
+                draw_dashed_cylinder(a, c, bond_radius * 0.46f,
+                                     multicentre_colour, opacity * 0.82f, b,
+                                     11, 0.43f);
+                break;
+            case InteractionVisualStyle::PolyhedralCageDash:
+                // Cage support is a global skeletal/topological inference,
+                // not an individual 3c electron channel.
+                draw_dashed_cylinder(a,c,bond_radius*0.38f,
+                                     polyhedral_cage_colour,opacity*0.72f,b,
+                                     8,0.58f);
+                break;
+            case InteractionVisualStyle::HydrogenBondDots:
+                draw_dashed_cylinder(a, c, bond_radius * 0.38f,
+                                     hydrogen_bond_colour, opacity * 0.64f, b,
+                                     13, 0.25f);
+                break;
+            case InteractionVisualStyle::NoncovalentDots:
+                draw_dashed_cylinder(a, c, bond_radius * 0.32f,
+                                     noncovalent_colour, opacity * 0.50f, b,
+                                     12, 0.22f);
+                break;
+            case InteractionVisualStyle::IonicDash:
+                draw_dashed_cylinder(a, c, bond_radius * 0.42f,
+                                     ionic_colour, opacity * 0.60f, b,
+                                     9, 0.34f);
+                break;
+            case InteractionVisualStyle::Hidden:
+                break;
         }
     }
 

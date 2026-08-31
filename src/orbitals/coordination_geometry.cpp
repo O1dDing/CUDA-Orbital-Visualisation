@@ -910,7 +910,10 @@ CoordinationShell extract_coordination_shell(
         std::size_t other = wavefunction.atoms.size();
         if (bond.atom_a == centre_atom) other = bond.atom_b;
         else if (bond.atom_b == centre_atom) other = bond.atom_a;
-        const double mayer = std::abs(bond.mayer_order);
+        // A sizeable negative Mayer value is antibonding/non-structural
+        // evidence, not a coordination contact.  Keep the sign contract in
+        // sync with the molecular interaction graph and bond analyser.
+        const double mayer = bond.mayer_order;
         if (other >= wavefunction.atoms.size() || other == centre_atom ||
             mayer < std::max(0.0, options.minimum_mayer_bond_order)) {
             continue;

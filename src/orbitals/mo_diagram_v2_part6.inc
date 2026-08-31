@@ -176,6 +176,20 @@ void write_svg_delocalised_pi(std::ostream& out,
                               const char* colour) {
     if (!pi.available) return;
     const double base_x = x - 4.0;
+    out << "<g data-pi-topology-available=\""
+        << (pi.topology_available ? "true" : "false")
+        << "\" data-pi-orientation-channels=\"";
+    if (pi.topology_available) out << pi.orientation_channels;
+    out << "\" data-pi-cyclic=\"";
+    if (pi.topology_available) out << (pi.cyclic_topology ? "true" : "false");
+    out << "\">\n<title>delocalised pi; ";
+    if (pi.topology_available) {
+        out << pi.orientation_channels << " orientation channel(s); "
+            << (pi.cyclic_topology ? "cyclic" : "non-cyclic");
+    } else {
+        out << "topology unavailable";
+    }
+    out << "</title>\n";
     out << "<text x=\"" << base_x << "\" y=\"" << y
         << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"10\">Π</text>\n";
     if (pi.participating_atoms > 0) {
@@ -188,6 +202,13 @@ void write_svg_delocalised_pi(std::ostream& out,
             << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"7\">"
             << static_cast<int>(std::lround(pi.participating_electrons)) << "</text>\n";
     }
+    if (pi.topology_available) {
+        out << "<text x=\"" << base_x + 16.0 << "\" y=\"" << y
+            << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily
+            << "\" font-size=\"7\">" << pi.orientation_channels << "ch"
+            << (pi.cyclic_topology ? " C" : " L") << "</text>\n";
+    }
+    out << "</g>\n";
 }
 
 struct ExportPiColour {
