@@ -124,6 +124,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
     add_library(cov_ui STATIC
         src/ui/ui.cpp
         src/ui/ui_text_dispatch.cpp
+        src/ui/orbital_ui_text.cpp
         src/ui/orbital_ui_v2.cpp
         src/ui/orbital_ui_dispatch.cpp
     )
@@ -415,4 +416,13 @@ if(COV_BUILD_TESTS)
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
     add_test(NAME ui_fchk_smoke COMMAND cov_ui_fchk_smoke)
+
+    add_executable(cov_ui_orbital_localisation_smoke
+        tests/ui_orbital_localisation_smoke.cpp)
+    target_link_libraries(cov_ui_orbital_localisation_smoke PRIVATE cov_ui)
+    target_compile_options(cov_ui_orbital_localisation_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
+    )
+    add_test(NAME ui_orbital_localisation_smoke
+        COMMAND cov_ui_orbital_localisation_smoke)
 endif()

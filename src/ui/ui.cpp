@@ -1,4 +1,5 @@
 #include "cov/ui.hpp"
+#include "cov/orbital_ui_text.hpp"
 
 #include <imgui.h>
 
@@ -249,10 +250,17 @@ const char* language_name(const Language language) noexcept {
 }
 
 const char* supplemental_glyph_seed(const Language language) noexcept {
+    static const std::string english=orbital_ui_glyph_seed(Language::English);
+    static const std::string chinese=std::string(kSupplementalChinese)+" "+
+        orbital_ui_glyph_seed(Language::ChineseSimplified);
+    static const std::string japanese=std::string(kSupplementalJapanese)+" "+
+        orbital_ui_glyph_seed(Language::Japanese);
+    static const std::string french=orbital_ui_glyph_seed(Language::French);
     switch (language) {
-        case Language::ChineseSimplified: return kSupplementalChinese;
-        case Language::Japanese: return kSupplementalJapanese;
-        default: return "";
+        case Language::ChineseSimplified: return chinese.c_str();
+        case Language::Japanese: return japanese.c_str();
+        case Language::French: return french.c_str();
+        default: return english.c_str();
     }
 }
 
@@ -355,6 +363,8 @@ bool configure_fonts(const float pixel_size) {
     latin_builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
     for (const auto& row : kStrings) { latin_builder.AddText(row.en); latin_builder.AddText(row.fr); }
     latin_builder.AddText(language_name(Language::French));
+    latin_builder.AddText(supplemental_glyph_seed(Language::English));
+    latin_builder.AddText(supplemental_glyph_seed(Language::French));
     latin_builder.AddText(scientific_glyph_seed());
     ImVector<ImWchar> latin_ranges;
     latin_builder.BuildRanges(&latin_ranges);

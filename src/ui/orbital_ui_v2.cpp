@@ -1,6 +1,7 @@
 #include "cov/orbital_ui.hpp"
 
 #include "cov/mo_diagram.hpp"
+#include "cov/orbital_ui_text.hpp"
 
 #include <imgui.h>
 
@@ -94,117 +95,54 @@ std::string pi_descriptor_ui(const DelocalisedPiDescriptor& descriptor) {
     return result;
 }
 
-struct DelocalisedLabels {
-    const char* members;
-    const char* atoms;
-    const char* electrons;
-    const char* channels;
-    const char* topology;
-};
-
-DelocalisedLabels delocalised_labels(const Language language) {
-    switch (language) {
-        case Language::ChineseSimplified:
-            return {"成员 MO", "参与原子", "参与电子", "取向通道", "拓扑"};
-        case Language::Japanese:
-            return {"構成 MO", "参加原子", "参加電子", "配向チャネル", "トポロジー"};
-        case Language::French:
-            return {"OM membres", "Atomes participants", "Électrons participants",
-                    "Canaux orientés", "Topologie"};
-        default:
-            return {"Member MOs", "Participating atoms", "Participating electrons",
-                    "Orientation channels", "Topology"};
-    }
-}
-
 const char* pi_topology_value(const DelocalisedPiDescriptor& descriptor,
                               const Language language) {
     if (!descriptor.topology_available) return "N/A";
     switch (descriptor.topology) {
         case DelocalisedPiTopology::Path:
-            switch (language) {
-                case Language::ChineseSimplified: return "链状 π 离域";
-                case Language::Japanese: return "鎖状 π 非局在";
-                case Language::French: return "chemin π délocalisé";
-                default: return "path-delocalised pi";
-            }
+            return orbital_tr(OrbitalText::TopologyPath, language);
         case DelocalisedPiTopology::Cycle:
-            switch (language) {
-                case Language::ChineseSimplified: return "环状 π 离域";
-                case Language::Japanese: return "環状 π 非局在";
-                case Language::French: return "cycle π délocalisé";
-                default: return "cyclic-delocalised pi";
-            }
+            return orbital_tr(OrbitalText::TopologyCycle, language);
         case DelocalisedPiTopology::BranchedResonance:
-            switch (language) {
-                case Language::ChineseSimplified: return "支化共振 π 网络";
-                case Language::Japanese: return "分岐共鳴 π ネットワーク";
-                case Language::French: return "réseau π résonant ramifié";
-                default: return "branched-resonance pi network";
-            }
+            return orbital_tr(OrbitalText::TopologyBranchedResonance, language);
         case DelocalisedPiTopology::Spiro:
-            switch (language) {
-                case Language::ChineseSimplified: return "螺环正交 π 网络";
-                case Language::Japanese: return "スピロ直交 π ネットワーク";
-                case Language::French: return "réseau π spiro orthogonal";
-                default: return "orthogonal spiro pi network";
-            }
+            return orbital_tr(OrbitalText::TopologySpiro, language);
         case DelocalisedPiTopology::HapticMetal:
-            switch (language) {
-                case Language::ChineseSimplified: return "多触点金属–π";
-                case Language::Japanese: return "多点金属–π";
-                case Language::French: return "contact haptique métal–π";
-                default: return "haptic metal-pi";
-            }
+            return orbital_tr(OrbitalText::TopologyHapticMetal, language);
         case DelocalisedPiTopology::SymmetryDirectSum:
-            switch (language) {
-                case Language::ChineseSimplified: return "对称等价 π 子系统直和";
-                case Language::Japanese: return "対称等価 π 部分系の直和";
-                case Language::French: return "somme directe de sous-systèmes π équivalents";
-                default: return "symmetry-equivalent pi direct sum";
-            }
+            return orbital_tr(OrbitalText::TopologySymmetryDirectSum, language);
         default:
             return "N/A";
     }
 }
 
-std::string pi_channel_detail(const DelocalisedPiDescriptor& descriptor) {
+std::string pi_channel_detail(const DelocalisedPiDescriptor& descriptor,
+                              const Language language) {
     std::ostringstream out;
     out << std::fixed << std::setprecision(3);
     for (std::size_t index=0;index<descriptor.orientation_channel_details.size();++index) {
         if (index) out << " | ";
         const auto& channel=descriptor.orientation_channel_details[index];
-        out << (index+1u) << ": atoms ";
+        out << (index+1u) << ": "
+            << orbital_tr(OrbitalText::ChannelAtoms, language) << ' ';
         for (std::size_t atom=0;atom<channel.atoms.size();++atom) {
             if (atom) out << '-';
             out << (channel.atoms[atom]+1u);
         }
         out << "; n=(" << channel.direction[0] << ',' << channel.direction[1]
-            << ',' << channel.direction[2] << "); coherence=" << channel.coherence;
+            << ',' << channel.direction[2] << "); "
+            << orbital_tr(OrbitalText::Coherence, language) << '='
+            << channel.coherence;
     }
     return out.str();
 }
 
 const char* intermediate_toggle_label(const Language language) {
-    switch (language) {
-        case Language::ChineseSimplified: return "隐藏中间框架轨道";
-        case Language::Japanese: return "中間骨格軌道を非表示";
-        case Language::French: return "Masquer les OM intermédiaires";
-        default: return "Hide intermediate framework MOs";
-    }
+    return orbital_tr(OrbitalText::HideIntermediateFrameworkMOs, language);
 }
 
 const char* intermediate_toggle_tooltip(const Language language) {
-    switch (language) {
-        case Language::ChineseSimplified:
-            return "隐藏次级配体中心、配体内部及极化型轨道；保留主要 d 能级、必要的 σ 成键/反键代表、当前轨道和 donor/acceptor 配对。";
-        case Language::Japanese:
-            return "副次的な配位子中心・配位子内部・分極軌道を隠し、主要 d 準位、必要な σ 結合/反結合代表、選択軌道と donor/acceptor 対を保持します。";
-        case Language::French:
-            return "Masque les OM secondaires centrées sur les ligands, internes ou de polarisation; conserve les niveaux d, les représentants sigma nécessaires, la sélection et les paires donor/acceptor.";
-        default:
-            return "Hide secondary ligand-centred, ligand-internal and polarisation MOs; keep the principal d levels, necessary sigma bonding/antibonding representatives, the selected MO and donor/acceptor pairs.";
-    }
+    return orbital_tr(OrbitalText::HideIntermediateFrameworkMOsTooltip, language);
 }
 
 const char* filter_name(const OrbitalFilterMode mode, const Language language) {
@@ -230,13 +168,8 @@ const char* family_symbol_ui(const std::string& family) {
     return "N/A";
 }
 
-const char* bonding_ui(const BondingClass value) {
-    switch (value) {
-        case BondingClass::Bonding: return "bonding";
-        case BondingClass::Nonbonding: return "nonbonding";
-        case BondingClass::Antibonding: return "antibonding";
-        default: return "N/A";
-    }
+const char* bonding_ui(const BondingClass value, const Language language) {
+    return localised_bonding_class(value, language);
 }
 
 std::string lower_ascii(std::string value) {
@@ -382,16 +315,13 @@ std::size_t group_base_raw(const OrbitalMetadata& item) {
 
 void tooltip_source_confidence(const AnnotationSource source,
                                const double confidence,
-                               const bool heuristic,
                                const Language language) {
     ImGui::TextDisabled("%s: %s · %s",
                         tr(Text::ClassificationSource, language),
-                        annotation_source_name(source),
+                        localised_annotation_source(source, language),
                         tr(Text::Confidence, language));
     ImGui::SameLine();
     ImGui::TextColored(text_colour(kNumericColour), "%.0f%%", confidence * 100.0);
-    ImGui::SameLine();
-    ImGui::TextDisabled("· %s", heuristic ? "heuristic" : "direct/parsed");
 }
 
 std::string delocalised_member_list(const MODiagramData& data,
@@ -451,28 +381,31 @@ void draw_level_tooltip(const MODiagramData& data,
     ImGui::SameLine();
     draw_rich_symmetry(displayed_symmetry, kSymmetryColour);
     if (!data.ligand_field_point_group.empty()) {
-        labelled_value("local ligand field",
-                       data.ligand_field_point_group+" first shell",
+        labelled_value(orbital_tr(OrbitalText::LocalLigandField, language),
+                       data.ligand_field_point_group+" · "+
+                           orbital_tr(OrbitalText::FirstShell, language),
                        kSymmetryColour);
         if (!data.ligand_field_geometry_name.empty()) {
-            labelled_value("coordination geometry",
-                           data.ligand_field_geometry_name+
+            labelled_value(orbital_tr(OrbitalText::CoordinationGeometry, language),
+                           localised_geometry_name(
+                               data.ligand_field_geometry_id,
+                               data.ligand_field_geometry_name,language)+
                                " ("+data.ligand_field_geometry_id+")",
                            kSymmetryColour);
         }
-        labelled_number("coordination number",
+        labelled_number(orbital_tr(OrbitalText::CoordinationNumber, language),
                         std::to_string(data.ligand_field_coordination_number));
-        labelled_number("geometry confidence",
+        labelled_number(orbital_tr(OrbitalText::GeometryConfidence, language),
                         fixed_number(data.ligand_field_confidence,3));
-        labelled_number("angular RMS (rad)",
+        labelled_number(orbital_tr(OrbitalText::AngularRMS, language),
                         fixed_number(data.ligand_field_angular_rms,5));
-        labelled_number("directional shape score",
+        labelled_number(orbital_tr(OrbitalText::DirectionalShapeScore, language),
                         fixed_number(data.ligand_field_shape_measure,5));
-        labelled_number("radial variation",
+        labelled_number(orbital_tr(OrbitalText::RadialVariation, language),
                         fixed_number(100.0*data.ligand_field_radial_cv,2)+"%");
     }
     if (!data.local_geometries.empty()) {
-        labelled_number("local molecular geometries",
+        labelled_number(orbital_tr(OrbitalText::LocalMolecularGeometries, language),
                         std::to_string(data.local_geometries.size()));
         std::set<std::size_t> relevant_centres;
         for (const auto& contribution:level.chemistry.ao_contributions) {
@@ -494,15 +427,21 @@ void draw_level_tooltip(const MODiagramData& data,
                 continue;
             }
             std::ostringstream value;
-            value << "atom " << (geometry.centre_atom+1u) << ": "
-                  << geometry.geometry_name << " (" << geometry.geometry_id
-                  << ", " << geometry.point_group << ", CN"
+            value << orbital_tr(OrbitalText::Atom, language) << ' '
+                  << (geometry.centre_atom+1u) << ": "
+                  << localised_geometry_name(geometry.geometry_id,
+                                             geometry.geometry_name,language)
+                  << " (" << geometry.geometry_id << ", "
+                  << geometry.point_group << ", CN"
                   << geometry.neighbour_atoms.size() << ")";
-            labelled_value("local geometry",value.str(),kSymmetryColour);
+            labelled_value(orbital_tr(OrbitalText::LocalGeometry, language),
+                           value.str(),kSymmetryColour);
             if (++shown==6u) break;
         }
         if (shown==0u) {
-            labelled_value("local geometry","not centred on this MO",kUnavailableColour);
+            labelled_value(orbital_tr(OrbitalText::LocalGeometry, language),
+                           orbital_tr(OrbitalText::NotCentredOnThisMO, language),
+                           kUnavailableColour);
         } else if (shown<relevant_geometry_count) {
             ImGui::TextDisabled("…");
         }
@@ -527,21 +466,28 @@ void draw_level_tooltip(const MODiagramData& data,
         labelled_value(tr(Text::DegenerateMembers, language), members.str(), kNumericColour);
     }
 
-    labelled_number("group occupation",fixed_number(level.total_occupation,3));
-    labelled_number("metal s / p / d",
+    labelled_number(orbital_tr(OrbitalText::GroupOccupation, language),
+                    fixed_number(level.total_occupation,3));
+    labelled_number(orbital_tr(OrbitalText::MetalSPD, language),
                     fixed_number(100.0*level.metal_s_weight,1)+"% / "+
                     fixed_number(100.0*level.metal_p_weight,1)+"% / "+
                     fixed_number(100.0*level.metal_d_weight,1)+"%");
-    labelled_number("ligand p",fixed_number(100.0*level.ligand_p_weight,1)+"%");
-    labelled_number("sigma / pi channel",
+    labelled_number(orbital_tr(OrbitalText::LigandP, language),
+                    fixed_number(100.0*level.ligand_p_weight,1)+"%");
+    labelled_number(orbital_tr(OrbitalText::SigmaPiChannel, language),
                     fixed_number(100.0*level.sigma_fraction,1)+"% / "+
                     fixed_number(100.0*level.pi_fraction,1)+"%");
-    labelled_number("M-L overlap",fixed_number(level.metal_ligand_overlap,6));
+    labelled_number(orbital_tr(OrbitalText::MetalLigandOverlap, language),
+                    fixed_number(level.metal_ligand_overlap,6));
     if (level.raw_data_fallback) {
-        labelled_value("selection","recovered from complete raw MO block",kNumericColour);
+        labelled_value(orbital_tr(OrbitalText::Selection, language),
+                       orbital_tr(OrbitalText::RecoveredFromRawMOBlock, language),
+                       kNumericColour);
     }
     if (level.approximate_nonbonding) {
-        labelled_value("weak-field treatment","approximately nonbonding",kUnavailableColour);
+        labelled_value(orbital_tr(OrbitalText::WeakFieldTreatment, language),
+                       orbital_tr(OrbitalText::ApproximatelyNonbonding, language),
+                       kUnavailableColour);
     }
 
     const auto level_index=static_cast<std::size_t>(&level-data.levels.data());
@@ -549,24 +495,25 @@ void draw_level_tooltip(const MODiagramData& data,
         if (interaction.lower_level!=level_index &&
             interaction.upper_level!=level_index &&
             interaction.retained_level!=level_index) continue;
-        labelled_value("pi interaction",
-                       pi_interaction_kind_name(interaction.kind),
+        labelled_value(orbital_tr(OrbitalText::PiInteraction, language),
+                       localised_pi_interaction_kind(interaction.kind,language),
                        pi_interaction_colour(interaction.kind));
-        labelled_number("pi splitting",
+        labelled_number(orbital_tr(OrbitalText::PiSplitting, language),
                         format_energy(interaction.splitting_hartree,
                                       state.energy_unit,6));
-        labelled_number("pair confidence",fixed_number(interaction.confidence,3));
+        labelled_number(orbital_tr(OrbitalText::PairConfidence, language),
+                        fixed_number(interaction.confidence,3));
     }
 
     ImGui::Separator();
     labelled_value(tr(Text::OrbitalFamily, language), family_symbol_ui(level.annotation.family),
                    family_colour(level.annotation.family));
-    tooltip_source_confidence(level.annotation.family_source, level.annotation.family_confidence,
-                              level.annotation.family_source == AnnotationSource::Heuristic, language);
-    labelled_value(tr(Text::BondingClassLabel, language), bonding_ui(level.annotation.bonding_class),
+    tooltip_source_confidence(level.annotation.family_source,
+                              level.annotation.family_confidence,language);
+    labelled_value(tr(Text::BondingClassLabel, language), bonding_ui(level.annotation.bonding_class,language),
                    bonding_colour(level.annotation.bonding_class));
-    tooltip_source_confidence(level.annotation.bonding_source, level.annotation.bonding_confidence,
-                              level.annotation.bonding_source == AnnotationSource::Heuristic, language);
+    tooltip_source_confidence(level.annotation.bonding_source,
+                              level.annotation.bonding_confidence,language);
 
     std::string multicentre_value = level.annotation.multicentre.available
         ? level.annotation.multicentre.label : "N/A";
@@ -579,31 +526,30 @@ void draw_level_tooltip(const MODiagramData& data,
     labelled_value(tr(Text::MulticentreBond, language), multicentre_value, multicentre_tone);
     if (level.annotation.multicentre.available) {
         tooltip_source_confidence(level.annotation.multicentre.source,
-                                  level.annotation.multicentre.confidence,
-                                  level.annotation.multicentre.heuristic, language);
+                                  level.annotation.multicentre.confidence,language);
     }
     if (level.annotation.delocalised_pi.available) {
-        const auto labels = delocalised_labels(language);
         const auto& descriptor = level.annotation.delocalised_pi;
         labelled_value(tr(Text::DelocalisedPiSystem, language), pi_descriptor_ui(descriptor), kPiColour);
-        labelled_value(labels.members, delocalised_member_list(data, descriptor), kPiColour);
+        labelled_value(orbital_tr(OrbitalText::MemberMOs, language),
+                       delocalised_member_list(data, descriptor), kPiColour);
         std::string atom_value = std::to_string(descriptor.participating_atoms);
         if (!descriptor.atom_indices.empty()) atom_value += " · " + delocalised_atom_list(descriptor);
-        labelled_number(labels.atoms, atom_value);
-        labelled_number(labels.electrons,
+        labelled_number(orbital_tr(OrbitalText::ParticipatingAtoms, language),atom_value);
+        labelled_number(orbital_tr(OrbitalText::ParticipatingElectrons, language),
                         std::to_string(static_cast<int>(std::lround(descriptor.participating_electrons))));
-        labelled_number(labels.channels,
+        labelled_number(orbital_tr(OrbitalText::OrientationChannels, language),
                         descriptor.topology_available
                             ?std::to_string(descriptor.orientation_channels):"N/A");
         if (descriptor.topology_available &&
             !descriptor.orientation_channel_details.empty()) {
-            ImGui::TextWrapped("%s",pi_channel_detail(descriptor).c_str());
+            ImGui::TextWrapped("%s",pi_channel_detail(descriptor,language).c_str());
         }
-        labelled_value(labels.topology,pi_topology_value(descriptor,language),
+        labelled_value(orbital_tr(OrbitalText::Topology, language),
+                       pi_topology_value(descriptor,language),
                        descriptor.topology_available?kPiColour:kUnavailableColour);
         tooltip_source_confidence(level.annotation.delocalised_pi.source,
-                                  level.annotation.delocalised_pi.confidence,
-                                  level.annotation.delocalised_pi.heuristic, language);
+                                  level.annotation.delocalised_pi.confidence,language);
     } else {
         labelled_value(tr(Text::DelocalisedPiSystem, language), "N/A", kUnavailableColour);
     }
@@ -736,6 +682,7 @@ void draw_ligand_field_pi_interactions(
     const std::vector<DiagramPoint>& points,
     const ImVec2 canvas_max,
     const EnergyUnit unit,
+    const Language language,
     const float ui_scale) {
     float bracket_x=canvas_max.x-13.0f*ui_scale;
     for (const auto& interaction:data.pi_interactions) {
@@ -791,15 +738,18 @@ void draw_ligand_field_pi_interactions(
                 mouse.y>=hit_top-pad && mouse.y<=hit_bottom+pad) {
                 ImGui::BeginTooltip();
                 if (!interaction.symmetry.empty()) {
-                    labelled_value("symmetry",interaction.symmetry,kSymmetryColour);
+                    labelled_value(tr(Text::Symmetry, language),
+                                   interaction.symmetry,kSymmetryColour);
                 }
-                labelled_value("interaction",
-                               pi_interaction_kind_name(interaction.kind),colour);
-                labelled_number("splitting",
+                labelled_value(orbital_tr(OrbitalText::Interaction, language),
+                               localised_pi_interaction_kind(
+                                   interaction.kind,language),colour);
+                labelled_number(orbital_tr(OrbitalText::Splitting, language),
                     format_energy(interaction.splitting_hartree,unit,6));
-                labelled_number("splitting (Ha)",
+                labelled_number(orbital_tr(OrbitalText::SplittingHartree, language),
                     fixed_number(interaction.splitting_hartree,10));
-                labelled_number("confidence",fixed_number(interaction.confidence,3));
+                labelled_number(tr(Text::Confidence, language),
+                                fixed_number(interaction.confidence,3));
                 ImGui::EndTooltip();
             }
         }
@@ -1075,7 +1025,9 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     const MODiagramData& data=*state.diagram_cache.data;
 
     ImGui::TextDisabled("%s", tr(Text::EnergyDiagram, language));
-    ImGui::TextDisabled("%s", data.selection.summary.c_str());
+    const std::string selection_summary=
+        localised_diagram_selection_summary(data,language);
+    ImGui::TextDisabled("%s",selection_summary.c_str());
     ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
     ImGui::SameLine();
     if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language), state.energy_axis_mode == EnergyAxisMode::Linear)) {
@@ -1204,7 +1156,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
 
     draw_pi_groups(draw, points, p1, ui_scale);
     draw_ligand_field_pi_interactions(
-        draw,data,points,p1,state.energy_unit,ui_scale);
+        draw,data,points,p1,state.energy_unit,language,ui_scale);
 
     if (ImGui::IsItemHovered()) {
         const ImVec2 mouse = ImGui::GetIO().MousePos;

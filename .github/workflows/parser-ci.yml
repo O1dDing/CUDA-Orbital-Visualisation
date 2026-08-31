@@ -36,7 +36,7 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 45
     concurrency:
-      group: cov-pre9-${{ github.event_name }}-${{ github.ref }}
+      group: cov-pre10-${{ github.event_name }}-${{ github.ref }}
       # Never terminate the asset/tag swap between its two API operations.
       # A branch-tip check below rejects an obsolete queued run safely.
       cancel-in-progress: false
@@ -81,21 +81,21 @@ jobs:
           if (Select-String -Path build-cuda/dependents.txt -Pattern "cu(?:blas|solver).*\.dll" -Quiet) {
             throw "cov.exe has a forbidden cuBLAS/cuSOLVER DLL startup dependency"
           }
-      - name: Stage v0.3.0-pre.9 executable
+      - name: Stage v0.3.0-pre.10 executable
         shell: pwsh
         run: |
           $source = "build-cuda/Release/cov.exe"
-          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.9-Windows-sm120.exe"
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.10-Windows-sm120.exe"
           Copy-Item $source $asset -Force
           Get-Item $asset | Format-List FullName,Length,LastWriteTime
-      - name: Upload pre.9 executable
+      - name: Upload pre.10 executable
         uses: actions/upload-artifact@v4
         with:
-          name: cov-v0.3.0-pre.9-windows-sm120
-          path: build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.9-Windows-sm120.exe
+          name: cov-v0.3.0-pre.10-windows-sm120
+          path: build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.10-Windows-sm120.exe
           if-no-files-found: error
           retention-days: 30
-      - name: Publish v0.3.0-pre.9
+      - name: Publish v0.3.0-pre.10
         if: github.event_name == 'push' && github.ref == 'refs/heads/feat/fchk-primary-interface'
         shell: pwsh
         env:
@@ -121,9 +121,22 @@ jobs:
           }
 
           $repo = $env:GITHUB_REPOSITORY
-          $tag = "v0.3.0-pre.9"
-          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.9-Windows-sm120.exe"
+          $tag = "v0.3.0-pre.10"
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.10-Windows-sm120.exe"
           $canonical = Split-Path $asset -Leaf
+          $releaseTitle = "CUDA Orbital Visualisation v0.3.0-pre.10 — Complete Four-Language Orbital UI"
+          $notesPath = Join-Path $env:RUNNER_TEMP "v0.3.0-pre.10-notes.md"
+          @'
+          This prerelease completes four-language localisation across PR #3's FCHK-first provenance, ligand-field, MO-diagram and selected-MO chemistry surfaces.
+
+          ### Highlights
+          - Complete English, Simplified Chinese, Japanese and French labels for data provenance, local geometry, pi interactions and selected-MO chemistry.
+          - Localised categorical values for source/confidence, bonding roles, unavailable states, chemistry notes and all 26 known coordination geometries.
+          - Scientific identifiers remain language-neutral: FCHK/MO/AO, Mayer, N/A/UND, point groups, energy units and sigma/pi/delta/phi.
+          - A localisation smoke test now covers the dedicated catalogue, backend-note mapping, geometry names, diagram summaries and font glyph seeds.
+          - Chemical-valence, multicentre and delocalised-pi analysis algorithms are unchanged.
+          - The Windows CUDA viewer remains built with CUDA 12.8.2 for native sm_120 plus compute_120 PTX fallback.
+          '@ | Set-Content -Path $notesPath -Encoding utf8
           $candidateName = "candidate-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT-$canonical"
           $rollbackName = "rollback-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT-$canonical"
           $candidatePath = Join-Path (Split-Path $asset -Parent) $candidateName
@@ -136,7 +149,72 @@ jobs:
             throw "stale run: branch=$($branchRef.object.sha), run=$env:GITHUB_SHA"
           }
 
-          $release = Get-GhJson -CommandArgs @("api", "repos/$repo/releases/tags/$tag")
+          # pre.10 is created on its first successful branch build. Later
+          # branch builds retain pre.9's verified candidate/rollback update
+          # protocol so the canonical executable is never replaced blindly.
+          $nativeErrorPreference = $PSNativeCommandUseErrorActionPreference
+          $releaseLookupError = Join-Path $env:RUNNER_TEMP "pre10-release-lookup.err"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $releaseRaw = & gh api "repos/$repo/releases/tags/$tag" 2>$releaseLookupError
+          $releaseExitCode = $LASTEXITCODE
+          $PSNativeCommandUseErrorActionPreference = $nativeErrorPreference
+          $releaseLookupMessage = if (Test-Path $releaseLookupError) {
+            Get-Content $releaseLookupError -Raw
+          } else {
+            ""
+          }
+          if ($releaseExitCode -ne 0 -and
+              $releaseLookupMessage -notmatch "HTTP 404") {
+            throw "release lookup failed: $releaseLookupMessage"
+          }
+          $releaseExists = $releaseExitCode -eq 0
+          if (-not $releaseExists) {
+            $freshRef = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+            )
+            if ($freshRef.object.sha -ne $env:GITHUB_SHA) {
+              throw "stale run before release creation: branch=$($freshRef.object.sha), run=$env:GITHUB_SHA"
+            }
+            Invoke-Gh -CommandArgs @(
+              "release", "create", $tag, $asset,
+              "--repo", $repo,
+              "--target", $env:GITHUB_SHA,
+              "--title", $releaseTitle,
+              "--notes-file", $notesPath,
+              "--prerelease"
+            )
+
+            $createdRelease = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/releases/tags/$tag"
+            )
+            $createdTag = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/tags/$tag"
+            )
+            $createdAsset = @(
+              $createdRelease.assets | Where-Object { $_.name -eq $canonical }
+            )
+            $localSize = (Get-Item $asset).Length
+            $localDigest = "sha256:" + `
+              (Get-FileHash $asset -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($createdTag.object.sha -ne $env:GITHUB_SHA) {
+              throw "created tag mismatch: $($createdTag.object.sha)"
+            }
+            if (-not [bool]$createdRelease.prerelease) {
+              throw "created release is not marked prerelease"
+            }
+            if ($createdAsset.Count -ne 1) {
+              throw "created canonical asset count is $($createdAsset.Count)"
+            }
+            if ([int64]$createdAsset[0].size -ne [int64]$localSize -or
+                [string]$createdAsset[0].digest -ne $localDigest) {
+              throw "created canonical asset digest/size mismatch"
+            }
+            Write-Host "Created $tag at $env:GITHUB_SHA"
+            Write-Host "Asset: $canonical ($localSize bytes, $localDigest)"
+            exit 0
+          }
+
+          $release = $releaseRaw | ConvertFrom-Json
           $tagRef = Get-GhJson -CommandArgs @("api", "repos/$repo/git/ref/tags/$tag")
           $oldTagSha = [string]$tagRef.object.sha
           $oldAsset = @($release.assets | Where-Object { $_.name -eq $canonical })
