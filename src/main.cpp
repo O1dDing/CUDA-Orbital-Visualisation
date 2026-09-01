@@ -4,6 +4,7 @@
 #include "cov/mo_diagram.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/molecule_style.hpp"
+#include "cov/orbital_tracking.hpp"
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
 #include "cov/volume_renderer.hpp"
@@ -74,11 +75,8 @@ cov::GridBox make_grid_box(const cov::Wavefunction& wf, const float padding_bohr
 }
 
 std::size_t initial_orbital(const cov::Wavefunction& wf) {
-    std::size_t selected = 0;
-    for (std::size_t i = 0; i < wf.orbitals.size(); ++i) {
-        if (wf.orbitals[i].occupation > 1.0e-4f) selected = i;
-    }
-    return selected;
+    const auto frontier=cov::find_frontier_orbitals(wf.orbitals);
+    return frontier.homo.value_or(0u);
 }
 
 const char* status_label(const StatusKind status, const cov::ui::Language language) {
@@ -235,6 +233,7 @@ int main(int argc, char** argv) {
         cov::OrbitCamera camera;
 
         std::optional<cov::Wavefunction> wavefunction;
+        std::optional<cov::OrbitalTrackingResult> frame_tracking;
         std::unique_ptr<cov::CudaOrbitalEvaluator> evaluator;
         cov::GridBox grid_box;
 
@@ -283,13 +282,24 @@ int main(int argc, char** argv) {
                 auto wf = cov::parse_molden(path, options);
                 const auto new_mo = initial_orbital(wf);
                 const auto new_box = make_grid_box(wf);
+                std::optional<cov::OrbitalTrackingResult> new_tracking;
+                if (wavefunction) {
+                    // Cross-frame identity is descriptive state only. Both
+                    // canonical wavefunctions remain immutable, and loading a
+                    // new frame still resets selection to that frame's own HOMO.
+                    new_tracking = cov::track_orbital_subspaces(*wavefunction, wf);
+                }
 
                 if (evaluator) evaluator->detach_gl_texture();
                 evaluator.reset();
                 wavefunction = std::move(wf);
+                frame_tracking = std::move(new_tracking);
+                renderer.invalidate_geometry_cache();
                 evaluator = std::make_unique<cov::CudaOrbitalEvaluator>(*wavefunction);
                 mo_index = new_mo;
                 pending_mo_index.reset();
+                orbital_ui.browser_cache={};
+                orbital_ui.diagram_cache={};
                 grid_box = new_box;
 
                 renderer.resize_volume(resolution, resolution, resolution);
@@ -471,7 +481,7 @@ int main(int argc, char** argv) {
             if (recent_to_load) load_file(*recent_to_load);
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
-            cov::ui::begin_card("##wavefunction_card", 174.0f * ui_scale);
+            cov::ui::begin_card("##wavefunction_card", 270.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::WavefunctionSection, language));
             if (wavefunction) {
                 if (ImGui::BeginTable("##wavefunction_metrics", 2,
@@ -485,15 +495,122 @@ int main(int argc, char** argv) {
                         std::string("D=") + (wavefunction->pure_d ? "5D" : "6D") +
                         "  F=" + (wavefunction->pure_f ? "7F" : "10F") +
                         "  G=" + (wavefunction->pure_g ? "9G" : "15G");
+                    std::string state = "—";
+                    if (wavefunction->charge_provenance != cov::DataProvenance::Unavailable ||
+                        wavefunction->multiplicity_provenance != cov::DataProvenance::Unavailable) {
+                        state.clear();
+                        if (wavefunction->charge_provenance != cov::DataProvenance::Unavailable) {
+                            if (wavefunction->charge > 0) state += "+";
+                            state += std::to_string(wavefunction->charge);
+                        } else {
+                            state += "?";
+                        }
+                        state += " / ";
+                        state += wavefunction->multiplicity_provenance !=
+                                     cov::DataProvenance::Unavailable
+                                     ? std::to_string(wavefunction->multiplicity) : "?";
+                    }
+                    const std::string electron_split =
+                        wavefunction->electron_counts_provenance ==
+                                cov::DataProvenance::Unavailable
+                            ? "— / —"
+                            : std::to_string(wavefunction->alpha_electrons) + " / " +
+                                  std::to_string(wavefunction->beta_electrons);
+                    std::string diagnostics = "—";
+                    if (wavefunction->scf_convergence !=
+                            cov::ScfConvergenceStatus::Unavailable ||
+                        wavefunction->stability !=
+                            cov::WavefunctionStabilityStatus::Unavailable) {
+                        const char* scf = wavefunction->scf_convergence ==
+                                                  cov::ScfConvergenceStatus::Converged
+                                              ? cov::ui::tr(cov::ui::Text::Converged,language)
+                                              : wavefunction->scf_convergence ==
+                                                        cov::ScfConvergenceStatus::Failed
+                                                    ? cov::ui::tr(cov::ui::Text::Failed,language)
+                                                    : "—";
+                        const char* stability = wavefunction->stability ==
+                                                        cov::WavefunctionStabilityStatus::Stable
+                                                    ? cov::ui::tr(cov::ui::Text::Stable,language)
+                                                    : wavefunction->stability ==
+                                                              cov::WavefunctionStabilityStatus::Unstable
+                                                          ? cov::ui::tr(cov::ui::Text::Unstable,language)
+                                                          : "—";
+                        diagnostics = std::string(scf) + " / " + stability;
+                    }
+                    std::string spin_squared = "—";
+                    if (wavefunction->spin_squared_provenance !=
+                        cov::DataProvenance::Unavailable) {
+                        char value[64]{};
+                        std::snprintf(value, sizeof(value), "%.4f / %.4f",
+                                      wavefunction->spin_squared_before_annihilation,
+                                      wavefunction->spin_squared_after_annihilation);
+                        spin_squared = value;
+                    }
                     metric_row(cov::ui::tr(cov::ui::Text::Atoms, language), atoms.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::Shells, language), shells.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::BasisFunctions, language), basis.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::Orbitals, language), orbitals.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::ShellConvention, language), convention.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::ChargeMultiplicity, language),
+                               state.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::AlphaBetaElectrons, language),
+                               electron_split.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::SCFStability, language),
+                               diagnostics.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::SpinSquared, language),
+                               spin_squared.c_str());
                     ImGui::EndTable();
                 }
             } else {
                 ImGui::TextDisabled("—");
+            }
+            cov::ui::end_card();
+            ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
+
+            cov::ui::begin_card("##frame_tracking_card", 156.0f * ui_scale);
+            cov::ui::section_title(cov::ui::tr(cov::ui::Text::FrameTracking,
+                                               language));
+            if (frame_tracking) {
+                if (ImGui::BeginTable("##frame_tracking_metrics", 2,
+                                      ImGuiTableFlags_SizingStretchProp |
+                                      ImGuiTableFlags_NoSavedSettings)) {
+                    std::size_t matched_members = 0u;
+                    for (const auto& match : frame_tracking->matches) {
+                        matched_members += match.from_members.size();
+                    }
+                    const std::string matched =
+                        std::to_string(frame_tracking->matches.size()) +
+                        " (" + std::to_string(matched_members) + " MO)";
+                    const std::string unmatched =
+                        std::to_string(frame_tracking->unmatched_from.size()) +
+                        " / " +
+                        std::to_string(frame_tracking->unmatched_to.size());
+                    metric_row(cov::ui::tr(
+                                   cov::ui::Text::AtomMappingCompatibility,
+                                   language),
+                               cov::ui::tr(
+                                   frame_tracking->atom_mapping_compatible
+                                       ? cov::ui::Text::Compatible
+                                       : cov::ui::Text::Incompatible,
+                                   language));
+                    metric_row(cov::ui::tr(cov::ui::Text::MatchedSubspaces,
+                                           language),
+                               matched.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::UnmatchedSubspaces,
+                                           language),
+                               unmatched.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::TrackingOptimisation,
+                                           language),
+                               cov::ui::tr(
+                                   frame_tracking->composite_optimisation_truncated
+                                       ? cov::ui::Text::ConservativeFallback
+                                       : cov::ui::Text::ExactOrNotNeeded,
+                                   language));
+                    ImGui::EndTable();
+                }
+            } else {
+                ImGui::TextDisabled("%s", cov::ui::tr(
+                    cov::ui::Text::NoPreviousFrame, language));
             }
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
@@ -527,20 +644,27 @@ int main(int argc, char** argv) {
             const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
             if (export_requested && wavefunction) {
                 cov::MODiagramOptions options;
+                options.mode=cov::preferred_compact_mo_diagram_mode(
+                    *wavefunction,orbital_ui.hide_ligand_centred_intermediates);
                 options.energy_unit = orbital_ui.energy_unit;
                 options.energy_axis_mode = orbital_ui.energy_axis_mode;
                 options.degeneracy = orbital_ui.degeneracy;
                 options.filter = orbital_ui.filter;
-                options.selected_index = mo_index;
-                options.neighbourhood = static_cast<std::size_t>(std::max(2, orbital_ui.diagram_neighbourhood));
+                options.selected_index = orbital_ui.hide_ligand_centred_intermediates
+                    ?wavefunction->orbitals.size():mo_index;
+                options.neighbourhood = static_cast<std::size_t>(
+                    std::max(3, orbital_ui.diagram_neighbourhood));
+                options.hide_ligand_centred_intermediates=
+                    orbital_ui.hide_ligand_centred_intermediates;
+                options.nonlinear_minimum_gap_weight=0.055;
                 std::filesystem::path base = current_file.empty()
                                                  ? std::filesystem::current_path() / "mo_diagram"
                                                  : current_file;
                 const auto result = cov::export_mo_diagram_bundle(*wavefunction, options, base);
                 if (result.svg && result.png && result.json && result.csv) {
                     status = StatusKind::Exported;
-                    if (base.has_extension()) base.replace_extension();
-                    status_detail = path_to_utf8(base) + ".mo.{png,svg,json,csv}";
+                    status_detail = path_to_utf8(result.svg_path.parent_path() /
+                        result.svg_path.stem()) + ".{png,svg,json,csv}";
                 } else {
                     status = StatusKind::Error;
                     status_detail = result.error.empty()
@@ -549,7 +673,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            cov::ui::begin_card("##render_card", 470.0f * ui_scale);
+            cov::ui::begin_card("##render_card", 545.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::RenderingSection, language));
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoleculeStyle, language));
             ImGui::SetNextItemWidth(-1.0f);
@@ -612,6 +736,19 @@ int main(int argc, char** argv) {
             ImGui::SliderFloat("##bond_size", &molecule_render.bond_scale, 0.5f, 2.0f, "%.2f");
             ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowHydrogens, language),
                             &molecule_render.show_hydrogens);
+            ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowCoordinationContacts, language),
+                            &molecule_render.show_coordination_contacts);
+            ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowMulticentreSupport, language),
+                            &molecule_render.show_multicentre_support);
+            ImGui::Checkbox(cov::ui::tr(
+                                cov::ui::Text::ShowPolyhedralCageSupport,language),
+                            &molecule_render.show_polyhedral_cage_support);
+            ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowWeakInteractions, language),
+                            &molecule_render.show_weak_interactions);
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("%s", cov::ui::tr(cov::ui::Text::WeakInteractionsHint,
+                                                     language));
+            }
 
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoleculeOpacity, language));
             ImGui::SliderFloat("##molecule_opacity", &molecule_render.molecule_opacity,

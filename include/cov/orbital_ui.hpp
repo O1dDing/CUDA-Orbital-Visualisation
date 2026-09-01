@@ -8,8 +8,29 @@
 #include <array>
 #include <cstddef>
 #include <optional>
+#include <vector>
 
 namespace cov::ui {
+
+struct OrbitalUIDiagramCache {
+    const Wavefunction* wavefunction = nullptr;
+    const MolecularOrbital* orbital_data = nullptr;
+    std::size_t atom_count = 0;
+    std::size_t orbital_count = 0;
+    std::optional<MODiagramOptions> options;
+    std::optional<MODiagramData> data;
+};
+
+struct OrbitalUIBrowserCache {
+    const Wavefunction* wavefunction = nullptr;
+    const MolecularOrbital* orbital_data = nullptr;
+    std::size_t atom_count = 0;
+    std::size_t orbital_count = 0;
+    std::optional<DegeneracySettings> degeneracy;
+    std::optional<OrbitalFilterSettings> filter;
+    std::optional<FrontierOrbitals> frontier;
+    std::vector<OrbitalMetadata> metadata;
+};
 
 struct OrbitalUIState {
     EnergyUnit energy_unit = EnergyUnit::Hartree;
@@ -17,8 +38,11 @@ struct OrbitalUIState {
     DegeneracySettings degeneracy{};
     OrbitalFilterSettings filter{};
     bool grouped_labels = true;
+    bool hide_ligand_centred_intermediates = true;
     int diagram_neighbourhood = 12;
     std::array<char, 96> search{};
+    OrbitalUIBrowserCache browser_cache{};
+    OrbitalUIDiagramCache diagram_cache{};
 };
 
 struct OrbitalUIActions {

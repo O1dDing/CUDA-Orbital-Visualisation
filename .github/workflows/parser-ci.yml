@@ -15,9 +15,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Configure CPU core build
         run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
-      - name: Build parser, orbital, diagram and UI smoke targets
+      - name: Build parser, orbital chemistry, diagram and UI targets
         run: cmake --build build --config Release --parallel
-      - name: Test parser, orbital semantics, adaptive layout, exports and localisation
+      - name: Download pinned real Gaussian 16 FCHK regression
+        run: >-
+          python -c "import urllib.request; u='https://raw.githubusercontent.com/cclib/cclib/21daa960123d28aa21eeaaacc2a1dea39e136829/data/FChk/basicGaussian16/dvb_sp.fchk'; urllib.request.urlretrieve(u, r'build/real_gaussian16_dvb_sp.fchk')"
+      - name: Run test suite
         run: ctest --test-dir build -C Release --output-on-failure
       - name: Upload deterministic MO visual-regression artifacts
         if: always()
@@ -28,28 +31,25 @@ jobs:
           if-no-files-found: warn
 
   windows-cuda-viewer:
-    name: prebuilt Windows CUDA viewer
+    name: Windows CUDA viewer and prerelease
+    needs: cpu-core
     runs-on: windows-2022
     timeout-minutes: 45
+    concurrency:
+      group: cov-pre10-${{ github.event_name }}-${{ github.ref }}
+      # Never terminate the asset/tag swap between its two API operations.
+      # A branch-tip check below rejects an obsolete queued run safely.
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-
       - name: Install CUDA 12.8.2 build toolkit
         uses: Jimver/cuda-toolkit@v0.2.36
-        id: cuda-toolkit
         with:
           cuda: '12.8.2'
           method: network
-          sub-packages: '["nvcc", "cudart", "cuobjdump", "visual_studio_integration"]'
-
-      - name: Show CUDA compiler
-        shell: pwsh
-        run: |
-          nvcc --version
-          Write-Host "CUDA_PATH=$env:CUDA_PATH"
-
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "cusolver", "cusolver_dev", "cusparse", "cusparse_dev", "cuobjdump", "visual_studio_integration"]'
       - name: Configure Blackwell Release viewer
         shell: pwsh
         run: >-
@@ -58,46 +58,362 @@ jobs:
           -DCOV_ENABLE_CUDA=ON
           -DCOV_BUILD_TESTS=OFF
           -DCMAKE_CUDA_ARCHITECTURES="120-real;120-virtual"
-
       - name: Build cov.exe
         shell: pwsh
         run: cmake --build build-cuda --config Release --parallel
-
-      - name: Verify standalone binary and Blackwell payload
+      - name: Verify Blackwell payload
         shell: pwsh
         run: |
           $exe = "build-cuda/Release/cov.exe"
           if (-not (Test-Path $exe)) { throw "cov.exe was not produced" }
           $cuobjdump = Join-Path $env:CUDA_PATH "bin/cuobjdump.exe"
-          if (-not (Test-Path $cuobjdump)) { throw "cuobjdump.exe is missing from the CUDA build environment" }
+          if (-not (Test-Path $cuobjdump)) { throw "cuobjdump.exe is missing" }
           & $cuobjdump --list-elf $exe | Tee-Object -FilePath build-cuda/cuobjdump.txt
-          if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) {
-            throw "sm_120 native cubin was not found in cov.exe"
-          }
+          if (-not (Select-String -Path build-cuda/cuobjdump.txt -Pattern "sm_120" -Quiet)) { throw "sm_120 cubin missing" }
           & $cuobjdump --dump-ptx $exe | Tee-Object -FilePath build-cuda/ptx.txt
-          if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) {
-            throw "compute_120 PTX fallback was not found in cov.exe"
+          if (-not (Select-String -Path build-cuda/ptx.txt -Pattern "\.target sm_120" -Quiet)) { throw "compute_120 PTX missing" }
+          $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
+          $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          $dumpbin = Get-ChildItem "$vs/VC/Tools/MSVC/*/bin/Hostx64/x64/dumpbin.exe" |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          if ($null -eq $dumpbin) { throw "dumpbin.exe is missing" }
+          & $dumpbin.FullName /DEPENDENTS $exe | Tee-Object -FilePath build-cuda/dependents.txt
+          if (Select-String -Path build-cuda/dependents.txt -Pattern "cu(?:blas|solver).*\.dll" -Quiet) {
+            throw "cov.exe has a forbidden cuBLAS/cuSOLVER DLL startup dependency"
           }
-          Get-Item $exe | Format-List FullName,Length,LastWriteTime
-
-      - name: Upload ready-to-run cov.exe
+      - name: Stage v0.3.0-pre.10 executable
+        shell: pwsh
+        run: |
+          $source = "build-cuda/Release/cov.exe"
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.10-Windows-sm120.exe"
+          Copy-Item $source $asset -Force
+          Get-Item $asset | Format-List FullName,Length,LastWriteTime
+      - name: Upload pre.10 executable
         uses: actions/upload-artifact@v4
         with:
-          name: cov-windows-sm120
-          path: build-cuda/Release/cov.exe
+          name: cov-v0.3.0-pre.10-windows-sm120
+          path: build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.10-Windows-sm120.exe
           if-no-files-found: error
           retention-days: 30
-
-      - name: Publish v0.2.0-pre.6
-        if: github.event_name == 'push' && github.ref == 'refs/heads/vibe/orbital-browser-and-file-dialog'
+      - name: Publish v0.3.0-pre.10
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/fchk-primary-interface'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $exe = "build-cuda/Release/cov.exe"
-          gh release create "v0.2.0-pre.6" $exe `
-            --repo "$env:GITHUB_REPOSITORY" `
-            --target "$env:GITHUB_SHA" `
-            --title "CUDA Orbital Visualisation v0.2.0-pre.6" `
-            --notes "Final PR #2 appearance candidate. Adds a Glass orbital material, true continuously adjustable orbital alpha, GPU-resident procedural triangular Wire and Solid + Wire surface modes, and a restrained camera-relative automatic key/fill light. Rendering order is depth-correct for transparency: 3D molecular geometry is drawn into depth first, then the implicit orbital surface depth-tests and alpha-blends over geometry behind it. No Marching Cubes or volumetric GPU-to-CPU readback is introduced. Includes the corrected omitted-[7F] Molden parser hotfix and existing 3D molecule rendering. CUDA 12.8.2; native sm_120 plus compute_120 PTX. Item 11 remains deferred to PR #3." `
-            --prerelease
+          $ErrorActionPreference = "Stop"
+          $PSNativeCommandUseErrorActionPreference = $true
+
+          function Invoke-Gh {
+            param([string[]]$CommandArgs)
+            & gh @CommandArgs
+            if ($LASTEXITCODE -ne 0) {
+              throw "gh failed: gh $($CommandArgs -join ' ')"
+            }
+          }
+          function Get-GhJson {
+            param([string[]]$CommandArgs)
+            $raw = & gh @CommandArgs
+            if ($LASTEXITCODE -ne 0) {
+              throw "gh failed: gh $($CommandArgs -join ' ')"
+            }
+            return ($raw | ConvertFrom-Json)
+          }
+
+          $repo = $env:GITHUB_REPOSITORY
+          $tag = "v0.3.0-pre.10"
+          $asset = "build-cuda/Release/CUDA-Orbital-Visualisation-v0.3.0-pre.10-Windows-sm120.exe"
+          $canonical = Split-Path $asset -Leaf
+          $releaseTitle = "CUDA Orbital Visualisation v0.3.0-pre.10 — Complete Four-Language Orbital UI"
+          $notesPath = Join-Path $env:RUNNER_TEMP "v0.3.0-pre.10-notes.md"
+          @'
+          This prerelease completes four-language localisation across PR #3's FCHK-first provenance, ligand-field, MO-diagram and selected-MO chemistry surfaces.
+
+          ### Highlights
+          - Complete English, Simplified Chinese, Japanese and French labels for data provenance, local geometry, pi interactions and selected-MO chemistry.
+          - Localised categorical values for source/confidence, bonding roles, unavailable states, chemistry notes and all 26 known coordination geometries.
+          - Scientific identifiers remain language-neutral: FCHK/MO/AO, Mayer, N/A/UND, point groups, energy units and sigma/pi/delta/phi.
+          - A localisation smoke test now covers the dedicated catalogue, backend-note mapping, geometry names, diagram summaries and font glyph seeds.
+          - Chemical-valence, multicentre and delocalised-pi analysis algorithms are unchanged.
+          - The Windows CUDA viewer remains built with CUDA 12.8.2 for native sm_120 plus compute_120 PTX fallback.
+          '@ | Set-Content -Path $notesPath -Encoding utf8
+          $candidateName = "candidate-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT-$canonical"
+          $rollbackName = "rollback-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT-$canonical"
+          $candidatePath = Join-Path (Split-Path $asset -Parent) $candidateName
+
+          # Refuse to mutate a public release from an obsolete queued run.
+          $branchRef = Get-GhJson -CommandArgs @(
+            "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+          )
+          if ($branchRef.object.sha -ne $env:GITHUB_SHA) {
+            throw "stale run: branch=$($branchRef.object.sha), run=$env:GITHUB_SHA"
+          }
+
+          # pre.10 is created on its first successful branch build. Later
+          # branch builds retain pre.9's verified candidate/rollback update
+          # protocol so the canonical executable is never replaced blindly.
+          $nativeErrorPreference = $PSNativeCommandUseErrorActionPreference
+          $releaseLookupError = Join-Path $env:RUNNER_TEMP "pre10-release-lookup.err"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $releaseRaw = & gh api "repos/$repo/releases/tags/$tag" 2>$releaseLookupError
+          $releaseExitCode = $LASTEXITCODE
+          $PSNativeCommandUseErrorActionPreference = $nativeErrorPreference
+          $releaseLookupMessage = if (Test-Path $releaseLookupError) {
+            Get-Content $releaseLookupError -Raw
+          } else {
+            ""
+          }
+          if ($releaseExitCode -ne 0 -and
+              $releaseLookupMessage -notmatch "HTTP 404") {
+            throw "release lookup failed: $releaseLookupMessage"
+          }
+          $releaseExists = $releaseExitCode -eq 0
+          if (-not $releaseExists) {
+            $freshRef = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+            )
+            if ($freshRef.object.sha -ne $env:GITHUB_SHA) {
+              throw "stale run before release creation: branch=$($freshRef.object.sha), run=$env:GITHUB_SHA"
+            }
+            Invoke-Gh -CommandArgs @(
+              "release", "create", $tag, $asset,
+              "--repo", $repo,
+              "--target", $env:GITHUB_SHA,
+              "--title", $releaseTitle,
+              "--notes-file", $notesPath,
+              "--prerelease"
+            )
+
+            $createdRelease = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/releases/tags/$tag"
+            )
+            $createdTag = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/tags/$tag"
+            )
+            $createdAsset = @(
+              $createdRelease.assets | Where-Object { $_.name -eq $canonical }
+            )
+            $localSize = (Get-Item $asset).Length
+            $localDigest = "sha256:" + `
+              (Get-FileHash $asset -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($createdTag.object.sha -ne $env:GITHUB_SHA) {
+              throw "created tag mismatch: $($createdTag.object.sha)"
+            }
+            if (-not [bool]$createdRelease.prerelease) {
+              throw "created release is not marked prerelease"
+            }
+            if ($createdAsset.Count -ne 1) {
+              throw "created canonical asset count is $($createdAsset.Count)"
+            }
+            if ([int64]$createdAsset[0].size -ne [int64]$localSize -or
+                [string]$createdAsset[0].digest -ne $localDigest) {
+              throw "created canonical asset digest/size mismatch"
+            }
+            Write-Host "Created $tag at $env:GITHUB_SHA"
+            Write-Host "Asset: $canonical ($localSize bytes, $localDigest)"
+            exit 0
+          }
+
+          $release = $releaseRaw | ConvertFrom-Json
+          $tagRef = Get-GhJson -CommandArgs @("api", "repos/$repo/git/ref/tags/$tag")
+          $oldTagSha = [string]$tagRef.object.sha
+          $oldAsset = @($release.assets | Where-Object { $_.name -eq $canonical })
+          if ($oldAsset.Count -ne 1) {
+            throw "expected exactly one existing canonical asset, got $($oldAsset.Count)"
+          }
+          $oldAsset = $oldAsset[0]
+
+          Copy-Item $asset $candidatePath -Force
+          $localSize = (Get-Item $asset).Length
+          $localDigest = "sha256:" + `
+            (Get-FileHash $asset -Algorithm SHA256).Hash.ToLowerInvariant()
+
+          $committed = $false
+          $candidate = $null
+          try {
+            # Upload a unique candidate first.  The existing public EXE remains
+            # downloadable until the new bytes pass GitHub's digest and size.
+            Invoke-Gh -CommandArgs @(
+              "release", "upload", $tag, $candidatePath, "--repo", $repo
+            )
+            $release = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/releases/tags/$tag"
+            )
+            $candidateMatches = @(
+              $release.assets | Where-Object { $_.name -eq $candidateName }
+            )
+            if ($candidateMatches.Count -ne 1) {
+              throw "candidate asset was not uploaded exactly once"
+            }
+            $candidate = $candidateMatches[0]
+            if ([int64]$candidate.size -ne [int64]$localSize -or
+                [string]$candidate.digest -ne $localDigest) {
+              throw "candidate verification failed: size=$($candidate.size), digest=$($candidate.digest), expected=$localSize/$localDigest"
+            }
+
+            # The branch may have moved while the candidate uploaded.  Recheck
+            # immediately before changing either public asset name or the tag.
+            $freshRef = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+            )
+            if ($freshRef.object.sha -ne $env:GITHUB_SHA) {
+              throw "stale run before commit: branch=$($freshRef.object.sha), run=$env:GITHUB_SHA"
+            }
+
+            Get-GhJson -CommandArgs @(
+              "api", "--method", "PATCH",
+              "repos/$repo/releases/assets/$($oldAsset.id)",
+              "-f", "name=$rollbackName"
+            ) | Out-Null
+            Get-GhJson -CommandArgs @(
+              "api", "--method", "PATCH",
+              "repos/$repo/releases/assets/$($candidate.id)",
+              "-f", "name=$canonical"
+            ) | Out-Null
+
+            Get-GhJson -CommandArgs @(
+              "api", "--method", "PATCH", "repos/$repo/git/refs/tags/$tag",
+              "-f", "sha=$env:GITHUB_SHA", "-F", "force=true"
+            ) | Out-Null
+
+            $finalRef = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/tags/$tag"
+            )
+            $finalBranch = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/git/ref/heads/feat/fchk-primary-interface"
+            )
+            $finalRelease = Get-GhJson -CommandArgs @(
+              "api", "repos/$repo/releases/tags/$tag"
+            )
+            $finalAsset = @(
+              $finalRelease.assets | Where-Object { $_.name -eq $canonical }
+            )
+            if ($finalRef.object.sha -ne $env:GITHUB_SHA) {
+              throw "final tag mismatch: $($finalRef.object.sha)"
+            }
+            if ($finalBranch.object.sha -ne $env:GITHUB_SHA) {
+              throw "branch moved during publish: $($finalBranch.object.sha)"
+            }
+            if ($finalAsset.Count -ne 1) {
+              throw "final canonical asset count is $($finalAsset.Count)"
+            }
+            if ([int64]$finalAsset[0].size -ne [int64]$localSize -or
+                [string]$finalAsset[0].digest -ne $localDigest) {
+              throw "final canonical asset digest/size mismatch"
+            }
+            if (-not [bool]$finalRelease.prerelease) {
+              throw "release is not marked prerelease"
+            }
+            $committed = $true
+          }
+          catch {
+            $failure = $_
+
+            # Reconcile remote truth instead of trusting whether a mutating gh
+            # command returned.  A server can commit a PATCH even if the client
+            # subsequently times out and reports failure.
+            try {
+              $remoteTag = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/git/ref/tags/$tag"
+              )
+              if ($remoteTag.object.sha -eq $env:GITHUB_SHA) {
+                Get-GhJson -CommandArgs @(
+                  "api", "--method", "PATCH", "repos/$repo/git/refs/tags/$tag",
+                  "-f", "sha=$oldTagSha", "-F", "force=true"
+                ) | Out-Null
+              } elseif ($remoteTag.object.sha -ne $oldTagSha) {
+                Write-Warning "tag changed externally; not overwriting $($remoteTag.object.sha)"
+              }
+            } catch { Write-Warning "tag reconciliation failed: $_" }
+
+            $canonicalRestored = $false
+            $candidateId = $null
+            try {
+              $remoteRelease = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/releases/tags/$tag"
+              )
+              $remoteOld = @(
+                $remoteRelease.assets |
+                  Where-Object { [int64]$_.id -eq [int64]$oldAsset.id }
+              )
+              $remoteCandidate = if ($null -ne $candidate) {
+                @($remoteRelease.assets |
+                  Where-Object { [int64]$_.id -eq [int64]$candidate.id })
+              } else {
+                @($remoteRelease.assets |
+                  Where-Object { $_.name -eq $candidateName })
+              }
+              if ($remoteCandidate.Count -eq 0) {
+                # The candidate rename may have committed before its response
+                # failed.  In that case it is the canonical asset with a new ID.
+                $remoteCandidate = @(
+                  $remoteRelease.assets | Where-Object {
+                    $_.name -eq $canonical -and
+                    [int64]$_.id -ne [int64]$oldAsset.id
+                  }
+                )
+              }
+              if ($remoteCandidate.Count -gt 1 -or $remoteOld.Count -ne 1) {
+                throw "cannot uniquely reconcile release assets"
+              }
+              if ($remoteCandidate.Count -eq 1) {
+                $candidateId = $remoteCandidate[0].id
+                if ($remoteCandidate[0].name -eq $canonical) {
+                  Get-GhJson -CommandArgs @(
+                    "api", "--method", "PATCH",
+                    "repos/$repo/releases/assets/$candidateId",
+                    "-f", "name=$candidateName"
+                  ) | Out-Null
+                }
+              }
+
+              $remoteRelease = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/releases/tags/$tag"
+              )
+              $remoteOld = @(
+                $remoteRelease.assets |
+                  Where-Object { [int64]$_.id -eq [int64]$oldAsset.id }
+              )
+              if ($remoteOld.Count -ne 1) {
+                throw "old canonical asset disappeared during rollback"
+              }
+              if ($remoteOld[0].name -ne $canonical) {
+                Get-GhJson -CommandArgs @(
+                  "api", "--method", "PATCH",
+                  "repos/$repo/releases/assets/$($oldAsset.id)",
+                  "-f", "name=$canonical"
+                ) | Out-Null
+              }
+
+              $verifiedRollback = Get-GhJson -CommandArgs @(
+                "api", "repos/$repo/releases/tags/$tag"
+              )
+              $restored = @($verifiedRollback.assets | Where-Object {
+                [int64]$_.id -eq [int64]$oldAsset.id -and
+                $_.name -eq $canonical
+              })
+              $canonicalRestored = $restored.Count -eq 1
+            } catch { Write-Warning "asset reconciliation failed: $_" }
+
+            if ($canonicalRestored -and $null -ne $candidateId) {
+              try {
+                Invoke-Gh -CommandArgs @(
+                  "api", "--method", "DELETE",
+                  "repos/$repo/releases/assets/$candidateId"
+                )
+              } catch { Write-Warning "candidate cleanup failed: $_" }
+            }
+            throw $failure
+          }
+
+          # The new canonical asset and tag are already fully verified.  Old
+          # rollback cleanup is best-effort and must never undo a good publish.
+          try {
+            Invoke-Gh -CommandArgs @(
+              "api", "--method", "DELETE",
+              "repos/$repo/releases/assets/$($oldAsset.id)"
+            )
+          } catch { Write-Warning "old rollback asset cleanup failed: $_" }
+
+          Write-Host "Published $tag at $env:GITHUB_SHA"
+          Write-Host "Asset: $canonical ($localSize bytes, $localDigest)"
