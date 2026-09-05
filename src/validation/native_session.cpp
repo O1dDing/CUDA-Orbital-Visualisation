@@ -4,9 +4,11 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
+#include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <map>
+#include <limits>
 #include <random>
 #include <sstream>
 #include <stdexcept>
@@ -33,6 +35,27 @@ std::vector<std::string> trace;
 std::string evaluation_reason;
 float kernel_ms = 0;
 ImVec2 injected_mouse(-100,-100);
+bool volume_command(const Command& c) { return c.op=="volume" || c.op=="volume_full"; }
+void write_volume_binary(const std::filesystem::path& path, const std::vector<float>& volume) {
+    static_assert(sizeof(float)==4 && std::numeric_limits<float>::is_iec559,
+                  "validation texture evidence requires IEEE-754 float32");
+    std::ofstream file(path,std::ios::binary);
+    if(!file)throw std::runtime_error("cannot create complete texture evidence");
+    const std::uint32_t probe=1;
+    if(*reinterpret_cast<const unsigned char*>(&probe)==1) {
+        file.write(reinterpret_cast<const char*>(volume.data()),
+                   static_cast<std::streamsize>(volume.size()*sizeof(float)));
+    } else {
+        std::vector<unsigned char> bytes(volume.size()*4);
+        for(std::size_t i=0;i<volume.size();++i) {
+            std::uint32_t bits;std::memcpy(&bits,&volume[i],4);
+            for(int j=0;j<4;++j)bytes[4*i+j]=static_cast<unsigned char>((bits>>(8*j))&255);
+        }
+        file.write(reinterpret_cast<const char*>(bytes.data()),static_cast<std::streamsize>(bytes.size()));
+    }
+    file.close();
+    if(!file)throw std::runtime_error("complete texture evidence write failed");
+}
 double elapsed() { return std::chrono::duration<double>(Clock::now()-started).count(); }
 std::string number(double v) { std::ostringstream s; s << std::setprecision(17) << v; return s.str(); }
 void finish(const std::string& status, const std::string& detail = {}) {
@@ -165,8 +188,8 @@ bool configure(int argc, char** argv) {
         if(line.empty() || line[0]=='#') continue;
         std::istringstream r(line); Command c; r>>c.op;
         if(c.op=="scene") {float x;while(r>>x)c.args.push_back(x);if(c.args.size()!=6)throw std::runtime_error("scene requires opacity yaw pitch distance iso resolution");}
-        else { r>>std::quoted(c.id); if(c.op=="text" || c.op=="volume") r>>std::quoted(c.value); }
-        if(c.op!="scene"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&c.op!="volume"&&c.op!="key"&&c.op!="wait") throw std::runtime_error("unknown plan command");
+        else { r>>std::quoted(c.id); if(c.op=="text" || volume_command(c)) r>>std::quoted(c.value); }
+        if(c.op!="scene"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait") throw std::runtime_error("unknown plan command");
         commands.push_back(c);
     }
     if(std::filesystem::exists(output / "actions.jsonl")) throw std::runtime_error("refusing to overwrite an existing validation run");
@@ -208,7 +231,7 @@ void input_frame() {
     io.AddFocusEvent(true);
     io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
     if(c.op=="scene")return;
-    if(c.op=="volume") {++stage;return;}
+    if(volume_command(c)) {++stage;return;}
     if(c.op=="capture" || c.op=="wait") { if(++stage>=4) complete_command=true;return; }
     if(c.op=="key") {
         const std::map<std::string,ImGuiKey> keys={{"Home",ImGuiKey_Home},{"Down",ImGuiKey_DownArrow},{"Up",ImGuiKey_UpArrow},{"Enter",ImGuiKey_Enter},{"Escape",ImGuiKey_Escape}};
@@ -255,7 +278,7 @@ void ui_frame(std::size_t drawn,std::size_t requested) {
 void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t mo) {
     if(!enabled)return;
     rendered_mo=mo;rendered_generation=generation;
-    if(done() || commands[next].op!="volume" || stage<4)return;
+    if(done() || !volume_command(commands[next]) || stage<4)return;
     const auto& c=commands[next];
     if(!c.value.empty() && std::stoull(c.value)!=mo) {finish("failed","selected MO does not match requested readback");return;}
     const int nx=renderer.nx(),ny=renderer.ny(),nz=renderer.nz();
@@ -268,6 +291,11 @@ void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t m
     glGetTexImage(0x806F,0,GL_RED,GL_FLOAT,volume.data());
     glBindTexture(0x806F,binding);glPixelStorei(GL_PACK_ALIGNMENT,alignment);
     if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("actual renderer volume readback failed");
+    // Full-grid evidence is an opt-in extension of the existing v1 plan. It
+    // stores the same texture just rendered, including its original float bits.
+    const bool full=c.op=="volume_full";
+    const std::string binary_name=c.id+".volume.f32";
+    if(full)write_volume_binary(output/binary_name,volume);
     std::mt19937 rng(20260905);std::vector<std::uint32_t> indices;
     for(int i=0;i<8192;++i)indices.push_back(rng()%static_cast<std::uint32_t>(volume.size()));
     std::sort(indices.begin(),indices.end());indices.erase(std::unique(indices.begin(),indices.end()),indices.end());
@@ -275,8 +303,13 @@ void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t m
     out<<"{\"schema\":1,\"frame\":"<<frame<<",\"generation\":"<<generation<<",\"rendered_mo\":"<<mo
        <<",\"texture_id\":"<<renderer.volume_texture()<<",\"nx\":"<<nx<<",\"ny\":"<<ny<<",\"nz\":"<<nz
        <<",\"grid_box_bohr\":["<<box.min_x<<','<<box.min_y<<','<<box.min_z<<','<<box.max_x<<','<<box.max_y<<','<<box.max_z
-       <<"],\"layout\":\"x fastest; coordinates use CUDA float interpolation i/(n-1)\",\"samples\":[";
+       <<"],\"layout\":\"x fastest; coordinates use CUDA float interpolation i/(n-1)\"";
+    if(full)out<<",\"full_grid\":{\"file\":"<<quote(binary_name)
+               <<",\"scalar_type\":\"IEEE754-float32-little-endian\",\"point_count\":"<<volume.size()
+               <<",\"byte_count\":"<<volume.size()*4<<",\"source\":\"actual renderer texture readback\"}";
+    out<<",\"samples\":[";
     bool first=true;for(auto idx:indices){if(!first)out<<',';first=false;out<<'['<<idx<<','<<volume[idx]<<']';}out<<"]}";
+    out.close();if(!out)throw std::runtime_error("texture evidence metadata write failed");
     complete_command=true;
 }
 void hit(const std::string& id,ImVec2 lo,ImVec2 hi) {
@@ -310,7 +343,7 @@ void end_frame(int width,int height,std::size_t applied,const ui::OrbitalUIState
     const auto state=state_json(applied,ui,wf);frames<<state<<'\n';
     if(!done() && complete_command) {
         const auto c=commands[next];
-        if(c.op=="capture") {
+        if(c.op=="capture" || c.op=="volume_full") {
             framebuffer(output/(c.id+".bmp"),width,height);
             std::ofstream out(output/(c.id+".ui.json"));
             out<<"{\"state\":"<<state<<",\"targets\":[";bool first=true;
