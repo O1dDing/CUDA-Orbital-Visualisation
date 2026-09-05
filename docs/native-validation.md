@@ -83,3 +83,23 @@ No file in an existing output directory is overwritten.
 References: the installed Gaussian `doc/formchk.txt`,
 [GBasis evaluation documentation](https://gbasis.qcdevs.org/tutorial/Evaluations_basis_and_potential.html),
 and the [D2h character table](https://www.staff.ncl.ac.uk/j.p.goss/symmetry/D2h.html).
+
+## Corpus collection without scientific analysis
+
+`tests/native_collection_batch.py` recursively inventories `.fch` and `.fchk`,
+then uses a thread pool to launch up to four independent COV processes by
+default. Every case has an isolated current directory, input/log snapshot,
+production dump, native plan, exports, captures, action trace and process IDs.
+The new `--validation-background` flag creates a hidden window/context and
+still draws the real production scene and ImGui into the same back buffer.
+Framebuffer size is required to remain 2100x1250; captures are losslessly
+converted and checked. See the [GLFW offscreen-context documentation](https://www.glfw.org/docs/latest/context_guide.html#context_offscreen).
+
+Collection includes every alpha/beta MO texture and the current compact
+members, including spin counterparts reached through the actual browser.
+Only collection integrity is checked at this stage. The scientific and image
+review fields remain deferred, even for a completely collected case.
+`progress.json` is updated atomically, failures retain their evidence, and
+`COMPLETED.json` is written only after all cases return and the index is saved.
+The final summary distinguishes complete collection, collection with gaps,
+and runtime errors. Completion does not imply scientific correctness.

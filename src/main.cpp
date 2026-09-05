@@ -203,6 +203,10 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+    if (cov::validation::background()) {
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+    }
 
     GLFWwindow* window = glfwCreateWindow(
         1500, 940, "CUDA Orbital Visualisation", nullptr, nullptr);
@@ -357,6 +361,9 @@ int main(int argc, char** argv) {
 
             int fb_w = 1, fb_h = 1;
             glfwGetFramebufferSize(window, &fb_w, &fb_h);
+            if (cov::validation::active() && (fb_w != 2100 || fb_h != 1250)) {
+                throw std::runtime_error("Validation framebuffer is not the requested 2100x1250 size");
+            }
             glViewport(0, 0, fb_w, fb_h);
             glClearColor(0.025f, 0.031f, 0.043f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

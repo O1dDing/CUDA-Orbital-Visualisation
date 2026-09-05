@@ -9,6 +9,7 @@ namespace cov::validation {
 #ifdef COV_ENABLE_VALIDATION
 bool configure(int argc, char** argv);
 bool active();
+bool background();
 bool done();
 int result();
 void begin_frame(OrbitCamera&, MoleculeRenderSettings&, float&, int&, bool&);
@@ -28,6 +29,7 @@ std::filesystem::path export_base(const std::filesystem::path& original);
 #else
 inline bool configure(int, char**) { return false; }
 inline bool active() { return false; }
+inline bool background() { return false; }
 inline bool done() { return false; }
 inline int result() { return 0; }
 inline void begin_frame(OrbitCamera&, MoleculeRenderSettings&, float&, int&, bool&) {}

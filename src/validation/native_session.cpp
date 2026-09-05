@@ -18,6 +18,7 @@ using Clock = std::chrono::steady_clock;
 struct Target { ImVec2 lo, hi; ImGuiWindow* window; ImRect clip; };
 struct Command { std::string op, id, value; std::vector<float> args; };
 bool enabled = false;
+bool hidden_window = false;
 std::filesystem::path output;
 std::vector<Command> commands;
 std::size_t next = 0, frame = 0, generation = 0, rendered_generation = 0;
@@ -153,9 +154,10 @@ bool configure(int argc, char** argv) {
         const std::string a=argv[i];
         if(a=="--validation-plan" && i+1<argc) plan=std::filesystem::u8path(argv[++i]);
         else if(a=="--validation-output" && i+1<argc) output=std::filesystem::u8path(argv[++i]);
+        else if(a=="--validation-background") hidden_window=true;
         else throw std::runtime_error("unknown/incomplete validation argument: "+a);
     }
-    if(plan.empty() && output.empty()) return false;
+    if(plan.empty() && output.empty() && !hidden_window) return false;
     if(plan.empty() || output.empty()) throw std::runtime_error("plan and output are both required");
     std::ifstream in(plan); std::string line;
     std::getline(in,line); if(line!="COV_VALIDATION 1") throw std::runtime_error("unsupported validation plan schema");
@@ -176,10 +178,12 @@ bool configure(int argc, char** argv) {
     std::ofstream identity(output/"identity.json");
     identity << "{\"schema\":1,\"git_commit\":" << quote(COV_VALIDATION_COMMIT)
              << ",\"input\":" << quote(argv[1]) << ",\"build\":\"validation ON\",\"imgui\":" << quote(IMGUI_VERSION)
+             << ",\"window_mode\":" << quote(hidden_window?"background-hidden":"visible")
              << ",\"protocol\":\"local plan v1\",\"scientific_verdict\":\"external checker required\"}";
     return true;
 }
 bool active(){return enabled;}
+bool background(){return enabled&&hidden_window;}
 bool done(){return enabled&&next>=commands.size();}
 int result(){return failures?2:0;}
 void begin_frame(OrbitCamera& camera, MoleculeRenderSettings& settings, float& iso, int& resolution, bool& resize) {
