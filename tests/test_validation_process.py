@@ -13,6 +13,22 @@ from gaussian_rebuild import input_text, source_identity_check
 
 @unittest.skipUnless(os.name == "nt", "Windows Job Object contract")
 class ProcessTreeTests(unittest.TestCase):
+    def test_real_stdin_file_and_console_output_are_preserved(self):
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            input_path = directory / 'commands.txt'
+            payload = b'-1 -6.000000 -6.000000 -6.000000\nq\n'
+            input_path.write_bytes(payload)
+            command = "import sys; print(sys.stdin.buffer.read().hex()); print('stderr-preserved',file=sys.stderr)"
+            result = run_tree([sys.executable, '-c', command], directory, dict(os.environ),
+                              physical_core_masks(1)[0], 1, 30, affinity=False, stdin_path=input_path)
+            self.assertEqual(result['exit_code'], 0)
+            self.assertEqual(Path(result['stdin_path']), input_path.resolve())
+            output = (directory/'launcher.log').read_text()
+            self.assertIn(payload.hex(), output)
+            self.assertIn('stderr-preserved', output)
+            self.assertEqual(input_path.read_bytes(), payload)
+
     def test_cpu_quota_applies_without_affinity_restriction(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)

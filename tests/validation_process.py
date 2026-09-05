@@ -123,7 +123,7 @@ def pin_current(mask):
 
 
 def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
-             timeout_seconds: float, on_started=None, affinity=True):
+             timeout_seconds: float, on_started=None, affinity=True, *, stdin_path: Path | None = None):
     """Run an argv list under kernel-enforced limits and record real tree time."""
     if cpu_mask <= 0 or memory_gib <= 0 or timeout_seconds <= 0:
         raise ValueError("Resource and timeout limits must be positive")
@@ -148,7 +148,7 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
     # Some Windows Fortran runtimes dereference the standard handles during
     # startup even when the application receives explicit input/output paths.
     # Give the hidden process real handles instead of the null GUI defaults.
-    stdin_file = open(os.devnull, "rb")
+    stdin_file = open(os.devnull if stdin_path is None else stdin_path, "rb")
     console_file = (Path(cwd) / "launcher.log").open("ab")
     started = time.time()
     begin = time.monotonic()
@@ -213,6 +213,8 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
         require(k.GetExitCodeProcess(process.hProcess, ct.byref(exit_code)))
         require(k.QueryInformationJobObject(job, 9, ct.byref(limits), ct.sizeof(limits), None))
         return {"argv": [str(x) for x in args], "cwd": str(cwd),
+                "stdin_path": str(Path(stdin_path).resolve()) if stdin_path is not None else None,
+                "console_log": str((Path(cwd) / "launcher.log").resolve()),
                 "pid": process.dwProcessId, "started_epoch": started,
                 "finished_epoch": time.time(), "wall_seconds": time.monotonic() - begin,
                 "exit_code": exit_code.value, "timed_out": timed_out,

@@ -22,8 +22,8 @@ import time
 from gaussian_rebuild import DEFAULT_GAUSSIAN, DEFAULT_OUTPUT, digest, log_completion, read_fchk, sha256
 from validation_process import atomic_json, run_tree
 
-DEFAULT_ROOT = DEFAULT_OUTPUT / "regression-fixtures" / "g-shell-v1"
-DEFAULT_WORK = Path(r"F:\Dev\cov-cycle-20260906\g-shell-regression-v1")
+DEFAULT_ROOT = DEFAULT_OUTPUT / "regression-fixtures" / "g-shell-v2"
+DEFAULT_WORK = Path(r"F:\Dev\cov-cycle-20260906\g-shell-regression-v2")
 DEFAULT_EXE = Path(r"F:\Dev\cov-native-validation-20260905-build\Release\cov_cuda_cube_reference.exe")
 
 
@@ -122,16 +122,21 @@ def compute_inputs(args, manifest):
 
 def grid_spec(manifest):
     grid = manifest["grid"]
-    lines = ["-1 " + " ".join(str(v) for v in grid["origin_bohr"])]
+    # Gaussian's free-format reader distinguishes integer and real tokens.
+    # Coordinates and vector components must be real even when exactly zero.
+    lines = ["-1 " + " ".join(f"{float(v):.17e}" for v in grid["origin_bohr"])]
     for axis in range(3):
         values = [grid["step_bohr"] if k == axis else 0 for k in range(3)]
-        lines.append(str((-1 if axis == 0 else 1)*grid["shape"][axis]) + " " + " ".join(str(v) for v in values))
+        lines.append(str((-1 if axis == 0 else 1)*grid["shape"][axis]) + " " + " ".join(f"{float(v):.17e}" for v in values))
     return "\n".join(lines) + "\n"
 
 
 def reference_worker(args):
-    """Run only inside the bounded parent Job Object (3 CPU equivalents/24 GiB)."""
+    """Each producer owns a bounded tree; the caller reserves args.workers cores."""
     manifest = json.loads((args.root / "manifest.json").read_text())
+    producer_hash = sha256(DEFAULT_GAUSSIAN / 'cubegen.exe')
+    if manifest.get('cubegen_sha256', producer_hash) != producer_hash:
+        raise ValueError('Frozen Gaussian cube producer identity changed')
     jobs = []
     for fixture in manifest["fixtures"]:
         directory = args.root / fixture["name"]
@@ -145,7 +150,8 @@ def reference_worker(args):
                 continue
             for orbital in range(count):
                 jobs.append({"fixture": fixture["name"], "spin": spin, "number": orbital+1,
-                             "kind": f"{token}={orbital+1}", "internal_index": offset+orbital})
+                             "kind": f"{token}={orbital+1}", "internal_index": offset+orbital,
+                             "input_sha256": calculation['fchk_sha256']})
     specification = grid_spec(manifest)
 
     def collect(job):
@@ -154,21 +160,33 @@ def reference_worker(args):
         directory.mkdir(parents=True, exist_ok=True)
         state_path = directory / "result.json"
         cube = directory / "orbital.cube"
+        identity = digest({'job': job, 'grid_specification': specification, 'cubegen_sha256': producer_hash,
+                           'runner_files': manifest.get('runner_files'),
+                           'reference_round_identity': manifest.get('reference_round_identity')})
         if state_path.exists():
             result = json.loads(state_path.read_text())
-            if result["status"] == "collected" and sha256(cube) == result["cube_sha256"]:
-                return result
-            return result  # A recorded failure is not silently retried in this batch.
-        result = dict(job, status="failed")
+            if result.get('job_identity') == identity:
+                if result['status'] != 'collected' or (cube.is_file() and sha256(cube) == result['cube_sha256']):
+                    return result  # Retain terminal failures; never silently retry them.
+            rejected = dict(job, status='identity_mismatch', job_identity=identity,
+                            reason='Existing record identity or cube content differs from frozen input')
+            atomic_json(directory/'reuse-rejection.json', rejected)
+            return rejected
+        result = dict(job, status="failed", job_identity=identity)
         env = gaussian_env(directory, cores=1)
         env["GAUSS_MEMDEF"] = "2GB"
         start = time.monotonic()
         command = [str(DEFAULT_GAUSSIAN / "cubegen.exe"), "1", job["kind"], str(root / "wavefunction.fch"), str(cube), "-1", "h"]
+        stdin_path = directory / "grid-specification.txt"
+        stdin_path.write_text(specification, encoding="ascii", newline="\n")
         try:
-            run = subprocess.run(command, input=specification, text=True, capture_output=True,
-                                 cwd=directory, env=env, timeout=120)
-            result.update(exit_code=run.returncode, stdout=run.stdout[-2000:], stderr=run.stderr[-1000:])
-            if run.returncode == 0 and cube.exists():
+            run = run_tree(command, directory, env, 1, 4, 180, affinity=False, stdin_path=stdin_path)
+            log = directory / "launcher.log"
+            result.update(process=run, exit_code=run['exit_code'],
+                          console_log=str(log), console_sha256=sha256(log),
+                          stdout=log.read_text(encoding="utf-8", errors="replace")[-4000:],
+                          grid_specification_sha256=sha256(stdin_path))
+            if run['exit_code'] == 0 and not run['timed_out'] and cube.exists():
                 result.update(status="collected", cube_sha256=sha256(cube), cube=str(cube))
         except Exception as error:
             result["failure"] = f"{type(error).__name__}: {error}"
@@ -177,7 +195,7 @@ def reference_worker(args):
         return result
 
     records = []
-    with ThreadPoolExecutor(max_workers=3) as pool:
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futures = [pool.submit(collect, job) for job in jobs]
         for future in as_completed(futures):
             records.append(future.result())
@@ -194,6 +212,12 @@ def compare_baseline(args):
         raise RuntimeError("Reference collection barrier not reached")
     if any(record["status"] != "collected" for record in collection["records"]):
         raise RuntimeError("Reference failures require review; do not generate a partial pass")
+    manifest = json.loads((args.root/'manifest.json').read_text())
+    if manifest.get('baseline_executable_sha256', sha256(args.exe)) != sha256(args.exe):
+        raise RuntimeError('Frozen baseline executable changed')
+    for record in collection['records']:
+        if sha256(Path(record['cube'])) != record['cube_sha256']:
+            raise RuntimeError('Collected cube identity changed')
     env = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1")
     env.pop("COV_REFERENCE_DIAGNOSTIC_ODD_M", None)
     result = {"executable": str(args.exe), "executable_sha256": sha256(args.exe),
@@ -223,7 +247,15 @@ def main():
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--work", type=Path, default=DEFAULT_WORK)
     parser.add_argument("--exe", type=Path, default=DEFAULT_EXE)
+    parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=1)
     args = parser.parse_args()
+    if args.command != "prepare":
+        frozen = json.loads((args.root / "manifest.json").read_text())
+        for name, expected in frozen.get('runner_files', {}).items():
+            if sha256(Path(__file__).parent/name) != expected:
+                raise RuntimeError('Frozen reference runner identity changed: '+name)
+        if 'reference_resource_policy' in frozen and args.workers != frozen['reference_resource_policy']['workers']:
+            raise RuntimeError('Worker count differs from frozen resource allocation')
     if args.command == "prepare":
         prepare(args)
     elif args.command == "reference-worker":
@@ -233,14 +265,31 @@ def main():
     else:
         manifest = json.loads((args.root / "manifest.json").read_text())
         compute_inputs(args, manifest)
-        # Extra work uses at most three CPU equivalents while the main queue
-        # owns eight; one remaining core is reserved for orchestration.
+        # Producers enforce their own per-job tree limits. Wrapping them in a
+        # second CPU-rate Job would multiply the nested quotas. The comparator
+        # instead receives one bounded tree for its entire process group.
         for operation in ("reference-worker", "compare-worker"):
             logdir = args.work / operation
             logdir.mkdir(parents=True, exist_ok=True)
-            result = run_tree([sys.executable, Path(__file__), operation, "--root", args.root,
-                               "--work", args.work, "--exe", args.exe], logdir, dict(os.environ),
-                              0b111, 24, 3600, affinity=False)
+            command = [sys.executable, Path(__file__), operation, "--root", args.root,
+                       "--work", args.work, "--exe", args.exe, "--workers", str(args.workers)]
+            if operation == 'reference-worker':
+                started = time.time()
+                with (logdir/'launcher.log').open('ab') as log:
+                    try:
+                        run = subprocess.run(command, cwd=logdir, stdout=log, stderr=log,
+                                             timeout=manifest.get('reference_resource_policy', {}).get('batch_timeout_seconds', 90600))
+                        returncode, timed_out = run.returncode, False
+                    except subprocess.TimeoutExpired:
+                        # Closing the worker closes its non-inherited Job
+                        # handles and terminates every unfinished producer.
+                        returncode, timed_out = 124, True
+                result = {'argv': list(map(str, command)), 'started_epoch': started,
+                          'finished_epoch': time.time(), 'exit_code': returncode, 'timed_out': timed_out,
+                          'producer_tree_limits': {'workers': args.workers, 'cores_each': 1,
+                                                   'memory_gib_each': 4, 'timeout_seconds_each': 180}}
+            else:
+                result = run_tree(command, logdir, dict(os.environ), 1, 12, 3600, affinity=False)
             atomic_json(args.root / (operation + ".json"), result)
             if result["exit_code"]:
                 raise RuntimeError(operation + " failed; inspect its preserved log")

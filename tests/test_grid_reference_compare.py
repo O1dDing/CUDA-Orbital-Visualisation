@@ -2,8 +2,9 @@
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
-from grid_reference_compare import grid_metrics, np, read_mo_cube
+from grid_reference_compare import compare_complete_spin_cube, grid_metrics, np, read_mo_cube
 from independent_grid_reference import point_table
 
 THRESHOLDS = {'nrms_max': 1e-4, 'abs_cosine_min': 1-1e-7, 'relative_peak_error_max': 1e-3}
@@ -35,6 +36,32 @@ class GridReferenceTests(unittest.TestCase):
         cube = self.read('2 7 12\n1D0 11 2 12 3 13 4 14 5 15 6 16 7 17 8 18\n')
         self.assertEqual(cube['orbital_ids'], [7, 12])
         np.testing.assert_array_equal(cube['values'], [np.arange(1, 9), np.arange(11, 19)])
+
+    def test_gaussian_all_header_count_and_legacy_nval_are_consistent(self):
+        body = '2 7 12\n' + '1 2 ' * 8
+        for nval in (1, 2):
+            cube = self.read(body, HEADER.replace('-1 -1.0 -2.0 -3.0', f'-1 -1.0 -2.0 -3.0 {nval}'))
+            self.assertEqual(cube['values'].shape, (2, 8))
+        for nval in (0, -1, 3):
+            with self.assertRaises(ValueError):
+                self.read(body, HEADER.replace('-1 -1.0 -2.0 -3.0', f'-1 -1.0 -2.0 -3.0 {nval}'))
+
+    def test_complete_spin_uses_explicit_identities_and_all_columns(self):
+        reference = np.array([np.arange(1., 9.), np.arange(2., 10.),
+                              np.sin(np.arange(1., 9.)), np.cos(np.arange(1., 9.))])
+        record = {'input_sha256': 'test', 'orbitals': [
+            {'spin': spin, 'column_zero_based': offset + i, 'source_mo_one_based': i + 1}
+            for spin, offset in (('alpha', 0), ('beta', 2)) for i in range(2)]}
+        cube = {'orbital_ids': [1, 2], 'values': reference[:2], 'shape': [2, 2, 2], 'sha256': 'test'}
+        with patch('grid_reference_compare.checked_reference_values', return_value=reference):
+            alpha = compare_complete_spin_cube(cube, record, '.', 'alpha', THRESHOLDS)
+            self.assertEqual(len(alpha), 2)
+            self.assertTrue(all(r['pass'] for r in alpha))
+            beta = compare_complete_spin_cube(cube, record, '.', 'beta', THRESHOLDS)
+            self.assertTrue(all(not r['pass'] for r in beta))
+            for spin, ids in (('unknown', [1, 2]), ('alpha', [1]), ('alpha', [1, 1]), ('alpha', [2, 1])):
+                with self.assertRaises(ValueError):
+                    compare_complete_spin_cube(dict(cube, orbital_ids=ids), record, '.', spin, THRESHOLDS)
 
     def test_truncation_extra_fields_invalid_tokens_and_duplicate_ids_are_rejected(self):
         for body in ('1 7\n1 2 3 4 5 6 7', '1 7\n1 2 3 4 5 6 7 8 9',
