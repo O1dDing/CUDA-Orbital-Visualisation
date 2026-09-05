@@ -1,4 +1,5 @@
 #include "cov/orbital_ui.hpp"
+#include "cov/validation.hpp"
 
 #include "cov/mo_diagram.hpp"
 #include "cov/orbital_ui_text.hpp"
@@ -37,12 +38,14 @@ ImVec4 text_colour(const ImU32 colour) {
 }
 
 void labelled_value(const char* label, const std::string& value, const ImU32 colour) {
+    cov::validation::field(label,value);
     ImGui::Text("%s:", label);
     ImGui::SameLine();
     ImGui::TextColored(text_colour(colour), "%s", value.c_str());
 }
 
 void labelled_number(const char* label, const std::string& value) {
+    cov::validation::field(label,value);
     labelled_value(label, value, kNumericColour);
 }
 
@@ -242,10 +245,13 @@ void energy_unit_combo(OrbitalUIState& state) {
         EnergyUnit::CaloriePerMol,
         EnergyUnit::KilocaloriePerMol,
     };
-    if (ImGui::BeginCombo("##energy_unit", energy_unit_symbol(state.energy_unit))) {
+    const bool unit_open=ImGui::BeginCombo("##energy_unit", energy_unit_symbol(state.energy_unit));
+    cov::validation::item("browser.unit");
+    if (unit_open) {
         for (const EnergyUnit unit : units) {
             const bool selected = state.energy_unit == unit;
             if (ImGui::Selectable(energy_unit_symbol(unit), selected)) state.energy_unit = unit;
+            cov::validation::item("browser.unit."+std::to_string(static_cast<int>(unit)));
             if (selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
@@ -253,7 +259,9 @@ void energy_unit_combo(OrbitalUIState& state) {
 }
 
 void filter_combo(OrbitalUIState& state, const Language language) {
-    if (ImGui::BeginCombo("##orbital_filter", filter_name(state.filter.mode, language))) {
+    const bool filter_open=ImGui::BeginCombo("##orbital_filter", filter_name(state.filter.mode, language));
+    cov::validation::item("browser.filter");
+    if (filter_open) {
         constexpr OrbitalFilterMode modes[] = {
             OrbitalFilterMode::AutoReasonable, OrbitalFilterMode::All,
             OrbitalFilterMode::Occupied, OrbitalFilterMode::Virtual,
@@ -262,6 +270,7 @@ void filter_combo(OrbitalUIState& state, const Language language) {
         for (const auto mode : modes) {
             const bool selected = state.filter.mode == mode;
             if (ImGui::Selectable(filter_name(mode, language), selected)) state.filter.mode = mode;
+            cov::validation::item("browser.filter."+std::to_string(static_cast<int>(mode)));
             if (selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
@@ -907,6 +916,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     ImGui::SetNextItemWidth(-1.0f);
     ImGui::InputTextWithHint("##orbital_search", tr(Text::Search, language),
                              state.search.data(), state.search.size());
+    cov::validation::item("browser.search");
 
     if (ImGui::BeginTable("##filter_controls", 2, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_NoSavedSettings)) {
         ImGui::TableNextColumn(); ImGui::TextDisabled("%s", tr(Text::Filter, language));
@@ -940,6 +950,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     ImGui::SameLine();
     ImGui::TextDisabled("%s: %zu / %zu", tr(Text::VisibleOrbitals, language), candidates.size(), metadata.size());
 
+    cov::validation::anchor("browser.table");
     if (ImGui::BeginTable("##orbital_table", 4,
                           ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerH |
                           ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchProp |
@@ -963,6 +974,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                                       ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap)) {
                     actions.select_orbital = index;
                 }
+                cov::validation::item("browser.mo."+std::to_string(index));
                 ImGui::TableNextColumn();
                 ImGui::TextColored(text_colour(kNumericColour), "%s",
                                    format_energy(item.energy_hartree, state.energy_unit, 5).c_str());
@@ -1015,12 +1027,15 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     options.hide_ligand_centred_intermediates=compact;
     options.nonlinear_minimum_gap_weight = 0.055;
     if (!diagram_cache_matches(state.diagram_cache,wavefunction,options)) {
+        cov::validation::record("diagram.cache","{\"hit\":false,\"reason\":\"input-or-options-changed\"}");
         state.diagram_cache.wavefunction=&wavefunction;
         state.diagram_cache.orbital_data=wavefunction.orbitals.data();
         state.diagram_cache.atom_count=wavefunction.atoms.size();
         state.diagram_cache.orbital_count=wavefunction.orbitals.size();
         state.diagram_cache.options=options;
         state.diagram_cache.data=build_mo_diagram_data(wavefunction,options);
+    } else {
+        cov::validation::record("diagram.cache","{\"hit\":true}");
     }
     const MODiagramData& data=*state.diagram_cache.data;
 
@@ -1028,15 +1043,18 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     const std::string selection_summary=
         localised_diagram_selection_summary(data,language);
     ImGui::TextDisabled("%s",selection_summary.c_str());
+    cov::validation::field("selection_summary",selection_summary);
     ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
     ImGui::SameLine();
     if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language), state.energy_axis_mode == EnergyAxisMode::Linear)) {
         state.energy_axis_mode = EnergyAxisMode::Linear;
     }
+    cov::validation::item("diagram.linear");
     ImGui::SameLine();
     if (ImGui::RadioButton(tr(Text::NonlinearFocus, language), state.energy_axis_mode == EnergyAxisMode::NonlinearFocus)) {
         state.energy_axis_mode = EnergyAxisMode::NonlinearFocus;
     }
+    cov::validation::item("diagram.nonlinear");
     ImGui::SetNextItemWidth(155.0f * ui_scale);
     ImGui::SliderInt("##diagram_neighbourhood", &state.diagram_neighbourhood, 3, 32, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SameLine(); ImGui::TextDisabled("%s", tr(Text::AroundSelected, language));
@@ -1044,12 +1062,14 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                         &state.hide_ligand_centred_intermediates)) {
         // The diagram is rebuilt on the next immediate-mode frame.
     }
+    cov::validation::item("diagram.compact");
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("%s",intermediate_toggle_tooltip(language));
     }
 
     const float height = 430.0f * ui_scale;
     ImGui::InvisibleButton("##energy_diagram_canvas", ImVec2(-1.0f, height), ImGuiButtonFlags_MouseButtonLeft);
+    cov::validation::item("diagram.canvas");
     const ImVec2 p0 = ImGui::GetItemRectMin();
     const ImVec2 p1 = ImGui::GetItemRectMax();
     ImDrawList* draw = ImGui::GetWindowDrawList();
@@ -1137,6 +1157,19 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                           member_selected?2.8f:1.8f);
             const ElectronGlyphs electrons=member<level.member_electrons.size()
                 ?level.member_electrons[member]:level.electrons;
+#ifdef COV_ENABLE_VALIDATION
+            const auto used_mo=counterpart_selected?spin_counterpart:member_orbital;
+            cov::validation::hit("diagram.mo."+std::to_string(used_mo),
+                ImVec2(member_x-member_half,y-4.0f*ui_scale),ImVec2(member_x+member_half,y+4.0f*ui_scale));
+            std::ostringstream traced;traced<<std::setprecision(17);
+            traced<<"{\"used_internal_mo\":"<<used_mo<<",\"used_source_mo\":"<<(used_mo+1)
+                <<",\"level_metadata_internal_mo\":"<<level.metadata.orbital_index
+                <<",\"y\":"<<y<<",\"layout_energy_hartree\":"<<level.layout_energy_hartree
+                <<",\"clip_y\":["<<draw->GetClipRectMin().y<<','<<draw->GetClipRectMax().y<<']'
+                <<",\"symmetry\":"<<cov::validation::quote(level.metadata.symmetry)
+                <<",\"alpha_arrows\":"<<electrons.alpha<<",\"beta_arrows\":"<<electrons.beta<<"}";
+            cov::validation::record("draw.level",traced.str());
+#endif
             if (electrons.alpha>0) {
                 draw_arrow(draw,ImVec2(member_x-5.0f*ui_scale,y-2.0f),
                            true,IM_COL32(234,242,252,255));
@@ -1177,6 +1210,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     }
 
     if (ImGui::Button(tr(Text::ExportBundle, language), ImVec2(-1.0f, 0.0f))) actions.export_diagram = true;
+    cov::validation::item("diagram.export");
 }
 
 } // namespace cov::ui

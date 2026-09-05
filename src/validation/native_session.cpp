@@ -1,0 +1,326 @@
+#include "cov/validation.hpp"
+#include "cov/gl_api.hpp"
+#include <imgui_internal.h>
+#include <algorithm>
+#include <chrono>
+#include <cstdint>
+#include <fstream>
+#include <iomanip>
+#include <map>
+#include <random>
+#include <sstream>
+#include <stdexcept>
+#include <vector>
+
+namespace cov::validation {
+namespace {
+using Clock = std::chrono::steady_clock;
+struct Target { ImVec2 lo, hi; ImGuiWindow* window; ImRect clip; };
+struct Command { std::string op, id, value; std::vector<float> args; };
+bool enabled = false;
+std::filesystem::path output;
+std::vector<Command> commands;
+std::size_t next = 0, frame = 0, generation = 0, rendered_generation = 0;
+std::size_t volume_mo = 0, rendered_mo = 0;
+std::size_t drawn_ui_mo = 0, requested_mo = 0, diagram_generation = 0;
+int stage = 0, attempts = 0, failures = 0, cooldown = 0;
+bool complete_command = false;
+Clock::time_point started, command_started;
+std::ofstream frames, actions, events;
+std::map<std::string, Target> targets, previous;
+std::vector<std::string> trace;
+std::string evaluation_reason;
+float kernel_ms = 0;
+ImVec2 injected_mouse(-100,-100);
+double elapsed() { return std::chrono::duration<double>(Clock::now()-started).count(); }
+std::string number(double v) { std::ostringstream s; s << std::setprecision(17) << v; return s.str(); }
+void finish(const std::string& status, const std::string& detail = {}) {
+    const auto& c = commands[next];
+    actions << "{\"schema\":1,\"command\":" << next << ",\"op\":" << quote(c.op)
+            << ",\"id\":" << quote(c.id) << ",\"status\":" << quote(status)
+            << ",\"detail\":" << quote(detail) << ",\"frame\":" << frame
+            << ",\"seconds\":" << number(std::chrono::duration<double>(Clock::now()-command_started).count()) << "}\n";
+    actions.flush();
+    if (status != "executed") ++failures;
+    ++next; stage = attempts = cooldown = 0; complete_command = false;
+    command_started = Clock::now();
+}
+ImVec2 target_point(const Target& t) {
+    // SpanAllColumns Selectable rectangles extend beyond the current table
+    // column clip. Use the actual visible part of the hit rectangle.
+    const float left=std::max(t.lo.x,t.clip.Min.x),right=std::min(t.hi.x,t.clip.Max.x);
+    return ImVec2(left<right?(left+right)*0.5f:(t.lo.x+t.hi.x)*0.5f,(t.lo.y+t.hi.y)*0.5f);
+}
+bool point_visible(const Target& t) {
+    const ImVec2 p=target_point(t);
+    return t.clip.Contains(p) && p.x>1 && p.y>1 &&
+           p.x<ImGui::GetIO().DisplaySize.x-1 && p.y<ImGui::GetIO().DisplaySize.y-1;
+}
+bool seek(const Target& t) {
+    ImGuiIO& io = ImGui::GetIO();
+    const ImVec2 p=target_point(t);
+    if (point_visible(t)) {injected_mouse=p;io.AddMousePosEvent(p.x,p.y);return true;}
+    // Bring an enclosing card into view before attempting to scroll its
+    // contents. Otherwise a clipped card can consume wheels indefinitely.
+    std::vector<ImGuiWindow*> chain;
+    for(auto* w=t.window;w;w=w->ParentWindow)chain.push_back(w);
+    for(std::size_t i=chain.size();i>1;--i) {
+        auto* parent=chain[i-1];auto* child=chain[i-2];
+        const auto r=parent->InnerClipRect;
+        if(parent->ScrollMax.y<=0 || r.GetHeight()<60)continue;
+        const float delta=child->Pos.y-(r.Min.y+12);
+        if(std::abs(delta)<65)continue;
+        // Only align a child that could fit, or the highest card in a scroll
+        // panel. Never change the selected MO or the widget's return value.
+        const auto bar=ImGui::GetWindowScrollbarRect(parent,ImGuiAxis_Y);
+        injected_mouse=bar.GetCenter();io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
+        io.AddMouseWheelEvent(0,std::clamp(-delta/(5*parent->CalcFontSize()),-2.0f,2.0f));
+        cooldown=3;return false;
+    }
+    if (point_visible(t)) { injected_mouse=p;io.AddMousePosEvent(p.x,p.y); return true; }
+    // Scroll through real ImGui wheel input. Never call SetScrollY or mutate
+    // a widget value as a fallback for an invisible/unavailable target.
+    for (auto* w=t.window; w; w=w->ParentWindow) {
+        ImRect r=w->InnerClipRect;
+        r.ClipWith(ImRect(ImVec2(0,0),io.DisplaySize));
+        if (w->ScrollMax.y <= 0 || r.GetHeight()<30 || r.GetWidth()<30) continue;
+        if (p.y >= r.Min.y+5 && p.y <= r.Max.y-5) continue;
+        // Use the parent's right padding so a nested card cannot consume an
+        // outer-panel wheel event just because it overlaps the panel centre.
+        injected_mouse=ImGui::GetWindowScrollbarRect(w,ImGuiAxis_Y).GetCenter();
+        io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
+        io.AddMouseWheelEvent(0,p.y<r.Min.y?3.0f:-3.0f);
+        cooldown=3;
+        return false;
+    }
+    return false;
+}
+void framebuffer(const std::filesystem::path& path, int w, int h) {
+    // Read the completed, visible, double-buffered viewer + ImGui client area.
+    GLint read_buffer=0, alignment=0;
+    glGetIntegerv(GL_READ_BUFFER,&read_buffer); glGetIntegerv(GL_PACK_ALIGNMENT,&alignment);
+    glReadBuffer(GL_BACK); glPixelStorei(GL_PACK_ALIGNMENT,1);
+    std::vector<unsigned char> rgba(static_cast<std::size_t>(w)*h*4);
+    glReadPixels(0,0,w,h,GL_RGBA,GL_UNSIGNED_BYTE,rgba.data());
+    glReadBuffer(read_buffer); glPixelStorei(GL_PACK_ALIGNMENT,alignment);
+    if (glGetError()!=GL_NO_ERROR) throw std::runtime_error("framebuffer readback failed");
+    for (std::size_t i=0;i<rgba.size();i+=4) std::swap(rgba[i],rgba[i+2]);
+    std::ofstream s(path,std::ios::binary);
+    auto u16=[&](std::uint16_t v){s.write(reinterpret_cast<char*>(&v),2);};
+    auto u32=[&](std::uint32_t v){s.write(reinterpret_cast<char*>(&v),4);};
+    s.write("BM",2); u32(54+static_cast<std::uint32_t>(rgba.size())); u32(0); u32(54);
+    u32(40); u32(w); u32(h); u16(1); u16(32); u32(0); u32(static_cast<std::uint32_t>(rgba.size()));
+    u32(0);u32(0);u32(0);u32(0); s.write(reinterpret_cast<char*>(rgba.data()),rgba.size());
+    if (!s) throw std::runtime_error("cannot write framebuffer");
+}
+std::string state_json(std::size_t applied, const ui::OrbitalUIState& ui, const Wavefunction* wf) {
+    std::ostringstream s; s << std::setprecision(17);
+    s << "{\"schema\":1,\"frame\":" << frame << ",\"elapsed_seconds\":" << elapsed()
+      << ",\"rendered_mo\":" << rendered_mo << ",\"applied_mo\":" << applied
+      << ",\"drawn_ui_mo\":" << drawn_ui_mo << ",\"requested_mo\":" << requested_mo
+      << ",\"diagram_generation\":" << diagram_generation
+      << ",\"rendered_generation\":" << rendered_generation << ",\"volume_generation\":" << generation
+      << ",\"scene_matches_applied\":" << (rendered_mo==applied?"true":"false")
+      << ",\"evaluation_reason\":" << quote(evaluation_reason) << ",\"kernel_ms\":" << kernel_ms
+      << ",\"compact\":" << (ui.hide_ligand_centred_intermediates?"true":"false")
+      << ",\"energy_unit\":" << static_cast<int>(ui.energy_unit)
+      << ",\"axis_mode\":" << static_cast<int>(ui.energy_axis_mode)
+      << ",\"filter\":" << static_cast<int>(ui.filter.mode);
+    if (wf && applied<wf->orbitals.size()) {
+        const auto& mo=wf->orbitals[applied];
+        s << ",\"energy_hartree\":" << mo.energy_hartree << ",\"occupation\":" << mo.occupation
+          << ",\"spin\":" << static_cast<int>(mo.spin);
+    }
+    s << '}'; return s.str();
+}
+}
+
+std::string quote(const std::string& v) {
+    std::string s="\"";
+    for (unsigned char c:v) {
+        if(c=='"'||c=='\\') {s+='\\';s+=c;}
+        else if(c=='\n') s+="\\n";
+        else if(c=='\r') s+="\\r";
+        else if(c=='\t') s+="\\t";
+        else if(c<32) {const char* h="0123456789abcdef";s+="\\u00";s+=h[c>>4];s+=h[c&15];}
+        else s+=c;
+    }
+    return s+'"';
+}
+bool configure(int argc, char** argv) {
+    std::filesystem::path plan;
+    for(int i=2;i<argc;++i) {
+        const std::string a=argv[i];
+        if(a=="--validation-plan" && i+1<argc) plan=std::filesystem::u8path(argv[++i]);
+        else if(a=="--validation-output" && i+1<argc) output=std::filesystem::u8path(argv[++i]);
+        else throw std::runtime_error("unknown/incomplete validation argument: "+a);
+    }
+    if(plan.empty() && output.empty()) return false;
+    if(plan.empty() || output.empty()) throw std::runtime_error("plan and output are both required");
+    std::ifstream in(plan); std::string line;
+    std::getline(in,line); if(line!="COV_VALIDATION 1") throw std::runtime_error("unsupported validation plan schema");
+    while(std::getline(in,line)) {
+        if(line.empty() || line[0]=='#') continue;
+        std::istringstream r(line); Command c; r>>c.op;
+        if(c.op=="scene") {float x;while(r>>x)c.args.push_back(x);if(c.args.size()!=6)throw std::runtime_error("scene requires opacity yaw pitch distance iso resolution");}
+        else { r>>std::quoted(c.id); if(c.op=="text" || c.op=="volume") r>>std::quoted(c.value); }
+        if(c.op!="scene"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&c.op!="volume"&&c.op!="key"&&c.op!="wait") throw std::runtime_error("unknown plan command");
+        commands.push_back(c);
+    }
+    if(std::filesystem::exists(output / "actions.jsonl")) throw std::runtime_error("refusing to overwrite an existing validation run");
+    std::filesystem::create_directories(output);
+    std::filesystem::copy_file(plan,output/"plan.txt");
+    frames.open(output/"frames.jsonl");actions.open(output/"actions.jsonl");
+    events.open(output/"events.jsonl");
+    started=command_started=Clock::now(); enabled=true;
+    std::ofstream identity(output/"identity.json");
+    identity << "{\"schema\":1,\"git_commit\":" << quote(COV_VALIDATION_COMMIT)
+             << ",\"input\":" << quote(argv[1]) << ",\"build\":\"validation ON\",\"imgui\":" << quote(IMGUI_VERSION)
+             << ",\"protocol\":\"local plan v1\",\"scientific_verdict\":\"external checker required\"}";
+    return true;
+}
+bool active(){return enabled;}
+bool done(){return enabled&&next>=commands.size();}
+int result(){return failures?2:0;}
+void begin_frame(OrbitCamera& camera, MoleculeRenderSettings& settings, float& iso, int& resolution, bool& resize) {
+    if(!enabled)return;
+    ++frame; previous=std::move(targets);targets.clear();trace.clear();evaluation_reason.clear();
+    if(done())return;
+    auto& c=commands[next];
+    if(c.op=="scene") {
+        settings.orbital_opacity=c.args[0];camera.yaw=c.args[1];camera.pitch=c.args[2];camera.distance=c.args[3];iso=c.args[4];
+        const int requested=static_cast<int>(c.args[5]);
+        if(requested!=resolution) {resolution=requested;resize=true;}
+        complete_command=true;
+    }
+}
+void input_frame() {
+    if(!enabled||done())return;
+    auto& c=commands[next]; auto& io=ImGui::GetIO();
+    // The local plan owns input while active. Discard OS cursor polling queued
+    // by the GLFW backend, then feed events through ImGui's normal input API.
+    // No Button/Selectable return value or application selection is forced.
+    io.ClearEventsQueue();
+    io.AddFocusEvent(true);
+    io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
+    if(c.op=="scene")return;
+    if(c.op=="volume") {++stage;return;}
+    if(c.op=="capture" || c.op=="wait") { if(++stage>=4) complete_command=true;return; }
+    if(c.op=="key") {
+        const std::map<std::string,ImGuiKey> keys={{"Home",ImGuiKey_Home},{"Down",ImGuiKey_DownArrow},{"Up",ImGuiKey_UpArrow},{"Enter",ImGuiKey_Enter},{"Escape",ImGuiKey_Escape}};
+        const auto k=keys.find(c.id);if(k==keys.end()){finish("failed","unsupported key");return;}
+        if(stage<2)io.AddKeyEvent(k->second,stage==0);
+        if(++stage>=4)complete_command=true;return;
+    }
+    if(cooldown>0){--cooldown;return;}
+    const auto it=previous.find(c.id);
+    if(it==previous.end()) {
+        if(c.id.rfind("browser.mo.",0)==0) {
+            const auto table=previous.find("browser.table");
+            if(table!=previous.end()) seek(table->second);
+        }
+        if(++attempts>60)finish("failed","semantic target not drawn");return;
+    }
+    if(stage==0) {
+        if(!seek(it->second)) {if(++attempts>60)finish("failed","target clipped or unreachable by wheel input");return;}
+        if(c.op=="seek"){complete_command=true;return;}
+    }
+    if(c.op=="hover") {if(++stage>=4)complete_command=true;return;}
+    // A real input sequence, observed hit rectangle -> down -> up. The
+    // production Button/Selectable/canvas path remains the sole state writer.
+    if(stage==1)io.AddMouseButtonEvent(0,true);
+    if(stage==2) {
+        io.AddMouseButtonEvent(0,false);
+    }
+    if(c.op=="text") {
+        if(stage==4){io.AddKeyEvent(ImGuiMod_Ctrl,true);io.AddKeyEvent(ImGuiKey_A,true);}
+        if(stage==5){io.AddKeyEvent(ImGuiKey_A,false);io.AddKeyEvent(ImGuiMod_Ctrl,false);}
+        if(stage==6)io.AddInputCharactersUTF8(c.value.c_str());
+        if(stage==8)io.AddKeyEvent(ImGuiKey_Enter,true);
+        if(stage==9)io.AddKeyEvent(ImGuiKey_Enter,false);
+        if(++stage>=12)complete_command=true;
+    } else if(++stage>=5)complete_command=true;
+}
+void evaluated(std::size_t mo,const char* reason,float milliseconds) {
+    if(!enabled)return;
+    ++generation;volume_mo=mo;evaluation_reason=reason;kernel_ms=milliseconds;
+}
+void ui_frame(std::size_t drawn,std::size_t requested) {
+    drawn_ui_mo=drawn;requested_mo=requested;
+}
+void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t mo) {
+    if(!enabled)return;
+    rendered_mo=mo;rendered_generation=generation;
+    if(done() || commands[next].op!="volume" || stage<4)return;
+    const auto& c=commands[next];
+    if(!c.value.empty() && std::stoull(c.value)!=mo) {finish("failed","selected MO does not match requested readback");return;}
+    const int nx=renderer.nx(),ny=renderer.ny(),nz=renderer.nz();
+    std::vector<float> volume(static_cast<std::size_t>(nx)*ny*nz);
+    GLint binding=0,alignment=0;
+    glGetIntegerv(0x806A,&binding);glGetIntegerv(GL_PACK_ALIGNMENT,&alignment);
+    glBindTexture(0x806F,renderer.volume_texture());glPixelStorei(GL_PACK_ALIGNMENT,1);
+    // CudaOrbitalEvaluator::evaluate returned after CUDA resource unmap. This
+    // is the same texture just consumed by render_volume, before later UI updates.
+    glGetTexImage(0x806F,0,GL_RED,GL_FLOAT,volume.data());
+    glBindTexture(0x806F,binding);glPixelStorei(GL_PACK_ALIGNMENT,alignment);
+    if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("actual renderer volume readback failed");
+    std::mt19937 rng(20260905);std::vector<std::uint32_t> indices;
+    for(int i=0;i<8192;++i)indices.push_back(rng()%static_cast<std::uint32_t>(volume.size()));
+    std::sort(indices.begin(),indices.end());indices.erase(std::unique(indices.begin(),indices.end()),indices.end());
+    std::ofstream out(output/(c.id+".volume.json"));out<<std::setprecision(17);
+    out<<"{\"schema\":1,\"frame\":"<<frame<<",\"generation\":"<<generation<<",\"rendered_mo\":"<<mo
+       <<",\"texture_id\":"<<renderer.volume_texture()<<",\"nx\":"<<nx<<",\"ny\":"<<ny<<",\"nz\":"<<nz
+       <<",\"grid_box_bohr\":["<<box.min_x<<','<<box.min_y<<','<<box.min_z<<','<<box.max_x<<','<<box.max_y<<','<<box.max_z
+       <<"],\"layout\":\"x fastest; coordinates use CUDA float interpolation i/(n-1)\",\"samples\":[";
+    bool first=true;for(auto idx:indices){if(!first)out<<',';first=false;out<<'['<<idx<<','<<volume[idx]<<']';}out<<"]}";
+    complete_command=true;
+}
+void hit(const std::string& id,ImVec2 lo,ImVec2 hi) {
+    if(!enabled)return;auto* w=ImGui::GetCurrentWindow();
+    targets[id]={lo,hi,w,w->ClipRect};
+}
+void item(const std::string& id) {
+    if(!enabled || ImGui::GetCurrentWindow()->SkipItems)return;
+    hit(id,ImGui::GetItemRectMin(),ImGui::GetItemRectMax());
+}
+void anchor(const std::string& id) {
+    if(!enabled)return;const auto p=ImGui::GetCursorScreenPos();hit(id,p,ImVec2(p.x+20,p.y+4));
+}
+void record(const std::string& kind,const std::string& json) {
+    if(enabled)trace.push_back("{\"kind\":"+quote(kind)+",\"data\":"+json+"}");
+    if(enabled && (kind=="export.actual" || (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {
+        if(kind=="diagram.cache")++diagram_generation;
+        events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";events.flush();
+    }
+}
+void field(const std::string& label,const std::string& value) {
+    if(enabled)record("draw.text","{\"label\":"+quote(label)+",\"value\":"+quote(value)+"}");
+}
+std::filesystem::path export_base(const std::filesystem::path& original) {
+    return enabled?output/"actual-export":original;
+}
+void end_frame(int width,int height,std::size_t applied,const ui::OrbitalUIState& ui,const Wavefunction* wf) {
+    if(!enabled)return;
+    targets["scene.viewport"]={ImVec2(width*0.7f,height*0.2f),ImVec2(width*0.9f,height*0.7f),nullptr,
+                               ImRect(ImVec2(0,0),ImVec2(static_cast<float>(width),static_cast<float>(height)))};
+    const auto state=state_json(applied,ui,wf);frames<<state<<'\n';
+    if(!done() && complete_command) {
+        const auto c=commands[next];
+        if(c.op=="capture") {
+            framebuffer(output/(c.id+".bmp"),width,height);
+            std::ofstream out(output/(c.id+".ui.json"));
+            out<<"{\"state\":"<<state<<",\"targets\":[";bool first=true;
+            for(const auto& [id,t]:targets){if(!first)out<<',';first=false;out<<"{\"id\":"<<quote(id)<<",\"rect\":["<<t.lo.x<<','<<t.lo.y<<','<<t.hi.x<<','<<t.hi.y<<"],\"visible\":"<<(point_visible(t)?"true":"false")<<'}';}
+            out<<"],\"draw_trace\":[";first=true;for(const auto& x:trace){if(!first)out<<',';first=false;out<<x;}out<<"]}";
+        }
+        finish("executed");
+    }
+    if(done()) {
+        std::ofstream summary(output/"session.json");
+        summary<<"{\"schema\":1,\"seconds\":"<<number(elapsed())<<",\"frames\":"<<frame
+               <<",\"commands\":"<<commands.size()<<",\"failed_commands\":"<<failures
+               <<",\"capture_status\":"<<quote(failures?"failed":"completed")<<",\"scientific_verdict\":\"external checker required\"}";
+        frames.flush();
+    }
+}
+}

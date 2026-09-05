@@ -4,6 +4,10 @@ project(CUDAOrbitalVisualisation VERSION 0.3.0 LANGUAGES CXX)
 
 option(COV_ENABLE_CUDA "Build the CUDA/OpenGL viewer" ON)
 option(COV_BUILD_TESTS "Build parser, orbital, diagram, molecule and UI smoke tests" ON)
+option(COV_ENABLE_VALIDATION "Enable local native validation plan and evidence capture" OFF)
+if(COV_ENABLE_VALIDATION AND NOT COV_ENABLE_CUDA)
+    message(FATAL_ERROR "Native validation requires the production CUDA/OpenGL viewer")
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -254,11 +258,35 @@ if(COV_ENABLE_CUDA)
     if(WIN32)
         set_property(TARGET cov PROPERTY WIN32_EXECUTABLE FALSE)
     endif()
+    if(COV_ENABLE_VALIDATION)
+        execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            OUTPUT_VARIABLE COV_VALIDATION_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE)
+        execute_process(COMMAND git diff --quiet WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            RESULT_VARIABLE COV_VALIDATION_DIRTY)
+        if(COV_VALIDATION_DIRTY)
+            string(APPEND COV_VALIDATION_COMMIT "-dirty")
+        endif()
+        add_library(cov_validation_support STATIC src/validation/native_session.cpp)
+        target_include_directories(cov_validation_support PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        target_compile_definitions(cov_validation_support PUBLIC COV_ENABLE_VALIDATION=1)
+        target_compile_definitions(cov_validation_support PRIVATE COV_VALIDATION_COMMIT="${COV_VALIDATION_COMMIT}")
+        target_compile_options(cov_validation_support PRIVATE $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
+        target_link_libraries(cov_validation_support PUBLIC cov_imgui_core OpenGL::GL)
+        target_link_libraries(cov_ui PUBLIC cov_validation_support)
+        set_target_properties(cov PROPERTIES OUTPUT_NAME cov_validation)
+    endif()
 endif()
 
 if(COV_BUILD_TESTS)
     include(CTest)
     enable_testing()
+
+    if(COV_ENABLE_CUDA)
+        # External scientific reference; never counted as a passing test when
+        # the producer cube is absent. Exercises the production CUDA texture.
+        add_executable(cov_cuda_cube_reference tests/cuda_cube_reference.cpp)
+        target_link_libraries(cov_cuda_cube_reference PRIVATE cov_gpu)
+    endif()
 
     add_executable(cov_parser_smoke tests/parser_smoke.cpp)
     target_link_libraries(cov_parser_smoke PRIVATE cov_parser)
@@ -286,6 +314,9 @@ if(COV_BUILD_TESTS)
     add_executable(cov_fchk_batch_regression tests/fchk_batch_regression.cpp)
     target_link_libraries(cov_fchk_batch_regression PRIVATE
         cov_parser cov_orbitals cov_molecule)
+
+    add_executable(cov_scientific_audit_dump tests/scientific_audit_dump.cpp)
+    target_link_libraries(cov_scientific_audit_dump PRIVATE cov_parser cov_molecule cov_orbitals)
 
     add_executable(cov_reference_manifest_regression
         tests/reference_manifest_regression.cpp)

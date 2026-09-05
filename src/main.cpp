@@ -8,6 +8,7 @@
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
 #include "cov/volume_renderer.hpp"
+#include "cov/validation.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -192,6 +193,8 @@ const char* orbital_surface_name(const cov::OrbitalSurfaceMode mode,
 } // namespace
 
 int main(int argc, char** argv) {
+    try { cov::validation::configure(argc, argv); }
+    catch (const std::exception& e) { std::fprintf(stderr,"Validation: %s\n",e.what()); return 2; }
     if (!glfwInit()) {
         std::fprintf(stderr, "GLFW initialisation failed\n");
         return 1;
@@ -210,6 +213,10 @@ int main(int argc, char** argv) {
     }
 
     glfwMakeContextCurrent(window);
+    if (cov::validation::active()) {
+        glfwSetWindowSize(window, 2100, 1250);
+        glfwSetWindowTitle(window, "COV native validation");
+    }
     glfwSwapInterval(1);
     glfwSetDropCallback(window, drop_callback);
 
@@ -221,6 +228,12 @@ int main(int argc, char** argv) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& startup_io = ImGui::GetIO();
+    if (cov::validation::active()) {
+        startup_io.IniFilename = nullptr;
+        // Each native-plan step supplies an ordered event batch for this
+        // frame. Do not defer part of it into the next GLFW polling batch.
+        startup_io.ConfigInputTrickleEventQueue = false;
+    }
     startup_io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     cov::ui::apply_theme(ui_scale);
     cov::ui::configure_fonts(16.5f * ui_scale);
@@ -266,6 +279,7 @@ int main(int argc, char** argv) {
             }
             evaluator->evaluate(mo_index, grid_box,
                                 resolution, resolution, resolution);
+            cov::validation::evaluated(mo_index,"selection-or-grid",evaluator->last_kernel_ms());
             status = StatusKind::GridUpdated;
             status_detail = evaluator->device_name();
             recompute = false;
@@ -306,6 +320,7 @@ int main(int argc, char** argv) {
                 evaluator->attach_gl_texture(renderer.volume_texture());
                 evaluator->evaluate(mo_index, grid_box,
                                     resolution, resolution, resolution);
+                cov::validation::evaluated(mo_index,"input-load",evaluator->last_kernel_ms());
                 current_file = path;
                 copy_path_to_buffer(path, path_buffer);
                 push_recent(recent_files, path);
@@ -322,6 +337,9 @@ int main(int argc, char** argv) {
             std::snprintf(path_buffer.data(), path_buffer.size(), "%s", p.c_str());
             load_file(path_from_utf8(p));
         }
+        if (cov::validation::active() && !wavefunction) {
+            throw std::runtime_error("Native validation input failed: "+status_detail);
+        }
 
         double last_x = 0.0;
         double last_y = 0.0;
@@ -329,6 +347,8 @@ int main(int argc, char** argv) {
 
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
+            cov::validation::begin_frame(camera,molecule_render,isovalue,resolution,resize_and_recompute);
+            if (resize_and_recompute) recompute = true;
 
             if (!g_dropped_path.empty()) {
                 load_file(path_from_utf8(g_dropped_path));
@@ -351,10 +371,12 @@ int main(int argc, char** argv) {
                 renderer.render_volume(fb_w, fb_h, isovalue, camera,
                                        molecule_render.orbital_opacity,
                                        orbital_material, orbital_surface_mode);
+                cov::validation::after_scene(renderer,grid_box,mo_index);
             }
 
             ImGui_ImplOpenGL2_NewFrame();
             ImGui_ImplGlfw_NewFrame();
+            cov::validation::input_frame();
             ImGui::NewFrame();
 
             ImGuiIO& io = ImGui::GetIO();
@@ -410,6 +432,7 @@ int main(int argc, char** argv) {
                     glfwSetWindowTitle(window,
                         cov::ui::tr(cov::ui::Text::AppTitle, language));
                 }
+                cov::validation::item("language");
                 ImGui::EndTable();
             }
 
@@ -615,6 +638,7 @@ int main(int argc, char** argv) {
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
+            cov::validation::anchor("panel.browser");
             cov::ui::begin_card("##orbital_browser_card", 620.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::OrbitalBrowser, language));
             cov::ui::OrbitalUIActions orbital_actions;
@@ -627,6 +651,7 @@ int main(int argc, char** argv) {
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
+            cov::validation::anchor("panel.diagram");
             cov::ui::begin_card("##energy_diagram_card", 430.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::EnergyDiagram, language));
             cov::ui::OrbitalUIActions diagram_actions;
@@ -660,7 +685,14 @@ int main(int argc, char** argv) {
                 std::filesystem::path base = current_file.empty()
                                                  ? std::filesystem::current_path() / "mo_diagram"
                                                  : current_file;
+                base = cov::validation::export_base(base);
                 const auto result = cov::export_mo_diagram_bundle(*wavefunction, options, base);
+#ifdef COV_ENABLE_VALIDATION
+                cov::validation::record("export.actual","{\"base\":"+cov::validation::quote(path_to_utf8(base))+
+                    ",\"mode\":"+std::to_string(static_cast<int>(options.mode))+
+                    ",\"selected_index\":"+std::to_string(options.selected_index)+
+                    ",\"success\":"+((result.svg&&result.png&&result.json&&result.csv)?"true":"false")+"}");
+#endif
                 if (result.svg && result.png && result.json && result.csv) {
                     status = StatusKind::Exported;
                     status_detail = path_to_utf8(result.svg_path.parent_path() /
@@ -810,6 +842,8 @@ int main(int argc, char** argv) {
 
             ImGui::EndChild();
             ImGui::End();
+            cov::validation::field("language",std::to_string(static_cast<int>(language)));
+            cov::validation::ui_frame(mo_index,pending_mo_index.value_or(mo_index));
 
             // Selection debounce: at most the latest requested orbital is evaluated
             // once at the end of this frame. Browser hover/filtering never launches CUDA.
@@ -834,8 +868,10 @@ int main(int argc, char** argv) {
 
             ImGui::Render();
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+            cov::validation::end_frame(fb_w,fb_h,mo_index,orbital_ui,wavefunction?&*wavefunction:nullptr);
 
             glfwSwapBuffers(window);
+            if (cov::validation::done()) {exit_code=cov::validation::result();break;}
         }
 
         if (evaluator) evaluator->detach_gl_texture();
