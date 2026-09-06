@@ -235,22 +235,29 @@ def pullback_basis(basis, operation, origin):
     return tuple(moved), block_diag(*transforms)
 
 
+def ao_operation_integrals(basis, operation, origin):
+    """Independent overlap S and pullback matrix K_ij = <AO_i|U_R AO_j>."""
+    moved, transform = pullback_basis(basis, operation, origin)
+    n = len(transform)
+    combined = overlap_integral(tuple(basis)+moved)
+    return combined[:n, :n], combined[:n, n:] @ transform
+
+
 def subspace_operation(basis, coefficients, operation, origin):
     """Analytic AO-integral operator and leakage for a selected real subspace.
 
     Rectangular C and nonorthogonal Cartesian AOs are supported. No label is
     inferred from a trace alone; all singular values and closure errors remain.
     """
-    moved, transform = pullback_basis(basis, operation, origin)
-    n = len(transform)
+    overlap, pullback = ao_operation_integrals(basis, operation, origin)
+    n = len(overlap)
     coefficients = np.asarray(coefficients, dtype=float)
     if (coefficients.ndim != 2 or coefficients.shape[0] != n or not coefficients.shape[1]
             or not np.isfinite(coefficients).all()):
         raise ValueError("Finite nonempty AO by subspace coefficient matrix required")
-    combined = overlap_integral(tuple(basis)+moved)
-    gram = coefficients.T @ combined[:n, :n] @ coefficients
+    gram = coefficients.T @ overlap @ coefficients
     normalizer = inverse_sqrt_positive(gram)
-    raw = coefficients.T @ combined[:n, n:] @ transform @ coefficients
+    raw = coefficients.T @ pullback @ coefficients
     projected = normalizer @ raw @ normalizer
     values = np.linalg.svd(projected, compute_uv=False)
     dimension = coefficients.shape[1]
