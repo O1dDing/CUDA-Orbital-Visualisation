@@ -144,6 +144,7 @@ def main():
         case_id=case['case_id']
         slot=slots.get()
         LOCAL.mask=slot
+        attempt_begin=time.perf_counter()
         case_dir=root/'cases'/case_id
         case_dir.mkdir(parents=True,exist_ok=True)
         existing=sorted(case_dir.glob('attempt-*'))
@@ -189,6 +190,7 @@ def main():
                   'round_identity':manifest['round_identity'],'evidence_directory':str(attempt.relative_to(root))}
         finally:
             slots.put(slot)
+        info['wall_seconds_including_ordinary_and_packaging']=time.perf_counter()-attempt_begin
         atomic_json(case_dir/'terminal.json',info)
         with LOCK:
             results[case_id]=info;running.pop(case_id,None)

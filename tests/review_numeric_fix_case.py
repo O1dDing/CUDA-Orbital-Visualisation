@@ -84,6 +84,14 @@ def review(root,case_id,out):
     limits=manifest['thresholds']
     checks=[]
     def check(name,passed,detail):checks.append({'check':name,'status':'pass' if passed else 'fail','observed':detail})
+    ordinary=directory/'production-off.json'
+    if ordinary.exists():
+        check('BUILD-ON-OFF',load(ordinary)==production,{'scope':'Entire recorded production analysis and diagram data'})
+    else:checks.append({'check':'BUILD-ON-OFF','status':'insufficient','observed':'Ordinary-build collection absent'})
+    events=[json.loads(line) for line in (directory/'native'/'events.jsonl').read_text(encoding='utf-8').splitlines()]
+    diagnostics=[event['data'] for event in events if event['kind']=='input.numerical_diagnostics']
+    check('ACTUAL-EXE-METRIC-DATA',len(diagnostics)==1 and diagnostics[0]==production['numerical_diagnostics'],
+          {'matching_actual_exe_input_events':len(diagnostics)})
     mol=load_one(str(source));basis=tuple(from_iodata(mol));coeff=np.asarray(mol.mo.coeffs)
     source_s=overlap_integral(basis)
     indices,scales=internal_basis_map(mol)
