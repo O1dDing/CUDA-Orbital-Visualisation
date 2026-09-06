@@ -270,7 +270,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
          << width << ' ' << height << "\" data-diagram-row-count=\""
          << data.levels.size() << "\" data-pi-interaction-count=\""
          << data.pi_interactions.size() << "\" data-diagram-mode=\""
-         << mo_diagram_mode_name(data.mode) << "\">\n";
+         << mo_diagram_mode_name(data.mode) << "\" data-view-snapshot=\""
+         << (data.view?xml_escape(data.view->id):"") << "\">\n";
     out << "<rect width=\"100%\" height=\"100%\" fill=\"#fbfcfe\"/>\n";
     out << "<text x=\"36\" y=\"40\" fill=\"#182231\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"24\" font-weight=\"600\">"
@@ -278,7 +279,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
     out << "<text x=\"36\" y=\"64\" fill=\"#68778b\" font-family=\"" << kSvgFontFamily << "\" "
            "font-size=\"12\">" << xml_escape(data.selection.summary) << "</text>\n";
     out << "<text x=\"36\" y=\"82\" fill=\"#7f8c9c\" font-family=\"" << kSvgFontFamily << "\" "
-           "font-size=\"11\">Molden-derived MO energies/occupations/symmetry; type/class is N/A unless supported by source data.</text>\n";
+           "font-size=\"11\">Source: " << wavefunction_source_name(data.electronic_state.source)
+        << "; raw MO energies and occupations are retained in metadata.</text>\n";
 
     const int axis_x = 70;
     out << "<line x1=\"" << axis_x << "\" y1=\"110\" x2=\"" << axis_x
@@ -308,20 +310,28 @@ bool write_mo_diagram_svg(const MODiagramData& data,
     for (std::size_t row_index = 0; row_index < positioned.size(); ++row_index) {
         const auto& item = positioned[row_index];
         const auto& level = *item.level;
-        const char* colour = level.metadata.selected ? "#286de0" :
-                             level.homo ? "#138a62" :
+        const char* colour = level.homo ? "#138a62" :
                              level.lumo ? "#b56a00" :
                              level.metadata.region == OrbitalRegion::Virtual ? "#778496" : "#29384c";
-        const double x0 = item.x - 45.0;
-        const double x1 = item.x + 45.0;
-        out << "<line class=\"mo-level\" data-row-index=\"" << row_index
+        const auto members=mo_diagram_member_views(data,level);
+        out << "<g class=\"mo-level\" data-row-index=\"" << row_index
             << "\" data-symmetry=\"" << xml_escape(level.metadata.symmetry)
-            << "\" x1=\"" << x0 << "\" y1=\"" << item.y
-            << "\" x2=\"" << x1 << "\" y2=\"" << item.y
-            << "\" stroke=\"" << colour << "\" stroke-width=\""
-            << (level.metadata.selected ? 4 : 2.2) << "\"/>\n";
-        if (level.electrons.alpha > 0) write_svg_electron(out, item.x - 10.0, item.y - 2.0, true);
-        if (level.electrons.beta > 0) write_svg_electron(out, item.x + 10.0, item.y - 2.0, false);
+            << "\" data-member-count=\"" << members.size() << "\">\n";
+        for (std::size_t member_index=0;member_index<members.size();++member_index) {
+            const auto& member=members[member_index];
+            const double x=item.x+(static_cast<double>(member_index)-
+                0.5*static_cast<double>(members.size()-1))*31.0;
+            out << "<line class=\"mo-member\" data-orbital-index=\"" << member.orbital_index
+                << "\" data-inspected-orbital-index=\"" << member.inspected_orbital_index
+                << "\" data-selected=\"" << (member.selected?"true":"false")
+                << "\" x1=\"" << x-12.0 << "\" y1=\"" << item.y
+                << "\" x2=\"" << x+12.0 << "\" y2=\"" << item.y
+                << "\" stroke=\"" << (member.selected?"#286de0":colour)
+                << "\" stroke-width=\"" << (member.selected?4.0:2.2) << "\"/>\n";
+            if (member.electrons.alpha>0) write_svg_electron(out,x-5.0,item.y-2.0,true);
+            if (member.electrons.beta>0) write_svg_electron(out,x+5.0,item.y-2.0,false);
+        }
+        out << "</g>\n";
 
         // Export deliberately omits MO numbers. Human-readable orbital type is
         // attached directly below the physical level; raw numbering remains in

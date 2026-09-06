@@ -999,9 +999,33 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                          const Language language,
                          const float ui_scale,
                          OrbitalUIActions& actions) {
+    actions.drawn_diagram.reset();
     if (wavefunction.orbitals.empty()) {
         ImGui::TextDisabled("%s", tr(Text::NoOrbitals, language));
         return;
+    }
+
+    ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
+    ImGui::SameLine();
+    if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language), state.energy_axis_mode == EnergyAxisMode::Linear)) {
+        state.energy_axis_mode = EnergyAxisMode::Linear;
+    }
+    cov::validation::item("diagram.linear");
+    ImGui::SameLine();
+    if (ImGui::RadioButton(tr(Text::NonlinearFocus, language), state.energy_axis_mode == EnergyAxisMode::NonlinearFocus)) {
+        state.energy_axis_mode = EnergyAxisMode::NonlinearFocus;
+    }
+    cov::validation::item("diagram.nonlinear");
+    ImGui::SetNextItemWidth(155.0f * ui_scale);
+    ImGui::SliderInt("##diagram_neighbourhood", &state.diagram_neighbourhood, 3, 32, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SameLine(); ImGui::TextDisabled("%s", tr(Text::AroundSelected, language));
+    if (ImGui::Checkbox(intermediate_toggle_label(language),
+                        &state.hide_ligand_centred_intermediates)) {
+        // The requested options are frozen below in this same frame.
+    }
+    cov::validation::item("diagram.compact");
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("%s",intermediate_toggle_tooltip(language));
     }
 
     MODiagramOptions options;
@@ -1034,39 +1058,35 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         state.diagram_cache.orbital_count=wavefunction.orbitals.size();
         state.diagram_cache.options=options;
         state.diagram_cache.data=build_mo_diagram_data(wavefunction,options);
+        state.diagram_cache.snapshot.reset();
     } else {
         cov::validation::record("diagram.cache","{\"hit\":true}");
     }
-    const MODiagramData& data=*state.diagram_cache.data;
+    const std::optional<std::size_t> inspected=selected_index<wavefunction.orbitals.size()
+        ?std::optional<std::size_t>(selected_index):std::nullopt;
+    if (!state.diagram_cache.snapshot ||
+        state.diagram_cache.snapshot->data.view->inspected_orbital_index!=inspected) {
+        state.diagram_cache.snapshot=std::make_shared<const MODiagramViewSnapshot>(
+            make_mo_diagram_view_snapshot(*state.diagram_cache.data,options,
+                                         inspected,"interactive-canvas"));
+    }
+    actions.drawn_diagram=state.diagram_cache.snapshot;
+    const auto& snapshot=*actions.drawn_diagram;
+    const MODiagramData& data=snapshot.data;
+    const MODiagramOptions& drawn_options=snapshot.options;
+#ifdef COV_ENABLE_VALIDATION
+    cov::validation::record("diagram.snapshot","{\"id\":"+
+        cov::validation::quote(data.view->id)+",\"inspected_orbital_index\":"+
+        (inspected?std::to_string(*inspected):"null")+
+        ",\"selection_anchor\":"+std::to_string(data.view->selection_anchor)+
+        ",\"row_count\":"+std::to_string(data.levels.size())+"}");
+#endif
 
     ImGui::TextDisabled("%s", tr(Text::EnergyDiagram, language));
     const std::string selection_summary=
         localised_diagram_selection_summary(data,language);
     ImGui::TextDisabled("%s",selection_summary.c_str());
     cov::validation::field("selection_summary",selection_summary);
-    ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
-    ImGui::SameLine();
-    if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language), state.energy_axis_mode == EnergyAxisMode::Linear)) {
-        state.energy_axis_mode = EnergyAxisMode::Linear;
-    }
-    cov::validation::item("diagram.linear");
-    ImGui::SameLine();
-    if (ImGui::RadioButton(tr(Text::NonlinearFocus, language), state.energy_axis_mode == EnergyAxisMode::NonlinearFocus)) {
-        state.energy_axis_mode = EnergyAxisMode::NonlinearFocus;
-    }
-    cov::validation::item("diagram.nonlinear");
-    ImGui::SetNextItemWidth(155.0f * ui_scale);
-    ImGui::SliderInt("##diagram_neighbourhood", &state.diagram_neighbourhood, 3, 32, "%d", ImGuiSliderFlags_AlwaysClamp);
-    ImGui::SameLine(); ImGui::TextDisabled("%s", tr(Text::AroundSelected, language));
-    if (ImGui::Checkbox(intermediate_toggle_label(language),
-                        &state.hide_ligand_centred_intermediates)) {
-        // The diagram is rebuilt on the next immediate-mode frame.
-    }
-    cov::validation::item("diagram.compact");
-    if (ImGui::IsItemHovered()) {
-        ImGui::SetTooltip("%s",intermediate_toggle_tooltip(language));
-    }
-
     const float height = 430.0f * ui_scale;
     ImGui::InvisibleButton("##energy_diagram_canvas", ImVec2(-1.0f, height), ImGuiButtonFlags_MouseButtonLeft);
     cov::validation::item("diagram.canvas");
@@ -1089,7 +1109,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                             ImVec2(axis_x + 4.0f * ui_scale, top + 3.0f * ui_scale), IM_COL32(129,148,171,255));
     draw->AddText(ImVec2(p0.x + 7.0f * ui_scale, p0.y + 7.0f * ui_scale),
                   IM_COL32(129,148,171,255),
-                  state.energy_axis_mode == EnergyAxisMode::Linear
+                  drawn_options.energy_axis_mode == EnergyAxisMode::Linear
                     ? tr(Text::LinearEnergyScale, language)
                     : tr(Text::NonlinearEnergyScale, language));
 
@@ -1098,7 +1118,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         const float y = map_energy_y(energy, data.energy_transform, top, bottom);
         draw->AddLine(ImVec2(axis_x - 4.0f * ui_scale, y), ImVec2(axis_x + 4.0f * ui_scale, y),
                       IM_COL32(100,118,140,255), 1.0f);
-        const std::string tick = format_energy(energy, state.energy_unit, 3);
+        const std::string tick = format_energy(energy, drawn_options.energy_unit, 3);
         draw->AddText(ImVec2(axis_x + 6.0f * ui_scale, y - ImGui::GetTextLineHeight() * 0.5f),
                       kNumericColour, tick.c_str());
     }
@@ -1122,9 +1142,8 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     for (std::size_t i = 0; i < data.levels.size(); ++i) {
         const auto& level = data.levels[i];
         const float y = map_energy_y(level.layout_energy_hartree, data.energy_transform, top, bottom);
-        const std::size_t members=level.member_indices.empty()
-            ?std::max<std::size_t>(1u,level.metadata.degeneracy_size)
-            :level.member_indices.size();
+        const auto member_views=mo_diagram_member_views(data,level);
+        const std::size_t members=member_views.size();
         const float member_half=12.0f*ui_scale;
         const float member_spacing=31.0f*ui_scale;
         const float group_half=member_half+
@@ -1137,16 +1156,13 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         for (std::size_t member=0;member<members;++member) {
             const float member_x=x[i]+(static_cast<float>(member)-
                 0.5f*static_cast<float>(members-1u))*member_spacing;
-            const std::size_t member_orbital=member<level.member_indices.size()
-                ?level.member_indices[member]
-                :level.metadata.orbital_index+member;
-            const std::size_t spin_counterpart=
-                member<level.member_spin_counterparts.size()
-                    ?level.member_spin_counterparts[member]
-                    :wavefunction.orbitals.size();
-            const bool counterpart_selected=spin_counterpart==selected_index;
-            const bool member_selected=member_orbital==selected_index ||
-                                       counterpart_selected;
+            const auto& member_view=member_views[member];
+            const std::size_t member_orbital=member_view.orbital_index;
+            const std::size_t spin_counterpart=member_view.spin_counterpart.value_or(
+                wavefunction.orbitals.size());
+            const bool counterpart_selected=member_view.selected &&
+                member_view.inspected_orbital_index==spin_counterpart;
+            const bool member_selected=member_view.selected;
             if (member_selected) {
                 draw->AddLine(ImVec2(member_x-member_half-1.0f*ui_scale,y),
                               ImVec2(member_x+member_half+1.0f*ui_scale,y),
@@ -1155,8 +1171,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
             draw->AddLine(ImVec2(member_x-member_half,y),
                           ImVec2(member_x+member_half,y),colour,
                           member_selected?2.8f:1.8f);
-            const ElectronGlyphs electrons=member<level.member_electrons.size()
-                ?level.member_electrons[member]:level.electrons;
+            const ElectronGlyphs electrons=member_view.electrons;
 #ifdef COV_ENABLE_VALIDATION
             const auto used_mo=counterpart_selected?spin_counterpart:member_orbital;
             cov::validation::hit("diagram.mo."+std::to_string(used_mo),
@@ -1189,7 +1204,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
 
     draw_pi_groups(draw, points, p1, ui_scale);
     draw_ligand_field_pi_interactions(
-        draw,data,points,p1,state.energy_unit,language,ui_scale);
+        draw,data,points,p1,drawn_options.energy_unit,language,ui_scale);
 
     if (ImGui::IsItemHovered()) {
         const ImVec2 mouse = ImGui::GetIO().MousePos;

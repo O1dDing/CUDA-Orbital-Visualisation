@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -319,7 +320,18 @@ struct ElectronicStateDiagramMetadata {
     std::string enrichment_source;
 };
 
+struct MODiagramViewContext {
+    // Correlates one immutable view with its exports; artifact hashes identify
+    // the bytes separately. The selection anchor controls row construction,
+    // while inspection can select a hidden MO or an opposite-spin counterpart.
+    std::string id;
+    std::string origin;
+    std::size_t selection_anchor = 0;
+    std::optional<std::size_t> inspected_orbital_index;
+};
+
 struct MODiagramData {
+    std::optional<MODiagramViewContext> view;
     DiagramPlan plan;
     FrontierOrbitals frontier;
     DiagramSelectionPlan selection;
@@ -355,6 +367,31 @@ struct MODiagramData {
     std::size_t spin_counterpart_unmatched_visible = 0;
 };
 
+struct MODiagramViewSnapshot {
+    const MODiagramData data;
+    const MODiagramOptions options;
+};
+
+struct MODiagramMemberView {
+    std::size_t orbital_index = 0;
+    std::optional<std::size_t> spin_counterpart;
+    ElectronGlyphs electrons;
+    bool selected = false;
+    std::size_t inspected_orbital_index = 0;
+};
+
+[[nodiscard]] MODiagramViewSnapshot make_mo_diagram_view_snapshot(
+    const MODiagramData& data,
+    const MODiagramOptions& options,
+    std::optional<std::size_t> inspected_orbital_index,
+    std::string origin = "explicit-data");
+// A mark always has a real canonical MO identity. A degeneracy count alone
+// cannot manufacture adjacent MO identities or extra electron arrows.
+[[nodiscard]] std::vector<MODiagramMemberView> mo_diagram_member_views(
+    const MODiagramData& data, const MODiagramLevel& level);
+[[nodiscard]] std::optional<std::size_t> mo_diagram_row_for_orbital(
+    const MODiagramData& data, std::size_t orbital_index) noexcept;
+
 [[nodiscard]] const char* annotation_source_name(AnnotationSource source) noexcept;
 [[nodiscard]] const char* bonding_class_name(BondingClass value) noexcept;
 [[nodiscard]] OrbitalAnnotation annotate_orbital(const MolecularOrbital& orbital);
@@ -378,6 +415,11 @@ struct MODiagramExportResult {
     std::string error;
 };
 
+[[nodiscard]] MODiagramExportResult export_mo_diagram_bundle(
+    const MODiagramViewSnapshot& snapshot,
+    const std::filesystem::path& base_path);
+// Explicit computed-export API for noninteractive callers. The live UI must
+// pass its already drawn snapshot through the overload above.
 [[nodiscard]] MODiagramExportResult export_mo_diagram_bundle(
     const Wavefunction& wavefunction,
     const MODiagramOptions& options,

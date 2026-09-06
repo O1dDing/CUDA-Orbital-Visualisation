@@ -13,6 +13,13 @@
     ihdr.push_back(8); ihdr.push_back(6); ihdr.push_back(0);
     ihdr.push_back(0); ihdr.push_back(0);
     append_png_chunk(png, "IHDR", ihdr);
+    if (!view_id.empty()) {
+        const std::string key="cov.view.snapshot";
+        std::vector<std::uint8_t> payload(key.begin(),key.end());
+        payload.push_back(0);
+        payload.insert(payload.end(),view_id.begin(),view_id.end());
+        append_png_chunk(png,"tEXt",payload);
+    }
     append_png_chunk(png, "IDAT", zlib);
     append_png_chunk(png, "IEND", {});
 

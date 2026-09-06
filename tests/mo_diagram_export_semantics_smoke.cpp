@@ -332,7 +332,7 @@ int main() {
     if (csv.find("multicentre_channel_count,multicentre_source_subspace_id,") ==
             std::string::npos ||
         csv.find(",2,mc-source-bridge-pair,4,stable internal test,"
-                 "export semantics fixture,#p test route,fixture.log\n") ==
+                 "export semantics fixture,#p test route,fixture.log,") ==
             std::string::npos) {
         std::cerr << "CSV shared multicentre source metadata missing\n";
         return 6;

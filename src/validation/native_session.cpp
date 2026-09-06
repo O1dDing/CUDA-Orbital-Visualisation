@@ -22,6 +22,7 @@ struct Command { std::string op, id, value; std::vector<float> args; };
 bool enabled = false;
 bool hidden_window = false;
 std::filesystem::path output;
+std::string export_name="actual-export";
 std::vector<Command> commands;
 std::size_t next = 0, frame = 0, generation = 0, rendered_generation = 0;
 std::size_t volume_mo = 0, rendered_mo = 0;
@@ -189,7 +190,11 @@ bool configure(int argc, char** argv) {
         std::istringstream r(line); Command c; r>>c.op;
         if(c.op=="scene") {float x;while(r>>x)c.args.push_back(x);if(c.args.size()!=6)throw std::runtime_error("scene requires opacity yaw pitch distance iso resolution");}
         else { r>>std::quoted(c.id); if(c.op=="text" || volume_command(c)) r>>std::quoted(c.value); }
-        if(c.op!="scene"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait") throw std::runtime_error("unknown plan command");
+        if(c.op!="scene"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name") throw std::runtime_error("unknown plan command");
+        if(c.op=="export-name" && (c.id.empty() || c.id.find_first_not_of(
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")!=std::string::npos)) {
+            throw std::runtime_error("export-name requires a plain artifact name");
+        }
         commands.push_back(c);
     }
     if(std::filesystem::exists(output / "actions.jsonl")) throw std::runtime_error("refusing to overwrite an existing validation run");
@@ -231,6 +236,9 @@ void input_frame() {
     io.AddFocusEvent(true);
     io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
     if(c.op=="scene")return;
+    // Destination naming alone; the following real button click still owns
+    // the production export. Existing COV_VALIDATION 1 plans keep the default.
+    if(c.op=="export-name") {export_name=c.id;complete_command=true;return;}
     if(volume_command(c)) {++stage;return;}
     if(c.op=="capture" || c.op=="wait") { if(++stage>=4) complete_command=true;return; }
     if(c.op=="key") {
@@ -329,13 +337,19 @@ void record(const std::string& kind,const std::string& json) {
                    (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {
         if(kind=="diagram.cache")++diagram_generation;
         events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";events.flush();
+        if(kind=="export.actual") {
+            events<<"{\"frame\":"<<frame<<",\"kind\":\"export.frame-trace\",\"data\":[";
+            bool first=true;
+            for(const auto& entry:trace){if(!first)events<<',';first=false;events<<entry;}
+            events<<"]}\n";events.flush();
+        }
     }
 }
 void field(const std::string& label,const std::string& value) {
     if(enabled)record("draw.text","{\"label\":"+quote(label)+",\"value\":"+quote(value)+"}");
 }
 std::filesystem::path export_base(const std::filesystem::path& original) {
-    return enabled?output/"actual-export":original;
+    return enabled?output/export_name:original;
 }
 void end_frame(int width,int height,std::size_t applied,const ui::OrbitalUIState& ui,const Wavefunction* wf) {
     if(!enabled)return;

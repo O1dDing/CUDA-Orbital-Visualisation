@@ -73,6 +73,7 @@ add_library(cov_orbitals
     src/orbitals/coordination_geometry.cpp
     src/orbitals/ligand_field.cpp
     src/orbitals/mo_diagram_v2.cpp
+    src/orbitals/mo_diagram_snapshot.cpp
     src/orbitals/mo_diagram_chemistry.cpp
     src/orbitals/annotation_source_dispatch.cpp
 )
@@ -449,6 +450,10 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_mo_diagram_export_semantics_smoke PRIVATE cov_orbitals)
     add_test(NAME mo_diagram_export_semantics_smoke
         COMMAND cov_mo_diagram_export_semantics_smoke)
+
+    add_executable(cov_mo_diagram_snapshot_smoke tests/mo_diagram_snapshot_smoke.cpp)
+    target_link_libraries(cov_mo_diagram_snapshot_smoke PRIVATE cov_ui)
+    add_test(NAME mo_diagram_snapshot_smoke COMMAND cov_mo_diagram_snapshot_smoke)
 
     add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
     target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule cov_parser)

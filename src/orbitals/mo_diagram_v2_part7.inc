@@ -96,14 +96,18 @@ bool write_mo_diagram_png(const MODiagramData& data,
         if (level.metadata.region == OrbitalRegion::Virtual) { r = 119; g = 132; b = 150; }
         if (level.homo) { r = 19; g = 138; b = 98; }
         if (level.lumo) { r = 181; g = 106; b = 0; }
-        if (level.metadata.selected) { r = 40; g = 109; b = 224; }
-
-        const int x0 = static_cast<int>(std::lround(item.x - 45.0));
-        const int x1 = static_cast<int>(std::lround(item.x + 45.0));
         const int y = static_cast<int>(std::lround(item.y));
-        canvas.line(x0, y, x1, y, r, g, b, level.metadata.selected ? 4 : 2);
-        if (level.electrons.alpha > 0) draw_electron(canvas, static_cast<int>(item.x) - 10, y - 2, true);
-        if (level.electrons.beta > 0) draw_electron(canvas, static_cast<int>(item.x) + 10, y - 2, false);
+        const auto members=mo_diagram_member_views(data,level);
+        for (std::size_t member_index=0;member_index<members.size();++member_index) {
+            const auto& member=members[member_index];
+            const int x=static_cast<int>(std::lround(item.x+
+                (static_cast<double>(member_index)-
+                 0.5*static_cast<double>(members.size()-1))*31.0));
+            canvas.line(x-12,y,x+12,y,member.selected?40:r,
+                member.selected?109:g,member.selected?224:b,member.selected?4:2);
+            if (member.electrons.alpha>0) draw_electron(canvas,x-5,y-2,true);
+            if (member.electrons.beta>0) draw_electron(canvas,x+5,y-2,false);
+        }
 
         // Human-facing export: orbital type directly below each level; MO
         // identifiers intentionally stay out of the figure. Collapse the
@@ -139,5 +143,5 @@ bool write_mo_diagram_png(const MODiagramData& data,
     draw_text(canvas, 36, height - 32,
               "FIGURE LABELS: ORBITAL TYPE / BONDING CLASS; MO NUMBERS ARE IN HOVER + JSON/CSV",
               113, 126, 144, 1);
-    return write_png_rgba(canvas, path, error);
+    return write_png_rgba(canvas,path,error,data.view?data.view->id:std::string{});
 }

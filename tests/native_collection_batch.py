@@ -103,16 +103,25 @@ def make_plan(production):
                 command('text','browser.search',f'{i+1} '),command('click',f'browser.mo.{i}'),
                 'text "browser.search" ""','click "browser.filter"','key "Home"','key "Enter"','seek "panel.diagram"']
 
+    export_names=[]
+    def export_view(name):
+        export_names.append(name)
+        return [command('export-name',name),'click "diagram.export"',
+                'hover "scene.viewport"',command('capture',name+'-state')]
+
     plan += select_browser(primary[0] if primary else selected)
+    plan += export_view('export-compact-first')
     for i in primary:
         plan += [command('click',f'diagram.mo.{i}'),command('hover',f'diagram.mo.{i}'),
                  command('capture',f'member-{i+1:04}-tooltip'),'hover "scene.viewport"',command('capture',f'member-{i+1:04}-surface')]
+    plan += export_view('export-compact-last')
     # The current product only exposes a merged beta member after browser
     # selection. Record that real path, without changing diagram hit targets.
     for i in counterparts:
         plan += select_browser(i)
         plan += [command('click',f'diagram.mo.{i}'),command('hover',f'diagram.mo.{i}'),
                  command('capture',f'counterpart-{i+1:04}-tooltip'),'hover "scene.viewport"',command('capture',f'counterpart-{i+1:04}-surface')]
+    if counterparts: plan += export_view('export-beta-counterpart')
     plan += select_browser(selected)
     plan += ['hover "scene.viewport"','capture "compact"']
     if primary:
@@ -127,12 +136,25 @@ def make_plan(production):
              'seek "panel.diagram"','hover "scene.viewport"','capture "electron-volts"',
              'seek "panel.browser"','click "browser.unit"','key "Home"','key "Enter"',
              'seek "panel.diagram"','click "diagram.export"','hover "scene.viewport"','capture "export-state"']
+    # Each state is still reached through the same controls. Preserve its
+    # bundle before continuing, instead of overwriting the previous evidence.
+    expanded=[]
+    for command_line in plan:
+        if command_line=='click "diagram.export"' and expanded and expanded[-1]=='seek "panel.diagram"':
+            expanded.append(command('export-name','actual-export'))
+            export_names.append('actual-export')
+        expanded.append(command_line)
+        for capture_name in ('expanded','restored','linear','electron-volts'):
+            if command_line==command('capture',capture_name):
+                expanded += export_view('export-'+capture_name)
+    plan=expanded
     for language in range(1,4):
         plan += ['click "language"','key "Home"']+['key "Down"']*language+['key "Enter"','hover "scene.viewport"',command('capture',f'language-{language}')]
     plan += ['click "language"','key "Home"','key "Enter"','hover "scene.viewport"','capture "language-0"',
              scene(0.92,iso=0.02),'capture "iso-002"',scene(0.92,iso=0.04),'capture "iso-004"',scene(0.92),
              'hover "scene.viewport"','capture "final"']
     expected=dict(mos=len(orbitals),primary_members=primary,spin_counterparts=counterparts,
+                  export_names=export_names,
                   captures=[json.loads(x[len('capture '):]) for x in plan if x.startswith('capture ')],
                   source_selection_for_controls=primary[0] if primary else selected)
     return '\n'.join(plan)+'\n', expected
@@ -239,9 +261,10 @@ def collect_one(args, manifest, record):
                 wanted=int(capture.split('-')[1])-1;actual=shot['state']['applied_mo']
                 selected.append(dict(capture=capture,requested_mo=wanted,observed_mo=actual))
                 if wanted!=actual:invalid.append(f'{capture}: selected {actual}, requested {wanted}')
-        for suffix in ('png','svg','json','csv'):
-            path=native_dir/('actual-export.mo.'+suffix)
-            if not path.exists() or path.stat().st_size==0:missing.append(path.name)
+        for export_name in expected.get('export_names',['actual-export']):
+            for suffix in ('png','svg','json','csv'):
+                path=native_dir/(export_name+'.mo.'+suffix)
+                if not path.exists() or path.stat().st_size==0:missing.append(path.name)
         failed_actions=[]
         if (native_dir/'actions.jsonl').exists():
             failed_actions=[x for x in (json.loads(line) for line in (native_dir/'actions.jsonl').read_text(encoding='utf-8').splitlines()) if x['status']!='executed']

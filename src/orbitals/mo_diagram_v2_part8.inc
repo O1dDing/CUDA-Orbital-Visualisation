@@ -63,7 +63,7 @@ void write_json_pi_channels(
             if (atom) out << ',';
             out << channel.atoms[atom];
         }
-        out << "],\"direction\":[" << std::setprecision(14)
+        out << "],\"direction\":[" << std::setprecision(17)
             << channel.direction[0] << ',' << channel.direction[1] << ','
             << channel.direction[2] << "],\"coherence\":"
             << channel.coherence << ",\"cyclic\":"
@@ -83,7 +83,7 @@ std::string csv_index_list(const std::vector<std::size_t>& values) {
 
 std::string csv_pi_interaction_summary(const MODiagramData& data) {
     std::ostringstream out;
-    out << std::setprecision(14);
+    out << std::setprecision(17);
     for (std::size_t i = 0; i < data.pi_interactions.size(); ++i) {
         if (i) out << " || ";
         const auto& interaction = data.pi_interactions[i];
@@ -105,7 +105,7 @@ std::string csv_pi_interaction_summary(const MODiagramData& data) {
 std::string csv_pi_channel_summary(const DelocalisedPiDescriptor& descriptor) {
     if (!descriptor.topology_available) return {};
     std::ostringstream out;
-    out << std::setprecision(14);
+    out << std::setprecision(17);
     for (std::size_t index=0;index<descriptor.orientation_channel_details.size();++index) {
         if (index) out << " || ";
         const auto& channel=descriptor.orientation_channel_details[index];
@@ -124,7 +124,7 @@ std::string csv_pi_channel_summary(const DelocalisedPiDescriptor& descriptor) {
 
 std::string csv_local_geometry_summary(const MODiagramData& data) {
     std::ostringstream out;
-    out << std::setprecision(14);
+    out << std::setprecision(17);
     for (std::size_t index=0;index<data.local_geometries.size();++index) {
         if (index) out << " || ";
         const auto& geometry=data.local_geometries[index];
@@ -143,7 +143,7 @@ std::string csv_local_geometry_summary(const MODiagramData& data) {
 
 std::string csv_real_list(const std::vector<double>& values) {
     std::ostringstream out;
-    out << std::setprecision(14);
+    out << std::setprecision(17);
     for (std::size_t index=0;index<values.size();++index) {
         if (index) out << ';';
         out << values[index];
@@ -163,10 +163,20 @@ bool write_mo_diagram_json(const MODiagramData& data,
         return false;
     }
 
-    std::set<std::size_t> included(data.selection.included_indices.begin(),
-                                   data.selection.included_indices.end());
     out << "{\n";
     out << "  \"schema\": \"cov.mo-diagram.v2\",\n";
+    out << "  \"view_snapshot\": ";
+    if (!data.view) out << "null";
+    else {
+        out << "{\"id\":\"" << json_escape(data.view->id)
+            << "\",\"origin\":\"" << json_escape(data.view->origin)
+            << "\",\"selection_anchor\":" << data.view->selection_anchor
+            << ",\"inspected_orbital_index\":";
+        if (data.view->inspected_orbital_index) out << *data.view->inspected_orbital_index;
+        else out << "null";
+        out << '}';
+    }
+    out << ",\n";
     out << "  \"mode\": \"" << mo_diagram_mode_name(data.mode) << "\",\n";
     out << "  \"strict_salc_claimed\": false,\n";
     out << "  \"energy_unit\": \"" << json_escape(energy_unit_symbol(options.energy_unit)) << "\",\n";
@@ -225,10 +235,10 @@ bool write_mo_diagram_json(const MODiagramData& data,
         << json_escape(state.stability_detail) << "\",\n";
     out << "    \"spin_squared_before_annihilation\": ";
     if (state.spin_squared_provenance==DataProvenance::Unavailable) out << "null";
-    else out << std::setprecision(14) << state.spin_squared_before;
+    else out << std::setprecision(17) << state.spin_squared_before;
     out << ",\n    \"spin_squared_after_annihilation\": ";
     if (state.spin_squared_provenance==DataProvenance::Unavailable) out << "null";
-    else out << std::setprecision(14) << state.spin_squared_after;
+    else out << std::setprecision(17) << state.spin_squared_after;
     out << ",\n    \"spin_squared_provenance\": \""
         << data_provenance_name(state.spin_squared_provenance) << "\",\n";
     out << "    \"atomic_partial_charge_scheme\": \""
@@ -242,7 +252,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << '[';
         for (std::size_t index=0;index<state.atomic_partial_charges.size();++index) {
             if (index) out << ',';
-            out << std::setprecision(14) << state.atomic_partial_charges[index];
+            out << std::setprecision(17) << state.atomic_partial_charges[index];
         }
         out << ']';
     }
@@ -277,7 +287,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
     out << "    \"ligand_atom_indices\": ";
     write_json_index_array(out, data.ligand_field_ligand_atoms);
     out << ",\n";
-    out << "    \"confidence\": " << std::setprecision(14)
+    out << "    \"confidence\": " << std::setprecision(17)
         << data.ligand_field_confidence << ",\n";
     out << "    \"angular_rms\": " << data.ligand_field_angular_rms << ",\n";
     out << "    \"shape_measure\": " << data.ligand_field_shape_measure << ",\n";
@@ -292,7 +302,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
             << "\",\"point_group\":\"" << json_escape(geometry.point_group)
             << "\",\"neighbour_atom_indices\":";
         write_json_index_array(out,geometry.neighbour_atoms);
-        out << ",\"confidence\":" << std::setprecision(14)
+        out << ",\"confidence\":" << std::setprecision(17)
             << geometry.confidence << ",\"angular_rms\":"
             << geometry.angular_rms << ",\"shape_measure\":"
             << geometry.shape_measure << ",\"radial_cv\":"
@@ -319,7 +329,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << "      \"upper_orbitals\": ";
         write_json_index_array(out, interaction.upper_orbitals);
         out << ",\n";
-        out << "      \"splitting_hartree\": " << std::setprecision(14)
+        out << "      \"splitting_hartree\": " << std::setprecision(17)
             << interaction.splitting_hartree << ",\n";
         out << "      \"splitting_display\": "
             << convert_hartree(interaction.splitting_hartree, options.energy_unit)
@@ -348,7 +358,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
         write_json_index_array(out,pi.atom_indices);
         out << ",\"orbital_indices\":";
         write_json_index_array(out,pi.orbital_indices);
-        out << ",\"electron_count\":" << std::setprecision(14)
+        out << ",\"electron_count\":" << std::setprecision(17)
             << pi.participating_electrons
             << ",\"topology_available\":"
             << (pi.topology_available ? "true" : "false")
@@ -377,7 +387,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
     for (std::size_t i = 0; i < data.levels.size(); ++i) {
         const auto& level = data.levels[i];
         out << "    {\"row_index\":" << i
-            << ",\"layout_energy_hartree\":" << std::setprecision(14)
+            << ",\"layout_energy_hartree\":" << std::setprecision(17)
             << level.layout_energy_hartree
             << ",\"symmetry\":\"" << json_escape(level.metadata.symmetry)
             << "\",\"member_orbitals\":";
@@ -386,6 +396,38 @@ bool write_mo_diagram_json(const MODiagramData& data,
         } else {
             write_json_index_array(out, level.member_indices);
         }
+        const auto members=mo_diagram_member_views(data,level);
+        out << ",\"representative_metadata_index\":" << level.metadata.orbital_index
+            << ",\"layout_energy_meaning\":\"row-layout-value-not-an-individual-MO-energy\""
+            << ",\"energy_spread_hartree\":" << level.energy_spread_hartree
+            << ",\"total_occupation\":" << level.total_occupation
+            << ",\"members\":[";
+        std::optional<double> minimum_energy,maximum_energy;
+        for (std::size_t member_index=0;member_index<members.size();++member_index) {
+            if (member_index) out << ',';
+            const auto& member=members[member_index];
+            out << "{\"orbital_index\":" << member.orbital_index
+                << ",\"spin_counterpart\":";
+            if (member.spin_counterpart) out << *member.spin_counterpart;
+            else out << "null";
+            out << ",\"inspected_orbital_index\":" << member.inspected_orbital_index
+                << ",\"selected\":" << (member.selected?"true":"false")
+                << ",\"alpha_arrows\":" << member.electrons.alpha
+                << ",\"beta_arrows\":" << member.electrons.beta << '}';
+            for (const auto& raw:data.metadata) {
+                if (raw.orbital_index!=member.orbital_index &&
+                    member.spin_counterpart!=raw.orbital_index) continue;
+                if (!std::isfinite(raw.energy_hartree)) continue;
+                minimum_energy=minimum_energy?std::min(*minimum_energy,raw.energy_hartree):raw.energy_hartree;
+                maximum_energy=maximum_energy?std::max(*maximum_energy,raw.energy_hartree):raw.energy_hartree;
+            }
+        }
+        out << "],\"all_members_energy_min_hartree\":";
+        if (minimum_energy) out << *minimum_energy;
+        else out << "null";
+        out << ",\"all_members_energy_max_hartree\":";
+        if (maximum_energy) out << *maximum_energy;
+        else out << "null";
         out << '}' << (i + 1 < data.levels.size() ? "," : "") << "\n";
     }
     out << "  ],\n";
@@ -393,28 +435,35 @@ bool write_mo_diagram_json(const MODiagramData& data,
 
     bool first = true;
     for (std::size_t i = 0; i < data.metadata.size(); ++i) {
-        if (!options.include_hidden_in_metadata && !included.count(i)) continue;
+        const auto row=mo_diagram_row_for_orbital(data,i);
+        const bool inspected=data.view && data.view->inspected_orbital_index==i;
+        if (!options.include_hidden_in_metadata && !row && !inspected) continue;
         if (!first) out << ",\n";
         first = false;
         const auto& item = data.metadata[i];
         const auto& annotation = i < data.annotations.size() ? data.annotations[i] : OrbitalAnnotation{};
         const double coordinate = energy_display_coordinate(
-            group_layout_energy(data.metadata, i), data.energy_transform);
+            row?data.levels[*row].layout_energy_hartree:data.metadata[i].energy_hartree,
+            data.energy_transform);
         out << "    {\n";
         out << "      \"index\": " << item.orbital_index << ",\n";
         out << "      \"raw_mo\": " << item.raw_mo_number << ",\n";
         out << "      \"label\": \"" << json_escape(item.display_label) << "\",\n";
-        out << "      \"energy_hartree\": " << std::setprecision(14) << item.energy_hartree << ",\n";
+        out << "      \"energy_hartree\": " << std::setprecision(17) << item.energy_hartree << ",\n";
         out << "      \"source_energy_hartree\": " << item.energy_hartree << ",\n";
         out << "      \"energy_display\": " << convert_hartree(item.energy_hartree, options.energy_unit) << ",\n";
         out << "      \"display_coordinate\": " << coordinate << ",\n";
+        out << "      \"diagram_row_index\": ";
+        if (row) out << *row;
+        else out << "null";
+        out << ",\n      \"coordinate_scope\": \"" << (row?"row-layout":"unplotted-energy-map") << "\",\n";
         out << "      \"occupation\": " << item.occupation << ",\n";
         out << "      \"spin\": \"" << spin_name(item.spin) << "\",\n";
         out << "      \"symmetry\": \"" << json_escape(item.symmetry) << "\",\n";
         out << "      \"symmetry_display\": \"" << json_escape(format_symmetry_unicode(item.symmetry)) << "\",\n";
         out << "      \"degeneracy_size\": " << item.degeneracy_size << ",\n";
         out << "      \"region\": \"" << region_name(item.region) << "\",\n";
-        out << "      \"included_in_diagram\": " << (included.count(i) ? "true" : "false") << ",\n";
+        out << "      \"included_in_diagram\": " << (row ? "true" : "false") << ",\n";
         out << "      \"visible\": " << (item.visible ? "true" : "false") << ",\n";
         out << "      \"selected\": " << (item.selected ? "true" : "false") << ",\n";
         out << "      \"orbital_family\": \"" << json_escape(annotation.family) << "\",\n";
@@ -493,8 +542,6 @@ bool write_mo_diagram_csv(const MODiagramData& data,
         if (error) *error = "Unable to open CSV output path";
         return false;
     }
-    std::set<std::size_t> included(data.selection.included_indices.begin(),
-                                   data.selection.included_indices.end());
     out << "diagram_mode,index,raw_mo,label,energy_hartree,energy_display,energy_unit,display_coordinate,"
            "energy_axis_mode,transform_name,symmetry,symmetry_display,occupation,spin,"
            "degeneracy_size,region,included_in_diagram,visible,selected,orbital_family,"
@@ -518,27 +565,32 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "atomic_partial_charge_provenance,atomic_partial_charges,point_group_detected,"
            "point_group_used,point_group_provenance,point_group_detected_provenance,point_group_used_provenance,multicentre_channel_count,"
            "multicentre_source_subspace_id,multicentre_source_subspace_electron_count,"
-           "stability_detail,source_title,source_route,enrichment_source\n";
+           "stability_detail,source_title,source_route,enrichment_source,"
+           "view_snapshot_id,view_origin,view_selection_anchor,view_inspected_orbital_index,"
+           "diagram_row_index,coordinate_scope,row_member_orbitals,row_spin_counterparts\n";
     const std::string ligand_atoms = csv_index_list(data.ligand_field_ligand_atoms);
     const std::string pi_interactions = csv_pi_interaction_summary(data);
     const std::string local_geometries = csv_local_geometry_summary(data);
     const auto& state=data.electronic_state;
     for (std::size_t i = 0; i < data.metadata.size(); ++i) {
-        if (!options.include_hidden_in_metadata && !included.count(i)) continue;
+        const auto row=mo_diagram_row_for_orbital(data,i);
+        const bool inspected=data.view && data.view->inspected_orbital_index==i;
+        if (!options.include_hidden_in_metadata && !row && !inspected) continue;
         const auto& item = data.metadata[i];
         const auto& annotation = i < data.annotations.size() ? data.annotations[i] : OrbitalAnnotation{};
         const double coordinate = energy_display_coordinate(
-            group_layout_energy(data.metadata, i), data.energy_transform);
+            row?data.levels[*row].layout_energy_hartree:data.metadata[i].energy_hartree,
+            data.energy_transform);
         out << mo_diagram_mode_name(data.mode) << ','
             << item.orbital_index << ',' << item.raw_mo_number << ','
-            << csv_escape(item.display_label) << ',' << std::setprecision(14) << item.energy_hartree << ','
+            << csv_escape(item.display_label) << ',' << std::setprecision(17) << item.energy_hartree << ','
             << convert_hartree(item.energy_hartree, options.energy_unit) << ','
             << csv_escape(energy_unit_symbol(options.energy_unit)) << ',' << coordinate << ','
             << energy_axis_mode_name(options.energy_axis_mode) << ','
             << energy_transform_name(options.energy_axis_mode) << ','
             << csv_escape(item.symmetry) << ',' << csv_escape(format_symmetry_unicode(item.symmetry)) << ','
             << item.occupation << ',' << spin_name(item.spin) << ',' << item.degeneracy_size << ','
-            << region_name(item.region) << ',' << (included.count(i) ? 1 : 0) << ','
+            << region_name(item.region) << ',' << (row ? 1 : 0) << ','
             << (item.visible ? 1 : 0) << ',' << (item.selected ? 1 : 0) << ','
             << csv_escape(annotation.family) << ',' << annotation_source_name(annotation.family_source) << ','
             << annotation.family_confidence << ',' << machine_bonding_class(annotation.bonding_class) << ','
@@ -625,7 +677,24 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             << csv_escape(state.stability_detail) << ','
             << csv_escape(state.source_title) << ','
             << csv_escape(state.source_route) << ','
-            << csv_escape(state.enrichment_source) << '\n';
+            << csv_escape(state.enrichment_source) << ',';
+        if (data.view) {
+            out << csv_escape(data.view->id) << ',' << csv_escape(data.view->origin)
+                << ',' << data.view->selection_anchor << ',';
+            if (data.view->inspected_orbital_index) out << *data.view->inspected_orbital_index;
+        } else out << ",,,";
+        out << ',';
+        if (row) out << *row;
+        out << ',' << (row?"row-layout":"unplotted-energy-map") << ',';
+        if (row) {
+            std::vector<std::size_t> primary,counterparts;
+            for (const auto& member:mo_diagram_member_views(data,data.levels[*row])) {
+                primary.push_back(member.orbital_index);
+                if (member.spin_counterpart) counterparts.push_back(*member.spin_counterpart);
+            }
+            out << csv_escape(csv_index_list(primary)) << ',' << csv_escape(csv_index_list(counterparts));
+        } else out << ',';
+        out << '\n';
     }
     if (!out) {
         if (error) *error = "Failed while writing CSV";
@@ -634,15 +703,15 @@ bool write_mo_diagram_csv(const MODiagramData& data,
     return true;
 }
 
-MODiagramExportResult export_mo_diagram_bundle(const Wavefunction& wavefunction,
-                                               const MODiagramOptions& options,
+MODiagramExportResult export_mo_diagram_bundle(const MODiagramViewSnapshot& snapshot,
                                                const std::filesystem::path& base_path) {
     static std::mutex bundle_mutex;
     static std::atomic<std::uint64_t> generation{0u};
     const std::lock_guard lock(bundle_mutex);
 
     MODiagramExportResult result;
-    const MODiagramData data = build_mo_diagram_data(wavefunction, options);
+    const MODiagramData& data=snapshot.data;
+    const MODiagramOptions& options=snapshot.options;
     std::filesystem::path normalised_base=base_path;
     if (normalised_base.has_extension()) normalised_base.replace_extension();
     result.svg_path=normalised_base.string()+".mo.svg";
@@ -731,6 +800,14 @@ MODiagramExportResult export_mo_diagram_bundle(const Wavefunction& wavefunction,
     }
     result.svg=result.png=result.json=result.csv=true;
     return result;
+}
+
+MODiagramExportResult export_mo_diagram_bundle(const Wavefunction& wavefunction,
+                                               const MODiagramOptions& options,
+                                               const std::filesystem::path& base_path) {
+    const auto data=build_mo_diagram_data(wavefunction,options);
+    return export_mo_diagram_bundle(make_mo_diagram_view_snapshot(
+        data,options,options.selected_index,"computed-export"),base_path);
 }
 
 } // namespace cov

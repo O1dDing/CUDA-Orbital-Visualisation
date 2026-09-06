@@ -682,29 +682,20 @@ int main(int argc, char** argv) {
             if (diagram_actions.select_orbital) pending_mo_index = diagram_actions.select_orbital;
             const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
             if (export_requested && wavefunction) {
-                cov::MODiagramOptions options;
-                options.mode=cov::preferred_compact_mo_diagram_mode(
-                    *wavefunction,orbital_ui.hide_ligand_centred_intermediates);
-                options.energy_unit = orbital_ui.energy_unit;
-                options.energy_axis_mode = orbital_ui.energy_axis_mode;
-                options.degeneracy = orbital_ui.degeneracy;
-                options.filter = orbital_ui.filter;
-                options.selected_index = orbital_ui.hide_ligand_centred_intermediates
-                    ?wavefunction->orbitals.size():mo_index;
-                options.neighbourhood = static_cast<std::size_t>(
-                    std::max(3, orbital_ui.diagram_neighbourhood));
-                options.hide_ligand_centred_intermediates=
-                    orbital_ui.hide_ligand_centred_intermediates;
-                options.nonlinear_minimum_gap_weight=0.055;
                 std::filesystem::path base = current_file.empty()
                                                  ? std::filesystem::current_path() / "mo_diagram"
                                                  : current_file;
                 base = cov::validation::export_base(base);
-                const auto result = cov::export_mo_diagram_bundle(*wavefunction, options, base);
+                const auto snapshot=diagram_actions.drawn_diagram;
+                cov::MODiagramExportResult result;
+                if (snapshot) result=cov::export_mo_diagram_bundle(*snapshot,base);
+                else result.error="No current diagram view is available for export";
 #ifdef COV_ENABLE_VALIDATION
                 cov::validation::record("export.actual","{\"base\":"+cov::validation::quote(path_to_utf8(base))+
-                    ",\"mode\":"+std::to_string(static_cast<int>(options.mode))+
-                    ",\"selected_index\":"+std::to_string(options.selected_index)+
+                    ",\"snapshot_id\":"+(snapshot?cov::validation::quote(snapshot->data.view->id):"null")+
+                    ",\"mode\":"+(snapshot?std::to_string(static_cast<int>(snapshot->data.mode)):"null")+
+                    ",\"selected_index\":"+(snapshot && snapshot->data.view->inspected_orbital_index
+                        ?std::to_string(*snapshot->data.view->inspected_orbital_index):"null")+
                     ",\"success\":"+((result.svg&&result.png&&result.json&&result.csv)?"true":"false")+"}");
 #endif
                 if (result.svg && result.png && result.json && result.csv) {

@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -19,6 +20,7 @@ struct OrbitalUIDiagramCache {
     std::size_t orbital_count = 0;
     std::optional<MODiagramOptions> options;
     std::optional<MODiagramData> data;
+    std::shared_ptr<const MODiagramViewSnapshot> snapshot;
 };
 
 struct OrbitalUIBrowserCache {
@@ -48,6 +50,7 @@ struct OrbitalUIState {
 struct OrbitalUIActions {
     std::optional<std::size_t> select_orbital;
     bool export_diagram = false;
+    std::shared_ptr<const MODiagramViewSnapshot> drawn_diagram;
 };
 
 void draw_orbital_browser(const Wavefunction& wavefunction,
