@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 9256,
+        "MolecularFormula": "C3H3NS",
+        "ConnectivitySMILES": "C1=CSC=N1",
+        "InChIKey": "FZWLAAWBMGSTSO-UHFFFAOYSA-N",
+        "IUPACName": "1,3-thiazole",
+        "Charge": 0
+      }
+    ]
+  }
+}

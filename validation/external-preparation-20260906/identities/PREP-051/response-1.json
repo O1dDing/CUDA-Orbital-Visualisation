@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 5702198,
+        "MolecularFormula": "Cl2H6N2Pt",
+        "ConnectivitySMILES": "N.N.Cl[Pt]Cl",
+        "InChIKey": "LXZZYRPGZAFOLE-UHFFFAOYSA-L",
+        "IUPACName": "azane;dichloroplatinum",
+        "Charge": 0
+      }
+    ]
+  }
+}

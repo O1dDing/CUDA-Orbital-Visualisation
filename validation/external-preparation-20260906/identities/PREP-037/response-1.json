@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 7095,
+        "MolecularFormula": "C12H10",
+        "ConnectivitySMILES": "C1=CC=C(C=C1)C2=CC=CC=C2",
+        "InChIKey": "ZUOUZKKEUPVFJK-UHFFFAOYSA-N",
+        "IUPACName": "1,1'-biphenyl",
+        "Charge": 0
+      }
+    ]
+  }
+}

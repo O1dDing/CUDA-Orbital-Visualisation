@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 23984,
+        "MolecularFormula": "GeH4",
+        "ConnectivitySMILES": "[GeH4]",
+        "InChIKey": "QUZPNFFHZPRKJD-UHFFFAOYSA-N",
+        "IUPACName": "germane",
+        "Charge": 0
+      }
+    ]
+  }
+}

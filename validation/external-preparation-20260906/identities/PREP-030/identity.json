@@ -1,0 +1,46 @@
+{
+  "candidate_id": "PREP-030",
+  "query": "cubane",
+  "expected_formula": "C8H8",
+  "expected_charge": 0,
+  "family": "笼状分子",
+  "purpose": "高对称 σ 骨架及 COT 图去重",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [
+    "OLD-100",
+    "OLD-101"
+  ],
+  "lookup_epoch": 1788709681.5320058,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 136090,
+      "MolecularFormula": "C8H8",
+      "ConnectivitySMILES": "C12C3C4C1C5C2C3C45",
+      "InChIKey": "TXWRERCHRDBNLG-UHFFFAOYSA-N",
+      "IUPACName": "cubane",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/136090"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709681.5320058,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-030\\response-1.json",
+      "sha256": "5e656cd5ea0387c7a16c2bf156f792f352afc8ea7dfc15e45fda63c17e2a673f",
+      "bytes": 284,
+      "elapsed_seconds": 4.895715236663818
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/cubane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

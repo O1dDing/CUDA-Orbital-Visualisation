@@ -1,0 +1,6 @@
+{
+  "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/WTFNSXYULBQCQV-UHFFFAOYSA-N/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON",
+  "source_for_identifier": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+  "sha256": "b357f069d180be086cdb8d5ee39d7c9bb532dacd45c1fa9adde36545c2d55403",
+  "epoch": 1788709970.314642
+}

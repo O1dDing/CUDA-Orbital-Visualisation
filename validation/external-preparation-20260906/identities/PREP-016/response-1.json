@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 17601,
+        "MolecularFormula": "ClNO",
+        "ConnectivitySMILES": "N(=O)Cl",
+        "InChIKey": "VPCDQGACGWYTMC-UHFFFAOYSA-N",
+        "IUPACName": "nitrosyl chloride",
+        "Charge": 0
+      }
+    ]
+  }
+}

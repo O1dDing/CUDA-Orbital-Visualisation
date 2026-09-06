@@ -1,0 +1,13 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 123144,
+        "MolecularFormula": "CH3O2",
+        "ConnectivitySMILES": "CO[O]",
+        "InChIKey": "WTFNSXYULBQCQV-UHFFFAOYSA-N",
+        "Charge": 0
+      }
+    ]
+  }
+}

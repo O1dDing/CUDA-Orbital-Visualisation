@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 136090,
+        "MolecularFormula": "C8H8",
+        "ConnectivitySMILES": "C12C3C4C1C5C2C3C45",
+        "InChIKey": "TXWRERCHRDBNLG-UHFFFAOYSA-N",
+        "IUPACName": "cubane",
+        "Charge": 0
+      }
+    ]
+  }
+}

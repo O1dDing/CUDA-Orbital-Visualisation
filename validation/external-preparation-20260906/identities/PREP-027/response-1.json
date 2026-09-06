@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 7221,
+        "MolecularFormula": "C8H6S",
+        "ConnectivitySMILES": "C1=CC=C2C(=C1)C=CS2",
+        "InChIKey": "FCEHBMOGCRZNNI-UHFFFAOYSA-N",
+        "IUPACName": "1-benzothiophene",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-032",
+  "query": "bicyclo[1.1.1]pentane",
+  "expected_formula": "C5H8",
+  "expected_charge": 0,
+  "family": "桥环",
+  "purpose": "桥联骨架与非螺反例",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709688.5712848,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 136153,
+      "MolecularFormula": "C5H8",
+      "ConnectivitySMILES": "C1C2CC1C2",
+      "InChIKey": "MKCBRYIXFFGIKN-UHFFFAOYSA-N",
+      "IUPACName": "bicyclo[1.1.1]pentane",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/136153"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709688.5712848,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-032\\response-1.json",
+      "sha256": "1a782240961157afe8da582c1ec749bf2d5a6683fdc8161e164029b08e052485",
+      "bytes": 290,
+      "elapsed_seconds": 1.265427589416504
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/bicyclo%5B1.1.1%5Dpentane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

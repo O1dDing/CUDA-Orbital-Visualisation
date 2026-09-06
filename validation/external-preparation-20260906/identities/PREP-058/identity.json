@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-058",
+  "query": "nitroprusside ion",
+  "expected_formula": "C5FeN6O",
+  "expected_charge": -2,
+  "family": "混合配体金属",
+  "purpose": "NO/CN 非无辜配体",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709748.9774492,
+  "lookup_status": "ambiguous-or-mismatched-metadata",
+  "identity_candidates": [
+    {
+      "CID": 166638194,
+      "MolecularFormula": "C5HFeN6O",
+      "ConnectivitySMILES": "[C-]#N.[C-]#N.[C-]#N.[C-]#N.[C-]#N.N=O.[Fe+5]",
+      "InChIKey": "SJCKVGOQDNJZFE-UHFFFAOYSA-N",
+      "IUPACName": "iron(5+);nitroxyl;pentacyanide",
+      "Charge": 0,
+      "formula_matches_request": false,
+      "charge_matches_request": false,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/166638194"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709748.9774492,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-058\\response-1.json",
+      "sha256": "e7c850ae34185209a7442e32aa1a11fcd840f4875dcd909298d02e61ba02067f",
+      "bytes": 342,
+      "elapsed_seconds": 2.021709680557251
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/nitroprusside%20ion/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

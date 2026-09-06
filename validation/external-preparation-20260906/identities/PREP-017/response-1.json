@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24386,
+        "MolecularFormula": "Cl2OS",
+        "ConnectivitySMILES": "O=S(Cl)Cl",
+        "InChIKey": "FYSNRJHAOHDILO-UHFFFAOYSA-N",
+        "IUPACName": "thionyl dichloride",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-026",
+  "query": "benzofuran",
+  "expected_formula": "C8H6O",
+  "expected_charge": 0,
+  "family": "稠合芳环",
+  "purpose": "稠合 O 杂环",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709672.8071208,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 9223,
+      "MolecularFormula": "C8H6O",
+      "ConnectivitySMILES": "C1=CC=C2C(=C1)C=CO2",
+      "InChIKey": "IANQTJSKSUMEQM-UHFFFAOYSA-N",
+      "IUPACName": "1-benzofuran",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9223"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709672.8071208,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-026\\response-1.json",
+      "sha256": "ea790c0b0d44e89bf92c2e866050dc6104878ac50d441573d3d4c89e02d85229",
+      "bytes": 290,
+      "elapsed_seconds": 3.7721102237701416
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/benzofuran/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}
