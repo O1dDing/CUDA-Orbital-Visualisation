@@ -1,0 +1,32 @@
+{
+  "case_id": "OLD-045",
+  "original_case_identity": "79c22a2d358fe40bbb1ee36b9fc0b5707ba7183ff5c4369445c7267d044a9128",
+  "purpose": {
+    "kind": "equilibrium_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Candidate equilibrium at the specified charge and multiplicity",
+    "competing_states_required": true,
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPP",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Default quality reference",
+  "ecp_core_electrons_by_atomic_number": {
+    "5": 0
+  },
+  "explicit_electrons": 10,
+  "alpha_electrons": 6,
+  "beta_electrons": 4,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": true,
+  "is_verified_reference": false,
+  "basis_sha256": "4ae2a53a347d1ca2bc26147baf57e0138849676a99792531e1cc7a7737e83338",
+  "initial_input_sha256": "94c84ff3c3a7a81160f5fdc71c6e534447b572e1e71b93979b48ca5ea1e0cb3a",
+  "identity": "7fb4c02fb48da79b1bdb32c458a8aeb8c49665e1bce8454bd1171505971b8544"
+}
