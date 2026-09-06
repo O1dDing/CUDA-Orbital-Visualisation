@@ -46,6 +46,13 @@ elif sys.argv[3] == 'fail':
         return result, output, argument
 
     def assert_complete_lifecycle(self, result):
+        self.assertEqual(result['lifecycle_schema_version'], 2)
+        clock = time.get_clock_info('perf_counter')
+        self.assertTrue(result['lifecycle_clock_info']['monotonic'])
+        self.assertEqual(result['lifecycle_clock_info']['name'], 'perf_counter')
+        self.assertEqual(result['lifecycle_clock_info']['implementation'], clock.implementation)
+        self.assertEqual(result['lifecycle_clock_info']['resolution_seconds'], clock.resolution)
+        self.assertIsInstance(result['lifecycle_clock_origin_nanoseconds'], int)
         events = result['lifecycle_events']
         names = [event['phase'] for event in events]
         self.assertEqual(names[0], 'supervisor_enter')
@@ -56,6 +63,10 @@ elif sys.argv[3] == 'fail':
         self.assertEqual([names.index(name) for name in sequence], sorted(names.index(name) for name in sequence))
         for index, event in enumerate(events):
             self.assertEqual(event['sequence'], index)
+            self.assertIsInstance(event['elapsed_nanoseconds'], int)
+            self.assertEqual(event['elapsed_seconds'], event['elapsed_nanoseconds']/1e9)
+            self.assertEqual(event['observer_wall_seconds'], event['observer_wall_nanoseconds']/1e9)
+            self.assertEqual(event['after_observer_elapsed_seconds'], event['after_observer_elapsed_nanoseconds']/1e9)
             self.assertGreaterEqual(event['observer_wall_seconds'], 0)
             self.assertGreaterEqual(event['after_observer_elapsed_seconds'], event['elapsed_seconds'])
             if index:
@@ -68,7 +79,7 @@ elif sys.argv[3] == 'fail':
     def test_real_handles_argument_roundtrip_and_observer_overhead(self):
         observed = []
         def observe(event):
-            observed.append(event)
+            observed.append((event, time.perf_counter_ns()))
             if event['phase'] == 'process_creation_enter':
                 time.sleep(.03)
             if event['phase'] == 'job_assigned':
@@ -93,6 +104,11 @@ elif sys.argv[3] == 'fail':
                                 phases['started_callback_enter']['after_observer_elapsed_seconds'], .03)
         self.assertEqual(phases['job_assigned']['observer_error'], 'RuntimeError: intentional telemetry failure')
         self.assertEqual(len(observed), len(result['lifecycle_events']))
+        origin = result['lifecycle_clock_origin_nanoseconds']
+        for snapshot, observer_counter in observed:
+            stored = result['lifecycle_events'][snapshot['sequence']]
+            self.assertLessEqual(origin+stored['elapsed_nanoseconds'], observer_counter)
+            self.assertGreaterEqual(origin+stored['after_observer_elapsed_nanoseconds'], observer_counter)
 
     def test_nonzero_child_exit_retains_failure_and_cleanup_with_default_observer(self):
         result, output, _ = self.run_probe('exit seven', mode='fail')

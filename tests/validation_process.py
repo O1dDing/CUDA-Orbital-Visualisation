@@ -127,7 +127,7 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
              on_phase=None):
     """Run an argv list under kernel-enforced limits and record real tree time.
 
-    Lifecycle events use a separate monotonic origin at function entry. The
+    Lifecycle events use an integer performance-counter origin at entry. The
     legacy started_epoch/wall_seconds fields retain their existing meaning.
     Optional on_phase receives an event snapshot before execution proceeds;
     its elapsed time and any ordinary exception are recorded separately. A
@@ -135,22 +135,33 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
     """
     if cpu_mask <= 0 or memory_gib <= 0 or timeout_seconds <= 0:
         raise ValueError("Resource and timeout limits must be positive")
-    lifecycle_begin = time.monotonic()
+    lifecycle_clock = time.get_clock_info("perf_counter")
+    if not lifecycle_clock.monotonic:
+        raise RuntimeError("Lifecycle evidence requires a monotonic performance counter")
+    lifecycle_begin_ns = time.perf_counter_ns()
     lifecycle = []
 
     def phase(name, **detail):
+        elapsed_ns = time.perf_counter_ns() - lifecycle_begin_ns
         event = {"sequence": len(lifecycle), "phase": name,
-                 "elapsed_seconds": time.monotonic() - lifecycle_begin,
-                 "epoch": time.time(), **detail}
+                 "elapsed_nanoseconds": elapsed_ns, "elapsed_seconds": elapsed_ns / 1e9,
+                 "epoch": time.time(), "observer_called": on_phase is not None, **detail}
         lifecycle.append(event)
-        observer_begin = time.monotonic()
+        observer_begin_ns = time.perf_counter_ns()
         if on_phase is not None:
             try:
                 on_phase(dict(event))
             except Exception as error:
                 event["observer_error"] = f"{type(error).__name__}: {error}"
-        event["observer_wall_seconds"] = time.monotonic() - observer_begin
-        event["after_observer_elapsed_seconds"] = time.monotonic() - lifecycle_begin
+            observer_ns = time.perf_counter_ns() - observer_begin_ns
+        else:
+            # This is an absent callback, not a below-resolution measurement.
+            observer_ns = 0
+        event["observer_wall_nanoseconds"] = observer_ns
+        event["observer_wall_seconds"] = observer_ns / 1e9
+        after_ns = time.perf_counter_ns() - lifecycle_begin_ns
+        event["after_observer_elapsed_nanoseconds"] = after_ns
+        event["after_observer_elapsed_seconds"] = after_ns / 1e9
 
     phase("supervisor_enter")
     k = kernel()
@@ -271,7 +282,15 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
                 "peak_tree_commit_bytes": limits.PeakJobMemoryUsed,
                 "tree_process_count": accounting.TotalProcesses,
                 "tree_cpu_seconds": (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7,
-                "lifecycle_clock": "monotonic seconds from run_tree entry; observer time is explicit",
+                "lifecycle_schema_version": 2,
+                "lifecycle_clock": "perf_counter_ns from run_tree entry; integer ticks and observer time retained",
+                "lifecycle_clock_origin_nanoseconds": lifecycle_begin_ns,
+                "lifecycle_clock_info": {"name": "perf_counter", "implementation": lifecycle_clock.implementation,
+                    "resolution_seconds": lifecycle_clock.resolution, "monotonic": lifecycle_clock.monotonic,
+                    "adjustable": lifecycle_clock.adjustable,
+                    "resolution_is_not_an_accuracy_guarantee": True},
+                "legacy_wall_seconds_clock_info": vars(time.get_clock_info("monotonic")),
+                "epoch_clock_info": vars(time.get_clock_info("time")),
                 "lifecycle_events": lifecycle}
     finally:
         phase("cleanup_enter")
