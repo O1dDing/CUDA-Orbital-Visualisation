@@ -158,6 +158,17 @@ def main():
                     raise RuntimeError('Producer sidecar changed before collection')
             info=native.collect_one(options,manifest,case)
             evidence=attempt/'cases'/case_id
+            # Ordinary and validation instrumentation call the same production
+            # science. Collect both now; compare only after the full barrier.
+            if (evidence/'production.json').exists():
+                ordinary=run_process(options,manifest,case_id,root/'programs'/'cov_scientific_audit_dump_off.exe',
+                    [Path(case['input']),'--interactions'],evidence,'production-off.json',900)
+                info['ordinary_process']=ordinary
+                if ordinary['exit_code']!=0:
+                    info['collection_status']='completed_with_gaps'
+                    info.setdefault('integrity_errors',[]).append('ordinary production data collection failed')
+                elif (evidence/'production-off.json').exists():
+                    read(evidence/'production-off.json')
             info['evidence_directory']=str(evidence.relative_to(root))
             info['source_sha256']=digest(case['input'])
             info['round_identity']=manifest['round_identity']
