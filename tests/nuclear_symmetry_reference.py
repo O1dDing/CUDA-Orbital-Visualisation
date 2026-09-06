@@ -56,7 +56,11 @@ def match_operation(coordinates, labels, operation, origin=None):
 
 def _frame(first, second):
     a = first/np.linalg.norm(first)
-    b = second-a*np.dot(second, a)
+    normal = np.cross(a, second/np.linalg.norm(second))
+    normal /= np.linalg.norm(normal)
+    # Subtracting nearly parallel vectors loses orthogonality near linearity.
+    # Cross products retain an orthogonal frame without loosening the gate.
+    b = np.cross(normal, a)
     b /= np.linalg.norm(b)
     return np.column_stack((a, b, np.cross(a, b)))
 

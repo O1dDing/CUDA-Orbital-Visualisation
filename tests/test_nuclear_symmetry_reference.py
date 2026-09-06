@@ -110,6 +110,14 @@ class NuclearSymmetryReferenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             match_operation(xyz, [1]*3, np.eye(3)*1.0001)
 
+    def test_almost_collinear_but_resolvable_geometry_has_orthogonal_operations(self):
+        xyz = np.array([[-1.1, 0., 0.], [.3, 1e-6, 0.], [1.7, 0., 0.]])
+        # This remains a plane at the frozen threshold, not a linear molecule.
+        result = self.check_shape(xyz, [1, 8, 9], 'Cs', 2)
+        for record in result['operations']:
+            matrix = np.asarray(record['matrix'])
+            np.testing.assert_allclose(matrix.T @ matrix, np.eye(3), rtol=0, atol=1e-12)
+
     def shell(self, angular, kind, center):
         return GeneralizedContractionShell(angular, np.asarray(center, dtype=float),
             np.array([[.6, .2], [.4, .8]]), np.array([.8, .25]), kind)
