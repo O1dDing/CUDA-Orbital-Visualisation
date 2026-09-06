@@ -1,4 +1,5 @@
 #include "cov/overlap.hpp"
+#include "cov/analysis_threads.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -29,10 +30,7 @@ namespace {
 
 std::size_t dense_worker_count(const std::size_t n) noexcept {
     if (n<384u) return 1u;
-    const auto hardware=std::thread::hardware_concurrency();
-    const std::size_t available=hardware>1u
-        ?static_cast<std::size_t>(hardware-1u):1u;
-    return std::clamp<std::size_t>(available,1u,12u);
+    return analysis_thread_budget();
 }
 
 template<class Function>

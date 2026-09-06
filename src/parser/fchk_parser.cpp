@@ -309,8 +309,8 @@ void append_shell(Wavefunction& wf,
 
     for (std::size_t p = 0; p < count; ++p) {
         Primitive primitive;
-        primitive.exponent = static_cast<float>(exponents[begin + p]);
-        primitive.coefficient = static_cast<float>(coefficients[begin + p]);
+        primitive.exponent = exponents[begin + p];
+        primitive.coefficient = coefficients[begin + p];
         wf.primitives.push_back(primitive);
     }
 
@@ -318,49 +318,13 @@ void append_shell(Wavefunction& wf,
     wf.shells.push_back(shell);
 }
 
-struct BasisMapEntry {
-    std::size_t source_index = 0;
-    double sign = 1.0;
-};
-
-// COV's internal Cartesian ordering through f is the same ordering used by
-// Gaussian FCHK. Gaussian's Cartesian g coefficients are stored in a distinct
-// reverse-alphabet ordering; map them into the Molden/COV g order used by the
-// existing CUDA evaluator. Pure shells share the m=0,+1,-1,+2,-2,... order.
-std::vector<std::size_t> fchk_local_to_internal_source_map(const int shell_type) {
-    if (shell_type == -1) return {0u, 1u, 2u, 3u}; // SP: s, px, py, pz
-
-    const int l = shell_type < 0 ? -shell_type : shell_type;
-    const bool pure = shell_type <= -2;
-    const std::size_t count = pure
-                                  ? static_cast<std::size_t>(2 * l + 1)
-                                  : static_cast<std::size_t>((l + 1) * (l + 2) / 2);
-    if (pure || l <= 3) {
-        std::vector<std::size_t> identity(count);
-        for (std::size_t i = 0; i < count; ++i) identity[i] = i;
-        return identity;
-    }
-
-    if (l == 4) {
-        // FCHK Cartesian g source order (Gaussian/IOData convention):
-        // zzzz,yzzz,yyzz,yyyz,yyyy,xzzz,xyzz,xyyz,xyyy,xxzz,
-        // xxyz,xxyy,xxxz,xxxy,xxxx
-        // COV/Molden internal order:
-        // xxxx,yyyy,zzzz,xxxy,xxxz,xyyy,yyyz,xzzz,yzzz,xxyy,
-        // xxzz,yyzz,xxyz,xyyz,xyzz
-        return {14u, 4u, 0u, 13u, 12u, 8u, 3u, 5u, 1u,
-                11u, 9u, 2u, 10u, 7u, 6u};
-    }
-
-    throw std::runtime_error("FCHK basis ordering above g is not supported yet");
-}
+using BasisMapEntry = GaussianAoTransformEntry;
 
 void append_basis_map(std::vector<BasisMapEntry>& basis_map,
                       const std::size_t source_offset,
-                      const std::vector<std::size_t>& local_source_for_internal) {
-    for (const std::size_t local : local_source_for_internal) {
-        basis_map.push_back({source_offset + local, 1.0});
-    }
+                      const int shell_type) {
+    const auto local = gaussian_ao_transform(shell_type, source_offset);
+    basis_map.insert(basis_map.end(), local.begin(), local.end());
 }
 
 std::vector<double> transform_packed_density(const std::vector<double>& source,
@@ -382,7 +346,8 @@ std::vector<double> transform_packed_density(const std::vector<double>& source,
             const BasisMapEntry& mi = basis_map[i];
             const BasisMapEntry& mj = basis_map[j];
             transformed[packed(i, j)] =
-                mi.sign * mj.sign * source[packed(mi.source_index, mj.source_index)];
+                mi.coefficient_scale * mj.coefficient_scale *
+                source[packed(mi.source_index, mj.source_index)];
         }
     }
     return transformed;
@@ -436,10 +401,12 @@ void append_orbital_set(Wavefunction& wf,
         mo.occupation_provenance = DataProvenance::Derived;
         mo.coefficients.resize(basis);
         const std::size_t offset = i * basis;
+        mo.gaussian_source_coefficients.assign(coefficients.begin()+offset,
+                                               coefficients.begin()+offset+basis);
         for (std::size_t internal = 0; internal < basis; ++internal) {
             const BasisMapEntry& map = basis_map[internal];
-            mo.coefficients[internal] = static_cast<float>(
-                map.sign * coefficients[offset + map.source_index]);
+            mo.coefficients[internal] =
+                map.coefficient_scale * coefficients[offset + map.source_index];
         }
         wf.orbitals.push_back(std::move(mo));
     }
@@ -567,8 +534,7 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
                          exponents, contractions, primitive_cursor, count);
             append_shell(wf, atom_index, 1u, false,
                          exponents, *sp_contractions, primitive_cursor, count);
-            append_basis_map(basis_map, source_basis_cursor,
-                             fchk_local_to_internal_source_map(shell_type));
+            append_basis_map(basis_map, source_basis_cursor, shell_type);
             source_basis_cursor += 4u;
         } else {
             const int l = shell_type < 0 ? -shell_type : shell_type;
@@ -580,9 +546,8 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
             const bool pure = shell_type <= -2;
             append_shell(wf, atom_index, static_cast<std::uint8_t>(l), pure,
                          exponents, contractions, primitive_cursor, count);
-            const auto local_map = fchk_local_to_internal_source_map(shell_type);
-            append_basis_map(basis_map, source_basis_cursor, local_map);
-            source_basis_cursor += local_map.size();
+            append_basis_map(basis_map, source_basis_cursor, shell_type);
+            source_basis_cursor += shell_basis_count(wf.shells.back());
         }
         primitive_cursor += count;
     }
@@ -599,6 +564,7 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
             std::to_string(expected_basis));
     }
     set_global_purity_flags(wf);
+    wf.gaussian_ao_transform = basis_map;
 
     const auto* alpha_energies = find_real_array(records, "Alpha Orbital Energies");
     const auto* alpha_coefficients = find_real_array(records, "Alpha MO coefficients");

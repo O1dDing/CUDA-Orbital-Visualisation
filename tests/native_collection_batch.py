@@ -197,15 +197,27 @@ def collect_one(args, manifest, record):
         native_dir=directory/'native'; session_path=native_dir/'session.json'
         session=json.loads(session_path.read_text(encoding='utf-8')) if session_path.exists() else None
         data['native_session']=session
-        missing=[];invalid=[];mo_ids=[];points=[]
+        missing=[];invalid=[];mo_ids=[];points=[];full_grids=[]
         for path in sorted(native_dir.glob('*.volume.json')):
             try:
                 volume=json.loads(path.read_text(encoding='utf-8'))
-                mo_ids.append(volume['rendered_mo']);points.append(len(volume['samples']))
+                if 'full_grid' in volume:
+                    grid=volume['full_grid']
+                    binary=native_dir/grid['file']
+                    shape=[volume[k] for k in ('nx','ny','nz')]
+                    if not binary.is_file() or binary.stat().st_size!=4*math.prod(shape) or grid['point_count']!=math.prod(shape):
+                        invalid.append(path.name+': incomplete full texture')
+                    full_grids.append(dict(mo=volume['rendered_mo'],shape=shape,metadata=path.name,binary=grid['file']))
+                else:
+                    mo_ids.append(volume['rendered_mo']);points.append(len(volume['samples']))
                 if not volume['samples'] or any(not math.isfinite(v) for _,v in volume['samples']):invalid.append(path.name)
             except (KeyError,ValueError):invalid.append(path.name)
         missing += [f'MO {i+1} texture' for i in range(expected['mos']) if i not in mo_ids]
         if len(mo_ids)!=len(set(mo_ids)):invalid.append('duplicate MO texture identity')
+        for i in expected.get('full_grid_frontiers_zero_based',[]):
+            for resolution in expected.get('full_grid_resolutions',[]):
+                found=[g for g in full_grids if g['mo']==i and g['shape']==[resolution]*3]
+                if len(found)!=1:missing.append(f'MO {i+1} complete {resolution} texture')
         images=[]
         for path in sorted(native_dir.glob('*.bmp')):
             target=path.with_suffix('.png')
@@ -242,6 +254,7 @@ def collect_one(args, manifest, record):
         data.update(collection_status='complete' if not missing and not invalid and not failed_actions else 'completed_with_gaps',
                     orbitals=expected['mos'],texture_count=len(mo_ids),sample_points_min=min(points,default=0),sample_points_max=max(points,default=0),
                     screenshots=len(images),export_png=(native_dir/'actual-export.mo.png').exists(),
+                    complete_texture_grids=full_grids,
                     primary_members=len(expected['primary_members']),spin_counterparts=len(expected['spin_counterparts']),
                     selection_records=selected,missing=missing,integrity_errors=invalid,failed_actions=failed_actions,
                     note='Collection completeness only; scientific correctness and visual/chemical review deferred.')

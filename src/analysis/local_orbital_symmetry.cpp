@@ -103,7 +103,7 @@ constexpr std::array<Mat3, 5> d_tensor_basis{{
           0.0, 0.0, 0.0},
 }};
 
-Mat3 pure_d_tensor(std::span<const float> coefficients) noexcept {
+Mat3 pure_d_tensor(std::span<const double> coefficients) noexcept {
     Mat3 tensor{};
     constexpr std::array<double, 5> signs{1.0, -1.0, -1.0, 1.0, 1.0};
     for (std::size_t component = 0; component < 5; ++component) {
@@ -115,7 +115,7 @@ Mat3 pure_d_tensor(std::span<const float> coefficients) noexcept {
     return tensor;
 }
 
-Mat3 cartesian_d_tensor(std::span<const float> coefficients) noexcept {
+Mat3 cartesian_d_tensor(std::span<const double> coefficients) noexcept {
     // Internal Cartesian order is xx, yy, zz, xy, xz, yz.  Diagonal basis
     // functions are x^2/sqrt(3), etc.; cross terms are xy, xz and yz.
     constexpr double kInvSqrt3 = 0.57735026918962576451;
@@ -313,7 +313,7 @@ std::optional<LocalIrrepAssignment> classify_local_metal_irrep(
             if (offset > coefficients.size() || count > coefficients.size() - offset) {
                 return std::nullopt;
             }
-            const std::span<const float> local(coefficients.data() + offset, count);
+            const std::span<const double> local(coefficients.data() + offset, count);
             if (shell.angular_momentum == 0) {
                 const double amplitude = local[0];
                 evidence[0].components[0] += amplitude * amplitude;

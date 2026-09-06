@@ -299,7 +299,7 @@ PreparedOperation prepare(const Wavefunction& wf, const SymmetryOperation& op) {
 
 std::vector<double> apply(const Wavefunction& wf,
                           const PreparedOperation& map,
-                          const std::vector<float>& coefficients) {
+                          const std::vector<double>& coefficients) {
     if (!map.valid || coefficients.size()!=wf.basis_count) return {};
     std::vector<double> out(wf.basis_count,0.0);
     for (std::size_t s=0;s<wf.shells.size();++s) {
@@ -315,7 +315,7 @@ std::vector<double> apply(const Wavefunction& wf,
 }
 
 double metric_inner(const Wavefunction& wf,
-                    const std::vector<float>& a,
+                    const std::vector<double>& a,
                     const std::vector<double>& b) {
     const std::size_t n=wf.basis_count;
     double value=0.0;

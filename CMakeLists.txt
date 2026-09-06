@@ -31,6 +31,7 @@ add_library(cov_parser
     src/parser/gaussian_log.cpp
     src/analysis/density.cpp
     src/analysis/overlap.cpp
+    src/analysis/overlap_basis.cpp
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
     src/analysis/point_group_catalog.cpp
@@ -49,6 +50,19 @@ target_include_directories(cov_parser PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_compile_features(cov_parser PUBLIC cxx_std_20)
+
+# Header-only dense spectral diagnostics. Pin the source archive and checksum;
+# do not enable Eigen's tests or add a runtime DLL dependency to cov.exe.
+include(FetchContent)
+FetchContent_Declare(cov_eigen
+    URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+    URL_HASH SHA256=8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    SOURCE_SUBDIR cov_headers_only
+)
+FetchContent_MakeAvailable(cov_eigen)
+target_include_directories(cov_parser SYSTEM PRIVATE ${cov_eigen_SOURCE_DIR})
+target_compile_definitions(cov_parser PRIVATE EIGEN_MPL2_ONLY)
 
 add_library(cov_orbitals
     src/analysis/local_orbital_symmetry.cpp
@@ -296,10 +310,16 @@ if(COV_BUILD_TESTS)
     add_executable(cov_fchk_parser_smoke tests/fchk_parser_smoke.cpp)
     target_link_libraries(cov_fchk_parser_smoke PRIVATE cov_parser)
     add_test(NAME fchk_parser_smoke COMMAND cov_fchk_parser_smoke)
+    add_executable(cov_fchk_ao_contract_smoke tests/fchk_ao_contract_smoke.cpp)
+    target_link_libraries(cov_fchk_ao_contract_smoke PRIVATE cov_parser)
+    add_test(NAME fchk_ao_contract_smoke COMMAND cov_fchk_ao_contract_smoke)
 
     add_executable(cov_fchk_overlap_smoke tests/fchk_overlap_smoke.cpp)
     target_link_libraries(cov_fchk_overlap_smoke PRIVATE cov_parser)
     add_test(NAME fchk_overlap_smoke COMMAND cov_fchk_overlap_smoke)
+    add_executable(cov_overlap_basis_smoke tests/overlap_basis_smoke.cpp)
+    target_link_libraries(cov_overlap_basis_smoke PRIVATE cov_parser)
+    add_test(NAME overlap_basis_smoke COMMAND cov_overlap_basis_smoke)
 
     add_executable(cov_format_equivalence_smoke tests/format_equivalence_smoke.cpp)
     target_link_libraries(cov_format_equivalence_smoke PRIVATE cov_parser)

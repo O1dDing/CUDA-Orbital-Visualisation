@@ -188,8 +188,27 @@ cov::Wavefunction make_local_linear_three_centre_case(const bool negative_edge) 
 } // namespace
 
 int main() {
+    const cov::OrbitalBondingDistribution unavailable;
+    if (unavailable.status!=cov::ChemistryStatus::Unavailable ||
+        unavailable.undetermined!=1.0) {
+        std::cerr<<"Default unavailable bonding evidence must remain UND=1\n";
+        return EXIT_FAILURE;
+    }
     auto wf=make_h3_reference_case();
     cov::derive_orbital_chemistry(wf);
+
+    for (const auto& mo:wf.orbitals) {
+        const auto& distribution=mo.chemistry.bonding;
+        if (!mo.chemistry.available ||
+            distribution.status==cov::ChemistryStatus::NotApplicable) continue;
+        const double total=distribution.bonding+distribution.antibonding+
+            distribution.nonbonding+distribution.undetermined;
+        if (!std::isfinite(total) || std::abs(total-1.0)>1.0e-10 ||
+            distribution.undetermined<0.0 || distribution.undetermined>1.0) {
+            std::cerr<<"Aggregate bonding fractions must conserve unit weight\n";
+            return EXIT_FAILURE;
+        }
+    }
 
     std::vector<std::size_t> selected;
     for (std::size_t i=0;i<wf.orbitals.size();++i) {

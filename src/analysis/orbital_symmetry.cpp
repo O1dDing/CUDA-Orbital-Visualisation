@@ -294,7 +294,7 @@ OperationMap prepare_operation(const Wavefunction& wf, const SymmetryOperation& 
 
 std::vector<double> apply_operation(const Wavefunction& wf,
                                     const OperationMap& map,
-                                    const std::vector<float>& coefficients) {
+                                    const std::vector<double>& coefficients) {
     if (!map.valid || coefficients.size()!=wf.basis_count) return {};
     std::vector<double> out(wf.basis_count,0.0);
     for (std::size_t s=0;s<wf.shells.size();++s) {
@@ -312,7 +312,7 @@ std::vector<double> apply_operation(const Wavefunction& wf,
 }
 
 double metric_inner(const Wavefunction& wf,
-                    const std::vector<float>& a,
+                    const std::vector<double>& a,
                     const std::vector<double>& b) {
     const std::size_t n=wf.basis_count;
     if (wf.ao_overlap.size()!=n*n || a.size()!=n || b.size()!=n) return 0.0;

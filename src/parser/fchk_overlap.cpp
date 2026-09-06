@@ -32,23 +32,16 @@ std::size_t packed_index(std::size_t i,std::size_t j) {
     return i*(i+1u)/2u+j;
 }
 
-std::vector<std::size_t> internal_to_fchk_basis_map(const Wavefunction& wf) {
-    std::vector<std::size_t> map;
+std::vector<GaussianAoTransformEntry> internal_to_fchk_basis_map(const Wavefunction& wf) {
+    if (wf.gaussian_ao_transform.size()==wf.basis_count) return wf.gaussian_ao_transform;
+    std::vector<GaussianAoTransformEntry> map;
     map.reserve(wf.basis_count);
     std::size_t source_offset=0;
     for (const auto& shell:wf.shells) {
         const std::size_t count=shell_basis_count(shell);
-        if (shell.pure || shell.angular_momentum<=3u) {
-            for (std::size_t i=0;i<count;++i) map.push_back(source_offset+i);
-        } else if (shell.angular_momentum==4u && count==15u) {
-            // Gaussian/FCHK Cartesian g source -> COV/Molden internal ordering.
-            static constexpr std::size_t g_map[15]={
-                14,4,0,13,12,8,3,5,1,11,9,2,10,7,6
-            };
-            for (std::size_t i:g_map) map.push_back(source_offset+i);
-        } else {
-            return {};
-        }
+        const int l=static_cast<int>(shell.angular_momentum);
+        const auto local=gaussian_ao_transform(shell.pure ? -l : l, source_offset);
+        map.insert(map.end(),local.begin(),local.end());
         source_offset+=count;
     }
     if (map.size()!=wf.basis_count || source_offset!=wf.basis_count) return {};
@@ -105,13 +98,17 @@ bool enrich_fchk_overlap_from_file(Wavefunction& wavefunction,
     wavefunction.ao_overlap.assign(n*n,0.0);
     for (std::size_t i=0;i<n;++i) {
         for (std::size_t j=0;j<=i;++j) {
-            const double value=packed[packed_index(basis_map[i],basis_map[j])];
+            const auto& left=basis_map[i];
+            const auto& right=basis_map[j];
+            const double value=left.basis_scale*right.basis_scale*
+                packed[packed_index(left.source_index,right.source_index)];
             wavefunction.ao_overlap[i*n+j]=value;
             wavefunction.ao_overlap[j*n+i]=value;
         }
     }
     wavefunction.ao_overlap_provenance=DataProvenance::Producer;
-    wavefunction.ao_overlap_orthonormality_error=0.0;
+    wavefunction.producer_ao_overlap=wavefunction.ao_overlap;
+    wavefunction.ao_overlap_orthonormality_error=std::numeric_limits<double>::quiet_NaN();
     return true;
 }
 

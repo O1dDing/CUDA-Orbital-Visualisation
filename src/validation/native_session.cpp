@@ -325,7 +325,8 @@ void anchor(const std::string& id) {
 }
 void record(const std::string& kind,const std::string& json) {
     if(enabled)trace.push_back("{\"kind\":"+quote(kind)+",\"data\":"+json+"}");
-    if(enabled && (kind=="export.actual" || (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {
+    if(enabled && (kind=="export.actual" || kind=="input.numerical_diagnostics" ||
+                   (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {
         if(kind=="diagram.cache")++diagram_generation;
         events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";events.flush();
     }

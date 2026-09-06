@@ -63,33 +63,33 @@ cov::Wavefunction base_wavefunction(const bool pure_d=true) {
     return wf;
 }
 
-std::vector<float> rotated_p_coefficients(const Mat3& rotation,
+std::vector<double> rotated_p_coefficients(const Mat3& rotation,
                                           const std::array<double,3>& local) {
     std::array<double,3> input{};
     for (std::size_t r=0;r<3;++r) for (std::size_t c=0;c<3;++c)
         input[r]+=rotation[3*r+c]*local[c];
-    std::vector<float> coefficients(9,0.0f);
+    std::vector<double> coefficients(9,0.0f);
     coefficients[1]=static_cast<float>(input[2]);
     coefficients[2]=static_cast<float>(-input[0]);
     coefficients[3]=static_cast<float>(-input[1]);
     return coefficients;
 }
 
-std::vector<float> rotated_pure_d_coefficients(const Mat3& rotation,
+std::vector<double> rotated_pure_d_coefficients(const Mat3& rotation,
                                                 const std::size_t component) {
     const Mat3 input=multiply(multiply(rotation,d_basis[component]),transpose(rotation));
-    std::vector<float> coefficients(9,0.0f);
+    std::vector<double> coefficients(9,0.0f);
     constexpr std::array<double,5> signs{1.0,-1.0,-1.0,1.0,1.0};
     for (std::size_t i=0;i<5;++i)
         coefficients[4+i]=static_cast<float>(signs[i]*dot(input,d_basis[i]));
     return coefficients;
 }
 
-std::vector<float> rotated_cartesian_d_coefficients(const Mat3& rotation,
+std::vector<double> rotated_cartesian_d_coefficients(const Mat3& rotation,
                                                      const std::size_t component) {
     const Mat3 input=multiply(multiply(rotation,d_basis[component]),transpose(rotation));
     constexpr double sqrt3=1.7320508075688772935;
-    std::vector<float> coefficients(10,0.0f);
+    std::vector<double> coefficients(10,0.0f);
     coefficients[4]=static_cast<float>(sqrt3*input[0]);
     coefficients[5]=static_cast<float>(sqrt3*input[4]);
     coefficients[6]=static_cast<float>(sqrt3*input[8]);
@@ -99,7 +99,7 @@ std::vector<float> rotated_cartesian_d_coefficients(const Mat3& rotation,
     return coefficients;
 }
 
-std::size_t add_orbital(cov::Wavefunction& wf,std::vector<float> coefficients) {
+std::size_t add_orbital(cov::Wavefunction& wf,std::vector<double> coefficients) {
     cov::MolecularOrbital mo;
     mo.coefficients=std::move(coefficients);
     wf.orbitals.push_back(std::move(mo));

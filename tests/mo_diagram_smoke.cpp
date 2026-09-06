@@ -557,7 +557,7 @@ void add_spin_matching_orbital(cov::Wavefunction& wavefunction,
                                const cov::Spin spin,
                                const double energy,
                                const std::string& symmetry,
-                               const std::vector<float>& coefficients,
+                               const std::vector<double>& coefficients,
                                const int metal_angular_momentum) {
     cov::MolecularOrbital orbital;
     orbital.energy_hartree=energy;

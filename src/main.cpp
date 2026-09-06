@@ -1,4 +1,6 @@
 #include "cov/cuda_orbital.hpp"
+#include "cov/numerical_diagnostics.hpp"
+#include <sstream>
 #include "cov/file_dialog.hpp"
 #include "cov/gl_api.hpp"
 #include "cov/mo_diagram.hpp"
@@ -298,6 +300,11 @@ int main(int argc, char** argv) {
                 options.max_atoms = 100;
                 options.require_orbitals = true;
                 auto wf = cov::parse_molden(path, options);
+                if (cov::validation::active()) {
+                    std::ostringstream diagnostics;
+                    cov::write_numerical_diagnostics_json(diagnostics,wf);
+                    cov::validation::record("input.numerical_diagnostics",diagnostics.str());
+                }
                 const auto new_mo = initial_orbital(wf);
                 const auto new_box = make_grid_box(wf);
                 std::optional<cov::OrbitalTrackingResult> new_tracking;

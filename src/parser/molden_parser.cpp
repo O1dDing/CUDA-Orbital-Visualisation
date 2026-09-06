@@ -466,9 +466,9 @@ Wavefunction parse_molden(const std::filesystem::path& path,
 
             for (const RawPrimitive& p : raw.primitives) {
                 Primitive primitive;
-                primitive.exponent = static_cast<float>(p.exponent);
+                primitive.exponent = p.exponent;
                 primitive.coefficient =
-                    static_cast<float>(use_second_coeff ? p.c2 : p.c1);
+                    use_second_coeff ? p.c2 : p.c1;
                 wf.primitives.push_back(primitive);
             }
             basis_offset += shell_basis_count(shell);
@@ -563,7 +563,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
                                   : Spin::Alpha;
         } else if (starts_with_ci(t, "occup=")) {
             current_mo.occupation =
-                static_cast<float>(parse_fortran_double(value_after_equals(t)));
+                parse_fortran_double(value_after_equals(t));
             current_mo.occupation_provenance = DataProvenance::Producer;
         } else {
             std::istringstream css(t);
@@ -584,8 +584,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
                 }
                 coefficient_seen[ci] = 1u;
                 ++coefficient_count;
-                current_mo.coefficients[ci] =
-                    static_cast<float>(parse_fortran_double(coefficient_s));
+                current_mo.coefficients[ci] = parse_fortran_double(coefficient_s);
             }
         }
     }

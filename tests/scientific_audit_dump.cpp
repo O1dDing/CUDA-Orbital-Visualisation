@@ -1,6 +1,7 @@
 #include "cov/wavefunction_io.hpp"
 #include "cov/molecule_style.hpp"
 #include "cov/mo_diagram.hpp"
+#include "cov/numerical_diagnostics.hpp"
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -31,6 +32,18 @@ int main(int argc, char** argv) {
         std::cout << std::setprecision(17) << "{\"nbasis\":" << wavefunction.basis_count
                   << ",\"overlap\":";
         numeric_array(wavefunction.ao_overlap);
+        std::cout << ",\"numerical_diagnostics\":";
+        cov::write_numerical_diagnostics_json(std::cout,wavefunction);
+        std::cout << ",\"producer_overlap\":";
+        numeric_array(wavefunction.producer_ao_overlap);
+        std::cout << ",\"ao_transform\":[";
+        for (std::size_t i=0;i<wavefunction.gaussian_ao_transform.size();++i) {
+            if (i) std::cout << ',';
+            const auto& entry=wavefunction.gaussian_ao_transform[i];
+            numeric_array(std::array<double,4>{static_cast<double>(i),static_cast<double>(entry.source_index),
+                          entry.basis_scale,entry.coefficient_scale});
+        }
+        std::cout << ']';
         std::cout << ",\"bond_orders\":[";
         bool first = true;
         for (const auto& bond : wavefunction.bond_orders) {
@@ -49,6 +62,8 @@ int main(int argc, char** argv) {
                       << ",\"spin\":" << static_cast<int>(orbital.spin)
                       << ",\"coefficients\":";
             numeric_array(orbital.coefficients);
+            std::cout << ",\"gaussian_source_coefficients\":";
+            numeric_array(orbital.gaussian_source_coefficients);
             std::cout << '}';
         }
         std::cout << "],\"chemistry\":[";

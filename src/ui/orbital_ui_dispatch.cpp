@@ -1,5 +1,7 @@
 #include "cov/orbital_ui.hpp"
 #include "cov/orbital_ui_text.hpp"
+#include "cov/numerical_diagnostics.hpp"
+#include "cov/overlap.hpp"
 
 #include <imgui.h>
 
@@ -142,6 +144,20 @@ void provenance_strip(const Wavefunction& wf, const Language language) {
     if (!wf.enrichment_source.empty()) {
         ImGui::TextDisabled("%s",
             orbital_tr(OrbitalText::GaussianEnrichmentAttached,language));
+    }
+    if (wf.ao_metric_diagnostics.status!=NumericalStatus::NotComputed) {
+        const bool chinese=language==Language::ChineseSimplified;
+        if (wf.ao_metric_diagnostics.status!=NumericalStatus::Available ||
+            (!wf.orbitals.empty() && !orbital_metric_usable(wf))) {
+            ImGui::TextWrapped("%s",chinese
+                ?"基组与轨道数值检查未通过；成键和派生轨道标签暂不可用。原始轨道数据保留。"
+                :"Basis/orbital numerical checks failed; bonding and derived orbital labels are unavailable. Original orbital data are retained.");
+        }
+        if (wf.producer_ao_overlap_basis_status==NumericalStatus::InvalidInput) {
+            ImGui::TextWrapped("%s",chinese
+                ?"输入中的重叠矩阵与基组不一致；分析使用独立基组积分，原矩阵保留供核查。"
+                :"The input overlap matrix is inconsistent with the basis; analysis uses independent basis integrals and retains the original matrix for inspection.");
+        }
     }
     ImGui::Spacing();
 }

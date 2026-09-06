@@ -71,31 +71,25 @@ void postprocess_wavefunction(Wavefunction& wf,
         }
     }
 
-    // A producer-supplied FCHK overlap matrix is authoritative. Only derive S
-    // from a complete orthonormal MO block when the input did not provide one.
-    if (wf.ao_overlap.empty()) {
-        const auto overlap = derive_ao_overlap_from_mos(wf);
-        if (overlap.available()) {
-            wf.ao_overlap = overlap.matrix;
-            wf.ao_overlap_provenance = DataProvenance::Derived;
-            wf.ao_overlap_orthonormality_error = overlap.max_orthonormality_error;
-        }
-    }
+    // Independent AO integrals support rectangular/truncated MO blocks and
+    // expose inconsistent producer matrices rather than fitting S to C.
+    establish_ao_metric(wf);
+    const bool usable_orbitals=orbital_metric_usable(wf);
 
     // FCHK normally lacks per-MO irreps. Once a validated geometry operation set
     // and AO overlap are available, derive irreps from the transformed AO/MO
     // representation. Producer labels remain immutable and always take priority.
-    if (!wf.ao_overlap.empty() && !wf.orbitals.empty()) {
+    if (usable_orbitals) {
         (void)derive_orbital_symmetry(wf);
     }
 
-    if (!wf.ao_overlap.empty() && !wf.total_density_packed.empty()) {
+    if (usable_orbitals && !wf.total_density_packed.empty()) {
         derive_bond_and_multicentre_analysis(wf);
     }
 
     // Chemistry is derived last so it can consume the validated AO metric,
     // density-level Mayer indices, multicentre assignments and MO symmetry.
-    if (!wf.ao_overlap.empty() && !wf.orbitals.empty()) {
+    if (usable_orbitals) {
         derive_orbital_chemistry(wf);
     }
 }

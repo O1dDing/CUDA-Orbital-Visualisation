@@ -59,16 +59,28 @@ int main() {
     try {
         const auto wf=cov::parse_wavefunction(path);
         std::filesystem::remove(path,ec);
-        if (wf.ao_overlap_provenance!=cov::DataProvenance::Producer ||
-            wf.ao_overlap.size()!=4u ||
-            std::abs(wf.ao_overlap[0]-1.0)>1.0e-10 ||
-            std::abs(wf.ao_overlap[1]-0.2)>1.0e-10 ||
-            std::abs(wf.ao_overlap[2]-0.2)>1.0e-10 ||
-            std::abs(wf.ao_overlap[3]-1.0)>1.0e-10) {
+        // Keep this historical synthetic fixture as a contradictory-input
+        // regression: its reported S and coefficients agree with each other,
+        // but neither agrees with the declared primitive basis and geometry.
+        if (wf.ao_overlap_provenance!=cov::DataProvenance::Derived ||
+            wf.producer_ao_overlap.size()!=4u ||
+            std::abs(wf.producer_ao_overlap[0]-1.0)>1.0e-10 ||
+            std::abs(wf.producer_ao_overlap[1]-0.2)>1.0e-10 ||
+            std::abs(wf.producer_ao_overlap[2]-0.2)>1.0e-10 ||
+            std::abs(wf.producer_ao_overlap[3]-1.0)>1.0e-10) {
             std::cerr << "producer FCHK overlap was not preserved\n";
             return EXIT_FAILURE;
         }
-        std::cout << "FCHK producer overlap smoke test passed\n";
+        if (std::abs(wf.ao_overlap[1]-std::exp(-0.98))>1e-12 ||
+            wf.producer_ao_overlap_basis_status!=cov::NumericalStatus::InvalidInput ||
+            wf.producer_ao_overlap_basis_error<0.17 ||
+            wf.ao_overlap_orthonormality_error<0.14 ||
+            wf.ao_metric_diagnostics.orbital_blocks[0].status!=cov::NumericalStatus::InvalidInput ||
+            wf.bond_order_provenance!=cov::DataProvenance::Unavailable) {
+            std::cerr << "Inconsistent input was silently treated as valid AO/MO evidence\n";
+            return EXIT_FAILURE;
+        }
+        std::cout << "FCHK producer overlap transport and contradictory-input detection passed\n";
         return EXIT_SUCCESS;
     } catch (const std::exception& e) {
         std::filesystem::remove(path,ec);

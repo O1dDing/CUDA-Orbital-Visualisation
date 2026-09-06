@@ -863,6 +863,10 @@ OrbitalBondingDistribution pair_bonding(
 OrbitalBondingDistribution aggregate_bonding(
     const std::vector<OrbitalPairInteraction>& interactions) {
     OrbitalBondingDistribution result;
+    // The public default describes unavailable data (UND=1). An accumulator
+    // starts at zero; otherwise each aggregate receives one fictitious UND
+    // contribution that depends on the total interaction weight.
+    result.undetermined=0.0;
     double total=0.0;
     for (const auto& interaction:interactions) {
         if (interaction.bonding.status==ChemistryStatus::NotApplicable) continue;

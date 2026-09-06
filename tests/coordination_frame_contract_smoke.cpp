@@ -256,7 +256,7 @@ cov::Wavefunction central_spd_wavefunction() {
     return wavefunction;
 }
 
-std::vector<float> rotated_p_coefficients(
+std::vector<double> rotated_p_coefficients(
     const Mat3& rotation, const std::array<double, 3>& reference) {
     std::array<double, 3> input{};
     for (std::size_t row = 0; row < 3; ++row) {
@@ -264,7 +264,7 @@ std::vector<float> rotated_p_coefficients(
             input[row] += rotation[3 * row + column] * reference[column];
         }
     }
-    std::vector<float> coefficients(9, 0.0f);
+    std::vector<double> coefficients(9, 0.0f);
     // Gaussian pure-p order used by the production classifier: pz,-px,-py.
     coefficients[1] = static_cast<float>(input[2]);
     coefficients[2] = static_cast<float>(-input[0]);
@@ -272,12 +272,12 @@ std::vector<float> rotated_p_coefficients(
     return coefficients;
 }
 
-std::vector<float> rotated_d_coefficients(const Mat3& rotation,
+std::vector<double> rotated_d_coefficients(const Mat3& rotation,
                                           const std::size_t component) {
     const Mat3 input = multiply(
         multiply(rotation, kDBasis[component]), transpose(rotation));
     constexpr std::array<double, 5> signs{1.0, -1.0, -1.0, 1.0, 1.0};
-    std::vector<float> coefficients(9, 0.0f);
+    std::vector<double> coefficients(9, 0.0f);
     for (std::size_t i = 0; i < kDBasis.size(); ++i) {
         coefficients[4 + i] = static_cast<float>(
             signs[i] * matrix_dot(input, kDBasis[i]));
@@ -286,7 +286,7 @@ std::vector<float> rotated_d_coefficients(const Mat3& rotation,
 }
 
 std::size_t add_orbital(cov::Wavefunction& wavefunction,
-                        std::vector<float> coefficients) {
+                        std::vector<double> coefficients) {
     cov::MolecularOrbital orbital;
     orbital.coefficients = std::move(coefficients);
     wavefunction.orbitals.push_back(std::move(orbital));

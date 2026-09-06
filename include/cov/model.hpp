@@ -1,7 +1,11 @@
 #pragma once
 
+#include "cov/gaussian_ao_transform.hpp"
+
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -24,6 +28,40 @@ enum class DataProvenance : std::uint8_t {
     Unavailable = 0,
     Producer = 1,
     Derived = 2,
+};
+
+enum class NumericalStatus : std::uint8_t {
+    NotComputed = 0,
+    Available,
+    MissingInput,
+    InvalidInput,
+    Failed,
+};
+
+struct OrbitalMetricDiagnostics {
+    Spin spin = Spin::Alpha;
+    std::size_t orbital_count = 0;
+    NumericalStatus status = NumericalStatus::NotComputed;
+    double maximum_diagonal_error = std::numeric_limits<double>::quiet_NaN();
+    double maximum_off_diagonal_error = std::numeric_limits<double>::quiet_NaN();
+    double orthonormality_tolerance = 5.0e-6;
+    std::string detail;
+};
+
+struct AoMetricDiagnostics {
+    NumericalStatus status = NumericalStatus::NotComputed;
+    std::size_t dimension = 0;
+    bool finite = false;
+    bool positive_semidefinite = false;
+    double symmetry_error = std::numeric_limits<double>::quiet_NaN();
+    double minimum_eigenvalue = std::numeric_limits<double>::quiet_NaN();
+    double maximum_eigenvalue = std::numeric_limits<double>::quiet_NaN();
+    double condition_number = std::numeric_limits<double>::quiet_NaN();
+    double eigen_residual = std::numeric_limits<double>::quiet_NaN();
+    double numerical_rank_tolerance = std::numeric_limits<double>::quiet_NaN();
+    std::size_t numerical_rank = 0;
+    std::vector<OrbitalMetricDiagnostics> orbital_blocks;
+    std::string detail;
 };
 
 // Optional producer diagnostics are deliberately tri-state.  Absence means
@@ -55,8 +93,8 @@ struct Atom {
 };
 
 struct Primitive {
-    float exponent = 0.0f;
-    float coefficient = 0.0f;
+    double exponent = 0.0;
+    double coefficient = 0.0;
 };
 
 struct Shell {
@@ -186,10 +224,13 @@ struct OrbitalChemistry {
 
 struct MolecularOrbital {
     double energy_hartree = 0.0;
-    float occupation = 0.0f;
+    double occupation = 0.0;
     Spin spin = Spin::Alpha;
     std::string symmetry;
-    std::vector<float> coefficients;
+    std::vector<double> coefficients;
+    // Exact parsed Gaussian coefficients before the AO representation change.
+    // Synthetic/Molden orbitals leave this Gaussian-specific field empty.
+    std::vector<double> gaussian_source_coefficients;
 
     // Molden can carry occupation/symmetry explicitly; FCHK normally carries
     // electron counts rather than per-orbital occupations and usually does not
@@ -307,6 +348,7 @@ struct Wavefunction {
     std::vector<Shell> shells;
     std::vector<MolecularOrbital> orbitals;
     std::uint32_t basis_count = 0;
+    std::vector<GaussianAoTransformEntry> gaussian_ao_transform;
     bool pure_d = false;
     bool pure_f = false;
     bool pure_g = false;
@@ -358,11 +400,17 @@ struct Wavefunction {
     DataProvenance total_density_provenance = DataProvenance::Unavailable;
     DataProvenance spin_density_provenance = DataProvenance::Unavailable;
 
-    // AO overlap recovered from a complete orthonormal MO block when the input
-    // format does not provide S explicitly. Row-major basis_count*basis_count.
+    // Analytic AO metric from the actual basis, independent of MO completeness.
+    // The optional producer matrix remains separate for consistency checks.
     std::vector<double> ao_overlap;
     DataProvenance ao_overlap_provenance = DataProvenance::Unavailable;
-    double ao_overlap_orthonormality_error = 0.0;
+    double ao_overlap_orthonormality_error = std::numeric_limits<double>::quiet_NaN();
+    AoMetricDiagnostics ao_metric_diagnostics;
+    std::vector<double> producer_ao_overlap;
+    AoMetricDiagnostics producer_ao_metric_diagnostics;
+    double producer_ao_overlap_basis_error = std::numeric_limits<double>::quiet_NaN();
+    NumericalStatus producer_ao_overlap_basis_status = NumericalStatus::NotComputed;
+    double producer_ao_overlap_basis_tolerance = 5.0e-6;
 
     // Provenance-aware analyses derived from density + overlap. Mayer bond
     // orders are pairwise evidence only. Multicentre assignments are made only
