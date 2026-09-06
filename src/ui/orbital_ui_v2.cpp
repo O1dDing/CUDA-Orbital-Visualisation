@@ -2,6 +2,7 @@
 #include "cov/validation.hpp"
 
 #include "cov/mo_diagram.hpp"
+#include "cov/mo_diagram_layout.hpp"
 #include "cov/orbital_ui_text.hpp"
 
 #include <imgui.h>
@@ -1088,21 +1089,40 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     ImGui::TextDisabled("%s",selection_summary.c_str());
     cov::validation::field("selection_summary",selection_summary);
     const float height = 430.0f * ui_scale;
-    ImGui::InvisibleButton("##energy_diagram_canvas", ImVec2(-1.0f, height), ImGuiButtonFlags_MouseButtonLeft);
+    const float left_padding=124.0f*ui_scale;
+    const float right_padding=46.0f*ui_scale;
+    const float available_width=std::max(1.0f,ImGui::GetContentRegionAvail().x);
+    std::vector<DiagramRowFootprint> footprints;
+    for (const auto& level:data.levels) {
+        const auto members=mo_diagram_member_views(data,level).size();
+        const double stroke_width=members==0?0.0:24.0+31.0*static_cast<double>(members-1);
+        footprints.push_back({map_energy_y(level.layout_energy_hartree,data.energy_transform,
+            34.0f*ui_scale,height-24.0f*ui_scale),14.0*ui_scale,14.0*ui_scale,
+            (stroke_width+24.0)*ui_scale});
+    }
+    const auto lanes=layout_diagram_lanes(footprints,
+        std::max(1.0f,available_width-left_padding-right_padding),8.0*ui_scale,2.0*ui_scale);
+    const float canvas_width=left_padding+static_cast<float>(lanes.width)+right_padding;
+    // Dense physical energies need horizontal space, not a different energy
+    // scale or smaller hit targets. Only the canvas scrolls horizontally.
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(0,0));
+    ImGui::BeginChild("##energy_diagram_scroll",
+        ImVec2(0,height+(canvas_width>available_width?ImGui::GetStyle().ScrollbarSize:0)),
+        ImGuiChildFlags_None,ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::PopStyleVar();
+    ImGui::InvisibleButton("##energy_diagram_canvas", ImVec2(canvas_width, height), ImGuiButtonFlags_MouseButtonLeft);
     cov::validation::item("diagram.canvas");
     const ImVec2 p0 = ImGui::GetItemRectMin();
     const ImVec2 p1 = ImGui::GetItemRectMax();
     ImDrawList* draw = ImGui::GetWindowDrawList();
     draw->AddRectFilled(p0, p1, IM_COL32(12, 18, 27, 235), 7.0f * ui_scale);
     draw->AddRect(p0, p1, IM_COL32(43, 58, 77, 220), 7.0f * ui_scale);
-    if (data.levels.empty()) return;
+    if (data.levels.empty()) { ImGui::EndChild(); return; }
 
     const float top = p0.y + 34.0f * ui_scale;
     const float bottom = p1.y - 24.0f * ui_scale;
-    const float left = p0.x + 62.0f * ui_scale;
-    const float right = p1.x - 30.0f * ui_scale;
-    const float lane_span = right - left;
-    const float axis_x = left - 28.0f * ui_scale;
+    const float left = p0.x + left_padding;
+    const float axis_x = p0.x + 34.0f * ui_scale;
     draw->AddLine(ImVec2(axis_x, bottom), ImVec2(axis_x, top), IM_COL32(129,148,171,255), 1.4f * ui_scale);
     draw->AddTriangleFilled(ImVec2(axis_x, top - 5.0f * ui_scale),
                             ImVec2(axis_x - 4.0f * ui_scale, top + 3.0f * ui_scale),
@@ -1123,17 +1143,8 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                       kNumericColour, tick.c_str());
     }
 
-    std::map<long long, std::vector<std::size_t>> coincident;
-    for (std::size_t i = 0; i < data.levels.size(); ++i) {
-        coincident[static_cast<long long>(std::llround(data.levels[i].layout_energy_hartree * 1.0e12))].push_back(i);
-    }
-    std::vector<float> x(data.levels.size(), left + 0.5f * lane_span);
-    for (const auto& [_, ids] : coincident) {
-        const float spacing = std::min(105.0f * ui_scale, lane_span / std::max(2.0f, static_cast<float>(ids.size())));
-        for (std::size_t j = 0; j < ids.size(); ++j) {
-            x[ids[j]] += (static_cast<float>(j) - (static_cast<float>(ids.size()) - 1.0f) * 0.5f) * spacing;
-        }
-    }
+    std::vector<float> x;
+    for (const double centre:lanes.centre_x) x.push_back(left+static_cast<float>(centre));
 
     std::vector<DiagramPoint> points;
     points.reserve(data.levels.size());
@@ -1180,6 +1191,8 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
             traced<<"{\"used_internal_mo\":"<<used_mo<<",\"used_source_mo\":"<<(used_mo+1)
                 <<",\"level_metadata_internal_mo\":"<<level.metadata.orbital_index
                 <<",\"y\":"<<y<<",\"layout_energy_hartree\":"<<level.layout_energy_hartree
+                <<",\"x\":"<<member_x<<",\"hit_half_width\":"<<(member_half+3.0f*ui_scale)
+                <<",\"hit_half_height\":"<<(8.0f*ui_scale)
                 <<",\"clip_y\":["<<draw->GetClipRectMin().y<<','<<draw->GetClipRectMax().y<<']'
                 <<",\"symmetry\":"<<cov::validation::quote(level.metadata.symmetry)
                 <<",\"alpha_arrows\":"<<electrons.alpha<<",\"beta_arrows\":"<<electrons.beta<<"}";
@@ -1211,7 +1224,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         const DiagramMemberPoint* nearest = nullptr;
         float best = 1.0e9f;
         for (const auto& point : member_points) {
-            if (mouse.x < point.left.x - 10.0f * ui_scale || mouse.x > point.right.x + 10.0f * ui_scale) continue;
+            if (mouse.x < point.left.x - 3.0f * ui_scale || mouse.x > point.right.x + 3.0f * ui_scale) continue;
             const float distance = std::abs(mouse.y - point.y);
             if (distance < best && distance <= 8.0f * ui_scale) { best = distance; nearest = &point; }
         }
@@ -1224,6 +1237,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         }
     }
 
+    ImGui::EndChild();
     if (ImGui::Button(tr(Text::ExportBundle, language), ImVec2(-1.0f, 0.0f))) actions.export_diagram = true;
     cov::validation::item("diagram.export");
 }

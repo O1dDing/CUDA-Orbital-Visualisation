@@ -26,6 +26,15 @@ def sha(path):
 def load(path): return json.loads(Path(path).read_text(encoding='utf-8'))
 
 
+def overlapping_rectangles(rectangles):
+    result=[]
+    for i,(identity,left,right,top,bottom) in enumerate(rectangles):
+        for other,other_left,other_right,other_top,other_bottom in rectangles[i+1:]:
+            if min(right,other_right)>max(left,other_left) and min(bottom,other_bottom)>max(top,other_top):
+                result.append([identity,other])
+    return result
+
+
 def review_case(root,record,Image):
     terminal=load(root/'cases'/record['case_id']/'terminal.json')
     evidence=root/terminal['evidence_directory']
@@ -53,6 +62,15 @@ def review_case(root,record,Image):
     check(bool(names),'VIEW-COVERAGE','No frozen export-state coverage specified')
     check(len(names)==len(set(names))==len(exports),'VIEW-EXPORT-COUNT',
           {'expected':len(names),'measured':len(exports)})
+    linear_clicks=[]
+    for mo in expected.get('primary_members',[]):
+        capture=f'linear-member-{mo+1:04}'
+        state=load(consume('native/'+capture+'.ui.json'))['state']
+        consume('native/'+capture+'.png')
+        passed=state['axis_mode']==0 and state['scene_matches_applied'] and all(
+            state[k]==mo for k in ('rendered_mo','applied_mo','drawn_ui_mo','requested_mo'))
+        check(passed,'VIEW-LINEAR-MEMBER-CLICK',{'capture':capture,'expected_mo':mo,'actual':state})
+        linear_clicks.append({'mo':mo,'pass':passed,'capture':capture})
     for name in names:
         begin=len(failures)
         matches=[x for x in exports if Path(x['data']['base']).name==name]
@@ -70,6 +88,8 @@ def review_case(root,record,Image):
         with Image.open(paths['png']) as image:
             png_id=image.info.get('cov.view.snapshot')
             image.load(); pixels=image.convert('RGB')
+        check(int(svg.attrib['width'])==pixels.width and int(svg.attrib['height'])==pixels.height,
+              'VIEW-EXPORT-DIMENSIONS',name)
         check(event['data']['success'] and context.get('origin')=='interactive-canvas' and
               drawn['id']==event['data'].get('snapshot_id')==context.get('id')==
               svg.attrib.get('data-view-snapshot')==png_id,'VIEW-IDENTITY',name)
@@ -97,8 +117,18 @@ def review_case(root,record,Image):
         check(len(rows)==data['diagram_row_count']==drawn['row_count']==len(svg_rows),
               'VIEW-ROW-COUNT',name)
         native_members=[x['data'] for x in capture_trace if x['kind']=='draw.level']
+        native_rects=[]
+        for member in native_members:
+            if not all(k in member for k in ('x','y','hit_half_width','hit_half_height')):
+                check(False,'VIEW-HIT-GEOMETRY-MISSING',{'bundle':name,'member':member.get('used_internal_mo')})
+                continue
+            x,y=member['x'],member['y']; w,h=member['hit_half_width'],member['hit_half_height']
+            native_rects.append((member['used_internal_mo'],x-w,x+w,y-h,y+h))
+        collisions=overlapping_rectangles(native_rects)
+        check(not collisions,'VIEW-HIT-REGIONS-OVERLAP',{'bundle':name,'pairs':collisions})
         expected_native=[]
         selected_png=[]
+        svg_rects=[]
         for row_index,row in enumerate(rows):
             members=row.get('members',[])
             check(bool(members),'VIEW-MEMBERS-MISSING',{'bundle':name,'row':row_index})
@@ -121,6 +151,11 @@ def review_case(root,record,Image):
                     row['layout_energy_hartree'],member['alpha_arrows'],member['beta_arrows']))
                 if member_index>=len(marks): continue
                 attrs=marks[member_index].attrib
+                half=float(attrs['stroke-width'])/2
+                svg_rects.append((member['orbital_index'],float(attrs['x1']),float(attrs['x2']),
+                                  float(attrs['y1'])-half,float(attrs['y1'])+half))
+                check(0<=float(attrs['x1'])<float(attrs['x2'])<pixels.width,
+                      'VIEW-EXPORT-MEMBER-BOUNDS',{'bundle':name,'member':member['orbital_index']})
                 check(int(attrs['data-orbital-index'])==indices[0] and
                       int(attrs['data-inspected-orbital-index'])==expected_used and
                       (attrs['data-selected']=='true')==expected_selected,
@@ -137,6 +172,8 @@ def review_case(root,record,Image):
             check(bool(energies) and math.isclose(min(energies),row.get('all_members_energy_min_hartree',math.nan),abs_tol=1e-12)
                   and math.isclose(max(energies),row.get('all_members_energy_max_hartree',math.nan),abs_tol=1e-12),
                   'VIEW-ROW-ENERGY-RANGE',{'bundle':name,'row':row_index})
+        collisions=overlapping_rectangles(svg_rects)
+        check(not collisions,'VIEW-EXPORT-STROKES-OVERLAP',{'bundle':name,'pairs':collisions})
         check(len(expected_native)==len(native_members),'VIEW-FRAME-MEMBER-COUNT',name)
         for wanted,actual in zip(expected_native,native_members):
             check(wanted[0]==actual['used_internal_mo'] and wanted[1]==actual['level_metadata_internal_mo'] and
@@ -147,6 +184,7 @@ def review_case(root,record,Image):
             'snapshot_id':context.get('id'),'export_frame':event['frame'],'selected_mo':selected,
             'rows':len(rows),'members':len(expected_native),'selected_png_checks':len(selected_png)})
     return {'case_id':record['case_id'],'status':'view_subset_pass' if not failures else 'view_subset_fail',
+        'linear_member_clicks':linear_clicks,
         'bundles':bundles,'failures':failures,'consumed_artifacts':consumed,'formal_case_pass':False}
 
 

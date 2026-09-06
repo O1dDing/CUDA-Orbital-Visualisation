@@ -56,10 +56,10 @@ bool write_mo_diagram_png(const MODiagramData& data,
                           const MODiagramOptions& options,
                           const std::filesystem::path& path,
                           std::string* error) {
-    const int width = std::max(760, options.width);
+    int width = std::max(760, options.width);
     const int height = std::max(720, options.height);
-    Canvas canvas(width, height);
     const auto positioned = position_levels(data, width, height);
+    Canvas canvas(width, height);
 
     const char* diagram_title="VALENCE MO DIAGRAM";
     if (data.mode==MODiagramMode::DelocalisedPiFamilyOnly) {

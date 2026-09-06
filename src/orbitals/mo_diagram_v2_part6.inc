@@ -260,7 +260,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         return false;
     }
 
-    const int width = std::max(760, options.width);
+    int width = std::max(760, options.width);
     const int height = std::max(720, options.height);
     const auto positioned = position_levels(data, width, height);
 

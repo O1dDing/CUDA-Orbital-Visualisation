@@ -147,6 +147,12 @@ def make_plan(production):
         for capture_name in ('expanded','restored','linear','electron-volts'):
             if command_line==command('capture',capture_name):
                 expanded += export_view('export-'+capture_name)
+                if capture_name=='linear':
+                    for i in primary:
+                        expanded += [command('click',f'diagram.mo.{i}'),
+                            command('hover',f'diagram.mo.{i}'),
+                            command('capture',f'linear-member-{i+1:04}')]
+                    if primary: expanded += [command('click',f'diagram.mo.{primary[0]}')]
     plan=expanded
     for language in range(1,4):
         plan += ['click "language"','key "Home"']+['key "Down"']*language+['key "Enter"','hover "scene.viewport"',command('capture',f'language-{language}')]

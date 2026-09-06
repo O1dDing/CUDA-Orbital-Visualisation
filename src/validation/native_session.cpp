@@ -118,6 +118,17 @@ bool seek(const Target& t) {
         cooldown=3;
         return false;
     }
+    for (auto* w=t.window; w; w=w->ParentWindow) {
+        ImRect r=w->InnerClipRect;
+        r.ClipWith(ImRect(ImVec2(0,0),io.DisplaySize));
+        if (w->ScrollMax.x<=0 || r.GetWidth()<30 || r.GetHeight()<30) continue;
+        if (p.x>=r.Min.x+5 && p.x<=r.Max.x-5) continue;
+        injected_mouse=ImGui::GetWindowScrollbarRect(w,ImGuiAxis_X).GetCenter();
+        io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
+        io.AddMouseWheelEvent(p.x<r.Min.x?3.0f:-3.0f,0);
+        cooldown=3;
+        return false;
+    }
     return false;
 }
 void framebuffer(const std::filesystem::path& path, int w, int h) {
