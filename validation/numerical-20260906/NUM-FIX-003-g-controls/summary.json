@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "round_identity": "313173ec79fd92685209f5fda4c637308b8677d107553a59dab962a9ce43b9b4",
+  "collection_sha256": "fcf457cb5f57f213d1be3edfb6df746a5921ca6fb8c16fcf40af2756f6f6786d",
+  "review_barrier_sha256": "110077724c876489919da4e74a2aab7d299fe3b51f65bb8aa1f02c9d82e1f58d",
+  "summary_script_sha256": "98065496b5e55aba1ee07b27f30ac51c5d8399432d711a5fc8de952b618d3886",
+  "created_epoch": 1788700008.6731315,
+  "case_count": 2,
+  "collection_counts": {
+    "complete": 2,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 2
+  },
+  "check_counts": {
+    "BUILD-ON-OFF": {
+      "pass": 2
+    },
+    "ACTUAL-EXE-METRIC-DATA": {
+      "pass": 2
+    },
+    "AO-INTEGRAL": {
+      "pass": 2
+    },
+    "MO-RAW-PRECISION": {
+      "pass": 2
+    },
+    "MO-AO-TRANSFORM": {
+      "pass": 2
+    },
+    "AO-TRANSFORM-PROVENANCE": {
+      "pass": 2
+    },
+    "MO-ENERGIES": {
+      "pass": 2
+    },
+    "MO-GRAM-0": {
+      "pass": 2
+    },
+    "MO-GRAM-1": {
+      "pass": 2
+    },
+    "MO-RECONSTRUCTED-ELECTRON-TRACE": {
+      "pass": 2
+    },
+    "DECOMPOSITION-CONSERVATION": {
+      "pass": 2
+    },
+    "ALL-MO-SAMPLED-TEXTURES": {
+      "pass": 2
+    },
+    "FRONTIER-COMPLETE-TEXTURES": {
+      "pass": 2
+    }
+  },
+  "sampled_mos": 500,
+  "complete_frontier_textures": 12,
+  "failed_check_count": 0,
+  "failed_texture_count": 0,
+  "failures": [],
+  "texture_failures": [],
+  "cases": [
+    {
+      "case_id": "AUX-G-CARTESIAN",
+      "input": "AUX-G-CARTESIAN/wavefunction.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 51.42869439999777,
+      "numerical_review_seconds": 12.589021200001298,
+      "failed_checks": []
+    },
+    {
+      "case_id": "AUX-G-PURE",
+      "input": "AUX-G-PURE/wavefunction.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 42.28180550000252,
+      "numerical_review_seconds": 16.31988629999978,
+      "failed_checks": []
+    }
+  ],
+  "timing": {
+    "collection_wall_seconds": 51.49188449999929,
+    "independent_review_wall_seconds": 18.723046999999497,
+    "collection_per_case": {
+      "n": 2,
+      "sum_seconds": 93.71049990000029,
+      "minimum_seconds": 42.28180550000252,
+      "median_seconds": 46.85524995000014,
+      "p95_seconds": 50.971349954998004,
+      "maximum_seconds": 51.42869439999777
+    },
+    "independent_review_per_case": {
+      "n": 2,
+      "sum_seconds": 28.908907500001078,
+      "minimum_seconds": 12.589021200001298,
+      "median_seconds": 14.454453750000539,
+      "p95_seconds": 16.133343044999854,
+      "maximum_seconds": 16.31988629999978
+    }
+  },
+  "formal_case_passes": 0,
+  "remaining": [
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

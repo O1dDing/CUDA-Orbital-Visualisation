@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Win32-MSBuild"
+	tests="33"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="[NON-UTF-8-BYTE-0xB4][NON-UTF-8-BYTE-0xF3][NON-UTF-8-BYTE-0xB2][NON-UTF-8-BYTE-0xCA][NON-UTF-8-BYTE-0xCF][NON-UTF-8-BYTE-0xE4][NON-UTF-8-BYTE-0xD7][NON-UTF-8-BYTE-0xD3]"
+	time="2"
+	timestamp="2026-09-06T21:10:33"
+	>
+	<testcase name="parser_smoke" classname="parser_smoke" time="0.324042" status="run">
+		<properties/>
+		<system-out>atoms=2 shells=2 basis=2 orbitals=2
+parser smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="fchk_parser_smoke" classname="fchk_parser_smoke" time="0.187482" status="run">
+		<properties/>
+		<system-out>fchk parser smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="fchk_ao_contract_smoke" classname="fchk_ao_contract_smoke" time="0.222617" status="run">
+		<properties/>
+		<system-out>FCHK AO transport and retained precision: 9 shell representations passed
+</system-out>
+	</testcase>
+	<testcase name="fchk_overlap_smoke" classname="fchk_overlap_smoke" time="0.230179" status="run">
+		<properties/>
+		<system-out>FCHK producer overlap transport and contradictory-input detection passed
+</system-out>
+	</testcase>
+	<testcase name="overlap_basis_smoke" classname="overlap_basis_smoke" time="0.233914" status="run">
+		<properties/>
+		<system-out>Independent basis integrals, rectangular spin metrics and invalid-input diagnostics passed
+</system-out>
+	</testcase>
+	<testcase name="format_equivalence_smoke" classname="format_equivalence_smoke" time="0.200335" status="run">
+		<properties/>
+		<system-out>FCHK/Molden semantic equivalence smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="fchk_real_regression" classname="fchk_real_regression" time="0.335036" status="run">
+		<properties/>
+		<system-out>real Gaussian16 FCHK full-pipeline regression passed
+</system-out>
+	</testcase>
+	<testcase name="gaussian_log_smoke" classname="gaussian_log_smoke" time="0.360642" status="run">
+		<properties/>
+		<system-out>Gaussian LOG enrichment smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="wavefunction_analysis_smoke" classname="wavefunction_analysis_smoke" time="0.401785" status="run">
+		<properties/>
+		<system-out>wavefunction analysis smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="overlap_large_smoke" classname="overlap_large_smoke" time="0.620447" status="run">
+		<properties/>
+		<system-out>large overlap smoke test passed: n=384 seconds=0.234612 max_error=4.44089e-16
+</system-out>
+	</testcase>
+	<testcase name="multicentre_classification_smoke" classname="multicentre_classification_smoke" time="0.25594" status="run">
+		<properties/>
+		<system-out>multicentre classification smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="chemical_valence_smoke" classname="chemical_valence_smoke" time="0.202161" status="run">
+		<properties/>
+		<system-out>chemical valence/ion visibility smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="delocalised_pi_smoke" classname="delocalised_pi_smoke" time="0.183305" status="run">
+		<properties/>
+		<system-out>delocalised pi smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="symmetry_smoke" classname="symmetry_smoke" time="0.18053" status="run">
+		<properties/>
+		<system-out>symmetry smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="point_group_catalog_smoke" classname="point_group_catalog_smoke" time="0.198006" status="run">
+		<properties/>
+		<system-out>point-group catalog smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="coordination_geometry_smoke" classname="coordination_geometry_smoke" time="0.357528" status="run">
+		<properties/>
+		<system-out>coordination geometry smoke tests passed
+</system-out>
+	</testcase>
+	<testcase name="local_orbital_symmetry_smoke" classname="local_orbital_symmetry_smoke" time="0.101833" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="local_geometry_smoke" classname="local_geometry_smoke" time="0.129232" status="run">
+		<properties/>
+		<system-out>local molecular geometry smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="orbital_tracking_smoke" classname="orbital_tracking_smoke" time="0.135727" status="run">
+		<properties/>
+		<system-out>orbital subspace tracking smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="pi_topology_smoke" classname="pi_topology_smoke" time="0.135321" status="run">
+		<properties/>
+		<system-out>oriented pi topology smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="interaction_graph_smoke" classname="interaction_graph_smoke" time="0.259867" status="run">
+		<properties/>
+		<system-out>interaction graph smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="coordination_frame_contract_smoke" classname="coordination_frame_contract_smoke" time="0.184117" status="run">
+		<properties/>
+		<system-out>coordination frame contract smoke tests passed
+</system-out>
+	</testcase>
+	<testcase name="orbital_symmetry_smoke" classname="orbital_symmetry_smoke" time="0.185595" status="run">
+		<properties/>
+		<system-out>orbital symmetry smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="linear_orbital_symmetry_smoke" classname="linear_orbital_symmetry_smoke" time="0.1873" status="run">
+		<properties/>
+		<system-out>linear orbital symmetry smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="orbital_view_smoke" classname="orbital_view_smoke" time="0.29115" status="run">
+		<properties/>
+		<system-out>orbital_view_smoke ok
+</system-out>
+	</testcase>
+	<testcase name="mo_diagram_smoke" classname="mo_diagram_smoke" time="0.333862" status="run">
+		<properties/>
+		<system-out>mo_diagram_smoke ok
+</system-out>
+	</testcase>
+	<testcase name="energy_axis_smoke" classname="energy_axis_smoke" time="0.269985" status="run">
+		<properties/>
+		<system-out>energy_axis_smoke ok; minimum normalized gap=0.0550035; pixel-equivalent=39.6025 px
+</system-out>
+	</testcase>
+	<testcase name="cp_reference_layout_smoke" classname="cp_reference_layout_smoke" time="0.164489" status="run">
+		<properties/>
+		<system-out>cp_reference_layout_smoke ok; shown=22 hidden=5; artifacts=F:\Dev\cov-general-fixes-20260906-build-off\visual_artifacts
+</system-out>
+	</testcase>
+	<testcase name="mo_diagram_export_semantics_smoke" classname="mo_diagram_export_semantics_smoke" time="0.282772" status="run">
+		<properties/>
+		<system-out>mo_diagram_export_semantics_smoke ok
+</system-out>
+	</testcase>
+	<testcase name="molecule_style_smoke" classname="molecule_style_smoke" time="0.300649" status="run">
+		<properties/>
+		<system-out>molecule_style_smoke ok
+</system-out>
+	</testcase>
+	<testcase name="ui_smoke" classname="ui_smoke" time="0.229174" status="run">
+		<properties/>
+		<system-out>ui_smoke ok
+</system-out>
+	</testcase>
+	<testcase name="ui_fchk_smoke" classname="ui_fchk_smoke" time="0.148354" status="run">
+		<properties/>
+		<system-out>FCHK-first UI smoke test passed
+</system-out>
+	</testcase>
+	<testcase name="ui_orbital_localisation_smoke" classname="ui_orbital_localisation_smoke" time="0.0493693" status="run">
+		<properties/>
+		<system-out>ui_orbital_localisation_smoke: four-language orbital UI catalogue verified
+</system-out>
+	</testcase>
+</testsuite>

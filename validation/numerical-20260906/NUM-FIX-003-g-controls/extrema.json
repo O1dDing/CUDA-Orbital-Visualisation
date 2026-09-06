@@ -1,0 +1,80 @@
+{
+  "round_identity": "313173ec79fd92685209f5fda4c637308b8677d107553a59dab962a9ce43b9b4",
+  "extrema": {
+    "AO_integral_max_absolute_error": {
+      "value": 1.1102230246251565e-15,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": null
+    },
+    "reference_gram_max_error": {
+      "value": 5.734202032383051e-07,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": null
+    },
+    "production_gram_max_error": {
+      "value": 5.734202465643878e-07,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": null
+    },
+    "production_reference_gram_max_error": {
+      "value": 1.9335977263779114e-11,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": null
+    },
+    "electron_trace_error": {
+      "value": 2.2701152069259933e-09,
+      "case_id": "AUX-G-PURE",
+      "mo_zero_based": null
+    },
+    "available_chemistry_mos": {
+      "count": 500
+    },
+    "sampled_nrms": {
+      "value": 1.1234576719026886e-05,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 203
+    },
+    "sampled_relative_peak_error": {
+      "value": 2.422122948377774e-05,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 25
+    },
+    "sampled_max_absolute_error": {
+      "value": 1.0195656866715458e-05,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 63
+    },
+    "sampled_abs_cosine": {
+      "value": 0.9999999999369127,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 203
+    },
+    "sampled_unique_points": {
+      "value": 8179,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 0
+    },
+    "complete_nrms": {
+      "value": 4.037465939833811e-07,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 1
+    },
+    "complete_relative_peak_error": {
+      "value": 1.0026836068099954e-06,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 1
+    },
+    "complete_max_absolute_error": {
+      "value": 4.374267989489909e-07,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 1
+    },
+    "complete_abs_cosine": {
+      "value": 0.9999999999999185,
+      "case_id": "AUX-G-CARTESIAN",
+      "mo_zero_based": 1
+    }
+  },
+  "review_barrier_sha256": "110077724c876489919da4e74a2aab7d299fe3b51f65bb8aa1f02c9d82e1f58d",
+  "formal_case_passes": 0
+}
