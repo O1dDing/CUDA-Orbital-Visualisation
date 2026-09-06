@@ -38,6 +38,8 @@ def checked_identity(manifest,root):
         if digest(Path(__file__).parent/name)!=sha: raise RuntimeError('Frozen runner differs: '+name)
     for case in manifest['cases']:
         if digest(case['input'])!=case['sha256']: raise RuntimeError('Frozen input differs: '+case['case_id'])
+    for name,sha in manifest['input_artifacts'].items():
+        if digest(root/name)!=sha: raise RuntimeError('Frozen input or sidecar differs: '+name)
 
 def main():
     parser=argparse.ArgumentParser()
@@ -148,6 +150,9 @@ def main():
                                 timeout=manifest['native_timeout_seconds'])
         try:
             if digest(case['input'])!=case['sha256']: raise RuntimeError('Input identity changed')
+            for log in case['log_candidates']:
+                if digest(log)!=manifest['input_artifacts'][str(Path(log).relative_to(root))]:
+                    raise RuntimeError('Producer sidecar changed before collection')
             info=native.collect_one(options,manifest,case)
             evidence=attempt/'cases'/case_id
             info['evidence_directory']=str(evidence.relative_to(root))
@@ -155,6 +160,9 @@ def main():
             info['round_identity']=manifest['round_identity']
             if info['source_sha256']!=case['sha256']:
                 info['collection_status']='error';info['error']='Input changed during collection'
+            for log in case['log_candidates']:
+                if digest(log)!=manifest['input_artifacts'][str(Path(log).relative_to(root))]:
+                    info['collection_status']='error';info['error']='Producer sidecar changed during collection'
             # Capture exact raw evidence identities only after the process tree
             # and lossless screenshot conversion have finished.
             files={str(p.relative_to(evidence)):{'bytes':p.stat().st_size,'sha256':digest(p)}
