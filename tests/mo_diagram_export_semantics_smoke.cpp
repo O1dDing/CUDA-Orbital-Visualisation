@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -9,6 +10,7 @@
 #include <iterator>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace {
 
@@ -26,6 +28,33 @@ std::size_t count_token(const std::string& text, const std::string& token) {
         offset += token.size();
     }
     return count;
+}
+
+bool number_after(const std::string& text,const std::string& marker,double expected) {
+    const auto pos=text.find(marker);
+    if (pos==std::string::npos) return false;
+    try { return std::abs(std::stod(text.substr(pos+marker.size()))-expected)<1e-12; }
+    catch (...) { return false; }
+}
+
+bool numeric_array_after(const std::string& text,const std::string& marker,
+                         const std::vector<double>& expected) {
+    const auto pos=text.find(marker);
+    if (pos==std::string::npos) return false;
+    auto begin=text.find('[',pos+marker.size());
+    if (begin==std::string::npos) return false;
+    ++begin;
+    for (std::size_t i=0;i<expected.size();++i) {
+        try {
+            std::size_t used=0;
+            if (std::abs(std::stod(text.substr(begin),&used)-expected[i])>=1e-12) return false;
+            begin+=used;
+            const auto delimiter=text.find_first_not_of(" \t\r\n",begin);
+            if (delimiter==std::string::npos || text[delimiter]!=(i+1==expected.size()?']':',')) return false;
+            begin=delimiter+1;
+        } catch (...) { return false; }
+    }
+    return true;
 }
 
 cov::OrbitalMetadata metadata(const std::size_t index,
@@ -262,7 +291,7 @@ int main() {
         json.find("\"geometry_name\": \"Octahedron\"") == std::string::npos ||
         json.find("\"coordination_number\": 6") == std::string::npos ||
         json.find("\"angular_rms\": 0.0125") == std::string::npos ||
-        json.find("\"shape_measure\": 0.018") == std::string::npos ||
+        !number_after(json,"\"shape_measure\":",0.018) ||
         json.find("\"radial_cv\": 0.021") == std::string::npos ||
         json.find("\"local_molecular_geometries\": [") == std::string::npos ||
         json.find("\"centre_atom_index\":4") == std::string::npos ||
@@ -275,10 +304,10 @@ int main() {
         json.find("\"beta_electrons\": 4") == std::string::npos ||
         json.find("\"scf_convergence\": \"converged\"") == std::string::npos ||
         json.find("\"wavefunction_stability\": \"stable\"") == std::string::npos ||
-        json.find("\"atomic_partial_charges\": [-0.2,0.2]") == std::string::npos ||
+        !numeric_array_after(json,"\"atomic_partial_charges\":",{-0.2,0.2}) ||
         json.find("\"pi_interactions\": [") == std::string::npos ||
         json.find("\"kind\": \"acceptor\"") == std::string::npos ||
-        json.find("\"splitting_hartree\": 0.3") == std::string::npos ||
+        !number_after(json,"\"splitting_hartree\":",0.3) ||
         json.find("\"lower_orbitals\": [0,2,4]") == std::string::npos ||
         json.find("\"family_id\":\"pi-family-derived\"") == std::string::npos ||
         json.find("\"topology_available\":true") == std::string::npos ||
@@ -325,7 +354,7 @@ int main() {
             std::string::npos ||
         csv.find(",Oh,OC-6,Octahedron,6,") == std::string::npos ||
         csv.find("kind=acceptor;symmetry=T2g") == std::string::npos ||
-        csv.find("splitting_hartree=0.3") == std::string::npos) {
+        !number_after(csv,"splitting_hartree=",0.3)) {
         std::cerr << "CSV local coordination or pi metadata missing\n";
         return 5;
     }
