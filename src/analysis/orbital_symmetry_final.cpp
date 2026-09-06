@@ -138,6 +138,14 @@ OrbitalSymmetryResult derive_orbital_symmetry(
                 std::min(result.worst_subspace_retention, retention);
             if (!label) continue;
 
+            DerivedOrbitalSymmetryAssignment evidence;
+            evidence.point_group=symmetry.point_group;
+            evidence.label=*label;
+            evidence.orbital_indices=group;
+            evidence.subspace_retention=retention;
+            evidence.centre_bohr=symmetry.centre_bohr;
+            wavefunction.derived_orbital_symmetry_assignments.push_back(std::move(evidence));
+
             ++result.groups_labelled;
             for (const std::size_t index : group) {
                 wavefunction.orbitals[index].symmetry = *label;

@@ -106,8 +106,22 @@ int main() {
     cov::Wavefunction derived = tetrahedral();
     cov::derive_point_group_from_geometry(derived);
     if (derived.point_group_detected != "Td" ||
-        derived.point_group_provenance != cov::DataProvenance::Derived) {
+        derived.point_group_provenance != cov::DataProvenance::Derived ||
+        derived.point_group_detected_provenance != cov::DataProvenance::Derived ||
+        !derived.point_group_used.empty() ||
+        derived.point_group_used_provenance != cov::DataProvenance::Unavailable) {
         std::cerr << "geometry-derived symmetry was not stored with derived provenance\n";
+        return EXIT_FAILURE;
+    }
+    auto used_only=tetrahedral();
+    used_only.point_group_used="C1";
+    used_only.point_group_used_provenance=cov::DataProvenance::Producer;
+    used_only.point_group_provenance=cov::DataProvenance::Producer;
+    cov::derive_point_group_from_geometry(used_only);
+    if (used_only.point_group_detected!="Td" || used_only.point_group_used!="C1" ||
+        used_only.point_group_detected_provenance!=cov::DataProvenance::Derived ||
+        used_only.point_group_used_provenance!=cov::DataProvenance::Producer) {
+        std::cerr << "geometry-derived full group was blocked by producer-used subgroup\n";
         return EXIT_FAILURE;
     }
 

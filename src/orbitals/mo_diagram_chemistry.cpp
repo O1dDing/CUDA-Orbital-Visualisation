@@ -84,6 +84,8 @@ void attach_electronic_state_metadata(const Wavefunction& wavefunction,
     state.point_group_detected=wavefunction.point_group_detected;
     state.point_group_used=wavefunction.point_group_used;
     state.point_group_provenance=wavefunction.point_group_provenance;
+    state.point_group_detected_provenance=wavefunction.point_group_detected_provenance;
+    state.point_group_used_provenance=wavefunction.point_group_used_provenance;
     state.source_title=wavefunction.source_title;
     state.source_route=wavefunction.source_route;
     state.enrichment_source=wavefunction.enrichment_source;

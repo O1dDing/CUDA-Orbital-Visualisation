@@ -50,13 +50,22 @@ std::vector<std::string> parenthesized_labels(const std::string& line) {
     return labels;
 }
 
-std::string token_after(const std::string& line, const char* prefix) {
+std::string point_group_field(const std::string& line, const char* prefix,
+                             std::string& field_text) {
     const auto pos = line.find(prefix);
     if (pos == std::string::npos) return {};
-    std::istringstream stream(line.substr(pos + std::string(prefix).size()));
-    std::string token;
-    stream >> token;
-    return token;
+    const auto begin = pos + std::string(prefix).size();
+    const auto end = line.find("NOp", begin);
+    const std::string field = trim(line.substr(begin, end == std::string::npos
+                                                        ? end : end - begin));
+    field_text=field;
+    // Validate Schoenflies syntax, not membership of the smaller display
+    // catalogue. Gaussian's linear aliases D*H/C*V are valid producer values.
+    // In particular, the next column name is never the missing field's value.
+    static const std::regex syntax(
+        R"((?:C(?:[1-9][0-9]*[HV]?|S|I|INFV|\*V)|D(?:[1-9][0-9]*[HD]?|INFH|\*H)|S[1-9][0-9]*|T[DH]?|OH?|IH?|KH?))",
+        std::regex::icase);
+    return std::regex_match(field, syntax) ? field : std::string{};
 }
 
 struct SymmetryBlock {
@@ -140,6 +149,7 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
         return result;
     }
     result.opened = true;
+    wavefunction.point_group_source_records.clear();
 
     std::vector<std::string> lines;
     std::string line;
@@ -158,14 +168,22 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
         const std::string folded = lower(t);
         if (starts_with(t, "Entering Link 1")) ++job_segment;
         if (t.find("Full point group") != std::string::npos) {
-            const auto value = token_after(t, "Full point group");
-            if (!value.empty()) {
-                point_group_detected=TextRecord{value,job_segment};
-            }
+            std::string field_text;
+            const auto value = point_group_field(t, "Full point group",field_text);
+            // An invalid later geometry record invalidates an earlier value
+            // in the same job too; it must not silently resurrect that value.
+            point_group_detected=TextRecord{value,job_segment};
+            wavefunction.point_group_source_records.push_back(
+                {"detected",lines[i],value,i+1u,job_segment,!value.empty(),field_text,
+                 field_text.empty()?"missing-input":value.empty()?"invalid-input":"available"});
         }
         if (t.find("Largest Abelian subgroup") != std::string::npos) {
-            const auto value = token_after(t, "Largest Abelian subgroup");
-            if (!value.empty()) point_group_used=TextRecord{value,job_segment};
+            std::string field_text;
+            const auto value = point_group_field(t, "Largest Abelian subgroup",field_text);
+            point_group_used=TextRecord{value,job_segment};
+            wavefunction.point_group_source_records.push_back(
+                {"used",lines[i],value,i+1u,job_segment,!value.empty(),field_text,
+                 field_text.empty()?"missing-input":value.empty()?"invalid-input":"available"});
         }
 
         if (auto spin = spin_squared_record(t, i)) {
@@ -241,15 +259,21 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
         last_scf_status?last_scf_status->job_segment:job_segment;
 
     const bool detected_is_current=point_group_detected &&
-        point_group_detected->job_segment==final_job_segment;
+        point_group_detected->job_segment==final_job_segment &&
+        !point_group_detected->value.empty();
     const bool used_is_current=point_group_used &&
-        point_group_used->job_segment==final_job_segment;
+        point_group_used->job_segment==final_job_segment &&
+        !point_group_used->value.empty();
     if (detected_is_current || used_is_current) {
         wavefunction.point_group_detected = detected_is_current
             ?point_group_detected->value:std::string{};
         wavefunction.point_group_used = used_is_current
-            ?point_group_used->value:wavefunction.point_group_detected;
+            ?point_group_used->value:std::string{};
         wavefunction.point_group_provenance = DataProvenance::Producer;
+        wavefunction.point_group_detected_provenance = detected_is_current
+            ?DataProvenance::Producer:DataProvenance::Unavailable;
+        wavefunction.point_group_used_provenance = used_is_current
+            ?DataProvenance::Producer:DataProvenance::Unavailable;
         result.point_group_applied = true;
     }
 
@@ -341,7 +365,8 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
         result.spin_squared_applied = true;
     }
 
-    if (result.applied()) wavefunction.enrichment_source = path.string();
+    if (result.applied() || !wavefunction.point_group_source_records.empty())
+        wavefunction.enrichment_source = path.string();
     return result;
 }
 

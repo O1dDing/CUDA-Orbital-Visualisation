@@ -312,6 +312,8 @@ struct ElectronicStateDiagramMetadata {
     std::string point_group_detected;
     std::string point_group_used;
     DataProvenance point_group_provenance = DataProvenance::Unavailable;
+    DataProvenance point_group_detected_provenance = DataProvenance::Unavailable;
+    DataProvenance point_group_used_provenance = DataProvenance::Unavailable;
     std::string source_title;
     std::string source_route;
     std::string enrichment_source;

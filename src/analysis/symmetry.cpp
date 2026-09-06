@@ -521,12 +521,20 @@ MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
 
 void derive_point_group_from_geometry(Wavefunction& wavefunction,
                                       const SymmetryOptions& options) {
-    if (wavefunction.point_group_provenance == DataProvenance::Producer) return;
+    if (!wavefunction.point_group_detected.empty() &&
+        (wavefunction.point_group_detected_provenance == DataProvenance::Producer ||
+         wavefunction.point_group_provenance == DataProvenance::Producer)) return;
     const MolecularSymmetry symmetry = analyse_molecular_symmetry(wavefunction, options);
     if (!symmetry.available()) return;
     wavefunction.point_group_detected = symmetry.point_group;
-    if (wavefunction.point_group_used.empty()) wavefunction.point_group_used = symmetry.point_group;
+    // Geometry says nothing about the symmetry settings actually used by a
+    // producer calculation. Keep that separately supplied field unchanged.
+    if (!wavefunction.point_group_used.empty() &&
+        wavefunction.point_group_used_provenance==DataProvenance::Unavailable &&
+        wavefunction.point_group_provenance==DataProvenance::Producer)
+        wavefunction.point_group_used_provenance=DataProvenance::Producer;
     wavefunction.point_group_provenance = DataProvenance::Derived;
+    wavefunction.point_group_detected_provenance = DataProvenance::Derived;
 }
 
 } // namespace cov

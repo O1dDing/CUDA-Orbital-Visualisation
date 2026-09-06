@@ -252,6 +252,10 @@ bool write_mo_diagram_json(const MODiagramData& data,
         << json_escape(state.point_group_used) << "\",\n";
     out << "    \"point_group_provenance\": \""
         << data_provenance_name(state.point_group_provenance) << "\",\n";
+    out << "    \"point_group_detected_provenance\": \""
+        << data_provenance_name(state.point_group_detected_provenance) << "\",\n";
+    out << "    \"point_group_used_provenance\": \""
+        << data_provenance_name(state.point_group_used_provenance) << "\",\n";
     out << "    \"source_title\": \"" << json_escape(state.source_title)
         << "\",\n    \"source_route\": \"" << json_escape(state.source_route)
         << "\",\n    \"enrichment_source\": \""
@@ -512,7 +516,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "wavefunction_stability,stability_provenance,spin_squared_before,"
            "spin_squared_after,spin_squared_provenance,atomic_partial_charge_scheme,"
            "atomic_partial_charge_provenance,atomic_partial_charges,point_group_detected,"
-           "point_group_used,point_group_provenance,multicentre_channel_count,"
+           "point_group_used,point_group_provenance,point_group_detected_provenance,point_group_used_provenance,multicentre_channel_count,"
            "multicentre_source_subspace_id,multicentre_source_subspace_electron_count,"
            "stability_detail,source_title,source_route,enrichment_source\n";
     const std::string ligand_atoms = csv_index_list(data.ligand_field_ligand_atoms);
@@ -613,6 +617,8 @@ bool write_mo_diagram_csv(const MODiagramData& data,
         out << ',' << csv_escape(state.point_group_detected) << ','
             << csv_escape(state.point_group_used) << ','
             << data_provenance_name(state.point_group_provenance) << ','
+            << data_provenance_name(state.point_group_detected_provenance) << ','
+            << data_provenance_name(state.point_group_used_provenance) << ','
             << annotation.multicentre.channel_count << ','
             << csv_escape(annotation.multicentre.source_subspace_id) << ','
             << annotation.multicentre.source_subspace_electron_count << ','

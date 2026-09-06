@@ -34,6 +34,50 @@ int main(int argc, char** argv) {
         numeric_array(wavefunction.ao_overlap);
         std::cout << ",\"numerical_diagnostics\":";
         cov::write_numerical_diagnostics_json(std::cout,wavefunction);
+        std::cout << ",\"point_group_source_records\":[";
+        for (std::size_t i=0;i<wavefunction.point_group_source_records.size();++i) {
+            if (i) std::cout << ',';
+            const auto& record=wavefunction.point_group_source_records[i];
+            std::cout << "{\"field\":";
+            cov::numerical_json::string(std::cout,record.field);
+            std::cout << ",\"raw_record\":";
+            cov::numerical_json::string(std::cout,record.raw_record);
+            std::cout << ",\"value\":";
+            cov::numerical_json::string(std::cout,record.value);
+            std::cout << ",\"field_text\":";
+            cov::numerical_json::string(std::cout,record.field_text);
+            std::cout << ",\"status\":";
+            cov::numerical_json::string(std::cout,record.status);
+            std::cout << ",\"line_number\":" << record.line_number
+                      << ",\"job_segment\":" << record.job_segment
+                      << ",\"valid\":" << (record.valid?"true":"false") << '}';
+        }
+        std::cout << ']';
+        std::cout << ",\"derived_symmetry_assignments\":[";
+        for (std::size_t i=0;i<wavefunction.derived_orbital_symmetry_assignments.size();++i) {
+            if (i) std::cout << ',';
+            const auto& record=wavefunction.derived_orbital_symmetry_assignments[i];
+            std::cout << "{\"point_group\":";
+            cov::numerical_json::string(std::cout,record.point_group);
+            std::cout << ",\"label\":";
+            cov::numerical_json::string(std::cout,record.label);
+            std::cout << ",\"orbital_indices\":";numeric_array(record.orbital_indices);
+            std::cout << ",\"subspace_retention\":";
+            cov::numerical_json::number(std::cout,record.subspace_retention);
+            std::cout << ",\"maximum_character_error\":";
+            cov::numerical_json::number(std::cout,record.maximum_character_error);
+            std::cout << ",\"centre_bohr\":";numeric_array(record.centre_bohr);
+            std::cout << ",\"axis_frame\":";
+            if (record.axes_available) {
+                std::cout << "{\"principal\":";numeric_array(record.principal_axis);
+                std::cout << ",\"secondary\":";numeric_array(record.secondary_axis);
+                std::cout << ",\"convention\":";
+                cov::numerical_json::string(std::cout,record.axis_convention);
+                std::cout << '}';
+            } else std::cout << "null";
+            std::cout << '}';
+        }
+        std::cout << ']';
         std::cout << ",\"producer_overlap\":";
         numeric_array(wavefunction.producer_ao_overlap);
         std::cout << ",\"ao_transform\":[";

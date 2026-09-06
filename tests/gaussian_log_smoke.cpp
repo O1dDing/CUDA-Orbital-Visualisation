@@ -169,6 +169,62 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    // The point group is a bounded field, not the next whitespace token.
+    // Exercise groups outside the small display catalogue, both linear
+    // aliases, invalid/missing fields, and a later empty geometry record.
+    const auto field_path=std::filesystem::temp_directory_path()/"cov_gaussian_point_group_field.log";
+    for (const std::string value : {"D6H","D12H","C7V","S8","IH","D*H","C*V","KH",""}) {
+        {
+            std::ofstream out(field_path,std::ios::binary);
+            out << " Full point group       " << value << "       NOp 0\n"
+                << " Largest Abelian subgroup       " << value << "       NOp 0\n";
+        }
+        cov::Wavefunction fields;
+        const auto enriched=cov::enrich_from_gaussian_log(fields,field_path);
+        if (enriched.point_group_applied!=!value.empty() ||
+            fields.point_group_detected!=value || fields.point_group_used!=value ||
+            fields.point_group_source_records.size()!=2u ||
+            fields.point_group_source_records.front().valid!=!value.empty() ||
+            fields.point_group_source_records.front().status!=(value.empty()?"missing-input":"available") ||
+            fields.point_group_source_records.front().raw_record.find("NOp")==std::string::npos) {
+            std::cerr << "Gaussian point-group bounded field regression: " << value << '\n';
+            return EXIT_FAILURE;
+        }
+    }
+    for (const std::string value : {"","NOp","banana","C0V","D6H extra"}) {
+        {
+            std::ofstream out(field_path,std::ios::binary);
+            out << " Full point group C2V NOp 4\n"
+                << " Full point group " << value << " NOp 0\n"
+                << " SCF Done: E(RHF) = -1.0 A.U.\n";
+        }
+        cov::Wavefunction fields;
+        const auto enriched=cov::enrich_from_gaussian_log(fields,field_path);
+        if (enriched.point_group_applied || !fields.point_group_detected.empty() ||
+            fields.point_group_provenance!=cov::DataProvenance::Unavailable ||
+            fields.point_group_source_records.size()!=2u ||
+            !fields.point_group_source_records.front().valid ||
+            fields.point_group_source_records.back().valid) {
+            std::cerr << "Gaussian invalid later field resurrected stale point group\n";
+            return EXIT_FAILURE;
+        }
+    }
+    std::filesystem::remove(field_path,ec);
+
+    {
+        std::ofstream out(field_path,std::ios::binary);
+        out << " Full point group D6H NOp 24\n";
+    }
+    cov::Wavefunction detected_only;
+    (void)cov::enrich_from_gaussian_log(detected_only,field_path);
+    std::filesystem::remove(field_path,ec);
+    if (detected_only.point_group_detected!="D6H" || !detected_only.point_group_used.empty() ||
+        detected_only.point_group_detected_provenance!=cov::DataProvenance::Producer ||
+        detected_only.point_group_used_provenance!=cov::DataProvenance::Unavailable) {
+        std::cerr << "Gaussian detected group invented an unreported calculation subgroup\n";
+        return EXIT_FAILURE;
+    }
+
     // Parallel .chk/.log project trees are a common Gaussian layout. The
     // exact relative subdirectory and stem must be preserved.
     const auto tree_root = std::filesystem::temp_directory_path() /

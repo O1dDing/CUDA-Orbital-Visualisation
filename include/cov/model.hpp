@@ -30,6 +30,37 @@ enum class DataProvenance : std::uint8_t {
     Derived = 2,
 };
 
+// One literal Gaussian point-group record. An absent field has no record;
+// an empty/invalid printed field has a record with valid=false. Keep rejected
+// text and Link1 identity without promoting it to producer symmetry metadata.
+struct PointGroupSourceRecord {
+    std::string field;
+    std::string raw_record;
+    std::string value;
+    std::size_t line_number = 0;
+    std::size_t job_segment = 0;
+    bool valid = false;
+    std::string field_text;
+    std::string status;
+};
+
+// A derived irrep describes a specified MO subspace in a specified nuclear
+// symmetry frame. It is independent of producer labels and local ligand-field
+// interpretations. Axes are in the input Cartesian frame; they are absent
+// unless axes_available is true. B1/B2 conventions can depend on this frame.
+struct DerivedOrbitalSymmetryAssignment {
+    std::string point_group;
+    std::string label;
+    std::vector<std::size_t> orbital_indices;
+    double subspace_retention = std::numeric_limits<double>::quiet_NaN();
+    double maximum_character_error = std::numeric_limits<double>::quiet_NaN();
+    std::array<double,3> centre_bohr{};
+    std::array<double,3> principal_axis{};
+    std::array<double,3> secondary_axis{};
+    bool axes_available = false;
+    std::string axis_convention;
+};
+
 enum class NumericalStatus : std::uint8_t {
     NotComputed = 0,
     Available,
@@ -379,6 +410,10 @@ struct Wavefunction {
     std::string point_group_detected;
     std::string point_group_used;
     DataProvenance point_group_provenance = DataProvenance::Unavailable;
+    DataProvenance point_group_detected_provenance = DataProvenance::Unavailable;
+    DataProvenance point_group_used_provenance = DataProvenance::Unavailable;
+    std::vector<PointGroupSourceRecord> point_group_source_records;
+    std::vector<DerivedOrbitalSymmetryAssignment> derived_orbital_symmetry_assignments;
 
     // Optional Gaussian LOG/OUT diagnostics.  These fields are populated only
     // from explicit final producer statements; route keywords and inferred

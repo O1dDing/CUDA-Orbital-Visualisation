@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace cov {
 
@@ -565,6 +566,13 @@ OrbitalSymmetryResult derive_orbital_symmetry(Wavefunction& wavefunction,
             label=classify_linear(wavefunction,sym,group,options,retention);
         }
         if (!label) continue;
+        DerivedOrbitalSymmetryAssignment evidence;
+        evidence.point_group=sym.point_group;
+        evidence.label=*label;
+        evidence.orbital_indices=group;
+        evidence.subspace_retention=retention;
+        evidence.centre_bohr=sym.centre_bohr;
+        wavefunction.derived_orbital_symmetry_assignments.push_back(std::move(evidence));
         ++result.groups_examined;
         ++result.groups_labelled;
         result.worst_subspace_retention=std::min(result.worst_subspace_retention,retention);

@@ -391,12 +391,26 @@ const SymmetryOperation* principal_rotation(const MolecularSymmetry& symmetry, i
     return best;
 }
 
-const SymmetryOperation* perpendicular_c2(const MolecularSymmetry& symmetry, const Vec3& axis) {
+const SymmetryOperation* perpendicular_c2(const Wavefunction& wf,
+                                         const MolecularSymmetry& symmetry, const Vec3& axis) {
+    const SymmetryOperation* best=nullptr;
+    std::size_t most_on_axis=0;
     for (const auto& op:symmetry.operations) {
         if (op.kind==SymmetryOperationKind::ProperRotation && op.order==2 &&
-            std::abs(dot3(op.axis_or_normal,axis))<2.0e-5) return &op;
+            std::abs(dot3(op.axis_or_normal,axis))<2.0e-5) {
+            std::size_t on_axis=0;
+            for (const auto& atom:wf.atoms) {
+                const Vec3 r{atom.x-symmetry.centre_bohr[0],
+                             atom.y-symmetry.centre_bohr[1],
+                             atom.z-symmetry.centre_bohr[2]};
+                const double along=dot3(r,op.axis_or_normal);
+                const double perpendicular2=std::max(0.0,dot3(r,r)-along*along);
+                if (perpendicular2<=symmetry.tolerance_bohr*symmetry.tolerance_bohr) ++on_axis;
+            }
+            if (!best || on_axis>most_on_axis) { best=&op;most_on_axis=on_axis; }
+        }
     }
-    return nullptr;
+    return best;
 }
 
 const SymmetryOperation* horizontal_reflection(const MolecularSymmetry& symmetry, const Vec3& axis) {
@@ -426,11 +440,12 @@ std::optional<std::string> classify_dnh(const Wavefunction& wf,
                                         const MolecularSymmetry& symmetry,
                                         const std::vector<std::size_t>& group,
                                         const OrbitalSymmetryOptions& options,
-                                        double& retention) {
+                                        double& retention,
+                                        DerivedOrbitalSymmetryAssignment& evidence) {
     int n=1;
     const auto* cn=principal_rotation(symmetry,n);
     if (!cn || n<3 || symmetry.point_group != "D"+std::to_string(n)+"h") return std::nullopt;
-    const auto* c2=perpendicular_c2(symmetry,cn->axis_or_normal);
+    const auto* c2=perpendicular_c2(wf,symmetry,cn->axis_or_normal);
     const auto* sh=horizontal_reflection(symmetry,cn->axis_or_normal);
     if (!c2 || !sh) return std::nullopt;
     const auto a=evaluate_character(wf,*cn,group);
@@ -440,17 +455,40 @@ std::optional<std::string> classify_dnh(const Wavefunction& wf,
     retention=std::min({a.retention,b.retention,h.retention});
     if (retention<options.minimum_subspace_retention) return std::nullopt;
     const int d=static_cast<int>(group.size());
-    const bool prime=h.character>=0.0;
     if (std::abs(std::abs(h.character)-static_cast<double>(d))>options.character_tolerance) return std::nullopt;
-    const std::string suffix=prime ? "'" : "''";
+    evidence.centre_bohr=symmetry.centre_bohr;
+    evidence.principal_axis=cn->axis_or_normal;
+    evidence.secondary_axis=c2->axis_or_normal;
+    evidence.axes_available=true;
+    evidence.axis_convention="C2 prime is the recorded perpendicular axis with maximal on-axis atom support; B1/B2 are relative to it";
+    evidence.maximum_character_error=std::abs(std::abs(h.character)-static_cast<double>(d));
+    std::string suffix=h.character>=0.0 ? "'" : "''";
+    double inversion_character=0.0;
+    if ((n%2)==0) {
+        const auto* inv=find_operation(symmetry,SymmetryOperationKind::Inversion,2);
+        if (!inv) return std::nullopt;
+        const auto parity=evaluate_character(wf,*inv,group);
+        if (!parity.valid) return std::nullopt;
+        retention=std::min(retention,parity.retention);
+        const double error=std::abs(std::abs(parity.character)-static_cast<double>(d));
+        if (retention<options.minimum_subspace_retention || error>options.character_tolerance) return std::nullopt;
+        evidence.maximum_character_error=std::max(evidence.maximum_character_error,error);
+        inversion_character=parity.character;
+        suffix=parity.character>=0.0 ? "g" : "u";
+    }
     if (d==1) {
         if (std::abs(std::abs(a.character)-1.0)>options.character_tolerance ||
             std::abs(std::abs(b.character)-1.0)>options.character_tolerance) return std::nullopt;
-        if (a.character<0.0) {
-            if ((n%2)==0) return std::nullopt;
-            return std::nullopt;
+        if (a.character<0.0 && (n%2)!=0) return std::nullopt;
+        if ((n%2)==0) {
+            const bool half_turn_odd=a.character<0.0 && ((n/2)%2)!=0;
+            const bool expected_even=(h.character>=0.0)!=half_turn_odd;
+            if ((inversion_character>=0.0)!=expected_even) return std::nullopt;
         }
-        return std::string(b.character>=0.0 ? "A1" : "A2")+suffix;
+        evidence.maximum_character_error=std::max({evidence.maximum_character_error,
+            std::abs(std::abs(a.character)-1.0),std::abs(std::abs(b.character)-1.0)});
+        const std::string family=a.character>=0.0?"A":"B";
+        return family+(b.character>=0.0?"1":"2")+suffix;
     }
     if (d==2) {
         int best_k=0;
@@ -463,7 +501,9 @@ std::optional<std::string> classify_dnh(const Wavefunction& wf,
         }
         if (best_k==0 || best_error>options.character_tolerance) return std::nullopt;
         if (std::abs(b.character)>options.character_tolerance) return std::nullopt;
-        return "E"+std::to_string(best_k)+suffix;
+        if ((n%2)==0 && (inversion_character>=0.0)!=((h.character>=0.0)!=((best_k%2)!=0))) return std::nullopt;
+        evidence.maximum_character_error=std::max({evidence.maximum_character_error,best_error,std::abs(b.character)});
+        return "E"+(kmax==1?std::string{}:std::to_string(best_k))+suffix;
     }
     return std::nullopt;
 }
@@ -603,6 +643,7 @@ OrbitalSymmetryResult derive_orbital_symmetry(Wavefunction& wavefunction,
         if (already_labelled) continue;
         ++result.groups_examined;
         double retention=1.0;
+        DerivedOrbitalSymmetryAssignment evidence;
         std::optional<std::string> label;
         if (symmetry.point_group=="Td") {
             label=classify_td(wavefunction,symmetry,group,options,retention);
@@ -610,10 +651,16 @@ OrbitalSymmetryResult derive_orbital_symmetry(Wavefunction& wavefunction,
             label=classify_oh(wavefunction,symmetry,group,options,retention);
         } else if (symmetry.point_group.size()>=3 && symmetry.point_group[0]=='D' &&
                    symmetry.point_group.back()=='h') {
-            label=classify_dnh(wavefunction,symmetry,group,options,retention);
+            label=classify_dnh(wavefunction,symmetry,group,options,retention,evidence);
         }
         result.worst_subspace_retention=std::min(result.worst_subspace_retention,retention);
         if (!label) continue;
+        evidence.point_group=symmetry.point_group;
+        evidence.label=*label;
+        evidence.orbital_indices=group;
+        evidence.subspace_retention=retention;
+        evidence.centre_bohr=symmetry.centre_bohr;
+        wavefunction.derived_orbital_symmetry_assignments.push_back(std::move(evidence));
         ++result.groups_labelled;
         for (std::size_t index:group) {
             wavefunction.orbitals[index].symmetry=*label;

@@ -99,6 +99,23 @@ int main() {
         return 7;
     }
 
+    struct LinearNotation { const char* raw; const char* base; const char* sub; const char* super; };
+    for (const auto& expected : std::vector<LinearNotation>{
+             {"SG","Σ","",""},{"SGG","Σ","g",""},{"SGU","Σ","u",""},
+             {"PI","Π","",""},{"PIG","Π","g",""},{"PIU","Π","u",""},
+             {"DLTA","Δ","",""},{"DLTG","Δ","g",""},{"DLTU","Δ","u",""},
+             {"PHI","Φ","",""},{"PHIU","Φ","u",""},
+             {"Sigma_g^+","Σ","g","+"},{"Σu−","Σ","u","−"},
+             {"sigma.g","Σ","g",""},{"Γg","Γ","g",""},
+             {"SGunknown","SGunknown","",""}}) {
+        const auto parsed=cov::parse_symmetry_notation(expected.raw);
+        if (parsed.raw!=expected.raw || parsed.base!=expected.base ||
+            parsed.subscript!=expected.sub || parsed.superscript!=expected.super) {
+            std::cerr << "linear irrep notation/provenance failed for " << expected.raw << '\n';
+            return 17;
+        }
+    }
+
     // For the default 1200x900 export, every distinct non-degenerate level in
     // this 6..27 Cp window must receive at least ~50 px vertical separation.
     // Degenerate members remain exactly co-linear by sharing display_coordinate.
