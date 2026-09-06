@@ -123,10 +123,36 @@ def pin_current(mask):
 
 
 def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
-             timeout_seconds: float, on_started=None, affinity=True, *, stdin_path: Path | None = None):
-    """Run an argv list under kernel-enforced limits and record real tree time."""
+             timeout_seconds: float, on_started=None, affinity=True, *, stdin_path: Path | None = None,
+             on_phase=None):
+    """Run an argv list under kernel-enforced limits and record real tree time.
+
+    Lifecycle events use a separate monotonic origin at function entry. The
+    legacy started_epoch/wall_seconds fields retain their existing meaning.
+    Optional on_phase receives an event snapshot before execution proceeds;
+    its elapsed time and any ordinary exception are recorded separately. A
+    failed observer does not remove process limits or interrupt cleanup.
+    """
     if cpu_mask <= 0 or memory_gib <= 0 or timeout_seconds <= 0:
         raise ValueError("Resource and timeout limits must be positive")
+    lifecycle_begin = time.monotonic()
+    lifecycle = []
+
+    def phase(name, **detail):
+        event = {"sequence": len(lifecycle), "phase": name,
+                 "elapsed_seconds": time.monotonic() - lifecycle_begin,
+                 "epoch": time.time(), **detail}
+        lifecycle.append(event)
+        observer_begin = time.monotonic()
+        if on_phase is not None:
+            try:
+                on_phase(dict(event))
+            except Exception as error:
+                event["observer_error"] = f"{type(error).__name__}: {error}"
+        event["observer_wall_seconds"] = time.monotonic() - observer_begin
+        event["after_observer_elapsed_seconds"] = time.monotonic() - lifecycle_begin
+
+    phase("supervisor_enter")
     k = kernel()
     k.CreateJobObjectW.argtypes = [ct.c_void_p, wt.LPCWSTR]
     k.CreateJobObjectW.restype = wt.HANDLE
@@ -142,18 +168,23 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
     k.CreateProcessW.argtypes = [wt.LPCWSTR, wt.LPWSTR, ct.c_void_p, ct.c_void_p,
                                 wt.BOOL, wt.DWORD, ct.c_void_p, wt.LPCWSTR,
                                 ct.POINTER(STARTUPINFO), ct.POINTER(PROCESSINFO)]
+    phase("job_creation_enter")
     job = require(k.CreateJobObjectW(None, None))
+    phase("job_created")
     process = PROCESSINFO()
     import msvcrt
     # Some Windows Fortran runtimes dereference the standard handles during
     # startup even when the application receives explicit input/output paths.
     # Give the hidden process real handles instead of the null GUI defaults.
+    phase("standard_stream_open_enter")
     stdin_file = open(os.devnull if stdin_path is None else stdin_path, "rb")
     console_file = (Path(cwd) / "launcher.log").open("ab")
+    phase("standard_streams_opened")
     started = time.time()
     begin = time.monotonic()
     timed_out = False
     try:
+        phase("resource_limits_enter")
         limits = EXTENDEDLIMIT()
         # AFFINITY | JOB_MEMORY | KILL_ON_JOB_CLOSE; children cannot break away.
         limits.BasicLimitInformation.LimitFlags = 0x200 | 0x2000
@@ -171,6 +202,7 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
             cpu_rate = max(1, min(10000, int(10000 * cpu_mask.bit_count() / os.cpu_count())))
             rate = (wt.DWORD * 2)(0x1 | 0x4, cpu_rate)
             require(k.SetInformationJobObject(job, 15, ct.byref(rate), ct.sizeof(rate)))
+        phase("resource_limits_installed")
         info = STARTUPINFO()
         info.cb = ct.sizeof(info)
         info.dwFlags = 1 | 0x100  # STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES
@@ -183,28 +215,42 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
         environment = ct.create_unicode_buffer("\0".join(
             f"{key}={value}" for key, value in sorted(env.items(), key=lambda x: x[0].upper())
         ) + "\0\0")
+        phase("process_creation_enter")
         require(k.CreateProcessW(str(args[0]), command, None, None, True,
                                  0x4 | 0x400 | 0x10, environment, str(cwd),
                                  ct.byref(info), ct.byref(process)))
+        phase("process_created_suspended", pid=process.dwProcessId)
         try:
+            phase("job_assignment_enter")
             require(k.AssignProcessToJobObject(job, process.hProcess))
+            phase("job_assigned")
         except Exception:
             k.TerminateProcess.argtypes = [wt.HANDLE, wt.UINT]
             k.TerminateProcess(process.hProcess, 125)
             raise
         if on_started:
+            phase("started_callback_enter")
             on_started({"pid": process.dwProcessId, "started_epoch": started,
                         "cpu_mask": cpu_mask if affinity else None,
                         "cpu_rate_hard_cap": cpu_rate, "memory_limit_gib": memory_gib})
+            phase("started_callback_returned")
+        else:
+            phase("started_callback_absent")
+        phase("resume_thread_enter")
         if k.ResumeThread(process.hThread) == 0xFFFFFFFF:
             raise ct.WinError(ct.get_last_error())
+        phase("thread_resumed")
         accounting = ACCOUNTING()
+        phase("tree_monitor_enter")
         while True:
             require(k.QueryInformationJobObject(job, 1, ct.byref(accounting),
                                                 ct.sizeof(accounting), None))
             if accounting.ActiveProcesses == 0:
+                phase("tree_empty")
                 break
             if time.monotonic() - begin > timeout_seconds:
+                if not timed_out:
+                    phase("execution_deadline_observed", active_processes=accounting.ActiveProcesses)
                 require(k.TerminateJobObject(job, 124))
                 timed_out = True
                 # Wait for every link to be gone before releasing its resources.
@@ -212,6 +258,7 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
         exit_code = wt.DWORD()
         require(k.GetExitCodeProcess(process.hProcess, ct.byref(exit_code)))
         require(k.QueryInformationJobObject(job, 9, ct.byref(limits), ct.sizeof(limits), None))
+        phase("final_accounting_collected", exit_code=exit_code.value)
         return {"argv": [str(x) for x in args], "cwd": str(cwd),
                 "stdin_path": str(Path(stdin_path).resolve()) if stdin_path is not None else None,
                 "console_log": str((Path(cwd) / "launcher.log").resolve()),
@@ -223,13 +270,17 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
                 "memory_limit_gib": memory_gib,
                 "peak_tree_commit_bytes": limits.PeakJobMemoryUsed,
                 "tree_process_count": accounting.TotalProcesses,
-                "tree_cpu_seconds": (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7}
+                "tree_cpu_seconds": (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7,
+                "lifecycle_clock": "monotonic seconds from run_tree entry; observer time is explicit",
+                "lifecycle_events": lifecycle}
     finally:
+        phase("cleanup_enter")
         # A supervisor crash or exception kills unfinished descendants, so they
         # cannot retain a resource allocation invisibly on resume.
         remaining = ACCOUNTING()
         if k.QueryInformationJobObject(job, 1, ct.byref(remaining), ct.sizeof(remaining), None):
             if remaining.ActiveProcesses:
+                phase("unfinished_tree_cleanup", active_processes=remaining.ActiveProcesses)
                 k.TerminateJobObject(job, 125)
                 while (k.QueryInformationJobObject(job, 1, ct.byref(remaining), ct.sizeof(remaining), None)
                        and remaining.ActiveProcesses):
@@ -241,3 +292,4 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
             k.CloseHandle(process.hProcess)
         stdin_file.close()
         console_file.close()
+        phase("cleanup_complete")
