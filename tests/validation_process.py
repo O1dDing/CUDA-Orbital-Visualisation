@@ -122,9 +122,107 @@ def pin_current(mask):
     require(k.SetProcessAffinityMask(k.GetCurrentProcess(), mask))
 
 
+def _job_process_ids(k, job):
+    """Read actual Job membership; process ancestry is not a substitute."""
+    capacity = 32
+    while True:
+        class PROCESSIDS(ct.Structure):
+            _fields_ = [("assigned", wt.DWORD), ("listed", wt.DWORD),
+                        ("pids", ct.c_size_t * capacity)]
+        members = PROCESSIDS()
+        if k.QueryInformationJobObject(job, 3, ct.byref(members), ct.sizeof(members), None):
+            if members.listed == members.assigned:
+                return [int(pid) for pid in members.pids[:members.listed]]
+        elif ct.get_last_error() != 234:  # ERROR_MORE_DATA: membership grew.
+            raise ct.WinError(ct.get_last_error())
+        capacity = max(capacity * 2, members.assigned)
+
+
+def _cleanup_declared_helpers(k, job, allowed, phase, previous_deferred):
+    """Keep held handles throughout identity checks and any targeted cleanup.
+
+    The caller has observed the root handle signaled. Unknown or unreadable
+    members are never terminated here and retain the Job limits. In particular,
+    an attached console host may exit naturally only after its helper exits.
+    Even after targeted cleanup, the caller waits for the actual Job to be empty.
+    """
+    held = []
+    observations = []
+    terminated = []
+    try:
+        try:
+            pids = _job_process_ids(k, job)
+        except OSError as error:
+            pids = []
+            observations.append({"status": "membership_query_failed", "error": str(error)})
+        for pid in pids:
+            entry = {"pid": pid}
+            observations.append(entry)
+            handle = k.OpenProcess(0x1000 | 0x100000 | 0x1, False, pid)
+            if not handle:
+                entry.update(status="process_open_failed", winerror=ct.get_last_error())
+                continue
+            held.append((handle, entry))
+            try:
+                wait = k.WaitForSingleObject(handle, 0)
+                if wait == 0:
+                    entry["status"] = "already_exited"
+                    continue
+                if wait != 258:
+                    raise ct.WinError(ct.get_last_error())
+                member = wt.BOOL()
+                require(k.IsProcessInJob(handle, job, ct.byref(member)))
+                entry["verified_current_job_member"] = bool(member.value)
+                if not member.value:
+                    entry["status"] = "not_current_job_member"
+                    continue
+                length = wt.DWORD(32768)
+                image = ct.create_unicode_buffer(length.value)
+                require(k.QueryFullProcessImageNameW(handle, 0, image, ct.byref(length)))
+                created, exited, kernel_time, user_time = (wt.FILETIME() for _ in range(4))
+                require(k.GetProcessTimes(handle, ct.byref(created), ct.byref(exited),
+                                         ct.byref(kernel_time), ct.byref(user_time)))
+                entry.update(image_path=image.value,
+                             creation_filetime=(created.dwHighDateTime << 32) | created.dwLowDateTime)
+                image_key = os.path.normcase(os.path.normpath(image.value))
+                entry["status"] = "declared_helper" if image_key in allowed else "undeclared_image"
+            except OSError as error:
+                entry.update(status="identity_query_failed", error=str(error))
+        deferred = [row for row in observations if row["status"] not in ("declared_helper", "already_exited")]
+        signature = None
+        if deferred:
+            signature = json.dumps(observations, sort_keys=True)
+            if signature != previous_deferred:
+                phase("finite_driver_cleanup_deferred", members=observations)
+        helpers = [(handle, row) for handle, row in held if row["status"] == "declared_helper"]
+        if helpers:
+            # Evidence records the decision before acting. A failed observer is
+            # retained by phase(); only the already verified handles are used.
+            phase("finite_driver_cleanup_enter", helpers=[dict(row) for _, row in helpers])
+        for handle, row in helpers:
+            if k.WaitForSingleObject(handle, 0) == 0:
+                continue
+            member = wt.BOOL()
+            if not k.IsProcessInJob(handle, job, ct.byref(member)) or not member.value:
+                phase("finite_driver_helper_cleanup_failed", pid=row["pid"], reason="membership_recheck_failed")
+                continue
+            if k.TerminateProcess(handle, 125):
+                record = {**row, "termination_exit_code": 125}
+                terminated.append(record)
+                phase("finite_driver_helper_termination_requested", **record)
+            else:
+                failure = ct.get_last_error()
+                if k.WaitForSingleObject(handle, 0) != 0:
+                    phase("finite_driver_helper_cleanup_failed", pid=row["pid"], winerror=failure)
+        return terminated, signature
+    finally:
+        for handle, _ in held:
+            k.CloseHandle(handle)
+
+
 def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
              timeout_seconds: float, on_started=None, affinity=True, *, stdin_path: Path | None = None,
-             on_phase=None):
+             on_phase=None, finite_driver_helpers=()):
     """Run an argv list under kernel-enforced limits and record real tree time.
 
     Lifecycle events use an integer performance-counter origin at entry. The
@@ -132,9 +230,22 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
     Optional on_phase receives an event snapshot before execution proceeds;
     its elapsed time and any ordinary exception are recorded separately. A
     failed observer does not remove process limits or interrupt cleanup.
+
+    finite_driver_helpers is an explicit opt-in for finite build drivers, using
+    existing absolute executable paths declared safe to stop after the finite
+    root exits. Only signaled-root, image-verified current Job members may be
+    terminated. Other members retain their limits and must finish normally or
+    reach the job deadline. Root failures remain failures. The default waits for every descendant and
+    must be used for scientific launchers whose children perform the real work.
     """
     if cpu_mask <= 0 or memory_gib <= 0 or timeout_seconds <= 0:
         raise ValueError("Resource and timeout limits must be positive")
+    allowed_helpers = set()
+    for helper in finite_driver_helpers:
+        helper = Path(helper)
+        if not helper.is_absolute() or not helper.is_file():
+            raise ValueError("Finite-driver helpers require existing absolute executable paths")
+        allowed_helpers.add(os.path.normcase(os.path.normpath(str(helper.resolve()))))
     lifecycle_clock = time.get_clock_info("perf_counter")
     if not lifecycle_clock.monotonic:
         raise RuntimeError("Lifecycle evidence requires a monotonic performance counter")
@@ -173,6 +284,14 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
     k.AssignProcessToJobObject.argtypes = [wt.HANDLE, wt.HANDLE]
     k.TerminateJobObject.argtypes = [wt.HANDLE, wt.UINT]
     k.GetExitCodeProcess.argtypes = [wt.HANDLE, ct.POINTER(wt.DWORD)]
+    k.WaitForSingleObject.argtypes = [wt.HANDLE, wt.DWORD]
+    k.WaitForSingleObject.restype = wt.DWORD
+    k.OpenProcess.argtypes = [wt.DWORD, wt.BOOL, wt.DWORD]
+    k.OpenProcess.restype = wt.HANDLE
+    k.IsProcessInJob.argtypes = [wt.HANDLE, wt.HANDLE, ct.POINTER(wt.BOOL)]
+    k.QueryFullProcessImageNameW.argtypes = [wt.HANDLE, wt.DWORD, wt.LPWSTR, ct.POINTER(wt.DWORD)]
+    k.GetProcessTimes.argtypes = [wt.HANDLE] + [ct.POINTER(wt.FILETIME)] * 4
+    k.TerminateProcess.argtypes = [wt.HANDLE, wt.UINT]
     k.CloseHandle.argtypes = [wt.HANDLE]
     k.ResumeThread.argtypes = [wt.HANDLE]
     k.ResumeThread.restype = wt.DWORD
@@ -194,6 +313,9 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
     started = time.time()
     begin = time.monotonic()
     timed_out = False
+    root_exit_observed = None
+    cleaned_helpers = []
+    deferred_helpers = None
     try:
         phase("resource_limits_enter")
         limits = EXTENDEDLIMIT()
@@ -256,6 +378,16 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
         while True:
             require(k.QueryInformationJobObject(job, 1, ct.byref(accounting),
                                                 ct.sizeof(accounting), None))
+            if root_exit_observed is None:
+                root_wait = k.WaitForSingleObject(process.hProcess, 0)
+                if root_wait == 0:
+                    root_code = wt.DWORD()
+                    require(k.GetExitCodeProcess(process.hProcess, ct.byref(root_code)))
+                    root_exit_observed = {"exit_code": root_code.value,
+                                          "active_job_processes": accounting.ActiveProcesses}
+                    phase("root_exit_observed", **root_exit_observed)
+                elif root_wait != 258:
+                    raise ct.WinError(ct.get_last_error())
             if accounting.ActiveProcesses == 0:
                 phase("tree_empty")
                 break
@@ -265,6 +397,10 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
                 require(k.TerminateJobObject(job, 124))
                 timed_out = True
                 # Wait for every link to be gone before releasing its resources.
+            elif allowed_helpers and root_exit_observed is not None:
+                cleaned, deferred_helpers = _cleanup_declared_helpers(
+                    k, job, allowed_helpers, phase, deferred_helpers)
+                cleaned_helpers.extend(cleaned)
             time.sleep(0.25 if timed_out else 0.5)
         exit_code = wt.DWORD()
         require(k.GetExitCodeProcess(process.hProcess, ct.byref(exit_code)))
@@ -276,6 +412,10 @@ def run_tree(args, cwd: Path, env: dict, cpu_mask: int, memory_gib: int,
                 "pid": process.dwProcessId, "started_epoch": started,
                 "finished_epoch": time.time(), "wall_seconds": time.monotonic() - begin,
                 "exit_code": exit_code.value, "timed_out": timed_out,
+                "completion_policy": "finite_driver_declared_helpers" if allowed_helpers else "entire_tree",
+                "finite_driver_helpers": sorted(allowed_helpers),
+                "root_exit_observation": root_exit_observed,
+                "terminated_declared_helpers": cleaned_helpers,
                 "cpu_mask": cpu_mask if affinity else None,
                 "cpu_rate_hard_cap": cpu_rate, "core_count": cpu_mask.bit_count(),
                 "memory_limit_gib": memory_gib,
