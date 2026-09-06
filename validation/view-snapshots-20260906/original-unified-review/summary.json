@@ -1,0 +1,1861 @@
+{
+  "round_identity": "79a352a6ef9de3413505f2c8c25c06561d6e5da2086240a8f836cd4da3b30693",
+  "production_commit": "70e72ef9d4c956b374a36efb4a478489127bca90",
+  "created_epoch": 1788706292.8625555,
+  "summary_script_sha256": "b50e20150dd2fb9caa1cf347a8d18ba1624fa8bd873c94251fda941214b0e8d2",
+  "collection_counts": {
+    "complete": 273,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 273
+  },
+  "view_subset_counts": {
+    "view_subset_fail": 4,
+    "view_subset_pass": 269
+  },
+  "bundle_counts": {
+    "pass": 1939,
+    "fail": 4
+  },
+  "selected_png_strokes_checked": 1943,
+  "case_count": 273,
+  "view_failures": [
+    {
+      "case_id": "OLD-071",
+      "check": "VIEW-PNG-SELECTED-STROKE",
+      "detail": {
+        "bundle": "export-linear",
+        "row": 0,
+        "probes": [
+          [
+            590,
+            829
+          ],
+          [
+            590,
+            830
+          ],
+          [
+            590,
+            831
+          ],
+          [
+            610,
+            829
+          ],
+          [
+            610,
+            830
+          ],
+          [
+            610,
+            831
+          ]
+        ]
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-071.json"
+    },
+    {
+      "case_id": "OLD-175",
+      "check": "VIEW-PNG-SELECTED-STROKE",
+      "detail": {
+        "bundle": "export-linear",
+        "row": 0,
+        "probes": [
+          [
+            590,
+            829
+          ],
+          [
+            590,
+            830
+          ],
+          [
+            590,
+            831
+          ],
+          [
+            610,
+            829
+          ],
+          [
+            610,
+            830
+          ],
+          [
+            610,
+            831
+          ]
+        ]
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-175.json"
+    },
+    {
+      "case_id": "OLD-176",
+      "check": "VIEW-PNG-SELECTED-STROKE",
+      "detail": {
+        "bundle": "export-linear",
+        "row": 0,
+        "probes": [
+          [
+            590,
+            829
+          ],
+          [
+            590,
+            830
+          ],
+          [
+            590,
+            831
+          ],
+          [
+            610,
+            829
+          ],
+          [
+            610,
+            830
+          ],
+          [
+            610,
+            831
+          ]
+        ]
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-176.json"
+    },
+    {
+      "case_id": "OLD-249",
+      "check": "VIEW-PNG-SELECTED-STROKE",
+      "detail": {
+        "bundle": "export-linear",
+        "row": 0,
+        "probes": [
+          [
+            590,
+            829
+          ],
+          [
+            590,
+            830
+          ],
+          [
+            590,
+            831
+          ],
+          [
+            610,
+            829
+          ],
+          [
+            610,
+            830
+          ],
+          [
+            610,
+            831
+          ]
+        ]
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-249.json"
+    }
+  ],
+  "view_failures_by_check": {
+    "VIEW-PNG-SELECTED-STROKE": 4
+  },
+  "view_case_reports": [
+    {
+      "case_id": "OLD-001",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-001.json",
+      "sha256": "7210fd6fe808109eda0a1450fddab026d3d46f78bd7eb576c9f94ab158936ee8"
+    },
+    {
+      "case_id": "OLD-002",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-002.json",
+      "sha256": "530d08ec154d0c9e40e0fadb288752aa85c0c7c4a4f75c16bbf44d56f9e4c558"
+    },
+    {
+      "case_id": "OLD-003",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-003.json",
+      "sha256": "6287c95fbfddfb24ae8329c3d075b07ca142fed6a9e9bd6e402c63b23837552d"
+    },
+    {
+      "case_id": "OLD-004",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-004.json",
+      "sha256": "7e1e6a3af5234225062ba707c8d563d4a12381f22399b203f6a79472643abc73"
+    },
+    {
+      "case_id": "OLD-005",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-005.json",
+      "sha256": "3af3b225658699cf3ea57d9ec4e29161e354d43a84f7c1cb5ffe7f33bd2c1742"
+    },
+    {
+      "case_id": "OLD-006",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-006.json",
+      "sha256": "4eae4744ffae40050afc5aebac44ff22a37c19dda6b7292501b2719d99a2be9e"
+    },
+    {
+      "case_id": "OLD-007",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-007.json",
+      "sha256": "ea6362f5df24abc09d700e9b9d6aff81ca42e4abd196c28a0fc9ee2214583a71"
+    },
+    {
+      "case_id": "OLD-008",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-008.json",
+      "sha256": "f4fa35badf2aa022e75060e8d138a71c0c920aed03328b688db6f15656b57b03"
+    },
+    {
+      "case_id": "OLD-009",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-009.json",
+      "sha256": "fe6d8d54b4c0a1f4d866bbebb62c080fc424f5f734ff1126b97d54ee282fd8a2"
+    },
+    {
+      "case_id": "OLD-010",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-010.json",
+      "sha256": "0148d28fec961d34205878ab0a845961699563caf3a52a97b276b9e73dd9b39b"
+    },
+    {
+      "case_id": "OLD-011",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-011.json",
+      "sha256": "4761aa534481cae7cd3f68f6e5bb524d77d0c4d261069b81db01b6c33370cdf7"
+    },
+    {
+      "case_id": "OLD-012",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-012.json",
+      "sha256": "7ccba15dac7a4ba527170dbadbc3f45a237a94b62d725e377a4abddd8bd546fd"
+    },
+    {
+      "case_id": "OLD-013",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-013.json",
+      "sha256": "02b09f92ee5e30cbfe9dc55c85a058f00dc4b9d6dbe1772e73a1f996104b4c2f"
+    },
+    {
+      "case_id": "OLD-014",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-014.json",
+      "sha256": "d3e3ec238290fe601be5cc947e5281f040adcb2f9f76bbcd9749dcdfe78cd60b"
+    },
+    {
+      "case_id": "OLD-015",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-015.json",
+      "sha256": "167c143dca2416366b0bbc2aa2c65400adf009b98ec009e737d28bbd46b40ebb"
+    },
+    {
+      "case_id": "OLD-016",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-016.json",
+      "sha256": "53edb51683fed3ca4ef0f62f634203ae0b6fc706cf5fc63ed08e540562c27381"
+    },
+    {
+      "case_id": "OLD-017",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-017.json",
+      "sha256": "88d7846c1f5e1275d11da23eeb375b9131c15b8d1d3f75cae2f7b4fd3ef1f25d"
+    },
+    {
+      "case_id": "OLD-018",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-018.json",
+      "sha256": "20955beecc7a2e2fc5ccc2cb1a2afe0a9e73700255ca8b9612c1c512a39fa6d5"
+    },
+    {
+      "case_id": "OLD-019",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-019.json",
+      "sha256": "cb37a269be738eee8e9e223f87e327c33b02be13932bbaca459c2b1f61a761ca"
+    },
+    {
+      "case_id": "OLD-020",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-020.json",
+      "sha256": "0a897738defd431f86aa49cf3b5431e583d9a31197d20ae2fd9878a840b79565"
+    },
+    {
+      "case_id": "OLD-021",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-021.json",
+      "sha256": "093b39f59a77231bfb583995eeb16387c6c72131ba411a7f778bfa7047eeebf8"
+    },
+    {
+      "case_id": "OLD-022",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-022.json",
+      "sha256": "8d52b78fe223dc9ca05d32b6b2b8fca4bd3a34422183363abfa3f7de4d78fce1"
+    },
+    {
+      "case_id": "OLD-023",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-023.json",
+      "sha256": "a99ec8aeb07bef40fe0d22334a9384f3009761fc9339bd37b45c747ab98ad240"
+    },
+    {
+      "case_id": "OLD-024",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-024.json",
+      "sha256": "6a3ce3d9e97fcffd09c2814e1d6bd594521d4bedc12a7b486bfb12d88e992760"
+    },
+    {
+      "case_id": "OLD-025",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-025.json",
+      "sha256": "939b206eedec9addb05afa2e8b99ad4d2f6bed50084db8aed91d3ee8f3f05bc5"
+    },
+    {
+      "case_id": "OLD-026",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-026.json",
+      "sha256": "3d614963a1d4b5a5252c16a183edf1f2d1030d26408163b8ce2119b6bda6ffc9"
+    },
+    {
+      "case_id": "OLD-027",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-027.json",
+      "sha256": "4de20abf0d6b1e1448103ad724983d6388a8e4b4e3815df05a38568ce16519bf"
+    },
+    {
+      "case_id": "OLD-028",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-028.json",
+      "sha256": "7ec021e56d204262e83ff9c89ef7f3f37c137af7c286acec17099af0b39dc74a"
+    },
+    {
+      "case_id": "OLD-029",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-029.json",
+      "sha256": "57e2af2f0f6d88ee88cba302b9cfd2d869f61b1a552ce10c935b5dd6ce5fe184"
+    },
+    {
+      "case_id": "OLD-030",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-030.json",
+      "sha256": "9b4d7671b1189a00daea795fc4ee6837720177a07bb94a04e3ff37c4a4b54320"
+    },
+    {
+      "case_id": "OLD-031",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-031.json",
+      "sha256": "3ece7e61d2ce3f34853c90ba2246efe496d3f9613602bfa3c68d696672da1448"
+    },
+    {
+      "case_id": "OLD-032",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-032.json",
+      "sha256": "7ed292711029ba08083e5f95892616ef5dd44ed7cf964e40bc163b4399804f15"
+    },
+    {
+      "case_id": "OLD-033",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-033.json",
+      "sha256": "65ba4cd8b77d894e42ed1fbfa7fe7d1c0ed2bc8f2d49d4e5ae589bf3ff83c330"
+    },
+    {
+      "case_id": "OLD-034",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-034.json",
+      "sha256": "6d76b11c1285ac2acccf2a97827618e0dc386e6ee9b78e8552c0ed5bc2c46b74"
+    },
+    {
+      "case_id": "OLD-035",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-035.json",
+      "sha256": "06fca73ff3e54d888dcd6cc4b177a05ab08036b4af04951d73d1b1c6cf430498"
+    },
+    {
+      "case_id": "OLD-036",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-036.json",
+      "sha256": "6d32627ff0fc7610ca05aad2ee56da615b32ea73413a6b2553110310f1b122b3"
+    },
+    {
+      "case_id": "OLD-037",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-037.json",
+      "sha256": "74a2e35df16d88d4254596241e15b401e30c167227c06959ca36be65f45805d9"
+    },
+    {
+      "case_id": "OLD-038",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-038.json",
+      "sha256": "026e598b6225321ea8c9f2fc95c6608ec853e7a3d7950b4b09eb759ea33aa471"
+    },
+    {
+      "case_id": "OLD-039",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-039.json",
+      "sha256": "b2a077930850492f36ffd7848a69634ad679bec44484bc90c238120d4b4fcc4d"
+    },
+    {
+      "case_id": "OLD-040",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-040.json",
+      "sha256": "132d05f435420edf5313293779fc5887155600ed4aed836ccb354f41b90d6c5a"
+    },
+    {
+      "case_id": "OLD-041",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-041.json",
+      "sha256": "33cd9359277afb8889a8c8b82df24a11beb663c1d56d23307fd5c951d25abfc7"
+    },
+    {
+      "case_id": "OLD-042",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-042.json",
+      "sha256": "54457da66a055554a1786b2dae7d16c4b3ad23056190135173a2a1f5081570b5"
+    },
+    {
+      "case_id": "OLD-043",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-043.json",
+      "sha256": "8d32b6a92e7cc08dc4580f1ef2c916403c9f9d396da6cdf7f6f6e311d46aff11"
+    },
+    {
+      "case_id": "OLD-044",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-044.json",
+      "sha256": "582e5bed87681192550f022200c6bce7611ad38e013d6473aef82e041d8ed0ad"
+    },
+    {
+      "case_id": "OLD-045",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-045.json",
+      "sha256": "73634b80b1515ae7019243e13b2adf7a43d59ee5357a0bad00ded0da8c771e0d"
+    },
+    {
+      "case_id": "OLD-046",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-046.json",
+      "sha256": "7ae4701ad833925b07e3c01e959eb90ee543c5bbc6d6e3e109c69299ca81c5c3"
+    },
+    {
+      "case_id": "OLD-047",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-047.json",
+      "sha256": "e3c270bca7cced9144bb47a419c4b4f928bb344f2d2fef5f6968ab76cfbef5ee"
+    },
+    {
+      "case_id": "OLD-048",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-048.json",
+      "sha256": "6dccf5719bdfb7790ea0461307caeca6d49d674c49d1f42ce688a41ec4f75a5c"
+    },
+    {
+      "case_id": "OLD-049",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-049.json",
+      "sha256": "ee1c8acde92c2407b1429107045202bd9dc458ae68159c8dc688714b9cc449c5"
+    },
+    {
+      "case_id": "OLD-050",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-050.json",
+      "sha256": "1492ed6996c89895fcb88920c0d36ef1adcee0fa686b938319bebb06dabc6268"
+    },
+    {
+      "case_id": "OLD-051",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-051.json",
+      "sha256": "7b0572ade0ae36766ee7f4a60808a44fe3a5a5698327ed89bc57264cc702b077"
+    },
+    {
+      "case_id": "OLD-052",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-052.json",
+      "sha256": "27da5c4f67546c35b19899d7cd489fc3e9d7103904211fddc8f02918ef636e9c"
+    },
+    {
+      "case_id": "OLD-053",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-053.json",
+      "sha256": "98671cfb2302eaa58bdffc919ec1c86572981649de5befd8f601e5f862e9c1de"
+    },
+    {
+      "case_id": "OLD-054",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-054.json",
+      "sha256": "e83005673068278a57405dda50e08e3a9ffb00c68a7aa3053868d09a9fe78d2b"
+    },
+    {
+      "case_id": "OLD-055",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-055.json",
+      "sha256": "8d9eef9d5fd362cab115fcc7bd27a38bcd361037bf432d14e79b6e153ded05e2"
+    },
+    {
+      "case_id": "OLD-056",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-056.json",
+      "sha256": "136986eca929232fcb4981b2a91336a987f3515a1c0931461faa8e83eeafd73f"
+    },
+    {
+      "case_id": "OLD-057",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-057.json",
+      "sha256": "a848dcdaeee40e84fb5f6e6571caf0cf6e282d13a515d6a2335f8fcde44dae66"
+    },
+    {
+      "case_id": "OLD-058",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-058.json",
+      "sha256": "fbb67fabf1b69b05498e86503fa5ec2357bd4a92e26eb1315ec57c88622d2f77"
+    },
+    {
+      "case_id": "OLD-059",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-059.json",
+      "sha256": "e1a9c20f16ed7e605ab47cd1e6dace295a84e85ced2aa3078b035a0fd52e0b05"
+    },
+    {
+      "case_id": "OLD-060",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-060.json",
+      "sha256": "9dd26a5d0c8b3f52d429babd57d214bdd70e1ffddb373a20a1657d74d18f754c"
+    },
+    {
+      "case_id": "OLD-061",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-061.json",
+      "sha256": "61a7a365a82ef12e4a0f3a73d0b749074b2f3af753797f91379f3b2bdaf3948f"
+    },
+    {
+      "case_id": "OLD-062",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-062.json",
+      "sha256": "12069a312e257a941b695e444b12f76962803a997cb93ed0de9f624a9ac8a306"
+    },
+    {
+      "case_id": "OLD-063",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-063.json",
+      "sha256": "5a863aca767d561d2765eb21cf8555f624893730093252b3276e41bd29612f83"
+    },
+    {
+      "case_id": "OLD-064",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-064.json",
+      "sha256": "78e165259b496f68d4fbd5ab13b38683202f2e8aa472f021693fa006b47d6c8b"
+    },
+    {
+      "case_id": "OLD-065",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-065.json",
+      "sha256": "72a96c30d944e7b66f765ee6faa53e4d8ed239c57761dea12ae42d04735fa58b"
+    },
+    {
+      "case_id": "OLD-066",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-066.json",
+      "sha256": "5a358e2a2a68f6299ff998631cfe404f1dab2ea24cf40fe9887ffb4d9da6156f"
+    },
+    {
+      "case_id": "OLD-067",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-067.json",
+      "sha256": "76557890a1924218c910db1e2bad59964e308f2202397139f44fc662aca7ee9f"
+    },
+    {
+      "case_id": "OLD-068",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-068.json",
+      "sha256": "ba8e51245b41f273032dc0d3c645e79325880443fefbd41c68c92843ab6f6fbd"
+    },
+    {
+      "case_id": "OLD-069",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-069.json",
+      "sha256": "9671d10a4d1048a4bc49c265fa3ba06bb2089e9efdf046f5ba240c672a8507ef"
+    },
+    {
+      "case_id": "OLD-070",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-070.json",
+      "sha256": "f16b3d36514ff0b0c13e24d6a3ceeee80004b9157f0657047e032be9127b3a35"
+    },
+    {
+      "case_id": "OLD-071",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-071.json",
+      "sha256": "8b0a3d8e608d0ba0f73decd7568a49b6e562b8e2a9813138891e6daea565d56d"
+    },
+    {
+      "case_id": "OLD-072",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-072.json",
+      "sha256": "8c3b874d71cc2416b4a707a2c06ab086612269e616214d63563617038b00b8fd"
+    },
+    {
+      "case_id": "OLD-073",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-073.json",
+      "sha256": "49d279bbb2f54712dc202515fa60806ced841d0e0e0b5fba61cafc96fc47d3ed"
+    },
+    {
+      "case_id": "OLD-074",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-074.json",
+      "sha256": "77f5b73d95d4f6bd9c1d15687e3c19a07acbcd2c70f99c1369e03df6bd14e065"
+    },
+    {
+      "case_id": "OLD-075",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-075.json",
+      "sha256": "75e0727072f7e690c0feb1ab19a4d7862b9422c4057a314f7fca52662c3b4632"
+    },
+    {
+      "case_id": "OLD-076",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-076.json",
+      "sha256": "b47bf530c00871c284ee55309026e68b32d0e991e91fdf2fa221de3ae8300d86"
+    },
+    {
+      "case_id": "OLD-077",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-077.json",
+      "sha256": "a12e79bc513de18c3aa21bf0cf93de245065c45bc227d7548a48eb953420c8a3"
+    },
+    {
+      "case_id": "OLD-078",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-078.json",
+      "sha256": "b2fbb1917e43077ccdecbb92c54bc4881c6220ccd982c4662a208773a0b3a182"
+    },
+    {
+      "case_id": "OLD-079",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-079.json",
+      "sha256": "65a44b3f23854cfcc8b452cb0b9339e924e7bd62763c9a9ec8bfa51c76124c19"
+    },
+    {
+      "case_id": "OLD-080",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-080.json",
+      "sha256": "c14111faeb69144556687158d7bb99781139b63b63532d773caa235ab0e07b1c"
+    },
+    {
+      "case_id": "OLD-081",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-081.json",
+      "sha256": "8a3f1195b9bd703657a4f21b407a20c9ca6f2094b36c8fd170eb34ba68b22f9f"
+    },
+    {
+      "case_id": "OLD-082",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-082.json",
+      "sha256": "a9757c6a245a4d276f5ee6da5ea19479962f35a22fb5f98434e52560c4b281a7"
+    },
+    {
+      "case_id": "OLD-083",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-083.json",
+      "sha256": "fe1ee64953eadd70b2b773e39bf2d977d297c3cdaf6aded16adc28c7b2ea105e"
+    },
+    {
+      "case_id": "OLD-084",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-084.json",
+      "sha256": "10621027fd2049bd21fefed02aa03a9eda37fe80a73e50f902e939cbac0f5a72"
+    },
+    {
+      "case_id": "OLD-085",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-085.json",
+      "sha256": "f764baeb69239895e0961e6656feeb961fa2fc2bf476121feb3e2bc56cc34c1a"
+    },
+    {
+      "case_id": "OLD-086",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-086.json",
+      "sha256": "c821ff1575a088514b3f0299d51779cbef5f0e4cc8bd3fe645bec7b4acd05caa"
+    },
+    {
+      "case_id": "OLD-087",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-087.json",
+      "sha256": "ebed1c7c8cac49daac28c6bf2f405bee5b58e1e11171067b7ffacce0145142f5"
+    },
+    {
+      "case_id": "OLD-088",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-088.json",
+      "sha256": "c4f4fe77c4ec84e42b7b280acdc7f4eeb501f2d8585b59e4855ff048e25293b3"
+    },
+    {
+      "case_id": "OLD-089",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-089.json",
+      "sha256": "c2277f6dcb2357d9055cc1cf1e01155dbb83ddcda910bb8e83891646d3b6ac8f"
+    },
+    {
+      "case_id": "OLD-090",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-090.json",
+      "sha256": "be7050bdb1bf6ace4801e850f8fb336f6ad5b7d105fb6ca9596a7f617800ad9c"
+    },
+    {
+      "case_id": "OLD-091",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-091.json",
+      "sha256": "c046b8acc6b0dc00c56bba999aae34ee8cc1921b6a03da350a0051a01bc882c8"
+    },
+    {
+      "case_id": "OLD-092",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-092.json",
+      "sha256": "235ad1124ff8f26d85de52407a008b5b3ccd625976c82f9b9c26cd05b7e620e0"
+    },
+    {
+      "case_id": "OLD-093",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-093.json",
+      "sha256": "b84aed6eae628d97cc359d78f6a1fee903d9b4176a8be20c81cc0d9df7eff3c2"
+    },
+    {
+      "case_id": "OLD-094",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-094.json",
+      "sha256": "08f573eec1d80a9b3c442aa7d6f75ffd7fe69094fa52d7a7d3030f4e704d7a5f"
+    },
+    {
+      "case_id": "OLD-095",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-095.json",
+      "sha256": "ee99f2e1b222170f87bcd6ff33f50a57ec24086400649b594d9f6d41ca15b738"
+    },
+    {
+      "case_id": "OLD-096",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-096.json",
+      "sha256": "7d1f86151036cb493f40e1e54e42dfb42ab997298ed3bb61343ef117ec1c6e38"
+    },
+    {
+      "case_id": "OLD-097",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-097.json",
+      "sha256": "757cd668acd53047dbc32b5e64089cb9b46d837cce04dd2e7ea3c884f11776ed"
+    },
+    {
+      "case_id": "OLD-098",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-098.json",
+      "sha256": "0acc0111b4cfb0a6df112b8eb44afedd71092daee4b732e4734760d2c73adb8d"
+    },
+    {
+      "case_id": "OLD-099",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-099.json",
+      "sha256": "2f2d05145545abf08176756d93ad67c1c496155bb430c80457d97fbc07c1c8e5"
+    },
+    {
+      "case_id": "OLD-100",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-100.json",
+      "sha256": "59b2386c7a0bedc78630e0ac78c7f7200a980cb888505d967a7d916475c678ff"
+    },
+    {
+      "case_id": "OLD-101",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-101.json",
+      "sha256": "c6049de871f4614ac2c5877bd733c781b9a643409ef077fb562ba8937ae09a04"
+    },
+    {
+      "case_id": "OLD-102",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-102.json",
+      "sha256": "b90f24a50e35fc8a38aa75b696e2a48488c7ca99ba9edf582bc08dfcb05e5b94"
+    },
+    {
+      "case_id": "OLD-103",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-103.json",
+      "sha256": "b4b56c7ab21605bac77571d3c05478dc5140010172083788c43d8435e63cdf22"
+    },
+    {
+      "case_id": "OLD-104",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-104.json",
+      "sha256": "32897b56ea463a9c1734f75647e3adc3babbddf03eefbd34098de0e6e7f60ee3"
+    },
+    {
+      "case_id": "OLD-105",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-105.json",
+      "sha256": "8d4acbb83508872e61e6473f68f84b4d04a1c9fe0a393b1b5592ad7a269b2c73"
+    },
+    {
+      "case_id": "OLD-106",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-106.json",
+      "sha256": "e3ea0dc8dcdba9b9cc99e2f2638369e32e20822e108fdc8922655fd9ba785a32"
+    },
+    {
+      "case_id": "OLD-107",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-107.json",
+      "sha256": "3afb850fb8acfba383fceae2760190b0ebc88ba6fbc7a01d258a1156ffef9720"
+    },
+    {
+      "case_id": "OLD-108",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-108.json",
+      "sha256": "fc41e64582ec11e59c0f53bf1c4d222983a8399495729bb4deee42f2b1268b38"
+    },
+    {
+      "case_id": "OLD-109",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-109.json",
+      "sha256": "c29c4b657fedd18976b0e6a2b871a75a7f1b1d29645ce2c89c5015a7b25274f1"
+    },
+    {
+      "case_id": "OLD-110",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-110.json",
+      "sha256": "218a857715bef5a01885af7f386edf73176438ac1c6504885ba22ac2485724c1"
+    },
+    {
+      "case_id": "OLD-111",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-111.json",
+      "sha256": "a6697ed3677869e299808519950a703e5f3b564dbcc3525683de8c711eb4f5a3"
+    },
+    {
+      "case_id": "OLD-112",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-112.json",
+      "sha256": "9b73c0037aa0c418ccb0ca2ec3e0c26243b17f450da157ebd6292784a17ca8d5"
+    },
+    {
+      "case_id": "OLD-113",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-113.json",
+      "sha256": "2d6bbd7b7ea0e7b8a405e8457246eb6aa0845cabb4399bb5104bee027bc34db1"
+    },
+    {
+      "case_id": "OLD-114",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-114.json",
+      "sha256": "1bcb9bc2eb36ad23c42e5a92c5bec0f271dab83e742968d3299a6be13e49a5dd"
+    },
+    {
+      "case_id": "OLD-115",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-115.json",
+      "sha256": "1cded09bd20a8e889f14bc3db3f108efb0d3b12075a149c5060be5d9b6f65a6c"
+    },
+    {
+      "case_id": "OLD-116",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-116.json",
+      "sha256": "d67c5855fafbe86eabe6fc558679d8987f57d343f9faa001350bacbd1295471e"
+    },
+    {
+      "case_id": "OLD-117",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-117.json",
+      "sha256": "0747ce77b94389113f3764de0b4e246de28669962ecba6b19ee2247a86dd977b"
+    },
+    {
+      "case_id": "OLD-118",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-118.json",
+      "sha256": "862c20cd6a892151d075ef63dc138f3674be24328fb9f6087ae78764326827f7"
+    },
+    {
+      "case_id": "OLD-119",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-119.json",
+      "sha256": "4b7f00f989079f81178c6fc35eb290c926d322a250f6b594c54657af379e1a26"
+    },
+    {
+      "case_id": "OLD-120",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-120.json",
+      "sha256": "6f7d2974af1b89e8e2f5a59633f96bcc1138de2d6795db2bc802402d802693db"
+    },
+    {
+      "case_id": "OLD-121",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-121.json",
+      "sha256": "57d8d2871007065c466fc9d9a04993f6cddd4305e8c6fa8d283a3d8d035a8dde"
+    },
+    {
+      "case_id": "OLD-122",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-122.json",
+      "sha256": "72253adce631672e0484393833bb3545185c48d300ccc0db1a4ce39fbe697076"
+    },
+    {
+      "case_id": "OLD-123",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-123.json",
+      "sha256": "2d9fd0cc484cbb13ed614185953134d0fa0fe2a1e1704d029be6b67827a4230d"
+    },
+    {
+      "case_id": "OLD-124",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-124.json",
+      "sha256": "57468ebb3554ff42aec87d22e94a8a1d1da8e5aa7f5666ab091e4bc664edac11"
+    },
+    {
+      "case_id": "OLD-125",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-125.json",
+      "sha256": "61d1629e9c5dcf19896c1eefc8afd18d4f668e67f5708e8e5454274effdb12c0"
+    },
+    {
+      "case_id": "OLD-126",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-126.json",
+      "sha256": "92af1c7ed9b90f9a78edf308d0673d7eb7b5991db89fc301dff91009243f2e4f"
+    },
+    {
+      "case_id": "OLD-127",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-127.json",
+      "sha256": "8c8932824f27bd46e4917b55e693de0cc818640990d1268054261268d97d8f8b"
+    },
+    {
+      "case_id": "OLD-128",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-128.json",
+      "sha256": "d4b51b826bdb65523d5643e5c06711a0ed4512cb4c7deed0a669be2aae99342e"
+    },
+    {
+      "case_id": "OLD-129",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-129.json",
+      "sha256": "1df864c36b4c1eb28a12eb7356d852eed1cc70766c96b8946955600076bb60c8"
+    },
+    {
+      "case_id": "OLD-130",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-130.json",
+      "sha256": "6635bb64ea72b9fb08a65e73e69b4500c635081bfd2bd3a4522d98f1af1dacdd"
+    },
+    {
+      "case_id": "OLD-131",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-131.json",
+      "sha256": "bd28eb91495d70c13a070a105c8c81a4ca0be954338c5b35920a2d4f3511bb8d"
+    },
+    {
+      "case_id": "OLD-132",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-132.json",
+      "sha256": "5b7aebfdb7a26507662cf77ac59059c06c1f570f9161105653a4fde682c55f24"
+    },
+    {
+      "case_id": "OLD-133",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-133.json",
+      "sha256": "c79dded61d0c3849e83f050121ea855cd0423e6b65fc5cd5092f1f0908220d03"
+    },
+    {
+      "case_id": "OLD-134",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-134.json",
+      "sha256": "0ab40befb9a70986f9008ba32cb8d665746ba606be4fb5ff4bb140901e16ef48"
+    },
+    {
+      "case_id": "OLD-135",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-135.json",
+      "sha256": "4dcab3c05318e906da7f6d288bb30faac6bb872b384fbb68af70828b6d020f59"
+    },
+    {
+      "case_id": "OLD-136",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-136.json",
+      "sha256": "da96c7c7f04b48122b61315621538c4b940001a6f5fbc97d047fdce11d1c1dbe"
+    },
+    {
+      "case_id": "OLD-137",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-137.json",
+      "sha256": "c8c755628cf175f351cdc00c96db480e8e90c3091bde6098ac7c20b1ed475e79"
+    },
+    {
+      "case_id": "OLD-138",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-138.json",
+      "sha256": "79acf52dc5549824757e564ced4d4996f3cb440f7783509012b5b9bf28cf6495"
+    },
+    {
+      "case_id": "OLD-139",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-139.json",
+      "sha256": "dc8a3ea33b57160ffd2919859a664dcc07eef5c9f648f8ba7b982ccdf6a477d6"
+    },
+    {
+      "case_id": "OLD-140",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-140.json",
+      "sha256": "9f2c27f60e5bd20a4a50b1f698c01894fff364f58f793a00f56a40f562540a3c"
+    },
+    {
+      "case_id": "OLD-141",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-141.json",
+      "sha256": "41e66e1acec74ac386ba87b89f098b09d4aadd4790a14ed4d4583dd49f0c03e2"
+    },
+    {
+      "case_id": "OLD-142",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-142.json",
+      "sha256": "2b1766613457254026e03b3fa83e9fbdefbce8938d9cd73fa094d988e3c19db3"
+    },
+    {
+      "case_id": "OLD-143",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-143.json",
+      "sha256": "49d90d42e9c6b2ea5be180ea3a5168afb658946bb98791dc44270f33dd5c4de1"
+    },
+    {
+      "case_id": "OLD-144",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-144.json",
+      "sha256": "2e90a8db5c16bb17483d97b97492768754eebb654f2685e2805cd390c9656287"
+    },
+    {
+      "case_id": "OLD-145",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-145.json",
+      "sha256": "26367eeaba2568657270519333460222584ef8e79944ac14bc4debdeb10bb6e5"
+    },
+    {
+      "case_id": "OLD-146",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-146.json",
+      "sha256": "7c688ab841e1ce33b49101fe736c5d78da7bf2bbba44bb0b20c668807d576c35"
+    },
+    {
+      "case_id": "OLD-147",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-147.json",
+      "sha256": "260490dec86627003fae469b899897148c24ec3233250947b8e2bee0123d225c"
+    },
+    {
+      "case_id": "OLD-148",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-148.json",
+      "sha256": "8980702eb158a0b63c9bfd93c3cc68f572b0ba69eb9ee9acc850557d4ac19817"
+    },
+    {
+      "case_id": "OLD-149",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-149.json",
+      "sha256": "5078d2486cf0c6605adff6440a634d3ab54df40687225fbff8f513a4599535b0"
+    },
+    {
+      "case_id": "OLD-150",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-150.json",
+      "sha256": "517a55576a6c86cbd29273e41d74cfc36bf10c0333c6d6b4b67549ab28ba422d"
+    },
+    {
+      "case_id": "OLD-151",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-151.json",
+      "sha256": "e1d5c9b4f2de8b1a899c816c4b4b5b2cd65d5ab0d517356af5106498111d7722"
+    },
+    {
+      "case_id": "OLD-152",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-152.json",
+      "sha256": "e3e182dfdf5df78c89707ac92730bd890599238a8d9db6165b269d4741b856aa"
+    },
+    {
+      "case_id": "OLD-153",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-153.json",
+      "sha256": "c27b21132c4a845fb7a89d8aa9307849bece229c12714fcbd13082c9c4034745"
+    },
+    {
+      "case_id": "OLD-154",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-154.json",
+      "sha256": "8a62646a86291c5046532985481727626b8083b11f75b3e786f9af1d2d20444e"
+    },
+    {
+      "case_id": "OLD-155",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-155.json",
+      "sha256": "6605cab329862a4b8e419ac01462f0268323df48fe057c937594ab124bf227d2"
+    },
+    {
+      "case_id": "OLD-156",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-156.json",
+      "sha256": "face5b6a2a0c75ff9a47c915a8d12cf23cd12d3c1f49eb4382d69d76e90aab17"
+    },
+    {
+      "case_id": "OLD-157",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-157.json",
+      "sha256": "fa11a4e7c17f0728a6aa394cb73d5f4e48d34e7416fab4032e2abdcc72d749ed"
+    },
+    {
+      "case_id": "OLD-158",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-158.json",
+      "sha256": "7553541149425e8fe51efe019b98d09869f3329ce062d62be9f6fa8b61bd5165"
+    },
+    {
+      "case_id": "OLD-159",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-159.json",
+      "sha256": "2c1f91e2008323a01bd0fed826b657371fd1615b47aef915dc907f01755c0cc4"
+    },
+    {
+      "case_id": "OLD-160",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-160.json",
+      "sha256": "191f32d36cd944888b5279928a5ba0814482d04b3cd5505fcefb35a625d8906b"
+    },
+    {
+      "case_id": "OLD-161",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-161.json",
+      "sha256": "9a6cd4d0c896b4e32f643bc603ec0c8a21798b19bd8690bcb76b356100e9d4e0"
+    },
+    {
+      "case_id": "OLD-162",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-162.json",
+      "sha256": "834632ec8fce9b34286303ea5f8aed282532b65f4596102f696aa7f93e6aefc1"
+    },
+    {
+      "case_id": "OLD-163",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-163.json",
+      "sha256": "646da433b8a4ead0de43d6809fe88cc7716896980a472dbdff0379da9d9df8be"
+    },
+    {
+      "case_id": "OLD-164",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-164.json",
+      "sha256": "3a44851ee33b0b961735d8552a11f267f982994c470f66580b84940d91843987"
+    },
+    {
+      "case_id": "OLD-165",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-165.json",
+      "sha256": "1c0fd7b107afa54b22d41523d4c56c1c1d9d3af529414e6195a9f91bb51113b5"
+    },
+    {
+      "case_id": "OLD-166",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-166.json",
+      "sha256": "b515ab3407a255a2bb5f9c7f9784cfca3fe25db0f59dbea77e8e89b5f22a2bac"
+    },
+    {
+      "case_id": "OLD-167",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-167.json",
+      "sha256": "2be7502de3fe001277717383733f82b40a16fbae13c40e0d0ef4fa6432508a3d"
+    },
+    {
+      "case_id": "OLD-168",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-168.json",
+      "sha256": "f1477ac12871401c1d4ab9e89bf6c0799cc6f71d89f97690b4c9b0fc1678f3f4"
+    },
+    {
+      "case_id": "OLD-169",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-169.json",
+      "sha256": "77392dc3c1d30859b35131d3aa5b23e95cd1b4ba7b3e17896b7e011102e50f8f"
+    },
+    {
+      "case_id": "OLD-170",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-170.json",
+      "sha256": "6f5a3108cc2e096eddc4fa05c9b99e99846dab9f4b93ab51ec3f188b24433dcb"
+    },
+    {
+      "case_id": "OLD-171",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-171.json",
+      "sha256": "09133bf3c9a9d508b7480f0034727a43b1dad63fa9a91104e0a63e918949e69d"
+    },
+    {
+      "case_id": "OLD-172",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-172.json",
+      "sha256": "e7464b825b2a32e2b9a1c444b69bee71e1082dfcd12200896f9c7b05057666e8"
+    },
+    {
+      "case_id": "OLD-173",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-173.json",
+      "sha256": "67070427f63eb78461d2b6a173d014a4e05ff93bca8e4bbae99f608c82177b89"
+    },
+    {
+      "case_id": "OLD-174",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-174.json",
+      "sha256": "cb4dc7a2c023ff6dd6d61b7685810939309555f91c049a4463e378362196f934"
+    },
+    {
+      "case_id": "OLD-175",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-175.json",
+      "sha256": "e2bf5d84ad2be9e7a5bd6f8e1c3f092386fba9d43ac0201c7a46f82d812da921"
+    },
+    {
+      "case_id": "OLD-176",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-176.json",
+      "sha256": "d3bd414ecff724ab01d64153647e88b376a8ff78d0a126210a9d041543490ed4"
+    },
+    {
+      "case_id": "OLD-177",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-177.json",
+      "sha256": "9e82b16136130887f257580723610ed18729dd01cc605fc6cf827318401a8de3"
+    },
+    {
+      "case_id": "OLD-178",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-178.json",
+      "sha256": "080d615b1d6e75d8993ab88ea2167dd05bba83c5afbc2ed3b4a1ab7d6260be55"
+    },
+    {
+      "case_id": "OLD-179",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-179.json",
+      "sha256": "b4f32a0af5526f99930a1731c768c6136f671482dd27b506244a75989e08cf2a"
+    },
+    {
+      "case_id": "OLD-180",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-180.json",
+      "sha256": "336aaaa91d8379e0ffc4ca6c208ebff73b9264cbe5529a851caadd89b21cbf64"
+    },
+    {
+      "case_id": "OLD-181",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-181.json",
+      "sha256": "a2ddaee2e8d442519332158afac50435831f7f12dd8b5f78dbdbf44cb828d3e4"
+    },
+    {
+      "case_id": "OLD-182",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-182.json",
+      "sha256": "5dcd04c292b9d0d89aefdfeabaa7750c0690cefce0eeb3d36036b0f5d143d519"
+    },
+    {
+      "case_id": "OLD-183",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-183.json",
+      "sha256": "f33df888546589611e4f84e713234e0931ffef5cae0c6d7d04b10d891d4d1da3"
+    },
+    {
+      "case_id": "OLD-184",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-184.json",
+      "sha256": "d74dfe198743e77a3b6123ac1fa919304a2272a4f2774882d384f84b4864ab8d"
+    },
+    {
+      "case_id": "OLD-185",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-185.json",
+      "sha256": "7ecaf803c09eb1acd789281168e799bc75102db9cf2856f8ccb3522002649305"
+    },
+    {
+      "case_id": "OLD-186",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-186.json",
+      "sha256": "2fb345003104e18cd5fce1bff002e59a413306d839bcb314ebae4938b3553622"
+    },
+    {
+      "case_id": "OLD-187",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-187.json",
+      "sha256": "c2e2e5c813e20874c475500af928aa10d3b3369d55741254dbd9ecbe1b4354ac"
+    },
+    {
+      "case_id": "OLD-188",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-188.json",
+      "sha256": "a52ee54b3bc40adfa63a82485e96d80fa0dce6cac324c42779f64c469e34cea4"
+    },
+    {
+      "case_id": "OLD-189",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-189.json",
+      "sha256": "7d1b3094adbef7bb64aa4309ed263891470320cf79b1f65b7c3d4bd9ce38139d"
+    },
+    {
+      "case_id": "OLD-190",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-190.json",
+      "sha256": "76676ec4749353bd34af9e2076b87530edbd333dd5154a59173400086b7cd6ff"
+    },
+    {
+      "case_id": "OLD-191",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-191.json",
+      "sha256": "77f6e694c81893665d9222b306b77af074e9f15cb202932bee35e738c4faf880"
+    },
+    {
+      "case_id": "OLD-192",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-192.json",
+      "sha256": "b22c78670856ac0aba86fd94e05f182ea3a027f9dcbfa02bd9d9f2b04ff1485a"
+    },
+    {
+      "case_id": "OLD-193",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-193.json",
+      "sha256": "588910c13177b4b9aa445e97c3f793f383e20c03b1df8d749033367dda53f8b8"
+    },
+    {
+      "case_id": "OLD-194",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-194.json",
+      "sha256": "57ff952970081cca7c2b91a5c5b466e6a7a7069377fd2583b0e49ac56dffdb7b"
+    },
+    {
+      "case_id": "OLD-195",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-195.json",
+      "sha256": "87513f27a853565b0926551f0f0c8eb26e4785ef8aa541df27b6fe431cda3e58"
+    },
+    {
+      "case_id": "OLD-196",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-196.json",
+      "sha256": "71107885a1b29b584c6459519dc8b0b246661fa836fb22e44cf936585f05d45c"
+    },
+    {
+      "case_id": "OLD-197",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-197.json",
+      "sha256": "b544c15ea13d56131364dc92608c7e8ae0e5d004ce8b111a75fc304ea425c730"
+    },
+    {
+      "case_id": "OLD-198",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-198.json",
+      "sha256": "02de10dad3d7d35735ba416ef5ad682e347f117bac6b4f4f7ca6e9b34707f1e8"
+    },
+    {
+      "case_id": "OLD-199",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-199.json",
+      "sha256": "f4603c221386a9a04177f3a0334b605ee0b6430e5868903fc7d2315331050970"
+    },
+    {
+      "case_id": "OLD-200",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-200.json",
+      "sha256": "2106bf057344b1250c580cb0ab77760ffa9f575d3d25aa1736a830494d719f7c"
+    },
+    {
+      "case_id": "OLD-201",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-201.json",
+      "sha256": "b3c7e540848cbdf54116fd616ddc631628243a0b074cf06aca22ca72948ee962"
+    },
+    {
+      "case_id": "OLD-202",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-202.json",
+      "sha256": "22e9c77dfc76358c8df677a21edd601ec842651d05edf953656487bcf5e36a10"
+    },
+    {
+      "case_id": "OLD-203",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-203.json",
+      "sha256": "bedf8db2b53b0e4e1262485f7ff1505de75cfcbaf21b5087da2e72e538e732bd"
+    },
+    {
+      "case_id": "OLD-204",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-204.json",
+      "sha256": "16fb931021a0ca8dfa30f40be6707c3c7fe89fffff35a805352cc1fe551ac522"
+    },
+    {
+      "case_id": "OLD-205",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-205.json",
+      "sha256": "6187e9bad579a86346fdf96faaf697bb9901172fc7b0843ab19c962d6da0f6b4"
+    },
+    {
+      "case_id": "OLD-206",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-206.json",
+      "sha256": "a773299ffc7a6549af3de97169515e4181e3c67eae356ddb083135b81b926612"
+    },
+    {
+      "case_id": "OLD-207",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-207.json",
+      "sha256": "4bdb858ffa5a65d68d0e45a755b78ed166e74d55af1822184b78a300ee3c023e"
+    },
+    {
+      "case_id": "OLD-208",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-208.json",
+      "sha256": "491a26d638a7e80719e2f25d9ace76a49f2132a19b1d13d045ca19220572d78b"
+    },
+    {
+      "case_id": "OLD-209",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-209.json",
+      "sha256": "a4f2654a2dbb2c9fb134a3f7fc08c6ba8c270b255e97a602b9ad24a4de2577f2"
+    },
+    {
+      "case_id": "OLD-210",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-210.json",
+      "sha256": "c7e30b110aa2d58ce5f81a7abf6b0367feda9f86fc7eb4ab75e7288428088ab1"
+    },
+    {
+      "case_id": "OLD-211",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-211.json",
+      "sha256": "413bee12144247dec7d01d499393dee42777af06fe92f8c5cfc4eba152271d07"
+    },
+    {
+      "case_id": "OLD-212",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-212.json",
+      "sha256": "86cab5ed3d9cd932b913b5e378899c8217613076cee32c93c5fb11ee32bf42ba"
+    },
+    {
+      "case_id": "OLD-213",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-213.json",
+      "sha256": "20c674c1fa33b9d44d4fa1d96de3cecb1e108064b5b66bf4e5063577d8d53fb3"
+    },
+    {
+      "case_id": "OLD-214",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-214.json",
+      "sha256": "c1c934190b57b386c3ea3513d7d0c724eb641ba0d25871a51cfedd7d0d650f6c"
+    },
+    {
+      "case_id": "OLD-215",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-215.json",
+      "sha256": "c5a53f884e640e6aee75eb0c66dc46c3610af942e274537da8e9cfb72c068c2b"
+    },
+    {
+      "case_id": "OLD-216",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-216.json",
+      "sha256": "91dc775737b2d145e479dff7f6c1ca9b7a62883a985de29103cd2a04fd0dbbbf"
+    },
+    {
+      "case_id": "OLD-217",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-217.json",
+      "sha256": "5ce92caf9eef360b1090add32c4e5812dbfc51042bc58970456944da6abcf28d"
+    },
+    {
+      "case_id": "OLD-218",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-218.json",
+      "sha256": "0e3b69d3cb341e37f9ca5468c7d644ed3d865dab9d64e94f11b9ec4bc4df7f1b"
+    },
+    {
+      "case_id": "OLD-219",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-219.json",
+      "sha256": "781720d83654ed1a8b2a7f503cdb693b03ed900c57f4afa92c38c4564d00b5bd"
+    },
+    {
+      "case_id": "OLD-220",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-220.json",
+      "sha256": "5ad86b193a74bf77838ad653d0d44dc2fe8fdb3b6953ca6928dc005a0572cbae"
+    },
+    {
+      "case_id": "OLD-221",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-221.json",
+      "sha256": "c3cca4e83512f5778f3bb822686e334b3abc08fa63f9fdf5642c413742d03738"
+    },
+    {
+      "case_id": "OLD-222",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-222.json",
+      "sha256": "ca5846a3cf62fa522fe375a69885127dc854238b13c281d9b9c28631acc02f8c"
+    },
+    {
+      "case_id": "OLD-223",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-223.json",
+      "sha256": "d6379ede1eb29eec48cc71def361af12fadaecdc447e36d1cfe77a4d17704ddc"
+    },
+    {
+      "case_id": "OLD-224",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-224.json",
+      "sha256": "a353be5087e7354d1eb11935b8946dcf395f4d3efea3d154abf2ebfe08e562ad"
+    },
+    {
+      "case_id": "OLD-225",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-225.json",
+      "sha256": "cb58843e257e82ce821b1f3b0fadcbdca86e8acc27a20784805b69a088415c78"
+    },
+    {
+      "case_id": "OLD-226",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-226.json",
+      "sha256": "8136945bb2292bf102f0acc0830b6d4a6b920f8e384003081ca471024325e857"
+    },
+    {
+      "case_id": "OLD-227",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-227.json",
+      "sha256": "6212ae656335db118364fce2d66bb656b77b9daa2b656ab1683f10695d4ecd6b"
+    },
+    {
+      "case_id": "OLD-228",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-228.json",
+      "sha256": "7171e62c3a58d4d71355abf6649637fae98312ae5cb5ec13f37719d18d8b42f8"
+    },
+    {
+      "case_id": "OLD-229",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-229.json",
+      "sha256": "1d03086578ea0aff1615123e73b9d6fc49bf8b3d22ed8bb902107aeff319a879"
+    },
+    {
+      "case_id": "OLD-230",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-230.json",
+      "sha256": "827c2d43c632acaeaf02ced48063a08f83fa1e79862c944892fc36d548b86302"
+    },
+    {
+      "case_id": "OLD-231",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-231.json",
+      "sha256": "c9be69bb6f6bbd6b06ea444029044e4a5102f0fb1967a47cee8728da6eef696c"
+    },
+    {
+      "case_id": "OLD-232",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-232.json",
+      "sha256": "60b45bdea445bfaf87c540098bcb6b9814429855145079b319ce5c6545b358e7"
+    },
+    {
+      "case_id": "OLD-233",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-233.json",
+      "sha256": "117d042a8196e7e39219455e73e49350bdfc694addbae7f41864f6a4d4e7683c"
+    },
+    {
+      "case_id": "OLD-234",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-234.json",
+      "sha256": "f5276c6731f5d4dbc549e7b3f4aa91f6800d05952e554acc67e9b203cf91286d"
+    },
+    {
+      "case_id": "OLD-235",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-235.json",
+      "sha256": "0ff8cb6db4bb40c7aa7bde26f7f8b5037046a4950ca2f79e7ddc67ab67afac78"
+    },
+    {
+      "case_id": "OLD-236",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-236.json",
+      "sha256": "b2f04f1237ba7498b06c304eeaa6a8597b0a3e216d62ecf8b7771bb9a3cb324f"
+    },
+    {
+      "case_id": "OLD-237",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-237.json",
+      "sha256": "839332e794e105b733b3905f785f27b97615ea96b9394a97e975ba706d4eaf35"
+    },
+    {
+      "case_id": "OLD-238",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-238.json",
+      "sha256": "36a0dc0f03160d7a0ba2071787687437ab76ff051168c1c21c11c2dccae166a0"
+    },
+    {
+      "case_id": "OLD-239",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-239.json",
+      "sha256": "5cdd3955b4453ea3366dba88372917561d51063746aa1b4cf4e3916c2d6ed255"
+    },
+    {
+      "case_id": "OLD-240",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-240.json",
+      "sha256": "a2d2a77e698961c4bd789d3384f07e70c5bac424f3e1259b5439c2a106d530d1"
+    },
+    {
+      "case_id": "OLD-241",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-241.json",
+      "sha256": "5c3424219b12ef35a8923a19d164bf3fa2fbc38c96fb780262c89382fa757c1f"
+    },
+    {
+      "case_id": "OLD-242",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-242.json",
+      "sha256": "12847aea2f5f55dea2b68ae7043ae77e70521064db049c01e89b88eb91c60db4"
+    },
+    {
+      "case_id": "OLD-243",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-243.json",
+      "sha256": "fdcc1d1b2e56842e35922064d4f4e8b34d81a595d8788d23aa7fadb054868482"
+    },
+    {
+      "case_id": "OLD-244",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-244.json",
+      "sha256": "d3252ec8990acef5c82c2aa359be99d35733474e5e76c1c2c2887892a6d175a6"
+    },
+    {
+      "case_id": "OLD-245",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-245.json",
+      "sha256": "53d10da9b3a4e979ff8f6797ea4e0df09d01c81043c12ba8553290a5e6f1960a"
+    },
+    {
+      "case_id": "OLD-246",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-246.json",
+      "sha256": "bef48e600e0239e0084ad200bc51f69811a52da55874745b81245d4f6d1c65e0"
+    },
+    {
+      "case_id": "OLD-247",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-247.json",
+      "sha256": "f46c7f76673e9c086d181a0c1251dd08a0400539c38af8229b90cf8bb47603e6"
+    },
+    {
+      "case_id": "OLD-248",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-248.json",
+      "sha256": "edd516bdc0c90ab2422fc76cf554b554996fdf413abd2eea867e6f8d2dcf9c15"
+    },
+    {
+      "case_id": "OLD-249",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-249.json",
+      "sha256": "3afda7fdda94bc4794cdf7cbb59e5548190010f66d92b67d62991e4fba07e3fa"
+    },
+    {
+      "case_id": "OLD-250",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-250.json",
+      "sha256": "034d399708748d35fe5f03d6d4fbcca72d19cfbdc94008dba73cb8d51239d035"
+    },
+    {
+      "case_id": "OLD-251",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-251.json",
+      "sha256": "e07bf870af14f55fd68ebb666a5618a4eca7369f7222d4be576efd267f97ead7"
+    },
+    {
+      "case_id": "OLD-252",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-252.json",
+      "sha256": "f637d630c351e071c1794dfd968de286f865f8676bb3d72bd41175b67d8e7015"
+    },
+    {
+      "case_id": "OLD-253",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-253.json",
+      "sha256": "413df2fbf0903da2d22713fc633ff3f71a3352d0936c5973c1198506c82cd2bd"
+    },
+    {
+      "case_id": "OLD-254",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-254.json",
+      "sha256": "c3dfca05257eb6a3f207d3f1da4848c9da9f9e31df17eff0117b66d4219e4262"
+    },
+    {
+      "case_id": "OLD-255",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-255.json",
+      "sha256": "359b11088b16bc0fa45a42c8c16319004fde9adaaab7ea4db601214eff4578bd"
+    },
+    {
+      "case_id": "OLD-256",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-256.json",
+      "sha256": "fe98a65db3588fc7e77fb85f204b93098d86858402edab0362ea7f480f2701c4"
+    },
+    {
+      "case_id": "OLD-257",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-257.json",
+      "sha256": "ab54e317123869c0532aec65eb8d0bc0ddc14fddca48a15f7a0fe00911e9c1a6"
+    },
+    {
+      "case_id": "OLD-258",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-258.json",
+      "sha256": "21e57b88d63abd43661f61684f1ec99da16c7dabf3d8d61d87fd5ddf17bf3f0a"
+    },
+    {
+      "case_id": "OLD-259",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-259.json",
+      "sha256": "b40aeef5bcfb9414a2a3c846f1d1f0bf01301eff25e8154f29de34ae60ea62b4"
+    },
+    {
+      "case_id": "OLD-260",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-260.json",
+      "sha256": "cd4aa8f6c44cd7a4e3f1743d0afbe5a244b7402b62558fd467c7b3b224395ca6"
+    },
+    {
+      "case_id": "OLD-261",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-261.json",
+      "sha256": "4ad20bcd9cbade0f52fef1bcb4312437c5b802014dc02321fd1d28bcf4837c3e"
+    },
+    {
+      "case_id": "OLD-262",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-262.json",
+      "sha256": "7bc8772fb617bddfe353b0c41860b0afac074c2fe3201db44eec2466b5abff50"
+    },
+    {
+      "case_id": "OLD-263",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-263.json",
+      "sha256": "e1778c890345877b7f512bf500a786924a7bf985abafc36a5133550287269510"
+    },
+    {
+      "case_id": "OLD-264",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-264.json",
+      "sha256": "721880026038e70141f074dbdc4ec1634fe0212babe6ba2845b12b19fbc53b44"
+    },
+    {
+      "case_id": "OLD-265",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-265.json",
+      "sha256": "f32ec88379e60fe718d26ea4ba2b1eb40c0db759bb6a2470302e0f96166eb4c2"
+    },
+    {
+      "case_id": "OLD-266",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-266.json",
+      "sha256": "70f75611790eee7ea59f098919e61de25a8be7d3729c8def4856161243322564"
+    },
+    {
+      "case_id": "OLD-267",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-267.json",
+      "sha256": "9086847b8c8c8f40486f95e8ba2d477657d0644b746290a40c00e7ab43331ea5"
+    },
+    {
+      "case_id": "OLD-268",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-268.json",
+      "sha256": "4be99475b4dd87bb38a3f7a3730046238224e576da9c877e9752d11c39559d51"
+    },
+    {
+      "case_id": "OLD-269",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-269.json",
+      "sha256": "6f60758e88ce3290ea62fe97d19e296ce3f8b45543e5019b2f91b008bd99eeb9"
+    },
+    {
+      "case_id": "OLD-270",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-270.json",
+      "sha256": "bc05ec489a3c4be2f3392275c98bdb7e1b69a945da56cb00bf3aa3b63c0b00e0"
+    },
+    {
+      "case_id": "OLD-271",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-271.json",
+      "sha256": "d4ad5ab67ace85260bf6bba07b075a73496aaa41d547967b8d466cb733a57603"
+    },
+    {
+      "case_id": "OLD-272",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-272.json",
+      "sha256": "1fd5f753a4868385cca0b8c614d5cc086796f24db89186a695b954a9c6ed3a37"
+    },
+    {
+      "case_id": "OLD-273",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\OLD-273.json",
+      "sha256": "34849906db512cd31e6dba3bf04136a6507ca734ef34fff9d965c5c0c017831e"
+    }
+  ],
+  "numeric_failures": [],
+  "numeric_texture_failures": [],
+  "sampled_mos": 31871,
+  "complete_frontier_textures": 1214,
+  "timing": {
+    "collection_wall_seconds": 2182.5970874999985,
+    "independent_review_wall_seconds": 1090.6022356999965,
+    "collection_per_case": {
+      "n": 273,
+      "sum_seconds": 8497.60751209996,
+      "minimum_seconds": 6.4430930000016815,
+      "median_seconds": 25.455389800001285,
+      "p95_seconds": 60.29504370000502,
+      "maximum_seconds": 249.22647919999872
+    },
+    "independent_review_per_case": {
+      "n": 273,
+      "sum_seconds": 4127.9816504000555,
+      "minimum_seconds": 1.1905617999946116,
+      "median_seconds": 12.480991899996297,
+      "p95_seconds": 34.68426532000303,
+      "maximum_seconds": 130.88282140000229
+    },
+    "view_review_wall_seconds": 24.977282300002116,
+    "OLD-015": {
+      "case_id": "OLD-015",
+      "input": "gaussian_validation_set\\15_naphthalene_D2h_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 41.41575789999479,
+      "numerical_review_seconds": 24.58241629999975,
+      "failed_checks": []
+    }
+  },
+  "consumed_summaries": {
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\collection-complete.json": "3707a807c7630f52ee67ef43000030e7d433b3b1ff86dcb337420cd5ae5daae9",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\review-v1\\unified-review\\summary.json": "a1859cf45334721da9bbab41215c5ac0c76a595db4f7b27605891127f087796b",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-004-original\\view-review-v1\\summary.json": "1d248e402e2b36398724f1a4c673f2849dd9708fb97e8a2023891e62d898453a"
+  },
+  "formal_case_passes": 0,
+  "external_molecule_count": 0,
+  "REF-001": "paused-by-user",
+  "limitations": [
+    "Draw-call semantics do not prove all visible text/glyph positions or clipping.",
+    "PNG stroke probes do not certify all output pixels.",
+    "Chemical/symmetry interpretation and paused physical references remain separate.",
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}
