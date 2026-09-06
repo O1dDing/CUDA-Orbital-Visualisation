@@ -40,6 +40,8 @@ def checked_identity(manifest,root):
         if digest(case['input'])!=case['sha256']: raise RuntimeError('Frozen input differs: '+case['case_id'])
     for name,sha in manifest['input_artifacts'].items():
         if digest(root/name)!=sha: raise RuntimeError('Frozen input or sidecar differs: '+name)
+    for name,sha in manifest['image_dependency_artifacts'].items():
+        if digest(root/'image-deps'/name)!=sha: raise RuntimeError('Frozen image dependency differs: '+name)
 
 def main():
     parser=argparse.ArgumentParser()
@@ -50,6 +52,7 @@ def main():
     manifest=read(root/'manifest.json')
     if manifest['case_count']!=len(manifest['cases']): raise RuntimeError('Incomplete frozen case manifest')
     sys.path.insert(0,str(args.reference_deps))
+    sys.path.insert(0,str(root/'image-deps'))
     os.environ.update(OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',
                       NUMEXPR_NUM_THREADS='1')
     import native_collection_batch as native
@@ -215,7 +218,8 @@ def main():
         atomic_json(root/'collection-complete.json',final)
         atomic_json(root/'progress.json',{k:v for k,v in final.items() if k!='cases'})
         print(json.dumps({k:v for k,v in final.items() if k!='cases'},ensure_ascii=False),flush=True)
+        return 0 if all(x['collection_status']=='complete' for x in results.values()) else 2
     finally:
         lock_file.seek(0);msvcrt.locking(lock_file.fileno(),msvcrt.LK_UNLCK,1);lock_file.close()
 
-if __name__=='__main__': main()
+if __name__=='__main__': raise SystemExit(main())
