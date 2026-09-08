@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import sys
 import time
 
@@ -22,6 +23,7 @@ from gbasis.evals.eval import evaluate_basis
 from grid_reference_compare import grid_metrics
 from validation_process import atomic_json
 from review_density_matrices import review_density
+from reference_cache import from_review_environment, array_identity
 
 def sha(path):
     h=hashlib.sha256()
@@ -97,7 +99,10 @@ def review(root,case_id,out):
     check('ACTUAL-EXE-DENSITY-DATA',len(density_events)==1 and density_events[0]==production['density_evidence'],
           {'matching_actual_exe_density_events':len(density_events)})
     mol=load_one(str(source));basis=tuple(from_iodata(mol));coeff=np.asarray(mol.mo.coeffs)
-    source_s=overlap_integral(basis)
+    reference_cache=from_review_environment(record['sha256'], Path(__file__))
+    coefficient_identity=array_identity(coeff)
+    source_s=(reference_cache.array('overlap', {'basis':'IOData source AO'},
+              lambda: overlap_integral(basis)) if reference_cache else overlap_integral(basis))
     indices,scales=internal_basis_map(mol)
     expected_s=source_s[np.ix_(indices,indices)]*scales[:,None]*scales[None,:]
     expected_c=coeff[indices]*scales[:,None]
@@ -159,7 +164,10 @@ def review(root,case_id,out):
         matched=state['rendered_mo']==mo and state['rendered_generation']==meta['generation'] and state['drawn_ui_mo']==mo
         if key not in cache:
             points=points_at(meta,ids)
-            cache[key]=coeff.T@evaluate_basis(basis,points)
+            spec={'coordinates':array_identity(points),'coefficients':coefficient_identity}
+            cache[key]=(reference_cache.array('sampled_mo',spec,
+                        lambda: coeff.T@evaluate_basis(basis,points)) if reference_cache
+                        else coeff.T@evaluate_basis(basis,points))
         metric=grid_metrics(values[:,1],cache[key][mo],thresholds)
         metric.update(mo=mo,metadata=path.name,frame_association=matched,full_grid='full_grid' in meta)
         if not matched:metric['pass']=False;metric['status']='fail'
@@ -175,11 +183,22 @@ def review(root,case_id,out):
         meta=items[0][1];count=meta['nx']*meta['ny']*meta['nz']
         mos=[m['rendered_mo'] for _,m in items]
         reference_path=out/f'full-reference-{group_index:02d}.npy'
-        reference=np.lib.format.open_memmap(reference_path,mode='w+',dtype='<f8',shape=(len(mos),count))
-        for first in range(0,count,4096):
-            last=min(first+4096,count)
-            reference[:,first:last]=coeff[:,mos].T@evaluate_basis(basis,points_at(meta,np.arange(first,last)))
-        reference.flush()
+        def write_full_reference(destination):
+            reference=np.lib.format.open_memmap(destination,mode='w+',dtype='<f8',shape=(len(mos),count))
+            for first in range(0,count,4096):
+                last=min(first+4096,count)
+                reference[:,first:last]=coeff[:,mos].T@evaluate_basis(basis,points_at(meta,np.arange(first,last)))
+            reference.flush()
+            del reference
+        if reference_cache:
+            spec={key:meta[key] for key in ('grid_box_bohr','nx','ny','nz')}
+            spec.update(mos=mos,coefficients=coefficient_identity,block_size=4096,dtype='<f8')
+            stored=reference_cache.materialize('full_mo',spec,write_full_reference)
+            # Every review remains portable, independently hashed and auditable.
+            shutil.copyfile(stored,reference_path)
+        else:
+            write_full_reference(reference_path)
+        reference=np.load(reference_path,mmap_mode='r',allow_pickle=False)
         for row,(path,metadata) in enumerate(items):
             binary=path.parent/metadata['full_grid']['file']
             if binary.parent.resolve()!=path.parent.resolve() or binary.stat().st_size!=count*4:
@@ -208,6 +227,9 @@ def review(root,case_id,out):
           {'expected':full_expected,'measured':len(full_results),'passed':sum(x['pass'] for x in full_results),
            'maximum_nrms':max((x['nrms'] for x in full_results if 'nrms' in x),default=None)})
     if sha(source)!=record['sha256']:raise RuntimeError('Input changed during review')
+    atomic_json(out/'reference-cache.json',{'enabled':reference_cache is not None,
+                'events':reference_cache.events if reference_cache else [],
+                'cached_verdicts':False,'actual_evidence_recompared':True})
     result={'schema':1,'case_id':case_id,'round_identity':manifest['round_identity'],
             'status':'numeric_subset_pass' if all(x['status']=='pass' for x in checks) else 'numeric_subset_fail',
             'checks':checks,'wall_seconds':time.perf_counter()-start,'formal_case_pass':False,
