@@ -160,7 +160,7 @@ def make_plan(production):
         # of the long window, closure, and the reopened selected-member state.
         plan += select_browser(details_mo)
         plan += ['click "diagram.details"','hover "diagram.details.close"','capture "orbital-details-top"',
-                 'hover "diagram.details.scope"','capture "orbital-details-bottom"',
+                 'hover "diagram.details.close.bottom"','capture "orbital-details-bottom"',
                  'click "diagram.details.close.bottom"','hover "scene.viewport"','capture "orbital-details-closed"',
                  'click "diagram.details"','hover "diagram.details.close"','capture "orbital-details-reopened"',
                  'click "diagram.details.close"','hover "scene.viewport"']

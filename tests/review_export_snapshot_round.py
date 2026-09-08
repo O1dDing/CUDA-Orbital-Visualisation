@@ -55,6 +55,11 @@ def review_details_frame(data, selected_mo, visible_target, image_size):
             x0,y0,x1,y1=targets[0]['rect'];width,height=image_size
             if not (0<=x0<x1<=width and 0<=y0<y1<=height):
                 failures.append('required-control-outside-frame')
+            clip=targets[0].get('clip_rect')
+            if clip is None:
+                failures.append('actual-clip-evidence-missing')
+            elif not all(math.isfinite(v) for v in clip) or not (clip[0]<=x0<x1<=clip[2] and clip[1]<=y0<y1<=clip[3]):
+                failures.append('required-control-partially-clipped')
     return failures
 
 
@@ -81,6 +86,9 @@ def review_case(root,record,Image):
     failures=[]; bundles=[]
     def check(ok,code,detail):
         if not ok: failures.append({'check':code,'detail':detail})
+    actions=[json.loads(line) for line in consume('native/actions.jsonl').read_text(encoding='utf-8').splitlines()]
+    failed_actions=[row for row in actions if row['status']!='executed']
+    check(not failed_actions,'VIEW-ACTION-FAILURES',failed_actions)
     names=expected.get('export_names',[])
     check(bool(names),'VIEW-COVERAGE','No frozen export-state coverage specified')
     check(len(names)==len(set(names))==len(exports),'VIEW-EXPORT-COUNT',

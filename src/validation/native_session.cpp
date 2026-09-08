@@ -220,18 +220,21 @@ void input_frame() {
         if(++stage>=4)complete_command=true;return;
     }
     if(cooldown>0){--cooldown;return;}
-    const auto it=previous.find(c.id);
-    if(it==previous.end()) {
-        if(c.id.rfind("browser.mo.",0)==0) {
-            const auto table=previous.find("browser.table");
-            if(table!=previous.end()) seek(table->second);
-        }
-        if(++attempts>60)finish("failed","semantic target not drawn");return;
-    }
     if(stage==0) {
+        const auto it=previous.find(c.id);
+        if(it==previous.end()) {
+            if(c.id.rfind("browser.mo.",0)==0) {
+                const auto table=previous.find("browser.table");
+                if(table!=previous.end()) seek(table->second);
+            }
+            if(++attempts>60)finish("failed","semantic target not drawn");return;
+        }
         if(!seek(it->second)) {if(++attempts>60)finish("failed","target clipped or unreachable by wheel input");return;}
         if(c.op=="seek"){complete_command=true;return;}
     }
+    // Once the real pointer sequence starts, finish its release and settling
+    // frames even if the action closes its own window. Final captures, rather
+    // than continued target existence, establish whether the action succeeded.
     if(c.op=="hover") {if(++stage>=4)complete_command=true;return;}
     // A real input sequence, observed hit rectangle -> down -> up. The
     // production Button/Selectable/canvas path remains the sole state writer.
@@ -339,7 +342,9 @@ void end_frame(int width,int height,std::size_t applied,const ui::OrbitalUIState
             framebuffer(output/(c.id+".bmp"),width,height);
             std::ofstream out(output/(c.id+".ui.json"));
             out<<"{\"state\":"<<state<<",\"targets\":[";bool first=true;
-            for(const auto& [id,t]:targets){if(!first)out<<',';first=false;out<<"{\"id\":"<<quote(id)<<",\"rect\":["<<t.lo.x<<','<<t.lo.y<<','<<t.hi.x<<','<<t.hi.y<<"],\"visible\":"<<(point_visible(t)?"true":"false")<<'}';}
+            for(const auto& [id,t]:targets){if(!first)out<<',';first=false;out<<"{\"id\":"<<quote(id)<<",\"rect\":["<<t.lo.x<<','<<t.lo.y<<','<<t.hi.x<<','<<t.hi.y
+                <<"],\"clip_rect\":["<<t.clip.Min.x<<','<<t.clip.Min.y<<','<<t.clip.Max.x<<','<<t.clip.Max.y
+                <<"],\"visible\":"<<(point_visible(t)?"true":"false")<<'}';}
             out<<"],\"draw_trace\":[";first=true;for(const auto& x:trace){if(!first)out<<',';first=false;out<<x;}out<<"]}";
         }
         finish("executed");
