@@ -269,7 +269,7 @@ def main():
         'collection_barrier_sha256':sha(root/'collection-complete.json'),'formal_case_passes':0,
         'limitations':['Draw-call semantics do not prove all visible text/glyph positions or clipping.',
                        'PNG stroke probes do not certify all output pixels.',
-                       'Chemical/symmetry interpretation and paused physical references remain separate.'],
+                       'Chemical/symmetry interpretation and independently managed physical references remain separate.'],
         'case_reports':{p.name:sha(p) for p in out.glob('OLD-*.json')}}
     atomic_json(out/'summary.json',result)
     print(json.dumps(result),flush=True)
