@@ -359,19 +359,16 @@ std::string delocalised_atom_list(const DelocalisedPiDescriptor& descriptor) {
 
 ImU32 pi_interaction_colour(PiInteractionKind kind);
 
-void draw_level_tooltip(const MODiagramData& data,
+void draw_level_details(const MODiagramData& data,
                         const MODiagramLevel& level,
+                        const Wavefunction& wavefunction,
                         const OrbitalUIState& state,
                         const Language language,
                         const std::size_t orbital_index) {
     const OrbitalMetadata& metadata=orbital_index<data.metadata.size()
         ?data.metadata[orbital_index]:level.metadata;
-    std::string displayed_symmetry=metadata.symmetry;
-    if (displayed_symmetry.empty() || displayed_symmetry=="?" ||
-        displayed_symmetry=="N/A" || displayed_symmetry=="n/a") {
-        displayed_symmetry=level.metadata.symmetry;
-    }
-    ImGui::BeginTooltip();
+    const std::string displayed_symmetry=metadata.symmetry.empty()?"N/A":metadata.symmetry;
+    const auto* actual=orbital_index<wavefunction.orbitals.size()?&wavefunction.orbitals[orbital_index]:nullptr;
     ImGui::Text("MO %s", metadata.display_label.c_str());
     ImGui::Separator();
     labelled_number(tr(Text::RawMO, language), std::to_string(metadata.raw_mo_number));
@@ -384,12 +381,20 @@ void draw_level_tooltip(const MODiagramData& data,
     labelled_number("kJ/mol", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::KilojoulePerMol), 5));
     labelled_number("cal/mol", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::CaloriePerMol), 3));
     labelled_number("kcal/mol", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::KilocaloriePerMol), 5));
-    labelled_number(tr(Text::Occupation, language), fixed_number(metadata.occupation, 3));
-    ImGui::Text("%s: %s", tr(Text::Spin, language), spin_name_ui(metadata.spin, language));
+    labelled_number(tr(Text::Occupation, language),
+        actual && actual->occupation_provenance!=DataProvenance::Unavailable && std::isfinite(actual->occupation)
+            ?fixed_number(actual->occupation,6):"N/A");
+    ImGui::Text("%s: %s", tr(Text::Spin, language),
+        actual && actual->spin_provenance!=DataProvenance::Unavailable?spin_name_ui(actual->spin,language):"N/A");
 
     ImGui::TextUnformatted(tr(Text::Symmetry, language));
     ImGui::SameLine();
     draw_rich_symmetry(displayed_symmetry, kSymmetryColour);
+    ImGui::Separator();
+    ImGui::TextWrapped(language==Language::ChineseSimplified?
+        "以下为能级组代表数据（MO %zu）；与上方所选成员的原始数据分别解释。":
+        "Group representative data below (MO %zu); interpret it separately from the selected member above.",
+        level.metadata.raw_mo_number);
     if (!data.ligand_field_point_group.empty()) {
         labelled_value(orbital_tr(OrbitalText::LocalLigandField, language),
                        data.ligand_field_point_group+" · "+
@@ -563,6 +568,40 @@ void draw_level_tooltip(const MODiagramData& data,
     } else {
         labelled_value(tr(Text::DelocalisedPiSystem, language), "N/A", kUnavailableColour);
     }
+}
+
+void draw_level_tooltip(const MODiagramData& data,
+                        const MODiagramLevel& level,
+                        const Wavefunction& wavefunction,
+                        const OrbitalUIState& state,
+                        const Language language,
+                        const std::size_t orbital_index) {
+    if(orbital_index>=data.metadata.size() || orbital_index>=wavefunction.orbitals.size())return;
+    const auto& metadata=data.metadata[orbital_index];
+    const auto& actual=wavefunction.orbitals[orbital_index];
+    const bool chinese=language==Language::ChineseSimplified;
+    const ImVec2 work_size=ImGui::GetMainViewport()->WorkSize;
+    ImGui::SetNextWindowSizeConstraints(ImVec2(0,0),ImVec2(std::max(120.0f,work_size.x-24.0f),std::max(120.0f,work_size.y-24.0f)));
+    ImGui::BeginTooltip();
+    ImGui::PushTextWrapPos(ImGui::GetFontSize()*24.0f);
+    ImGui::Text("MO %s",metadata.display_label.c_str());
+    labelled_number(tr(Text::ExactEnergy,language),format_energy(metadata.energy_hartree,state.energy_unit,8));
+    labelled_number(tr(Text::Occupation,language),
+        actual.occupation_provenance!=DataProvenance::Unavailable && std::isfinite(actual.occupation)?fixed_number(actual.occupation,6):"N/A");
+    ImGui::Text("%s: %s",tr(Text::Spin,language),
+        actual.spin_provenance!=DataProvenance::Unavailable?spin_name_ui(actual.spin,language):"N/A");
+    labelled_value(tr(Text::Symmetry,language),metadata.symmetry.empty()?"N/A":metadata.symmetry,kSymmetryColour);
+    if(orbital_index<data.annotations.size()) {
+        const auto& annotation=data.annotations[orbital_index];
+        labelled_value(tr(Text::OrbitalFamily,language),family_symbol_ui(annotation.family),family_colour(annotation.family));
+        labelled_value(tr(Text::BondingClassLabel,language),bonding_ui(annotation.bonding_class,language),bonding_colour(annotation.bonding_class));
+    }
+    if(level.member_indices.size()>1)
+        ImGui::Text(chinese?"能级组含 %zu 个 MO":"Level group contains %zu MOs",level.member_indices.size());
+    ImGui::Separator();
+    ImGui::TextWrapped("%s",chinese?"选中轨道后，通过“轨道详情”查看完整说明。":
+        "Select the orbital, then open Orbital details for the full explanation.");
+    ImGui::PopTextWrapPos();
     ImGui::EndTooltip();
 }
 
@@ -1229,7 +1268,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
             if (distance < best && distance <= 8.0f * ui_scale) { best = distance; nearest = &point; }
         }
         if (nearest && nearest->level) {
-            draw_level_tooltip(data,*nearest->level,state,language,
+            draw_level_tooltip(data,*nearest->level,wavefunction,state,language,
                                nearest->orbital_index);
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
                 actions.select_orbital=nearest->orbital_index;
@@ -1240,6 +1279,42 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     ImGui::EndChild();
     if (ImGui::Button(tr(Text::ExportBundle, language), ImVec2(-1.0f, 0.0f))) actions.export_diagram = true;
     cov::validation::item("diagram.export");
+    const bool chinese=language==Language::ChineseSimplified;
+    if(ImGui::Button(chinese?"轨道详情":"Orbital details",ImVec2(-1.0f,0.0f)))
+        state.show_diagram_details=true;
+    cov::validation::item("diagram.details");
+    if(state.show_diagram_details) {
+        const auto* viewport=ImGui::GetMainViewport();
+        const ImVec2 work=viewport->WorkSize;
+        ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x+work.x*.5f,viewport->WorkPos.y+work.y*.5f),
+            ImGuiCond_Appearing,ImVec2(.5f,.5f));
+        ImGui::SetNextWindowSize(ImVec2(std::min(720.0f*ui_scale,work.x*.8f),work.y*.7f),ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSizeConstraints(ImVec2(180.0f,120.0f),ImVec2(std::max(180.0f,work.x-24.0f),std::max(120.0f,work.y-24.0f)));
+        const bool visible=ImGui::Begin(chinese?"轨道详情###cov.orbital.details":"Orbital details###cov.orbital.details",
+            &state.show_diagram_details,ImGuiWindowFlags_HorizontalScrollbar);
+        if(visible) {
+            if(ImGui::Button(chinese?"关闭详情":"Close details"))state.show_diagram_details=false;
+            cov::validation::item("diagram.details.close");
+            ImGui::Separator();
+            ImGui::PushTextWrapPos(0.0f);
+            const auto row=mo_diagram_row_for_orbital(data,selected_index);
+            if(row && *row<data.levels.size()) {
+                draw_level_details(data,data.levels[*row],wavefunction,state,language,selected_index);
+            } else if(selected_index<wavefunction.orbitals.size()) {
+                ImGui::Text("MO %zu",selected_index+1);
+                ImGui::TextWrapped("%s",chinese?"所选轨道未包含在当前能级图中；可在轨道列表和所选轨道化学分析中查看其信息。":
+                    "The selected orbital is outside the current diagram; its data remain available in the orbital browser and selected-orbital analysis.");
+            }
+            ImGui::Separator();
+            ImGui::TextWrapped("%s",chinese?"数据范围：当前视图中的所选轨道及其能级组。":
+                "Data scope: the selected orbital and its level group in the current view.");
+            cov::validation::item("diagram.details.scope");
+            if(ImGui::Button(chinese?"关闭详情##bottom":"Close details##bottom"))state.show_diagram_details=false;
+            cov::validation::item("diagram.details.close.bottom");
+            ImGui::PopTextWrapPos();
+        }
+        ImGui::End();
+    }
 }
 
 } // namespace cov::ui

@@ -41,6 +41,7 @@ struct OrbitalUIState {
     OrbitalFilterSettings filter{};
     bool grouped_labels = true;
     bool hide_ligand_centred_intermediates = true;
+    bool show_diagram_details = false;
     int diagram_neighbourhood = 12;
     std::array<char, 96> search{};
     OrbitalUIBrowserCache browser_cache{};
