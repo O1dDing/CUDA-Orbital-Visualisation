@@ -297,9 +297,10 @@ class EngineTests(unittest.TestCase):
         self.engine.calculate('OLD-001', self.phase(), 14)
         self.assertIn('Opt=(Restart,VeryTight', self.backend.calls[-1]['input'])
         self.assertIn('%nprocshared=14', self.backend.calls[-1]['input'])
-        attempts = list((self.engine.jobs / 'OLD-001/opt-00').glob('attempt-*/attempt.json'))
+        attempts = sorted((self.engine.jobs / 'OLD-001/opt-00').glob('attempt-*/attempt.json'))
         self.assertEqual(len(attempts), 2)
         self.assertEqual(r.read(attempts[0])['status'], 'interrupted')
+        self.assertEqual(r.read(attempts[1])['status'], 'collected')
 
     def test_analytic_frequency_replay_preserves_completed_opt(self):
         self.engine.calculate('OLD-001', self.phase(), 7)

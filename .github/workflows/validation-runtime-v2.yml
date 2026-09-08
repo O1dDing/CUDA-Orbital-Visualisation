@@ -29,4 +29,9 @@ jobs:
       - name: Policy, mocked Gaussian, real frozen registry, and Windows Job tests
         run: python -X utf8 validation/runtime_v2/test_runtime.py
       - name: Existing frozen recovery tests
+        # The frozen test compares literal paths; avoid the runner's 8.3 TEMP alias.
+        env:
+          TEMP: ${{ runner.temp }}
+          TMP: ${{ runner.temp }}
+          TMPDIR: ${{ runner.temp }}
         run: python -X utf8 validation/paused-20260906/test_resume_reference.py
