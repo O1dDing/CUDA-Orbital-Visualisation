@@ -1,0 +1,32 @@
+name: Validation runtime v2
+on:
+  push:
+    branches: [test/fchk-validation-native]
+    paths:
+      - validation/runtime_v2/**
+      - validation/paused-20260906/**
+      - .github/workflows/validation-runtime-v2.yml
+  pull_request:
+    paths:
+      - validation/runtime_v2/**
+      - validation/paused-20260906/**
+      - .github/workflows/validation-runtime-v2.yml
+permissions:
+  contents: read
+jobs:
+  runtime-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Policy, mocked Gaussian, real frozen registry, and Windows Job tests
+        run: python -X utf8 validation/runtime_v2/test_runtime.py
+      - name: Existing frozen recovery tests
+        run: python -X utf8 validation/paused-20260906/test_resume_reference.py

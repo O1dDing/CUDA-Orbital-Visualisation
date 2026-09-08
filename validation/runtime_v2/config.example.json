@@ -1,0 +1,8 @@
+{
+  "data_root": "F:\\CalChem\\COV\\Resume\\data",
+  "work_root": "F:\\CalChem\\COV\\Resume\\work",
+  "gaussian": "F:\\CalChem\\Gaussian\\Gaussian 16 W",
+  "core_budget": null,
+  "timeout_hours": 72,
+  "disk_reserve_gib": 20
+}
