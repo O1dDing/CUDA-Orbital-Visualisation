@@ -106,6 +106,8 @@ def review_case(root,record,Image):
             with Image.open(consume('native/'+capture+'.png')) as image:
                 image.load();size=image.size
             issues=review_details_frame(data,expected['orbital_details_member'],target,size)
+            if capture=='orbital-details-bottom':
+                issues += review_details_frame(data,expected['orbital_details_member'],'diagram.details.close.bottom',size)
             check(not issues,'VIEW-DETAILS-CONTROL',{'capture':capture,'failures':issues})
             details_frames.append({'capture':capture,'selected_mo':expected['orbital_details_member'],
                                    'required_visible_control':target,'image_size':list(size),'pass':not issues})

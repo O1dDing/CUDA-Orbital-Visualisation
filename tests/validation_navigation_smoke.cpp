@@ -7,7 +7,7 @@
 
 namespace {
 void require(bool condition,const char* message) { if (!condition) throw std::runtime_error(message); }
-void nested_navigation(float scale) {
+void nested_navigation(float scale,bool reveal_entire_item=false) {
     ImGui::CreateContext();auto& io=ImGui::GetIO();
     io.IniFilename=nullptr;io.DisplaySize={1200,1100};io.DeltaTime=1.0f/60;
     io.Fonts->AddFontDefault();io.Fonts->Build();
@@ -59,7 +59,7 @@ void nested_navigation(float scale) {
     for (int index:{0,1,2,3,0}) {
         bool reached=false;
         for (int attempt=0;attempt<60;++attempt) {
-            const auto step=cov::validation::plan_navigation(targets[index]);
+            const auto step=cov::validation::plan_navigation(targets[index],reveal_entire_item);
             if (attempt==59) {
                 std::cerr<<"scale="<<scale<<" target="<<index<<" step="<<int(step.kind)
                     <<" mouse="<<io.MousePos.x<<','<<io.MousePos.y
@@ -70,6 +70,12 @@ void nested_navigation(float scale) {
             require(step.kind!=cov::validation::NavigationKind::Unreachable,"nested target unreachable through actual wheel input");
             pointer=step.mouse;
             if (step.kind==cov::validation::NavigationKind::Ready) {
+                if(reveal_entire_item) {
+                    const auto& t=targets[index];
+                    require(t.lo.x>=t.clip_lo.x && t.lo.y>=t.clip_lo.y &&
+                            t.hi.x<=t.clip_hi.x && t.hi.y<=t.clip_hi.y,
+                            "hover evidence must reveal the complete fitting target in the actual clip");
+                }
                 if (visit==0) require(wheels_y==0,"a horizontal miss must not realign vertical ancestors");
                 tick();tick({},1);tick({},0);
                 require(selected==index,"actual button did not receive the selected target click");
@@ -93,6 +99,7 @@ void nested_navigation(float scale) {
 int main() {
     try {
         nested_navigation(1);nested_navigation(1.5f);
+        nested_navigation(1,true);nested_navigation(1.5f,true);
         std::cout<<"validation_navigation_smoke ok\n";
     } catch (const std::exception& error) {
         std::cerr<<"validation_navigation_smoke: "<<error.what()<<'\n';

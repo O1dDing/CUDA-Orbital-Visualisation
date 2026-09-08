@@ -52,9 +52,18 @@ ImVec2 wheel_position(ImGuiWindow* window,ImGuiAxis axis) {
 }
 }
 bool navigation_target_visible(const NavigationTarget& target) { return usable(visible_target(target)); }
-NavigationStep plan_navigation(const NavigationTarget& target) {
+NavigationStep plan_navigation(const NavigationTarget& target, bool reveal_entire_item) {
     const auto visible=visible_target(target);
-    if (usable(visible)) return {NavigationKind::Ready,visible.GetCenter()};
+    auto clip=ImRect(target.clip_lo,target.clip_hi);clip.ClipWith(desktop());
+    bool ready=usable(visible);
+    if (reveal_entire_item) {
+        for (const auto axis:{ImGuiAxis_Y,ImGuiAxis_X}) {
+            const float span=target.hi[axis]-target.lo[axis];
+            if (span<=clip.Max[axis]-clip.Min[axis] &&
+                (target.lo[axis]<clip.Min[axis] || target.hi[axis]>clip.Max[axis])) ready=false;
+        }
+    }
+    if (ready) return {NavigationKind::Ready,visible.GetCenter()};
     const ImVec2 point((target.lo.x+target.hi.x)*0.5f,(target.lo.y+target.hi.y)*0.5f);
     // Scroll only a viewport that actually excludes this target on this axis.
     // A horizontal miss must not unconditionally realign vertical ancestors.
@@ -63,8 +72,14 @@ NavigationStep plan_navigation(const NavigationTarget& target) {
         for (const auto axis:{ImGuiAxis_Y,ImGuiAxis_X}) {
             if (window->ScrollMax[axis]<=0) continue;
             const float lo=window->InnerRect.Min[axis]+4,hi=window->InnerRect.Max[axis]-4;
-            if (hi<=lo || (point[axis]>=lo && point[axis]<=hi)) continue;
-            const float delta=point[axis]-std::clamp(point[axis],lo,hi);
+            if (hi<=lo) continue;
+            float delta=point[axis]-std::clamp(point[axis],lo,hi);
+            if (reveal_entire_item && target.hi[axis]-target.lo[axis]<=hi-lo) {
+                if (target.lo[axis]<lo) delta=target.lo[axis]-lo;
+                else if (target.hi[axis]>hi) delta=target.hi[axis]-hi;
+                else delta=0;
+            }
+            if (std::abs(delta)<0.5f) continue;
             const float desired=std::clamp(window->Scroll[axis]+delta,0.0f,window->ScrollMax[axis]);
             if (std::abs(desired-window->Scroll[axis])<0.5f) continue;
             const auto mouse=wheel_position(window,axis);

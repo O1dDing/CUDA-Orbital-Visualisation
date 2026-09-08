@@ -75,9 +75,9 @@ NavigationTarget navigation_target(const Target& t) { return {t.lo,t.hi,t.window
 bool point_visible(const Target& t) {
     return navigation_target_visible(navigation_target(t));
 }
-bool seek(const Target& t) {
+bool seek(const Target& t, bool reveal_entire_item = false) {
     auto& io=ImGui::GetIO();
-    const auto step=plan_navigation(navigation_target(t));
+    const auto step=plan_navigation(navigation_target(t),reveal_entire_item);
     if (step.kind==NavigationKind::Unreachable) return false;
     injected_mouse=step.mouse;io.AddMousePosEvent(step.mouse.x,step.mouse.y);
     if (step.kind==NavigationKind::Ready) return true;
@@ -229,7 +229,7 @@ void input_frame() {
             }
             if(++attempts>60)finish("failed","semantic target not drawn");return;
         }
-        if(!seek(it->second)) {if(++attempts>60)finish("failed","target clipped or unreachable by wheel input");return;}
+        if(!seek(it->second,c.op=="hover")) {if(++attempts>60)finish("failed","target clipped or unreachable by wheel input");return;}
         if(c.op=="seek"){complete_command=true;return;}
     }
     // Once the real pointer sequence starts, finish its release and settling
