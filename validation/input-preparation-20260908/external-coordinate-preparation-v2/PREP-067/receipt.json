@@ -1,0 +1,15 @@
+{
+  "candidate_id": "PREP-067",
+  "query": "La(NO3)2(phen)(H2O)4(+)",
+  "family": "少见配位几何",
+  "expected_formula": "C12H16LaN4O10",
+  "expected_charge": 1,
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "started_epoch": 1788843132.3632164,
+  "input_geometry_accepted": false,
+  "formal_case": false,
+  "gaussian_started": false,
+  "status": "identity-unresolved-retained",
+  "lookup_status": "source-coordinate-work-pending",
+  "finished_epoch": 1788843132.3632164
+}

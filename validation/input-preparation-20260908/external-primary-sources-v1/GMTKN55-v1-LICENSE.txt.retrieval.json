@@ -1,0 +1,14 @@
+{
+  "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/LICENSE",
+  "started_epoch": 1788844885.1499965,
+  "file": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-primary-sources-v1\\GMTKN55-v1-LICENSE.txt",
+  "formal_molecules_added": 0,
+  "gaussian_started": false,
+  "status_code": 200,
+  "resolved_url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/LICENSE",
+  "content_type": "text/plain; charset=utf-8",
+  "bytes": 2259,
+  "sha256": "29853614116e554998fb67ca0654c69dadedaf70960344027acdfa8ee42f0a68",
+  "status": "retrieved",
+  "finished_epoch": 1788844885.747715
+}

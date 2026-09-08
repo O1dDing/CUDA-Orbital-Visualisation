@@ -1,0 +1,57 @@
+{
+  "snapshot_epoch": 1788844809.3323524,
+  "phase": "input-and-control-preparation",
+  "external_candidate_count": 67,
+  "pubchem_retrieval_counts": {
+    "computed-starting-conformer-retrieved": 35,
+    "conformer-unavailable-or-rejected-retained": 19,
+    "identity-unresolved-retained": 13
+  },
+  "benchmark_geometry_candidates": [
+    "PREP-018",
+    "PREP-043",
+    "PREP-044",
+    "PREP-046"
+  ],
+  "candidates_with_archived_starting_coordinates": 39,
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "density_controls_prepared": 20,
+  "density_controls_cov_executed": false,
+  "gaussian_started_by_this_preparation": false,
+  "independently_managed_gaussian": "F:/CalChem/COV/Resume; queue and pause request untouched",
+  "running_round": "NUM-FIX-006",
+  "running_round_progress_at_snapshot": {
+    "status": "collecting",
+    "started_epoch": 1788841057.6037312,
+    "updated_epoch": 1788844780.5619636,
+    "expected_cases": 273,
+    "terminal_cases": 113,
+    "running": {
+      "OLD-114": {
+        "stage": "cov_validation.exe",
+        "pid": 73732,
+        "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\cases\\OLD-114\\attempt-001\\cases\\OLD-114\\process-native",
+        "started_epoch": 1788844778.4625692
+      },
+      "OLD-115": {
+        "stage": "cov_validation.exe",
+        "pid": 63268,
+        "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\cases\\OLD-115\\attempt-001\\cases\\OLD-115\\process-native",
+        "started_epoch": 1788844780.5619636
+      }
+    },
+    "collection_complete": 113,
+    "collection_gaps": 0,
+    "collection_errors": 0,
+    "scientific_analysis": "pending full collection barrier",
+    "formal_case_passes": 0
+  },
+  "production_or_frozen_round_changes": false,
+  "evidence": {
+    "pubchem": "external-coordinate-preparation-v2/review-v1/summary.json",
+    "benchmark": "benchmark-geometry-preparation-v1/review-v2/summary.json",
+    "rare_geometries": "external-primary-sources-v1/source-review.json",
+    "density_controls": "regression-fixtures/density-source-v1/manifest.json"
+  }
+}

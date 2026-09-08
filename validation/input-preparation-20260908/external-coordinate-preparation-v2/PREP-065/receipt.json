@@ -1,0 +1,15 @@
+{
+  "candidate_id": "PREP-065",
+  "query": "Co@Ge10(3-)",
+  "family": "少见配位几何",
+  "expected_formula": "CoGe10",
+  "expected_charge": -3,
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "started_epoch": 1788843132.3612165,
+  "input_geometry_accepted": false,
+  "formal_case": false,
+  "gaussian_started": false,
+  "status": "identity-unresolved-retained",
+  "lookup_status": "source-coordinate-work-pending",
+  "finished_epoch": 1788843132.3612165
+}
