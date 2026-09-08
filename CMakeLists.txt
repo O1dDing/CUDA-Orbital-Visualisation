@@ -141,6 +141,11 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
         ${imgui_SOURCE_DIR}
     )
 
+    add_library(cov_validation_navigation STATIC src/validation/navigation.cpp)
+    target_include_directories(cov_validation_navigation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_link_libraries(cov_validation_navigation PUBLIC cov_imgui_core)
+    target_compile_features(cov_validation_navigation PUBLIC cxx_std_20)
+
     add_library(cov_ui STATIC
         src/ui/ui.cpp
         src/ui/ui_text_dispatch.cpp
@@ -287,7 +292,7 @@ if(COV_ENABLE_CUDA)
         target_compile_definitions(cov_validation_support PUBLIC COV_ENABLE_VALIDATION=1)
         target_compile_definitions(cov_validation_support PRIVATE COV_VALIDATION_COMMIT="${COV_VALIDATION_COMMIT}")
         target_compile_options(cov_validation_support PRIVATE $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
-        target_link_libraries(cov_validation_support PUBLIC cov_imgui_core OpenGL::GL)
+        target_link_libraries(cov_validation_support PUBLIC cov_imgui_core cov_validation_navigation OpenGL::GL)
         target_link_libraries(cov_ui PUBLIC cov_validation_support)
         set_target_properties(cov PROPERTIES OUTPUT_NAME cov_validation)
     endif()
@@ -458,6 +463,9 @@ if(COV_BUILD_TESTS)
     add_executable(cov_mo_diagram_layout_smoke tests/mo_diagram_layout_smoke.cpp)
     target_link_libraries(cov_mo_diagram_layout_smoke PRIVATE cov_ui)
     add_test(NAME mo_diagram_layout_smoke COMMAND cov_mo_diagram_layout_smoke)
+    add_executable(cov_validation_navigation_smoke tests/validation_navigation_smoke.cpp)
+    target_link_libraries(cov_validation_navigation_smoke PRIVATE cov_validation_navigation cov_ui)
+    add_test(NAME validation_navigation_smoke COMMAND cov_validation_navigation_smoke)
 
     add_executable(cov_molecule_style_smoke tests/molecule_style_smoke.cpp)
     target_link_libraries(cov_molecule_style_smoke PRIVATE cov_molecule cov_parser)

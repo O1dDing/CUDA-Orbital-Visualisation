@@ -1,4 +1,5 @@
 #include "cov/validation.hpp"
+#include "cov/validation_navigation.hpp"
 #include "cov/gl_api.hpp"
 #include <imgui_internal.h>
 #include <algorithm>
@@ -70,64 +71,24 @@ void finish(const std::string& status, const std::string& detail = {}) {
     ++next; stage = attempts = cooldown = 0; complete_command = false;
     command_started = Clock::now();
 }
-ImVec2 target_point(const Target& t) {
-    // SpanAllColumns Selectable rectangles extend beyond the current table
-    // column clip. Use the actual visible part of the hit rectangle.
-    const float left=std::max(t.lo.x,t.clip.Min.x),right=std::min(t.hi.x,t.clip.Max.x);
-    return ImVec2(left<right?(left+right)*0.5f:(t.lo.x+t.hi.x)*0.5f,(t.lo.y+t.hi.y)*0.5f);
-}
+NavigationTarget navigation_target(const Target& t) { return {t.lo,t.hi,t.window,t.clip.Min,t.clip.Max}; }
 bool point_visible(const Target& t) {
-    const ImVec2 p=target_point(t);
-    return t.clip.Contains(p) && p.x>1 && p.y>1 &&
-           p.x<ImGui::GetIO().DisplaySize.x-1 && p.y<ImGui::GetIO().DisplaySize.y-1;
+    return navigation_target_visible(navigation_target(t));
 }
 bool seek(const Target& t) {
-    ImGuiIO& io = ImGui::GetIO();
-    const ImVec2 p=target_point(t);
-    if (point_visible(t)) {injected_mouse=p;io.AddMousePosEvent(p.x,p.y);return true;}
-    // Bring an enclosing card into view before attempting to scroll its
-    // contents. Otherwise a clipped card can consume wheels indefinitely.
-    std::vector<ImGuiWindow*> chain;
-    for(auto* w=t.window;w;w=w->ParentWindow)chain.push_back(w);
-    for(std::size_t i=chain.size();i>1;--i) {
-        auto* parent=chain[i-1];auto* child=chain[i-2];
-        const auto r=parent->InnerClipRect;
-        if(parent->ScrollMax.y<=0 || r.GetHeight()<60)continue;
-        const float delta=child->Pos.y-(r.Min.y+12);
-        if(std::abs(delta)<65)continue;
-        // Only align a child that could fit, or the highest card in a scroll
-        // panel. Never change the selected MO or the widget's return value.
-        const auto bar=ImGui::GetWindowScrollbarRect(parent,ImGuiAxis_Y);
-        injected_mouse=bar.GetCenter();io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
-        io.AddMouseWheelEvent(0,std::clamp(-delta/(5*parent->CalcFontSize()),-2.0f,2.0f));
-        cooldown=3;return false;
-    }
-    if (point_visible(t)) { injected_mouse=p;io.AddMousePosEvent(p.x,p.y); return true; }
-    // Scroll through real ImGui wheel input. Never call SetScrollY or mutate
-    // a widget value as a fallback for an invisible/unavailable target.
-    for (auto* w=t.window; w; w=w->ParentWindow) {
-        ImRect r=w->InnerClipRect;
-        r.ClipWith(ImRect(ImVec2(0,0),io.DisplaySize));
-        if (w->ScrollMax.y <= 0 || r.GetHeight()<30 || r.GetWidth()<30) continue;
-        if (p.y >= r.Min.y+5 && p.y <= r.Max.y-5) continue;
-        // Use the parent's right padding so a nested card cannot consume an
-        // outer-panel wheel event just because it overlaps the panel centre.
-        injected_mouse=ImGui::GetWindowScrollbarRect(w,ImGuiAxis_Y).GetCenter();
-        io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
-        io.AddMouseWheelEvent(0,p.y<r.Min.y?3.0f:-3.0f);
-        cooldown=3;
-        return false;
-    }
-    for (auto* w=t.window; w; w=w->ParentWindow) {
-        ImRect r=w->InnerClipRect;
-        r.ClipWith(ImRect(ImVec2(0,0),io.DisplaySize));
-        if (w->ScrollMax.x<=0 || r.GetWidth()<30 || r.GetHeight()<30) continue;
-        if (p.x>=r.Min.x+5 && p.x<=r.Max.x-5) continue;
-        injected_mouse=ImGui::GetWindowScrollbarRect(w,ImGuiAxis_X).GetCenter();
-        io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
-        io.AddMouseWheelEvent(p.x<r.Min.x?3.0f:-3.0f,0);
-        cooldown=3;
-        return false;
+    auto& io=ImGui::GetIO();
+    const auto step=plan_navigation(navigation_target(t));
+    if (step.kind==NavigationKind::Unreachable) return false;
+    injected_mouse=step.mouse;io.AddMousePosEvent(step.mouse.x,step.mouse.y);
+    if (step.kind==NavigationKind::Ready) return true;
+    events<<"{\"kind\":\"input.seek\",\"frame\":"<<frame<<",\"command\":"<<next
+          <<",\"phase\":"<<quote(step.kind==NavigationKind::Move?"move":"wheel")
+          <<",\"window\":"<<quote(step.scrolling_window?step.scrolling_window->Name:"")
+          <<",\"mouse\":["<<step.mouse.x<<','<<step.mouse.y<<"],\"wheel\":["
+          <<step.wheel.x<<','<<step.wheel.y<<"],\"target\":["<<t.lo.x<<','<<t.lo.y<<','<<t.hi.x<<','<<t.hi.y
+          <<"],\"clip\":["<<t.clip.Min.x<<','<<t.clip.Min.y<<','<<t.clip.Max.x<<','<<t.clip.Max.y<<"]}\n";
+    if (step.kind==NavigationKind::Wheel) {
+        io.AddMouseWheelEvent(step.wheel.x,step.wheel.y);cooldown=3;
     }
     return false;
 }

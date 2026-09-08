@@ -1,0 +1,50 @@
+{
+  "helpers/build_general_fixes.py": {
+    "bytes": 2607,
+    "sha256": "b5c28e7e81129367fbd01e00a78eb4020e1edd30d6afef568813e153fb13c97f"
+  },
+  "helpers/continue_frozen_round.py": {
+    "bytes": 4036,
+    "sha256": "73da65f8570f806a107db530d084939a9d20089b0be05504940c01359308fc3e"
+  },
+  "helpers/freeze_numeric_round.py": {
+    "bytes": 6832,
+    "sha256": "ad49b45ad5d75d632dc7f2b6093ea9cf3e4db95ee71784aae25066a7a348fd42"
+  },
+  "helpers/numeric_round_extrema.py": {
+    "bytes": 3292,
+    "sha256": "e10ce6d60f979f852f7af54e5a061d3e95b4c42a40d727c95d0a246be6806c36"
+  },
+  "helpers/run_numeric_collection.py": {
+    "bytes": 1715,
+    "sha256": "e1b07ed83c5ea086470f967b675f685e7ffead7fdbde7912a55e834d445eeec7"
+  },
+  "helpers/run_numeric_review_batch.py": {
+    "bytes": 16054,
+    "sha256": "88074032468af4da1733a79cee4b12cd01cd9d53e5ba7a89daa337dc04049058"
+  },
+  "helpers/run_view_snapshot_review.py": {
+    "bytes": 1627,
+    "sha256": "9d4f3fbfad27c50b85380e898f57313a713ce2b7723544f761252f9e0129e159"
+  },
+  "helpers/summarize_collection_navigation_gaps.py": {
+    "bytes": 4492,
+    "sha256": "daad8155f58226c5138806f8aec958822e664ef284b34517880ce986c9010144"
+  },
+  "helpers/summarize_numeric_review.py": {
+    "bytes": 8205,
+    "sha256": "98065496b5e55aba1ee07b27f30ac51c5d8399432d711a5fc8de952b618d3886"
+  },
+  "helpers/summarize_view_snapshot_round.py": {
+    "bytes": 4012,
+    "sha256": "680b8da577de3c494c6c0ce91fd852d4b9b7b3c42b660818cec3e1701d268100"
+  },
+  "helpers/test_general_fixes.py": {
+    "bytes": 1248,
+    "sha256": "0c4dfdf1d6f65a10f7f6154ff7b8a5f78bf696ec4b50bf0b5d2bd941ec0a28bb"
+  },
+  "README.md": {
+    "bytes": 1825,
+    "sha256": "108833c36577ee6e963de44bc59b8d5b1c3f739b51581499f25868de3cfb6808"
+  }
+}

@@ -59,9 +59,13 @@ def main():
     checked_identity(manifest,root)
     workers=manifest['resources']['workers']
     threads=manifest['resources']['threads_per_worker']
-    if workers*threads>12 or not 1<=workers<=4 or manifest['resources']['memory_gib_per_worker']*workers>128:
+    quota=manifest['resources']
+    offset=quota.get('core_slot_offset',0)
+    if (not 1<=threads or not 1<=workers<=4 or not 0<=offset
+            or not workers*threads<=quota['aggregate_cpu_cores']<=12-offset
+            or not 0<quota['memory_gib_per_worker']*workers<=quota['aggregate_memory_gib']<=128):
         raise ValueError('Frozen worker quotas exceed the authorized global ceiling')
-    masks=physical_core_masks(workers*threads)
+    masks=physical_core_masks(offset+workers*threads)[offset:]
     slots=queue.Queue()
     for i in range(workers): slots.put(sum(masks[i*threads:(i+1)*threads]))
     results={}
