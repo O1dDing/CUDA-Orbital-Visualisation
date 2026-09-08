@@ -1,0 +1,2085 @@
+{
+  "created_epoch": 1788857237.4045365,
+  "sources": [
+    {
+      "relative": "campaign/阶段状态.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\阶段状态.json",
+      "source_sha256": "e17d449c7932e157088fbfc554a81b4162d309ef0c0bf2cb53b832465355dbd0"
+    },
+    {
+      "relative": "campaign/执行检查点.md",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\执行检查点.md",
+      "source_sha256": "7051f6b420ec2ceb911cfc442a2f564da10631eb4263e1f80b66a97da40f6c0c"
+    },
+    {
+      "relative": "campaign/external-fifty-starting-geometries-v1.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-starting-geometries-v1.json",
+      "source_sha256": "799e456c1178c8d35a80ba5d2f2bc21629658701cabec2d229db89ff07acde51"
+    },
+    {
+      "relative": "campaign/external-fifty-identity-screen-v1.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-identity-screen-v1.json",
+      "source_sha256": "67775e1b054700407a4dcae05641582c55fa53da0e0c6cf2b50a7326a1d859c8"
+    },
+    {
+      "relative": "campaign/ISSUES.md",
+      "local_source": "F:\\CalChem\\COV\\TO-DO\\validation_20260905\\ISSUES.md",
+      "source_sha256": "5acde32244512499ec069a5f12026ab8f0d919f97d577521b76a9e19b30306a3"
+    },
+    {
+      "relative": "campaign/density-details-fifty-checkpoint-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\density-details-fifty-checkpoint-v1\\summary.json",
+      "source_sha256": "a2ad48bcc75600b7c47390e992204e46f99456eb8d811cceb9cc50705bf31bf6"
+    },
+    {
+      "relative": "campaign/num007c-launch-checkpoint/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\num007c-launch-checkpoint\\summary.json",
+      "source_sha256": "d96acbb668c58aa0a4a4eab9752e362c60d11e43c1b02f0bb2b9f3bc4fb5bc0b"
+    },
+    {
+      "relative": "campaign/external-fifty-formula-collision-review-v1/benzyl-tropylium.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-formula-collision-review-v1\\benzyl-tropylium.json",
+      "source_sha256": "2ee9b552fb085b846ab7522c518bdc2ba1fdfbe99716ef65f4ed4e01e8e4694d"
+    },
+    {
+      "relative": "campaign/external-fifty-formula-collision-review-v1/oxazole-isoxazole.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-formula-collision-review-v1\\oxazole-isoxazole.json",
+      "source_sha256": "2ada34d26d9edb547a64ea363b6d04c41ea3ae0e5580cba1696818d73a8e9645"
+    },
+    {
+      "relative": "campaign/external-fifty-formula-collision-review-v1/protocol.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-formula-collision-review-v1\\protocol.json",
+      "source_sha256": "e26a5c4b98360d5e9cc8ddcb52cb765e44c27f05e641da20581500965b608d21"
+    },
+    {
+      "relative": "campaign/external-fifty-formula-collision-review-v1/reviewer.py",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-formula-collision-review-v1\\reviewer.py",
+      "source_sha256": "86b0cf1b81a153c9c7db7869128f0033927f000e0841bf17aac0cf1b0cabab9e"
+    },
+    {
+      "relative": "campaign/external-fifty-formula-collision-review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-formula-collision-review-v1\\summary.json",
+      "source_sha256": "9745f19e4f4e7745fb24405a842b2116904f453f065e122ef3eb10669e172862"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-051/ccd-source-review.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-051\\ccd-source-review.json",
+      "source_sha256": "ef9b3589f8eaa7eeef733e410de4cce28193d74274b5b0887211a031a033376b"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-051/crystal-asymmetric-unit.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-051\\crystal-asymmetric-unit.xyz",
+      "source_sha256": "5eacb429a8b9e1c9d438040f090474eb759636ca58736fd09fee1984a3be316c"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-051/crystal-source-and-state.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-051\\crystal-source-and-state.json",
+      "source_sha256": "9c95f83d5892799cefedde867e7f366726c4d950c97a0ffa3d613f7e74802574"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-051/ideal.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-051\\ideal.xyz",
+      "source_sha256": "45aa4a6dd004ff0ce17bf5914ec0e1d29fa3e53d460bc148468916a2c303ac3d"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-051/model.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-051\\model.xyz",
+      "source_sha256": "4e0e3eb464ed1fce9dff29c7dd7830342f0ee78d70e0db5baaa513404d5488d7"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-051/starting.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-051\\starting.xyz",
+      "source_sha256": "b1d6d0ca37ce059e8f757568f7869023c6facbbbbc5bef50290783026e75fb8f"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-060/ccd-source-review.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-060\\ccd-source-review.json",
+      "source_sha256": "404283051af6fe296595a4c8e26406edcb89a0a75fac41ab73793d987d5d66c5"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-060/ideal.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-060\\ideal.xyz",
+      "source_sha256": "fe75f55a172c9eeafd6bcf4e3619584c85fc159a05f3138f20fcc21618036742"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/PREP-060/model.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\PREP-060\\model.xyz",
+      "source_sha256": "f91076aa080e89f41c9a39ad11ad35922b4902ed6eb7a2837e356a69d242d7fb"
+    },
+    {
+      "relative": "external/rcsb-and-cisplatin-coordinate-preparation-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\summary.json",
+      "source_sha256": "d3e537b05b631bbce9a2d0032d3f1c2f6a812471a04b61f32ab88fbec15286a9"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/pinned-tree-verification-v1.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\pinned-tree-verification-v1.json",
+      "source_sha256": "6af3a133e9b41d5e2fcc91293a97f5d537264aff0af9a1dce9b69641e7357f71"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-068/source-and-state.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-068\\source-and-state.json",
+      "source_sha256": "d5c8a333a689c66a9c83e1dbd186a86ecc0068ea3281010ed6791a7b5213c979"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-068/starting.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-068\\starting.xyz",
+      "source_sha256": "f81c658806d9d862b5174350cb4aa006719d2132c5242a08fdef88f18a9a0f53"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-069/source-and-state.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-069\\source-and-state.json",
+      "source_sha256": "a1b2acccf07c358a094e6af528623e34771d34cead154d861e0224c1c1703ceb"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-069/starting.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-069\\starting.xyz",
+      "source_sha256": "0f21cb80309934dd114d47dee8fe6d9b791fdb9d30e673d986a8d7b382e38140"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-070/source-and-state.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-070\\source-and-state.json",
+      "source_sha256": "efd5defbf33cd8c3fb22dfaec160cbf3b11470e5e7831ab26b6c1b46f884b879"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-070/starting.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-070\\starting.xyz",
+      "source_sha256": "e2e9e490380abd8900c69374d48f58b0ad55954bcf5d96a0537e0621627264e4"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-071/source-and-state.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-071\\source-and-state.json",
+      "source_sha256": "4da3269b32c793d590273d4a5dfb5ad469a6ccde977616a516a10630561a5ded"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/PREP-071/starting.xyz",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-071\\starting.xyz",
+      "source_sha256": "e57c083b7b80760c40caf9c97df04e90483f4223afeb12d0f5acb9347fc5721c"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/selection-protocol.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\selection-protocol.json",
+      "source_sha256": "c98d70d8a11b753eb73b864fe41336db9e54ec01a433fab6c7c6afbe92f198e4"
+    },
+    {
+      "relative": "external/mor41-geometry-preparation-v2/selection-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\summary.json",
+      "source_sha256": "69cc6463aa776d81fb6cbb456f2ac265eb52e60dcb6f09425cbe3bc7c25a6ccd"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/adjudication-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\adjudication-v1\\summary.json",
+      "source_sha256": "594d0cd68f07baf248edfcdf325ef7c97bee39ed2acdceaa7f71f070f96c112c"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/build/CMakeFiles/InstallScripts.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\build\\CMakeFiles\\InstallScripts.json",
+      "source_sha256": "b09476d5a92ddf9d666de48ef6a18030df414b0e7d4a827ee6e7aa2f9a16910d"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/build-process/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\build-process\\launcher.log",
+      "source_sha256": "f70f3b59bd57c1a1b14e8a0d168643eafef6f523c2e3eb1e350242457e24b268"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/build-process/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\build-process\\process.json",
+      "source_sha256": "f99d2033cfdf90c6e9271884dfd380254b57e931ee9b14a8328307b38fe28e48"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C01/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C01\\launcher.log",
+      "source_sha256": "34539724dcc2dfac3513c904013b0eb8f6c8b5da0b24d76854b0fdf7838e62e9"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C01/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C01\\observed.json",
+      "source_sha256": "3a1733d49ded78c3c806acbdb50dee209528910e9865092b7a88d1bd47480789"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C01/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C01\\process.json",
+      "source_sha256": "29b2121c828c48f68e7e781af4128c3556b42e76a83d45ab886fdfc316b5a001"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C01/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C01\\receipt.json",
+      "source_sha256": "2ee78e2eb610e4ed9ecc081658fc7ac119ee689b6e30e6dd5734da566f976717"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C02/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C02\\launcher.log",
+      "source_sha256": "973f472422f8a8d17ce78d43e036008d5bf634b917b9df64bec92432ecab9e9f"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C02/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C02\\observed.json",
+      "source_sha256": "9117f8f59a4fb9d1b71c43444aa5e534212463cf60cfd29dda8cfd9aa18fee04"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C02/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C02\\process.json",
+      "source_sha256": "eccadc24187e3a57c794028314a250ff5ae7abe18de9c401780803d8ce9de144"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C02/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C02\\receipt.json",
+      "source_sha256": "f43e0d6a6df96baf05b3f001b43228cef8e1ca65cf322e77c877623e45e2de7d"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C03/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C03\\launcher.log",
+      "source_sha256": "545ff3a44c60d1d27af3b6c21f22a2af38c50ca381b89413c2bda143df45779d"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C03/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C03\\observed.json",
+      "source_sha256": "0aa4774880ef076c9f6f5bd4e8a3dc918c6278283015e4dbbe8296354737d531"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C03/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C03\\process.json",
+      "source_sha256": "71ce246506c993ccec153a5c19b789476d419f45ee450200a31f4279f97fdc37"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C03/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C03\\receipt.json",
+      "source_sha256": "1efebfc05679cbff27d0c04a4cdd3ff375d5e496408f8b4373579f75c38eef22"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C04/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C04\\launcher.log",
+      "source_sha256": "9ce2aacaa9d3f36f47c7600d0523982289fa3254eec9e6144b0500c672f2c34f"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C04/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C04\\observed.json",
+      "source_sha256": "0da36842ff81964e93216d87387bd9f2084ffd3a72b4aac67a24741582693ba6"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C04/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C04\\process.json",
+      "source_sha256": "8f484f6cca1f8b76792d2f576190ab11ab69dd865222d478f25cee79394148b7"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C04/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C04\\receipt.json",
+      "source_sha256": "5e09eb7d54efb599adc2fa0c0d5cefee83e83e5c4fa546bccf81859a53410ee0"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C05/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C05\\launcher.log",
+      "source_sha256": "21f36509314ec0f2779f922c5d1a733d4ef41fc5c3e2ca2b66637ffed999706b"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C05/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C05\\observed.json",
+      "source_sha256": "44da3a19499c72e661639eb6681aa73aece7d7575929f4d136e22b19e78da86c"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C05/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C05\\process.json",
+      "source_sha256": "c6c9ee69a1979a4a1f5d937ea588d0fa0d8012d62fd8e1c88c09991637f27d65"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C05/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C05\\receipt.json",
+      "source_sha256": "431a2c6f60d8776fb3e8be633d6ffe6ba6120e9ac7f956184d81ea9e29256c84"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C06/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C06\\launcher.log",
+      "source_sha256": "85f1c4f75eec902a6299372a6bd739ca81a7393acbaa1239aa5f72f65fda4e92"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C06/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C06\\observed.json",
+      "source_sha256": "eed143d50767eea8596ae703816bf6f1e1fab956f22cc3c794b81dc2c4100ac0"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C06/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C06\\process.json",
+      "source_sha256": "852ef01998db51b17def7520236beb3bae4f4c5e937c60e93dc0622cd2057b53"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C06/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C06\\receipt.json",
+      "source_sha256": "f3a6261799cc02ab6a7e7293277574fda798da4dd29903fbe30386d99375557a"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C07/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C07\\launcher.log",
+      "source_sha256": "16c7cda29084f20104ed32fa68c1ee7ed050cc85b2068470954bdbeecadfdebb"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C07/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C07\\observed.json",
+      "source_sha256": "885c60b4b85e3465d18154203015d70348a674dd83172988710655b07e194621"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C07/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C07\\process.json",
+      "source_sha256": "c60c3ee165082f43ec885d4a0522d7cd5ad989240ffd8fc689da485cdefe4973"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C07/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C07\\receipt.json",
+      "source_sha256": "353f4a99e759ee82e178f3bc888f7d4cd196c620f4effed14dc6abe6e52ce8f6"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C08/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C08\\launcher.log",
+      "source_sha256": "8cc32519a8b957bbea1eb896e5d5d04b547e2a6a46a9d2d78dfcfbe2c9306a27"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C08/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C08\\observed.json",
+      "source_sha256": "314fe69f6f0549cbbb5575a67f39d86df98468c60f62d0fb34377170686f79ef"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C08/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C08\\process.json",
+      "source_sha256": "9ba393e23fa866acb6254243ef666661abbb9f0044bc3c3b7ea86a1d77701a49"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C08/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C08\\receipt.json",
+      "source_sha256": "066b858829313595a49f5e596f391f248b2faabffc8228beaedcedf3c132e69d"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C09/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C09\\launcher.log",
+      "source_sha256": "a461526c98c3de125033fb93e67b630a73f744a3a1cb945b147387e8cf572d99"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C09/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C09\\observed.json",
+      "source_sha256": "25171d3a6c165eb5bf0f531b33ef9588ba10350d6ee56b584f08a6a4caf66910"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C09/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C09\\process.json",
+      "source_sha256": "4f23f0a6bd25da18debb9f42cce0250f2a8a64f00a8fd17970b0ea4fd5aa629b"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C09/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C09\\receipt.json",
+      "source_sha256": "8b83464222e205e6872799b6d617bc5dbc6bcbe085cbf442571a5b851207c4cf"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C10/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C10\\launcher.log",
+      "source_sha256": "f244134a659e3c3471800119c089a0b2c69b0cc0f44a2613501129f53d6fdd70"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C10/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C10\\observed.json",
+      "source_sha256": "6a76ef7aaf2de724f57e820ff5a9b5e0295869f292ad947780576402e94cea20"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C10/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C10\\process.json",
+      "source_sha256": "d7d657ce6be1b4f03a79bfaac7c61a8f6f41fac2ffd2d954cfc85e04c9a23546"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C10/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C10\\receipt.json",
+      "source_sha256": "84f96709dc8975163010144a2a2c028e23c51fd90b009e8f4e4c41ffb970bfd2"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C11/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C11\\launcher.log",
+      "source_sha256": "4cffc95299bcc2254fcd13391da7fd2a1005afd56fc285927881e03f6a268c2c"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C11/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C11\\observed.json",
+      "source_sha256": "46fa1128151c184cc9982b2d5378ed6126babcaa9b6ac28783126b60a025b52c"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C11/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C11\\process.json",
+      "source_sha256": "e5207f4f6e87f10f5d82df78ade1570b55339be4df5ca26d2d16d59c552587d2"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C11/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C11\\receipt.json",
+      "source_sha256": "e65d7035797eb0a248ccb987495193c3b6bc5c307c051a92a9def87c132ef8fb"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C12/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C12\\launcher.log",
+      "source_sha256": "828b9f91046f1a2dd36d2a1d404da34ae6b7a0fa50a6e8310b9d46c09c697e65"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C12/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C12\\observed.json",
+      "source_sha256": "3f63e6ab8874f9aea516663cd1dd70c655621ab2e8858320e57dde09594bc340"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C12/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C12\\process.json",
+      "source_sha256": "5c9e96dcaa05c7997321ea7dc0a1693077cc62f36432082caf2f9dd9273862a2"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C12/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C12\\receipt.json",
+      "source_sha256": "35f0d8f3188c2eb6fb8dd680e3b45b1cb8625df2ed919cff68c7d068bbe76ac7"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C13/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C13\\launcher.log",
+      "source_sha256": "7d38d21cbc63ecf11f6811acf44a9dc22b31b5fa45b92493ec627523f00564e6"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C13/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C13\\observed.json",
+      "source_sha256": "e3fb85ca2a112748fd9681d2ed6ee10fcc0dd0a2b5fab0c06622083e48a14724"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C13/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C13\\process.json",
+      "source_sha256": "1810d31a61432a488aaefdc3ae5d833f1d80b1457073791f629004a425c7058b"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C13/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C13\\receipt.json",
+      "source_sha256": "efb6d8ce7eed84d8577c5d9138444ce160f222d5426d89329a7d5c290f2797e2"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C14/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C14\\launcher.log",
+      "source_sha256": "d233b73c4887921ad9c4eef67050bceb5b5c39dd04513f2ca406894570d3e14a"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C14/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C14\\observed.json",
+      "source_sha256": "6654fb23a3247dec467a3a121863b1c995e15bc8c0308ef50e9fb8dd5496b4de"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C14/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C14\\process.json",
+      "source_sha256": "09607354a98f3ee690cef9eb6d608c1484614438235236b0277ca137c63e5493"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C14/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C14\\receipt.json",
+      "source_sha256": "8272ab4f8326b073203952d8892af84ce9e7fb9a3a46df883c0275677d2cf175"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C15/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C15\\launcher.log",
+      "source_sha256": "f636e713aeed46624120da4636de668cd15a3c84454ed19a6f797da4a8e0c6e3"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C15/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C15\\observed.json",
+      "source_sha256": "6bbcde72a41b5ff4e9b60d86f45635b413863fff4fb85fabdc0de1d84d44b77a"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C15/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C15\\process.json",
+      "source_sha256": "174df78d01c82c7aa1fbd09e21455f711fd7c966cf9804d6a8cb8b8a1f0fee7d"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C15/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C15\\receipt.json",
+      "source_sha256": "a86b69fda72a3a19ffa451652d793d11fe4606d021ada9a0817cf83b97290628"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C16/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C16\\launcher.log",
+      "source_sha256": "60136f13a2333f3bc20b4e51cfc5163a21b661116643192f0b0a8c0eaf4d8823"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C16/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C16\\observed.json",
+      "source_sha256": "d9594f4748ca4a01f99277b0c839b49deea21ed0ff9bccf8be25dcbd1dc7a16f"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C16/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C16\\process.json",
+      "source_sha256": "276003d4dda121c50f9f20a3b830f6065c2e8107a883f48bae76a7eebe2c9b50"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C16/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C16\\receipt.json",
+      "source_sha256": "d315d813d14c78ee8b5b5538277b4869dbfb2b65f9ca76868aba9d3e3f428677"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C17/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C17\\launcher.log",
+      "source_sha256": "7a64ef7387e763aacfcc1af8f5e7be05a31414887383c33693beb081f4cfaea9"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C17/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C17\\observed.json",
+      "source_sha256": "762da6b1b22ad6ee33da111141183e6f48e14b234894c1b00da8e69970f6bea0"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C17/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C17\\process.json",
+      "source_sha256": "dfcfcdbe1147defb24ee7ce264306999bb4e2db8fd24848efd3df4e45a10af5f"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C17/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C17\\receipt.json",
+      "source_sha256": "0a2dc953f8a0eb94b9b30cb5ea40d04faac4da3a51b9128633cd0548f68d2a67"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C18/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C18\\launcher.log",
+      "source_sha256": "b85dd91433cc4cfc10baf013c6fb6d1d552bcb782f49fbdfd35e89dd66d9c108"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C18/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C18\\observed.json",
+      "source_sha256": "198d368d49d77fa6a3d4dd3379acf52f8a7f5adcafe881cea70ad17775b1c8bb"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C18/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C18\\process.json",
+      "source_sha256": "799f27fe377a91a97605a0f5d5205aa302659a5f17bc6d4faa3228ee48613d99"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C18/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C18\\receipt.json",
+      "source_sha256": "2ede4ebc969a84c2cac3d84c9d122d7887d6a989a4142b60182cfd7406771f61"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C19/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C19\\launcher.log",
+      "source_sha256": "e02bfb905e78765d994b5e87b95240fe99d1c648f8447488b0858aa41fce13f7"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C19/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C19\\observed.json",
+      "source_sha256": "d08ac10a098177b59fab935fde23cd5766eb1c96b18cc353a30077185cbf9780"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C19/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C19\\process.json",
+      "source_sha256": "58a631f30c4f62175403fbc44de40202d654f6f2edbc016ad48737c229b6ee43"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C19/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C19\\receipt.json",
+      "source_sha256": "c9dac026fd4b421f229139c492cc88aeb10b2ca6e0fe2fffaf2007de14b87a6f"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C20/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C20\\launcher.log",
+      "source_sha256": "9a8ad2365ed3ee93b11e0f05c38624960e15780029ccbef992585dd0974613a8"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C20/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C20\\observed.json",
+      "source_sha256": "f2dd9e07fb1bcfafa304bff62865cad6a6d31b7f88cb1ddfb3e1b31b4444c735"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C20/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C20\\process.json",
+      "source_sha256": "7d54b73594a96e6953c81cb2ce908353cb76bb3d928ad808463e6e63b9bebe54"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/cases/DEN-C20/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\cases\\DEN-C20\\receipt.json",
+      "source_sha256": "eb619d5122b8a0a6333574f5fa1f8db90c19f7c0bd38d326dc0f6853cc456f36"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\collection-complete.json",
+      "source_sha256": "8a200f902361a63ff6d25963a9de9f16df3216328cc3c8ab0dd2bd62ec509f71"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/configure/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\configure\\launcher.log",
+      "source_sha256": "4b1727e77bc3941055b0d3ae4fcbb2a8accea9fd84ec31649eb87644d597c856"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/configure/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\configure\\process.json",
+      "source_sha256": "354567121efc4b43cbf6f95b108b3b0732401c3c38eaafd3342ebf7bc2e887bb"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/execution-started.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\execution-started.json",
+      "source_sha256": "9b2391ae90e809a2cc5c28c1b43cb41a0e739425ed9ca1ecfc76c5745b648c04"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\identity.json",
+      "source_sha256": "51aaf07bd115cc86954bac9142fa749c55f82a237f1ab45bb55885a06a7fae44"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/post-num006-pipeline/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\post-num006-pipeline\\identity.json",
+      "source_sha256": "8581b01cd013079959779666591d0562813f872805adad6a63d237ee333589a2"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/post-num006-pipeline/independent-control-review/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\post-num006-pipeline\\independent-control-review\\launcher.log",
+      "source_sha256": "d9c75dfb840d6d353b227708e02c30a49750b6d075fc10135d5ae6081ea7dde1"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/post-num006-pipeline/independent-control-review/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\post-num006-pipeline\\independent-control-review\\process.json",
+      "source_sha256": "c24dda598630fe7c67705e52bf1a563dda4c41b9a630ccb3e46c331e4bd16e11"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/post-num006-pipeline/production-baseline/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\post-num006-pipeline\\production-baseline\\launcher.log",
+      "source_sha256": "32bbd8993d6dffda0767c4f9e21e74985b31c9131c1d0417446aa110b836c44e"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/post-num006-pipeline/production-baseline/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\post-num006-pipeline\\production-baseline\\process.json",
+      "source_sha256": "91fa9cebc68e5b8d0152e2c6f64a5621615b1f553b89f623f42665877b6c2d2e"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/post-num006-pipeline/progress.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\post-num006-pipeline\\progress.json",
+      "source_sha256": "98c335639ab676e1acaee84f6e21e070ffa4b85566d4561b5fc4192e2ba03d8c"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/post-num006-pipeline/started.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\post-num006-pipeline\\started.json",
+      "source_sha256": "1472f73dbf99d7344caaf8694a77e3dbb2e9c1b7b1c92e289fc100128da2d6be"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/progress.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\progress.json",
+      "source_sha256": "6997179277c09f58d9269e464f0fc138d3c6ecf81e487d7ba6d7f72b9d9f68f6"
+    },
+    {
+      "relative": "density/baseline-production-21036b2-v3/review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3\\review-v1\\summary.json",
+      "source_sha256": "9191a9afbd5f0c799ff71e28eead3e079c75ef3df49293615d380e8ed0e02278"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/all-collection-terminal.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\all-collection-terminal.json",
+      "source_sha256": "f9012a94689dd270843d7aeea76f7302618d392be1c9de94acfcaa6bcc317b0e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\identity.json",
+      "source_sha256": "dca861151173a2474e7b001c95adeac6a07542743e2ac68189fad51d356694b3"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C01/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C01\\launcher.log",
+      "source_sha256": "9da1eabd32e7882ac58fe7de591d9813c78f2d5c96c9127db7ff09cb81c5d65f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C01/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C01\\observed.json",
+      "source_sha256": "d7e90f8a85c98e8566cadc5706d2509f3ae8251cf61aff8c85ae34d951624111"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C01/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C01\\process.json",
+      "source_sha256": "58434aaf5fd9f87ca93a8a835799471e179564e566a3d437f4a08c230d4b69a4"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C01/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C01\\receipt.json",
+      "source_sha256": "2dfaf173b100784dfbbb74c05252d2f772238738d791a77b7ac522744d82fb6a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C02/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C02\\launcher.log",
+      "source_sha256": "6cd8cb4590c34c32acfad7de9826955e3f8ed18d8005d53f972f2131b9855070"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C02/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C02\\observed.json",
+      "source_sha256": "d338fa2bdf6347fbb92900b44cddcd7ef5a81a01b223419488d742673f59952e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C02/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C02\\process.json",
+      "source_sha256": "2b84b0e01ecc9c65aec0c56472776d9941cd910df1c266a3ae5ad1e8427f3e7b"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C02/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C02\\receipt.json",
+      "source_sha256": "1d08c885c0164458c80d2b75e8c66159bf95d9df8ef20071968d65b891625220"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C03/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C03\\launcher.log",
+      "source_sha256": "93695196ef6eab790cfb37aed7817e5a84c7fb467bfa323fac849590e0a338a0"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C03/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C03\\observed.json",
+      "source_sha256": "9d38f2a685211d3d30134dfaf719d1a17cc9b7395007b3b4a527fddc39a8a1b6"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C03/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C03\\process.json",
+      "source_sha256": "be4688dc70fef1e0dfebd2786586f92d7634aa01ba804746838867721f25939c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C03/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C03\\receipt.json",
+      "source_sha256": "8122ae6240996c693c97130de2025b90bd7f46a5949a130d7faa2502d026bebf"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C04/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C04\\launcher.log",
+      "source_sha256": "cb9f5e1c5545c1fa5af83ebd460a52db96af82e01210ced0df193bd7a24c856e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C04/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C04\\observed.json",
+      "source_sha256": "92da503f3d8f9af5182c107e5fd5258db45688e33b044dd59fbda5e7551407ee"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C04/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C04\\process.json",
+      "source_sha256": "7e71a59f61ae3c78ab162d4a868e99b4f5d9c45104ed3e7eeb409e8d69201247"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C04/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C04\\receipt.json",
+      "source_sha256": "a5a16005f84816f4b1e03979606b873f7af2636683e53a38b11901020b7aa8e1"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C05/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C05\\launcher.log",
+      "source_sha256": "3a7797d461167650932f9fef9ee06a420aac758dbd37b97a23ec22ab91bd1c64"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C05/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C05\\observed.json",
+      "source_sha256": "4256d31f1ea7c6b470e2cdf6946864fe6b2e5c353dbaae8dca419c02035cff45"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C05/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C05\\process.json",
+      "source_sha256": "61a1fd63d4d7e97f07b958dd9e37f21f81538f3e287b5b918d2127977fe05e6f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C05/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C05\\receipt.json",
+      "source_sha256": "5d046bf4277f1af7b911108ebd4da8dc99d23953c826e9a29048b27a7f0303f9"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C06/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C06\\launcher.log",
+      "source_sha256": "990844879709de1204fcc59fe1cf27d9288b3c3dd7a6cfeaee32f5857648eb56"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C06/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C06\\observed.json",
+      "source_sha256": "1a3cb71d8d195e2689d37df34e947c01135bda9acfa86216f84012ca6b652ccc"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C06/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C06\\process.json",
+      "source_sha256": "f3f78c90dd800c90ace953af1afdbd6ac482cbb54b13971275c6bf926903d4d0"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C06/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C06\\receipt.json",
+      "source_sha256": "5612d5191e75f288d586cdd9621039f31ec063abf3cae002641af7eb817149db"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C07/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C07\\launcher.log",
+      "source_sha256": "fc74affcdd490d3c832ce3349977f40f9da70bec251977660367c5d87587577f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C07/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C07\\observed.json",
+      "source_sha256": "b34e76e807fe555c6dc7985e73859e69ee4f21cd480e289d03dff766e7360330"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C07/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C07\\process.json",
+      "source_sha256": "accdc76ec362c1a131b2fc91dae63ac77709f54b1a1b90fb0d6d29de5afc55bb"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C07/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C07\\receipt.json",
+      "source_sha256": "94be72d370b4d88753fa122284851abe33bd66d7c580f7db33e08befe12afef9"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C08/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C08\\launcher.log",
+      "source_sha256": "72f9e74b715404ab9004143b25ccbb34fabe454f6660001b24a824516a31300e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C08/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C08\\observed.json",
+      "source_sha256": "83af3a49845a962b7fcc2d8143db544186d23120849e8ea1c6bdf0b3235b656c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C08/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C08\\process.json",
+      "source_sha256": "fbd4cc74da053f6c430b6798363bd3f2a17421e073aaee6b8bfd7a4ebeb0366c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C08/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C08\\receipt.json",
+      "source_sha256": "38b8a02497b7e1729431c3ef8b8ce0466dd19906449c1f1a91d6b7644bd5c43e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C09/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C09\\launcher.log",
+      "source_sha256": "62181b5b7a9cee01acf5239c092ca7db9c9c9521dc9b7c546d9f9c7ef793d0eb"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C09/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C09\\observed.json",
+      "source_sha256": "5b0591b54a84054bb7e3e68efb2af52997dabe09cee2468a59fb6d8882507618"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C09/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C09\\process.json",
+      "source_sha256": "606466ac93c0bdb6228572c922bf198936db559193a29b2f4b1dc17a95cef986"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C09/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C09\\receipt.json",
+      "source_sha256": "87b3b75318dd980d613fce777af72f5dfc8ef930658e6dca73ed21297429ddaa"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C10/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C10\\launcher.log",
+      "source_sha256": "ba879d1a1eb022b979a9c9e9e4fab2cfdd83ce3b8747c81793b31b7ee42e498c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C10/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C10\\observed.json",
+      "source_sha256": "81a28082c511a31470cc4b304503459866b49a43f5776253dd7ec93f6a48a143"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C10/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C10\\process.json",
+      "source_sha256": "cadeeeacdb6332a870898c83fce1d6f240b8d7eb903d7026afa04801345b8952"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C10/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C10\\receipt.json",
+      "source_sha256": "dbc7961ff0fa980fb4f86329c993f1a13ea39ffc0f070c3b0af486b0032ed326"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C11/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C11\\launcher.log",
+      "source_sha256": "cd24aa4618464a90781ca31db70843cee22913c75f787c809891de00c509c515"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C11/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C11\\observed.json",
+      "source_sha256": "f66a9fb3b868b569fa2035db857a3feae2dc191015246770c43d64ccbbaf6aba"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C11/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C11\\process.json",
+      "source_sha256": "1c7cf44ec1e1b4fdbad768bced88a42393e5a347b2916313fbcc4e0c9651cda9"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C11/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C11\\receipt.json",
+      "source_sha256": "cc77551fe6971a350480135cdfcfb84a1af4c016560ce24d0a781ad850952447"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C12/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C12\\launcher.log",
+      "source_sha256": "d7912a57f1a63688f1daa854a5465230d11438449a50fecf21bcb91f7404e544"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C12/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C12\\observed.json",
+      "source_sha256": "c7d3cf7b4112c39ead6d0c492e218e857d4b5ba1f9d03f5e3337b7abf0c4cc3a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C12/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C12\\process.json",
+      "source_sha256": "0b9272f4043ac43e9714180ee8ef51731e9b96f9ee95b3f5179ef9fed9572be1"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C12/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C12\\receipt.json",
+      "source_sha256": "f7dd42f367aad5d0b6cb998462bf9632f8245e733e4d26152ff1824ac2be4f3d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C13/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C13\\launcher.log",
+      "source_sha256": "cb7e38ea430f65c34d360481eaaa28d0c248c77160d648acd774b3ff957c347f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C13/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C13\\observed.json",
+      "source_sha256": "8005da7a77152be2706d1a4bfd017a97af10eda52b8bf43b78fd5443fefbde57"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C13/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C13\\process.json",
+      "source_sha256": "b794f96c85f56c7599af7d3c02d9554d67660ec34741028a21c5c6a9a2cf9dad"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C13/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C13\\receipt.json",
+      "source_sha256": "e49e25f0acec11ff1bed823d6f4b71d6dea76a15d6f0e65a6fcd2d6c781161de"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C14/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C14\\launcher.log",
+      "source_sha256": "363bb937b831b76f8117394acb2482179f8924872db54cb7d5aecf3f3aec5308"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C14/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C14\\observed.json",
+      "source_sha256": "b1fa7fb589d0f9eb324936dcadf6c8e584a8f356fe7039e8a48386ce78d8aac4"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C14/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C14\\process.json",
+      "source_sha256": "50b98c73ebc387443956abe12dbfa232ad8969990d184fc63abbd62b71ba8ea1"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C14/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C14\\receipt.json",
+      "source_sha256": "ddf445ef88f1bf1f3de835c561bd299ca6c5aea00227016415c3394c14fc0c32"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C15/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C15\\launcher.log",
+      "source_sha256": "f636e713aeed46624120da4636de668cd15a3c84454ed19a6f797da4a8e0c6e3"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C15/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C15\\observed.json",
+      "source_sha256": "6bbcde72a41b5ff4e9b60d86f45635b413863fff4fb85fabdc0de1d84d44b77a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C15/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C15\\process.json",
+      "source_sha256": "a0571c3b0343a71e896be87ccb24c8902ba03f272c876ceb7b1dd1373452a27a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C15/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C15\\receipt.json",
+      "source_sha256": "c3fbe9166e223c11c1b424e772bc70ee4f1af3d75a7ae360a31f793049e6ac6a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C16/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C16\\launcher.log",
+      "source_sha256": "177c69c4394093bf199ddd1423326d97a49b8854cbbf206b46e773b8b91bfb45"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C16/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C16\\observed.json",
+      "source_sha256": "7d9fbd44ff6e4d7022a55570ab5ff43e31be54b835bfa4c7f42e4c8a7f55bc9a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C16/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C16\\process.json",
+      "source_sha256": "d925de9ea07c94b484aedcb174bd805106709abceb21fff2032cb11d813fdcca"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C16/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C16\\receipt.json",
+      "source_sha256": "0870a53450c5077f968f734d0c63d79792b597e0429ed394ceaa2a00f0977901"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C17/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C17\\launcher.log",
+      "source_sha256": "9c09767d7ebfc546b36bd217708ef8fc1eae82b3b0e466fe708e053bcdcbb118"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C17/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C17\\observed.json",
+      "source_sha256": "c9a3e1e4eb422174ba33c290fdda5d61c1fb0905461be308fe5e3bfaa4052c96"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C17/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C17\\process.json",
+      "source_sha256": "d5a43caa5eb9cff2e95ca74d43da58e3aa1e15a76ecc7161cbf8c59b1fdd9090"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C17/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C17\\receipt.json",
+      "source_sha256": "48659d2557c86cf1bd63e56602a0f891fedc1dac74bb067e4b9470b186956190"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C18/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C18\\launcher.log",
+      "source_sha256": "eb9285085abb85ad18e7b6f5ca3ea1a1bd5805d71688c7189f5e823da2b1eb51"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C18/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C18\\observed.json",
+      "source_sha256": "09ec9bbc98591da2d296728be0af13d86993c75aea2e3e061874e0be21ce8ee5"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C18/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C18\\process.json",
+      "source_sha256": "3523c3b4293716e0f7a1a277b149031ac80cd42b7eb25196854ed93a58ce9cea"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C18/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C18\\receipt.json",
+      "source_sha256": "70b5f29620946c2503817d3821f10e3feaacb6f589b5c3af5e47a5e8efec078e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C19/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C19\\launcher.log",
+      "source_sha256": "fd54060c4066b13f6eb55876fe7dc419cfd9797e99bea61d5de57ec9116fa754"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C19/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C19\\observed.json",
+      "source_sha256": "03e2760ffcf3b7b753695675684477acda614a1fc3fe91e12287d120193896fb"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C19/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C19\\process.json",
+      "source_sha256": "5b73d9471236f908cc49fa2f37c6e4da37737032509c6ff7e72319a20fbe1a2c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C19/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C19\\receipt.json",
+      "source_sha256": "3b96cb65c11c6cc1cd163eb2b23d8badd91776c2cd5733fd5b47169807203d53"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C20/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C20\\launcher.log",
+      "source_sha256": "00adf07000762d736a1332c691bff84619e6e0539f49f36c412d957cbb37720d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C20/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C20\\observed.json",
+      "source_sha256": "9565158661f36cadae2e4f635d5708c8e57035aab2818b3b3cebc39c1845881d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C20/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C20\\process.json",
+      "source_sha256": "798665ca56193cd61b75b0eedb78d8d053d66b24a096ab037932d75d90fabc7d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/cases/DEN-C20/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\cases\\DEN-C20\\receipt.json",
+      "source_sha256": "89d974b04c8dd3cd3545452eb7a23c456c4a8277229d120356c12745934b37da"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\collection-complete.json",
+      "source_sha256": "3fcf6fb65e21c47b18dc1e86428629bbd53604206b83f964ec338fec2a2c3250"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\identity.json",
+      "source_sha256": "7d88f511e6696f88ee429c3d5c10dab3e2ecc73642c5af326f6e465b1770745c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/review-process/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\review-process\\launcher.log",
+      "source_sha256": "9d24e0a2026e75280131e3de7a6e9daa70af5220632e06183118ec738d5922b3"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/review-process/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\review-process\\process.json",
+      "source_sha256": "20182a22a59339ee2f4900d013e04241fdabbb52515a0e2843fda2a47389e1ad"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/off/review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\off\\review-v1\\summary.json",
+      "source_sha256": "a8ad3c9ebc2e63741280c58d1718201be1263a726f359d407c46e66f9edbdf7b"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C01/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C01\\launcher.log",
+      "source_sha256": "9da1eabd32e7882ac58fe7de591d9813c78f2d5c96c9127db7ff09cb81c5d65f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C01/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C01\\observed.json",
+      "source_sha256": "d7e90f8a85c98e8566cadc5706d2509f3ae8251cf61aff8c85ae34d951624111"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C01/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C01\\process.json",
+      "source_sha256": "0ff819d02c9303d3568a52cd2bf7824f0b3075829cea582d55c6a066175a43de"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C01/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C01\\receipt.json",
+      "source_sha256": "2a93adf67191616a48e770db368187864b815ab41fbfd9e7ea41accd281b8082"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C02/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C02\\launcher.log",
+      "source_sha256": "6cd8cb4590c34c32acfad7de9826955e3f8ed18d8005d53f972f2131b9855070"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C02/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C02\\observed.json",
+      "source_sha256": "d338fa2bdf6347fbb92900b44cddcd7ef5a81a01b223419488d742673f59952e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C02/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C02\\process.json",
+      "source_sha256": "7fc2b073c492aa81974f13bd8b004f3aca1bf2008e4e44f6dbd609312f6746c6"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C02/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C02\\receipt.json",
+      "source_sha256": "adb54dbfbfd9123046ee8a727943abab5bbf8a48ea529c08997f86bdc2c173e0"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C03/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C03\\launcher.log",
+      "source_sha256": "93695196ef6eab790cfb37aed7817e5a84c7fb467bfa323fac849590e0a338a0"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C03/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C03\\observed.json",
+      "source_sha256": "9d38f2a685211d3d30134dfaf719d1a17cc9b7395007b3b4a527fddc39a8a1b6"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C03/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C03\\process.json",
+      "source_sha256": "e3765611a5275ae138850f2c97b7a420fce88cb83cc4f7d062cd1fe31242d529"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C03/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C03\\receipt.json",
+      "source_sha256": "1a527eaa86bdcf8ad574487251c7df2c529fb0179a1143f8534cbbdad7225a74"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C04/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C04\\launcher.log",
+      "source_sha256": "cb9f5e1c5545c1fa5af83ebd460a52db96af82e01210ced0df193bd7a24c856e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C04/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C04\\observed.json",
+      "source_sha256": "92da503f3d8f9af5182c107e5fd5258db45688e33b044dd59fbda5e7551407ee"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C04/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C04\\process.json",
+      "source_sha256": "839720671e9bd7d07366dd4d5d7cec4aed320016e18e1cb98620900f4fff03e9"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C04/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C04\\receipt.json",
+      "source_sha256": "660c791ee744366a4d88c2d658a1b58ec265ece4e4e073f40b11d3acff146f8d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C05/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C05\\launcher.log",
+      "source_sha256": "3a7797d461167650932f9fef9ee06a420aac758dbd37b97a23ec22ab91bd1c64"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C05/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C05\\observed.json",
+      "source_sha256": "4256d31f1ea7c6b470e2cdf6946864fe6b2e5c353dbaae8dca419c02035cff45"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C05/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C05\\process.json",
+      "source_sha256": "e5d53cc1f785a9f339845f797e51bb20f4e15c0e15df1c07522d925be9838061"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C05/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C05\\receipt.json",
+      "source_sha256": "c438b4a10e7683cdccafeeeaf1e3550d2fb945159168827f785018c9db7c2eee"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C06/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C06\\launcher.log",
+      "source_sha256": "990844879709de1204fcc59fe1cf27d9288b3c3dd7a6cfeaee32f5857648eb56"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C06/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C06\\observed.json",
+      "source_sha256": "1a3cb71d8d195e2689d37df34e947c01135bda9acfa86216f84012ca6b652ccc"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C06/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C06\\process.json",
+      "source_sha256": "3b8e97d64953eeca8ea22b70c75dd68ffb1c76654e07161e82d32017925ba094"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C06/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C06\\receipt.json",
+      "source_sha256": "3b18545fde4df26d2ccdb03ebe1959d07f6e4d0f4a703dc3a8e5cd8effcf22a7"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C07/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C07\\launcher.log",
+      "source_sha256": "fc74affcdd490d3c832ce3349977f40f9da70bec251977660367c5d87587577f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C07/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C07\\observed.json",
+      "source_sha256": "b34e76e807fe555c6dc7985e73859e69ee4f21cd480e289d03dff766e7360330"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C07/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C07\\process.json",
+      "source_sha256": "ea8bf5c65d7a3dfa56b0fb3ff6b209d0cfd1b69a70e4838e68c62c01c11eed85"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C07/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C07\\receipt.json",
+      "source_sha256": "00821d99049fc5f21cdef3614ed91a20fc343e9ab88c150d62f2899b31fd6752"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C08/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C08\\launcher.log",
+      "source_sha256": "72f9e74b715404ab9004143b25ccbb34fabe454f6660001b24a824516a31300e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C08/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C08\\observed.json",
+      "source_sha256": "83af3a49845a962b7fcc2d8143db544186d23120849e8ea1c6bdf0b3235b656c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C08/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C08\\process.json",
+      "source_sha256": "a88a9f40bb8f1538a93598d78b1800f0cb267f7eb5461f246124c12063397ae6"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C08/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C08\\receipt.json",
+      "source_sha256": "a0f3bb1b90fe7b0cb39f34b9fd7ad62d0644164af7087ad6c790a7830f9fea1f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C09/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C09\\launcher.log",
+      "source_sha256": "62181b5b7a9cee01acf5239c092ca7db9c9c9521dc9b7c546d9f9c7ef793d0eb"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C09/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C09\\observed.json",
+      "source_sha256": "5b0591b54a84054bb7e3e68efb2af52997dabe09cee2468a59fb6d8882507618"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C09/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C09\\process.json",
+      "source_sha256": "d9e6d539eba8df9b0a7aaaeae2c848200250a0274924a4719786033ce4ddbc68"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C09/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C09\\receipt.json",
+      "source_sha256": "61a0d18ce73edd18869fd4f7884939dce2c29ba1c1a7403c6b9ebe87bdcc0b8c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C10/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C10\\launcher.log",
+      "source_sha256": "ba879d1a1eb022b979a9c9e9e4fab2cfdd83ce3b8747c81793b31b7ee42e498c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C10/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C10\\observed.json",
+      "source_sha256": "81a28082c511a31470cc4b304503459866b49a43f5776253dd7ec93f6a48a143"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C10/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C10\\process.json",
+      "source_sha256": "cd47215690f2c8b6dd594a078dd3913146edccd3820c469514a7799015608426"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C10/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C10\\receipt.json",
+      "source_sha256": "64a44e999f4ff508ed3c4d8d397e22615a775b1a174d1029a70ef61144f7aaf5"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C11/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C11\\launcher.log",
+      "source_sha256": "cd24aa4618464a90781ca31db70843cee22913c75f787c809891de00c509c515"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C11/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C11\\observed.json",
+      "source_sha256": "f66a9fb3b868b569fa2035db857a3feae2dc191015246770c43d64ccbbaf6aba"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C11/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C11\\process.json",
+      "source_sha256": "63f34cedfd8efe019541cd02c4a5ca9d60e5e5e706aa8d31cae84436d5f404d6"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C11/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C11\\receipt.json",
+      "source_sha256": "cecae99616c040fc176e27ff71636fa1e6bf54e42e25a6271e8c74ad1ed31d80"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C12/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C12\\launcher.log",
+      "source_sha256": "d7912a57f1a63688f1daa854a5465230d11438449a50fecf21bcb91f7404e544"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C12/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C12\\observed.json",
+      "source_sha256": "c7d3cf7b4112c39ead6d0c492e218e857d4b5ba1f9d03f5e3337b7abf0c4cc3a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C12/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C12\\process.json",
+      "source_sha256": "0b9955ba1805f8dd9ada9781fedcfce82e1f6ec7425d9376fcc899de3e1f083e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C12/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C12\\receipt.json",
+      "source_sha256": "608fb4421287dd11381c07144b6deeb048d34e49c928a2d4b924c70196019e7e"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C13/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C13\\launcher.log",
+      "source_sha256": "cb7e38ea430f65c34d360481eaaa28d0c248c77160d648acd774b3ff957c347f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C13/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C13\\observed.json",
+      "source_sha256": "8005da7a77152be2706d1a4bfd017a97af10eda52b8bf43b78fd5443fefbde57"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C13/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C13\\process.json",
+      "source_sha256": "fb5a987dd04242ed4f545e1add05325abbc9683a0d330f96f41ed06219721143"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C13/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C13\\receipt.json",
+      "source_sha256": "b816e59bfeab03189bad81abea9225b1c11126fd23a44a1d4cc43a7f30e1a12d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C14/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C14\\launcher.log",
+      "source_sha256": "363bb937b831b76f8117394acb2482179f8924872db54cb7d5aecf3f3aec5308"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C14/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C14\\observed.json",
+      "source_sha256": "b1fa7fb589d0f9eb324936dcadf6c8e584a8f356fe7039e8a48386ce78d8aac4"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C14/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C14\\process.json",
+      "source_sha256": "5e74201e2c408d21ef0a224333ac364ed79e946843cde52c5174de886f5fb6b1"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C14/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C14\\receipt.json",
+      "source_sha256": "240c5542c0877eda0281d9a42ceb7b8c521c6849c2dee90f0526875dd3620e2d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C15/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C15\\launcher.log",
+      "source_sha256": "f636e713aeed46624120da4636de668cd15a3c84454ed19a6f797da4a8e0c6e3"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C15/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C15\\observed.json",
+      "source_sha256": "6bbcde72a41b5ff4e9b60d86f45635b413863fff4fb85fabdc0de1d84d44b77a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C15/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C15\\process.json",
+      "source_sha256": "0333d5bbb5bd8f76bdd31b38f5aee92ca58b7af40303b5751d8c25e8fa867662"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C15/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C15\\receipt.json",
+      "source_sha256": "aa2e3bd4e9b8e6f788838c96e1ceb390772b08613e11b3436ed24b738d39bfa0"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C16/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C16\\launcher.log",
+      "source_sha256": "177c69c4394093bf199ddd1423326d97a49b8854cbbf206b46e773b8b91bfb45"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C16/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C16\\observed.json",
+      "source_sha256": "7d9fbd44ff6e4d7022a55570ab5ff43e31be54b835bfa4c7f42e4c8a7f55bc9a"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C16/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C16\\process.json",
+      "source_sha256": "203d7ac234aa9e4cb00b49dae361c79eda2f2b57bac7ab580e4b5c8107176c3d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C16/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C16\\receipt.json",
+      "source_sha256": "dbef67ca0c557c54bb2d40dd1d3d5363dfd2de400294995d7c3849dfa40603cb"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C17/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C17\\launcher.log",
+      "source_sha256": "9c09767d7ebfc546b36bd217708ef8fc1eae82b3b0e466fe708e053bcdcbb118"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C17/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C17\\observed.json",
+      "source_sha256": "c9a3e1e4eb422174ba33c290fdda5d61c1fb0905461be308fe5e3bfaa4052c96"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C17/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C17\\process.json",
+      "source_sha256": "35fe1346cf5042f2307263e380e85b2474efccb7c0f6fc84204199ef0aecb1dd"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C17/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C17\\receipt.json",
+      "source_sha256": "5312eec0921f2d2e519e73b3da6039bdab215983eab8fd2fe9dbf45cd44ff269"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C18/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C18\\launcher.log",
+      "source_sha256": "eb9285085abb85ad18e7b6f5ca3ea1a1bd5805d71688c7189f5e823da2b1eb51"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C18/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C18\\observed.json",
+      "source_sha256": "09ec9bbc98591da2d296728be0af13d86993c75aea2e3e061874e0be21ce8ee5"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C18/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C18\\process.json",
+      "source_sha256": "29efdc5e0b6a116ee249dfb4b30efa306f33bff3acf5ef017ae508f187b0afe1"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C18/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C18\\receipt.json",
+      "source_sha256": "4c771f570d1740710daad36e6ab7cc3a2b0615e8deb574ba0d9e6503ff9a4f83"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C19/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C19\\launcher.log",
+      "source_sha256": "fd54060c4066b13f6eb55876fe7dc419cfd9797e99bea61d5de57ec9116fa754"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C19/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C19\\observed.json",
+      "source_sha256": "03e2760ffcf3b7b753695675684477acda614a1fc3fe91e12287d120193896fb"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C19/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C19\\process.json",
+      "source_sha256": "41f3613e7c478fe64568b67dbd23110e3d1fa30643080b5102228643b068c4bb"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C19/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C19\\receipt.json",
+      "source_sha256": "f0a6251603cd541f80c70861b86a78738a446034abb37de48fe715bf6c955c6f"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C20/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C20\\launcher.log",
+      "source_sha256": "00adf07000762d736a1332c691bff84619e6e0539f49f36c412d957cbb37720d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C20/observed.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C20\\observed.json",
+      "source_sha256": "9565158661f36cadae2e4f635d5708c8e57035aab2818b3b3cebc39c1845881d"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C20/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C20\\process.json",
+      "source_sha256": "cf6ce632443bd08879597f512df93722e625ee970322b1ef396ac6a1d99cef8c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/cases/DEN-C20/receipt.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\cases\\DEN-C20\\receipt.json",
+      "source_sha256": "04e0b419a6b05dfa5bb54dbceab09b355839b3cc6dea2953bd630bbdd9df4c70"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\collection-complete.json",
+      "source_sha256": "863fd5006151e3633eefe65d148b65bd6b64c11157dad9d1b76388dc9c30aa5c"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\identity.json",
+      "source_sha256": "e80171c07275474511ed4fb1573accbf9e20baaa1b4b02981c3fd456c64a3f85"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/review-process/launcher.log",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\review-process\\launcher.log",
+      "source_sha256": "5ca362f292a4b95da7b1da5b65f8a76e1660065299b2f0b4280ff35d876e36de"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/review-process/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\review-process\\process.json",
+      "source_sha256": "344251e008bab7b38bfa5e1e9d8bf9e4026651756502036041f53b461cce0f12"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/on/review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\on\\review-v1\\summary.json",
+      "source_sha256": "adede5907c00f5fc250660b40389a758c8d2b077b1d804ae5d5572bf26c1c3fa"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/progress.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\progress.json",
+      "source_sha256": "c152cf7723f4057b0d8ce7be111b60e14b27ec74d5cd5b10bd3a779faf766e52"
+    },
+    {
+      "relative": "density/fixed-production-e2e835a7-1788854219897649100/review-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\review-complete.json",
+      "source_sha256": "d053783d90ceef5f90eaab52121c0acd16bfdd90bcf359b82b495be62a7aa53a"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/manifest.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\manifest.json",
+      "source_sha256": "57bf06d9eb2bfc711b82cb032fa6a573eed7f86eafdada8431112e5183387749"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/orchestration-identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\orchestration-identity.json",
+      "source_sha256": "098d7c0c1d3e5d8bff000be95b2592f557f89b3f88a2679ebf68c861b2f5490a"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\collection-complete.json",
+      "source_sha256": "2caa827c1420f5a332aca6feacf0bd14a9b5b8ff73fbbd74e872bc5c03c11266"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/review-v1/review-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\review-v1\\review-complete.json",
+      "source_sha256": "27ae468f0cbe10f17bc2fc8c729b1d0b56b18381b057709aa7c95eb05b2c5f70"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/review-v1/unified-review/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\review-v1\\unified-review\\summary.json",
+      "source_sha256": "f5d06821934a947f44c240ac377c5fce6d7aac0c0711340c97c733fe100a367f"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/review-v1/unified-review/extrema.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\review-v1\\unified-review\\extrema.json",
+      "source_sha256": "75d0fc64c1767ae92c8315da210fa9e77c35b3e5c3ba48c37c89db7458b9a314"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/view-review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\view-review-v1\\summary.json",
+      "source_sha256": "75ccda0664bc12294c60a7ed01ac60ffc98b2ce8da1e0ce30138466317ebe93d"
+    },
+    {
+      "relative": "rounds/NUM-FIX-006-original/unified-view-numeric-review/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\unified-view-numeric-review\\summary.json",
+      "source_sha256": "2e92e134dad64d8f9b2f78cae3b71256bad07b79d2e2a7fce6a108ad3e816282"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/manifest.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\manifest.json",
+      "source_sha256": "7f434307f533b7424f028de3e8930c0517ce05ab5a4e331764adc35496fbea7e"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/orchestration-identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\orchestration-identity.json",
+      "source_sha256": "27d5921f6a69e3f66f119969d0be037643ba9c0344c87001154069932fef023b"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\collection-complete.json",
+      "source_sha256": "0b75b284d88552b34bbfc5aa9c4306b7438f1b4a825c7f8cc40bdebc9c78a945"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/review-v1/review-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\review-v1\\review-complete.json",
+      "source_sha256": "99241d433e557fb780427aceaad4907d6b4d5469ee9fa04d56bbfc241d0c1f90"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/review-v1/unified-review/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\review-v1\\unified-review\\summary.json",
+      "source_sha256": "d067bad03c2d2f66fa1283021a260e7867c6b41152fcff134677e15afdf7f766"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/review-v1/unified-review/extrema.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\review-v1\\unified-review\\extrema.json",
+      "source_sha256": "808384990b8c70fffa027196cca70e83460f964c618295307c698aef79194441"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/view-review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\view-review-v1\\summary.json",
+      "source_sha256": "64541be6fdd25766ad0650ae017d428966e59306993769f1b32e8ed654709bd4"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/terminal.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\terminal.json",
+      "source_sha256": "8b94d891fb801f4acfed69fbda6756eb936692cc66515225c559dce297379cee"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/view-review-v1/OLD-001.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\view-review-v1\\OLD-001.json",
+      "source_sha256": "2546bedd3c03bdfe699f8b2c3ea67af280e19408bb588a72dbea6726c94b336e"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/case.plan",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\case.plan",
+      "source_sha256": "b49ddfdbc3e50b0e2ef0e25d2406707e589c4e3303314e65410baf6e9cd2d4bd"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/expected-evidence.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\expected-evidence.json",
+      "source_sha256": "ecf0a0ffa0b74905f4cd4570f5d33adf2aefb9f61c8b05e1a183f1060ba69005"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/actions.jsonl",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\actions.jsonl",
+      "source_sha256": "78252f778bb29bca75072c7ca9923585249352f3392c83386a86ee87f090475b"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/session.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\session.json",
+      "source_sha256": "ce91492252027a3c6cca2b0f24b2cfe8872c1c8b0c6f48ddbcc95f01f70b9acf"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/orbital-details-bottom.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-bottom.ui.json",
+      "source_sha256": "c752850c03643bab22ae19bae998846cb06e32303cfa7f05eceaa06d78084ac4"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/orbital-details-closed.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-closed.ui.json",
+      "source_sha256": "41400c52f4614960eaa6daa76856bef4907a28a409edef2c5214e1bb15932c8e"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/orbital-details-reopened.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-reopened.ui.json",
+      "source_sha256": "8a6f644f1d8975851af9de5522effdfec9be083287c76cc420fde6ce269b283e"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/orbital-details-top.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-top.ui.json",
+      "source_sha256": "29dad360288e2b855f7a48493b064e08dcf1cf23c2e6bc370ece1696a29697bd"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/orbital-details-bottom.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-bottom.png",
+      "source_sha256": "8c2427b83ac1017f4960dce252c53b95f27d34804fd790c624027ef163a08abf"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007-pilot/OLD-001/native/orbital-details-reopened.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-reopened.png",
+      "source_sha256": "48fcca86f4d3a5af5250b939896a15e716bfab659d998d7848b68b761c24e278"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/manifest.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\manifest.json",
+      "source_sha256": "fe6e205abf7b1f9c7858beab0acaef694f1edc8c15b08d9991d2f4cd88ce104c"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/orchestration-identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\orchestration-identity.json",
+      "source_sha256": "e2e28fce40fd219952f161526cc06148bbedbfcb34a946709a167e6829ae3199"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\collection-complete.json",
+      "source_sha256": "c0afebc79ca23c979bc32b1cc4cd93f5199a580823af03ddf26b189669cb4fb6"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/review-v1/review-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\review-v1\\review-complete.json",
+      "source_sha256": "b59ecce73bd70a064f348420d3555251e6fa36ede9700ca59dbcae9d097e7a17"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/review-v1/unified-review/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\review-v1\\unified-review\\summary.json",
+      "source_sha256": "1982940487a14ed51d018ae35d786e7bd53c89ac848ac7b02b80ff2da976fa8e"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/review-v1/unified-review/extrema.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\review-v1\\unified-review\\extrema.json",
+      "source_sha256": "a7723d84e2c926cd13e6492c615e97dfb1fc3c973e3b92c9cff7bdd40be0833a"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/view-review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\view-review-v1\\summary.json",
+      "source_sha256": "d71acc76d8a61b2e685a5d3ca155d800dafe97eb54819a430c780a90592c5638"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/terminal.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\terminal.json",
+      "source_sha256": "d0d0d7c15c722a7688d40575eb9074ebd9b0319aa9bc72e9be6b223a4a5e1784"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/view-review-v1/OLD-001.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\view-review-v1\\OLD-001.json",
+      "source_sha256": "963cc91c1f611d76bd5163fb34dcddc1863b21c6a188df92165766080804c7c9"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/case.plan",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\case.plan",
+      "source_sha256": "339e8e4519e85e71c8c92d7317b5ef303c85107c21b1c0464075ec61a27fc01b"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/expected-evidence.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\expected-evidence.json",
+      "source_sha256": "ecf0a0ffa0b74905f4cd4570f5d33adf2aefb9f61c8b05e1a183f1060ba69005"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/actions.jsonl",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\actions.jsonl",
+      "source_sha256": "49d5dace64c458a695581dd65a6ccdcca640911200317d14fcc719eb9cda90da"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/session.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\session.json",
+      "source_sha256": "8221ab1d319ad42ea84b61619e8eb845de94b24d38855b4eab6476ae63445746"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/orbital-details-bottom.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-bottom.ui.json",
+      "source_sha256": "7d026c10f92c04408edfe6bd1f41da9ff0c5793954a5ff0aba6f5574c90314ab"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/orbital-details-closed.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-closed.ui.json",
+      "source_sha256": "6277e8a140340ea2d0c3b6862937edde1d7d7333c7ea45c65443db118f0ba16d"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/orbital-details-reopened.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-reopened.ui.json",
+      "source_sha256": "954a0616470fe1d1fda0c484ebe2975cb07212297d1d98228ca33d46f577395f"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/orbital-details-top.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-top.ui.json",
+      "source_sha256": "8e1e383910e10077a70c8465bede7279a474fa665ce5773f7d0be08ada873402"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/orbital-details-bottom.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-bottom.png",
+      "source_sha256": "46163c3c72e07cb228d420ee9e9e7eb2f1baad8b81ebc70da10a53316eebe1bd"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007B-pilot/OLD-001/native/orbital-details-reopened.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007B-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-reopened.png",
+      "source_sha256": "76905323846756686c71d13891e97763bb9fff532ad7b4cc0b714761b6421e7f"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/manifest.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\manifest.json",
+      "source_sha256": "57a4934e28dbcecb7bed88cabfbf1ad19d2226e41a44baf9a2223be05bf53822"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/orchestration-identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\orchestration-identity.json",
+      "source_sha256": "a5e673fa84856fcc8ed38d3d3dd4b5942776457e683591c44c700b04a6394103"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\collection-complete.json",
+      "source_sha256": "9103414a546efa7105aca0ff6847e0e681d9c824eaf250f2b810f2185f395ad4"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/review-v1/review-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\review-v1\\review-complete.json",
+      "source_sha256": "9181f152b13d921b4186774d51dacee8b0243fb686420e6b8345557bea12cbad"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/review-v1/unified-review/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\review-v1\\unified-review\\summary.json",
+      "source_sha256": "b4f281555ec64bd4b43b180f126ff89a9a032b25e2a60c052bec50add42fe337"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/review-v1/unified-review/extrema.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\review-v1\\unified-review\\extrema.json",
+      "source_sha256": "7a0b5e461bac5e400c5cb6714ee146f9a1e36e930c8b54942bdb075401f6e340"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/view-review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\view-review-v1\\summary.json",
+      "source_sha256": "267fab60facfe4a607fa16a63d25a97199fb5efb5509a95bed34a63ade99fbcc"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/terminal.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\terminal.json",
+      "source_sha256": "e455f205842a3c559094c42200902eb9c7d2c0cf51236107ce0893762fadc871"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/view-review-v1/OLD-001.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\view-review-v1\\OLD-001.json",
+      "source_sha256": "bed00a252dd6f0ddc7dbef1e5adc55847724d92ab94f09d5fae9bde565c28105"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/case.plan",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\case.plan",
+      "source_sha256": "339e8e4519e85e71c8c92d7317b5ef303c85107c21b1c0464075ec61a27fc01b"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/expected-evidence.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\expected-evidence.json",
+      "source_sha256": "ecf0a0ffa0b74905f4cd4570f5d33adf2aefb9f61c8b05e1a183f1060ba69005"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/actions.jsonl",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\actions.jsonl",
+      "source_sha256": "c6895726cd4c2fb8d53d2e55b4a86409b13b3a455a021426caeb554709843f5f"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/session.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\session.json",
+      "source_sha256": "348243e5226458417fc6fe831c25ac14250bc399a92ef926714f60b295867dc6"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/orbital-details-bottom.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-bottom.ui.json",
+      "source_sha256": "6b6a2a5b4a176170f39c112e199b53388b46c7c429f0aa44d18f2efbfb19a3c8"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/orbital-details-closed.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-closed.ui.json",
+      "source_sha256": "690a6d19bcd74c89c63ecf37d4857661eeec618d81f583343e3f5fb61a510791"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/orbital-details-reopened.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-reopened.ui.json",
+      "source_sha256": "5b553292bbab0462fffa1bf43be8add2fd62d8bc73e9896f39e3dba0c64b8743"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/orbital-details-top.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-top.ui.json",
+      "source_sha256": "63fa0eb7a877e00d89467455c950a31102b0af47fba138bcc5deee557b8ea14f"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/orbital-details-bottom.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-bottom.png",
+      "source_sha256": "a7619f877f4261e999fecd79d8362e6d8eb668b58c3bb194ce7dd7c8ddc4fc72"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-pilot/OLD-001/native/orbital-details-reopened.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-pilot\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\orbital-details-reopened.png",
+      "source_sha256": "4baa9a9c13fcf9b1ab2b2be2ea3bb9b7fb1a90bd0ba7638679a236a6f8b88980"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/manifest.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\manifest.json",
+      "source_sha256": "910fd29efc69b915926055a4468563a4db6c6726242db000a041782b54693dca"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/orchestration-identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\orchestration-identity.json",
+      "source_sha256": "7b7b062413aa5371651ce9ff36b939c9c4478756531aaf49abc8aa2fb6247a01"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/collection-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\collection-complete.json",
+      "source_sha256": "450d44d456a004e6423a26a3cb5eb8f07f655b7770921a4865da1d426605c5b3"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/review-v1/review-complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\review-v1\\review-complete.json",
+      "source_sha256": "f835d86e970259f436498dbd30e766475bbbdb08e4a8998689be2b3acb17bde5"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/review-v1/unified-review/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\review-v1\\unified-review\\summary.json",
+      "source_sha256": "e48ed20b2418aeb4a895f0fe07b5da01c256cfe27dd3fa9a8f2f30c6ba6611e2"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/review-v1/unified-review/extrema.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\review-v1\\unified-review\\extrema.json",
+      "source_sha256": "44c42742d0cfabfbdd46239767c411fdef0d18c155086811fe20ed830569ac00"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/view-review-v1/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\view-review-v1\\summary.json",
+      "source_sha256": "5a703257dabfe0d9ab2c2cef12bde5c3014b8874d86cdc95460ffe13f7a5bfe0"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/terminal.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\terminal.json",
+      "source_sha256": "5393079d809fe28ed5c20d785dc03fa2f7eb1b4d70b5c216c83d2de6df7f31fd"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/view-review-v1/OLD-013.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\view-review-v1\\OLD-013.json",
+      "source_sha256": "52fb34f33272b7e966bfb485bde7aee8d10a0508b91f5975c551239ba681597c"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/case.plan",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\case.plan",
+      "source_sha256": "b08cdc8d8277960c20c5703908b44f4857d61f62d12ccd198277c58f844c9500"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/expected-evidence.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\expected-evidence.json",
+      "source_sha256": "0a73e134140017a7ddc99d101dcb647acf742e5714026bf15d6b4b9a8f4e8b5a"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/actions.jsonl",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\actions.jsonl",
+      "source_sha256": "a08386d2051c21122a1ec776d5b1a80e3bed185a2bdca061776ee168802179bd"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/session.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\session.json",
+      "source_sha256": "3e091a22ffcdf4ae085c891876397736b06db76dff123528add0c360c438df94"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/orbital-details-bottom.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\orbital-details-bottom.ui.json",
+      "source_sha256": "50e569613b5c406f95ac9fc65d249ea85407cdefec91824f9d0be7104183cfb7"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/orbital-details-closed.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\orbital-details-closed.ui.json",
+      "source_sha256": "2bb28b072b8a359b5cdbcb40ff1017360d880792b040c51c5e1e2b25159ef909"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/orbital-details-reopened.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\orbital-details-reopened.ui.json",
+      "source_sha256": "f620b3d59d91f7ad5f68762063f4429cbe35a867d94eb495cff7638f18e62417"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/orbital-details-top.ui.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\orbital-details-top.ui.json",
+      "source_sha256": "1ce1de33b1f2665a406c04ab46197437431520ee1551aaa75aa10237eb014a5f"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/orbital-details-bottom.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\orbital-details-bottom.png",
+      "source_sha256": "3b0b65ef24a2c30fbbcf9f71289f303a60b7673c6698dd6bce15a0c2101ec85b"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/orbital-details-reopened.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\orbital-details-reopened.png",
+      "source_sha256": "fe1fcbfb1aa66c51f45569fdaf4022f242e68a87e9a6830dd3ae7cca9461f431"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-diagnostic/OLD-013/native/member-0058-tooltip.png",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\member-0058-tooltip.png",
+      "source_sha256": "52e178d0ffd5b4005bbe23a6e614545b9db9847e381b0ff25def6f10371419a7"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-original/manifest.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-original\\manifest.json",
+      "source_sha256": "babcd8c1c3a0b24607e9a38bdccf64038bc47dcb73f3613f58ffe2ffa267cebb"
+    },
+    {
+      "relative": "rounds/NUM-FIX-007C-original/orchestration-identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-original\\orchestration-identity.json",
+      "source_sha256": "a7634467cf55418807ff7c15a214aa4fa365f715b2a8d08522bcb13897c5bed3"
+    },
+    {
+      "relative": "preflight/density-preflight-1788853484469266400/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400\\identity.json",
+      "source_sha256": "3a89645fbf21047da9f88801957dd3a42bb1503eb3fa2efc17a3007bd29743b2"
+    },
+    {
+      "relative": "preflight/density-preflight-1788853484469266400/complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400\\complete.json",
+      "source_sha256": "2f543ad493059b98985d439c742382ca1b27ca683bf9f1053b00b2662bd02d26"
+    },
+    {
+      "relative": "preflight/density-preflight-1788853484469266400/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400\\process.json",
+      "source_sha256": "64d6364d4e44a216905faa8b7dc9ddf96ad43b0126bd311d8e8a971efaca7764"
+    },
+    {
+      "relative": "preflight/tooltip-preflight-1788854415993140600/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\tooltip-preflight-1788854415993140600\\identity.json",
+      "source_sha256": "8923535eec5fda63edaa026b60ae41b65b8060d789cada392d98c0648d1a7727"
+    },
+    {
+      "relative": "preflight/tooltip-preflight-1788854415993140600/complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\tooltip-preflight-1788854415993140600\\complete.json",
+      "source_sha256": "ce989fe5620420cdc1adf7084730161fb1af5f1b3d7f859fb607375bb5fc59af"
+    },
+    {
+      "relative": "preflight/tooltip-preflight-1788854415993140600/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\tooltip-preflight-1788854415993140600\\process.json",
+      "source_sha256": "bfac8f7a89563ec58dcea8aa02642197c0bd185206393220b9f580fafe56f749"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788855763189363000/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788855763189363000\\identity.json",
+      "source_sha256": "5657b76bcaaf2d9cd9c155dee0154ff9218f2b43e3f33b11baf5eed32dc48648"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788855763189363000/complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788855763189363000\\complete.json",
+      "source_sha256": "b3c0bfafb1ef5fc92d32c8905aecf3e1e37d98c826b2931cdf30eafd76da8f3c"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788855763189363000/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788855763189363000\\process.json",
+      "source_sha256": "24fa115628ab6ae593a87725363d1c029ed08c8188229ee6c3499aaaf719d6c1"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788856174260660400/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856174260660400\\identity.json",
+      "source_sha256": "7aa1125872e4ff95a1d53f0f61f6caa0314b045e8d985a51e72c9b0ec8b48dc3"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788856174260660400/complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856174260660400\\complete.json",
+      "source_sha256": "8315cbb0b26c3c709b7f4447b39c60ca2204c99ec81b7c5e477f52eb478e7656"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788856174260660400/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856174260660400\\process.json",
+      "source_sha256": "1b0b92e0bdb85ce2b9ed74aa5600f2cbe77783cf4c21d2788549bb77f16b5220"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788856542626153100/identity.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100\\identity.json",
+      "source_sha256": "2171b2e12438780c1a1c4e973c3200b4d1388abd227a7d745d7a648ef23f4570"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788856542626153100/complete.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100\\complete.json",
+      "source_sha256": "56233d2e5d16db798723d2e6dc24f1ca6b6f5f968cd7550e728be235ea7693fd"
+    },
+    {
+      "relative": "preflight/native-evidence-preflight-1788856542626153100/process.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100\\process.json",
+      "source_sha256": "afb394ff102d78cac65f675e6fe0d58ac4e0de6197a3208665c710354a9fd9b1"
+    },
+    {
+      "relative": "preflight/details-plan-preflight-1788855447276760300/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\details-plan-preflight-1788855447276760300\\summary.json",
+      "source_sha256": "8d7014224616b9a200750df6b908246653db4f9605cc6df84243e7873dafa636"
+    },
+    {
+      "relative": "preflight/details-plan-preflight-1788855735271638400/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\details-plan-preflight-1788855735271638400\\summary.json",
+      "source_sha256": "5ac945464d6b8dc19a045403e895efeb4dd0aae9b2240d8f086dfb4dd029c654"
+    },
+    {
+      "relative": "preflight/density-matrix-checker-preflight-1788856141656420600/summary.json",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-matrix-checker-preflight-1788856141656420600\\summary.json",
+      "source_sha256": "73eaeb55ffe9e664a874e0d8d20bdd5d97b3431efc6edb27640bbd3e62c07ad2"
+    },
+    {
+      "relative": "helpers/checkpoint_num007c_launch.py",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\work\\checkpoint_num007c_launch.py",
+      "source_sha256": "f297c0458db93658f60ef1f09456dec139f986612fc068b8c5866eb7d4f6fbae"
+    },
+    {
+      "relative": "helpers/checkpoint_density_details_and_fifty.py",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\work\\checkpoint_density_details_and_fifty.py",
+      "source_sha256": "cdf2f57d23e19b66d9876b51a2cd1e657e5b61925332a8399519386ba23dda3e"
+    },
+    {
+      "relative": "helpers/resolve_fifty_formula_collisions.py",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\work\\resolve_fifty_formula_collisions.py",
+      "source_sha256": "86b0cf1b81a153c9c7db7869128f0033927f000e0841bf17aac0cf1b0cabab9e"
+    },
+    {
+      "relative": "helpers/check_details_plan_coverage.py",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\work\\check_details_plan_coverage.py",
+      "source_sha256": "7e06c2da062ca80be0d0ce0159d003cf3f46430927b3b301666d6ae6e6f92414"
+    },
+    {
+      "relative": "helpers/check_density_comparison_v1.py",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\work\\check_density_comparison_v1.py",
+      "source_sha256": "8c4dc517651a95df5dbd717dca4c9769d1d8634def0b5f16ae536bcecf8b38b8"
+    },
+    {
+      "relative": "helpers/prepare_num007_progress_publication.py",
+      "local_source": "F:\\Codex\\2026-09-05\\branch-15\\work\\prepare_num007_progress_publication.py",
+      "source_sha256": "726f3e06ac8ab9ec7706929ba8cae6765a99c8312875fa96910580b65ae1caa6"
+    }
+  ]
+}

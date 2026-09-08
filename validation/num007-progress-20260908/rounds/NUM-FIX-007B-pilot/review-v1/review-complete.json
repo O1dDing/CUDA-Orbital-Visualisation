@@ -1,0 +1,82 @@
+{
+  "status": "all_numeric_reviews_terminal",
+  "all_terminal": true,
+  "round_identity": "8d8a5dbf5ad12c4eed4f923a30a29fe0445881dfd70f130265806166b5f47016",
+  "review_manifest_sha256": "e923d533079b472ad8ec7a96462b4d130c2f9fc2ffc2bcf63bf20d451ec3d0bd",
+  "expected_cases": 1,
+  "terminal_cases": 1,
+  "counts": {
+    "numeric_subset_pass": 1,
+    "numeric_subset_fail": 0,
+    "review_error": 0
+  },
+  "wall_seconds_this_session": 4.315394200006267,
+  "finished_epoch": 1788856339.5982697,
+  "formal_case_passes": 0,
+  "unified_adjudication": "ready; not yet performed",
+  "cases": [
+    {
+      "case_id": "OLD-001",
+      "round_identity": "8d8a5dbf5ad12c4eed4f923a30a29fe0445881dfd70f130265806166b5f47016",
+      "review_manifest_sha256": "e923d533079b472ad8ec7a96462b4d130c2f9fc2ffc2bcf63bf20d451ec3d0bd",
+      "attempt": "cases\\OLD-001\\attempt-001",
+      "process_exit_code": 0,
+      "process_wall_seconds": 2.5160000000032596,
+      "status": "numeric_subset_pass",
+      "review": "cases\\OLD-001\\attempt-001\\result\\review.json",
+      "check_counts": {
+        "pass": 30,
+        "fail": 0,
+        "insufficient": 0
+      },
+      "artifacts": {
+        "process\\launcher.log": {
+          "bytes": 120,
+          "sha256": "0837f3b994e9ce11ed1954c058e3c40b79edb4f5cd01d321649819eb19361f6f"
+        },
+        "process\\process.json": {
+          "bytes": 10470,
+          "sha256": "795199e153e75a5cad4bf74b351c87f50d23c4d585c49822b903abbba3d8337e"
+        },
+        "process\\started.json": {
+          "bytes": 135,
+          "sha256": "b788d7e4eb0849edc8a30dc6857d1743614b80bb8baed6689a703aab76af7fe5"
+        },
+        "result\\complete-textures.json": {
+          "bytes": 3233,
+          "sha256": "6c8dd2b17a21d89f6d0e108a002b8f42a2d56e880c6633b171b4670d494dbeb0"
+        },
+        "result\\full-reference-00.npy": {
+          "bytes": 33554560,
+          "sha256": "111ae8a4761b1077c317779381f83a3eb06dc6ee1d09b7a7b5c8ae99220c081d"
+        },
+        "result\\full-reference-01.npy": {
+          "bytes": 4194432,
+          "sha256": "1b9f7bc118f9e385256c583c16a0ea7155b391712d846fbb2a6f45f8766363c3"
+        },
+        "result\\independent-density.npz": {
+          "bytes": 3174,
+          "sha256": "f082c5e69a37e934060a52c9b69560d253eda6952dde5371d169eab80e46adbd"
+        },
+        "result\\independent-metric.npz": {
+          "bytes": 2203,
+          "sha256": "bc208f311a2cf6674ad9b67b0005c95d9c5eacf7bc230317d90c62fadf994a42"
+        },
+        "result\\metric-checks.json": {
+          "bytes": 8167,
+          "sha256": "b82c46fc7414b5c451669c87cf2327260392dda1a9a7cadbe8c211a2cffc0c42"
+        },
+        "result\\review.json": {
+          "bytes": 11059,
+          "sha256": "7afcb764dad5d1cf2edbe3759a1f1987313d8da94b0d0760034074e143832f6d"
+        },
+        "result\\sampled-textures.json": {
+          "bytes": 11529,
+          "sha256": "60462de7c1bc120c4e321da92b768110c0835649ee90fc5e8bf55ed929dd0635"
+        }
+      },
+      "wall_seconds_with_packaging": 2.5701723999809474,
+      "formal_case_pass": false
+    }
+  ]
+}

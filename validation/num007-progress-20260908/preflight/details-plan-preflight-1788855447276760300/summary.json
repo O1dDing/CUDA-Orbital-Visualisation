@@ -1,0 +1,2200 @@
+{
+  "all_original_cases_checked": true,
+  "case_count": 273,
+  "retained_all_mos": 31871,
+  "retained_primary_targets": 2771,
+  "retained_export_bundles": 1943,
+  "new_details_captures": 1092,
+  "control_checker_positive_and_negative_checks": 7,
+  "formal_case_passes": 0,
+  "source_hashes": {
+    "native_collection_batch.py": "3aa71f2deddfa3ec37a9d134f4e226fa623bf22acfe580f494ccfa7461e72b39",
+    "review_export_snapshot_round.py": "6fff632e6990235cdf7a79eae4e959d08415fcb26023c67c01465f8ff6568d36"
+  },
+  "records": [
+    {
+      "case_id": "OLD-001",
+      "mos": 15,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-002",
+      "mos": 64,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-003",
+      "mos": 115,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-004",
+      "mos": 103,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-005",
+      "mos": 114,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-006",
+      "mos": 114,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-007",
+      "mos": 222,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-008",
+      "mos": 86,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-009",
+      "mos": 48,
+      "primary_members": 11,
+      "exports": 7,
+      "retained_captures": 56,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-010",
+      "mos": 58,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-011",
+      "mos": 28,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-012",
+      "mos": 199,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-013",
+      "mos": 216,
+      "primary_members": 21,
+      "exports": 7,
+      "retained_captures": 86,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-014",
+      "mos": 134,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-015",
+      "mos": 180,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-016",
+      "mos": 86,
+      "primary_members": 20,
+      "exports": 7,
+      "retained_captures": 83,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-017",
+      "mos": 30,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-018",
+      "mos": 410,
+      "primary_members": 15,
+      "exports": 8,
+      "retained_captures": 99,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-019",
+      "mos": 345,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-020",
+      "mos": 396,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-021",
+      "mos": 99,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-022",
+      "mos": 198,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-023",
+      "mos": 117,
+      "primary_members": 12,
+      "exports": 7,
+      "retained_captures": 59,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-024",
+      "mos": 179,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-025",
+      "mos": 352,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-026",
+      "mos": 154,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-027",
+      "mos": 150,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-028",
+      "mos": 186,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-029",
+      "mos": 186,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-030",
+      "mos": 123,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-031",
+      "mos": 246,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-032",
+      "mos": 253,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-033",
+      "mos": 148,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-034",
+      "mos": 98,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-035",
+      "mos": 98,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-036",
+      "mos": 148,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-037",
+      "mos": 148,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-038",
+      "mos": 296,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-039",
+      "mos": 20,
+      "primary_members": 2,
+      "exports": 8,
+      "retained_captures": 34,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-040",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-041",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-042",
+      "mos": 15,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-043",
+      "mos": 18,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-044",
+      "mos": 18,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-045",
+      "mos": 56,
+      "primary_members": 8,
+      "exports": 8,
+      "retained_captures": 64,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-046",
+      "mos": 28,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-047",
+      "mos": 28,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-048",
+      "mos": 56,
+      "primary_members": 8,
+      "exports": 8,
+      "retained_captures": 64,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-049",
+      "mos": 56,
+      "primary_members": 8,
+      "exports": 8,
+      "retained_captures": 64,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-050",
+      "mos": 92,
+      "primary_members": 8,
+      "exports": 8,
+      "retained_captures": 64,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-051",
+      "mos": 46,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-052",
+      "mos": 28,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-053",
+      "mos": 28,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-054",
+      "mos": 14,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-055",
+      "mos": 19,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-056",
+      "mos": 28,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-057",
+      "mos": 56,
+      "primary_members": 7,
+      "exports": 8,
+      "retained_captures": 59,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-058",
+      "mos": 28,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-059",
+      "mos": 40,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-060",
+      "mos": 19,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-061",
+      "mos": 42,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-062",
+      "mos": 33,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-063",
+      "mos": 24,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-064",
+      "mos": 29,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-065",
+      "mos": 34,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-066",
+      "mos": 29,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-067",
+      "mos": 56,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-068",
+      "mos": 38,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-069",
+      "mos": 48,
+      "primary_members": 11,
+      "exports": 7,
+      "retained_captures": 56,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-070",
+      "mos": 38,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-071",
+      "mos": 62,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-072",
+      "mos": 78,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-073",
+      "mos": 58,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-074",
+      "mos": 105,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-075",
+      "mos": 88,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-076",
+      "mos": 102,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-077",
+      "mos": 106,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-078",
+      "mos": 144,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-079",
+      "mos": 29,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-080",
+      "mos": 58,
+      "primary_members": 5,
+      "exports": 8,
+      "retained_captures": 49,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-081",
+      "mos": 44,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-082",
+      "mos": 42,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-083",
+      "mos": 84,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-084",
+      "mos": 72,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-085",
+      "mos": 140,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-086",
+      "mos": 114,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-087",
+      "mos": 228,
+      "primary_members": 6,
+      "exports": 8,
+      "retained_captures": 54,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-088",
+      "mos": 180,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-089",
+      "mos": 76,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-090",
+      "mos": 67,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-091",
+      "mos": 134,
+      "primary_members": 3,
+      "exports": 8,
+      "retained_captures": 39,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-092",
+      "mos": 100,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-093",
+      "mos": 86,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-094",
+      "mos": 86,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-095",
+      "mos": 124,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-096",
+      "mos": 57,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-097",
+      "mos": 133,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-098",
+      "mos": 76,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-099",
+      "mos": 76,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-100",
+      "mos": 152,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-101",
+      "mos": 152,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-102",
+      "mos": 109,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-103",
+      "mos": 95,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-104",
+      "mos": 90,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-105",
+      "mos": 94,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-106",
+      "mos": 114,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-107",
+      "mos": 90,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-108",
+      "mos": 246,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-109",
+      "mos": 246,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-110",
+      "mos": 180,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-111",
+      "mos": 58,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-112",
+      "mos": 58,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-113",
+      "mos": 48,
+      "primary_members": 12,
+      "exports": 7,
+      "retained_captures": 59,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-114",
+      "mos": 72,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-115",
+      "mos": 38,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-116",
+      "mos": 53,
+      "primary_members": 13,
+      "exports": 7,
+      "retained_captures": 62,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-117",
+      "mos": 86,
+      "primary_members": 22,
+      "exports": 7,
+      "retained_captures": 89,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-118",
+      "mos": 76,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-119",
+      "mos": 74,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-120",
+      "mos": 57,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-121",
+      "mos": 76,
+      "primary_members": 19,
+      "exports": 7,
+      "retained_captures": 80,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-122",
+      "mos": 57,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-123",
+      "mos": 71,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-124",
+      "mos": 89,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-125",
+      "mos": 89,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-126",
+      "mos": 143,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-127",
+      "mos": 286,
+      "primary_members": 22,
+      "exports": 7,
+      "retained_captures": 89,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-128",
+      "mos": 171,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-129",
+      "mos": 199,
+      "primary_members": 15,
+      "exports": 7,
+      "retained_captures": 68,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-130",
+      "mos": 221,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-131",
+      "mos": 48,
+      "primary_members": 12,
+      "exports": 7,
+      "retained_captures": 59,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-132",
+      "mos": 38,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-133",
+      "mos": 58,
+      "primary_members": 13,
+      "exports": 7,
+      "retained_captures": 62,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-134",
+      "mos": 71,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-135",
+      "mos": 170,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-136",
+      "mos": 54,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-137",
+      "mos": 8,
+      "primary_members": 1,
+      "exports": 7,
+      "retained_captures": 26,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-138",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 8,
+      "retained_captures": 34,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-139",
+      "mos": 9,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-140",
+      "mos": 15,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-141",
+      "mos": 24,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-142",
+      "mos": 18,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-143",
+      "mos": 24,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-144",
+      "mos": 18,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-145",
+      "mos": 23,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-146",
+      "mos": 27,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-147",
+      "mos": 41,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-148",
+      "mos": 35,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-149",
+      "mos": 29,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-150",
+      "mos": 34,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-151",
+      "mos": 42,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-152",
+      "mos": 130,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-153",
+      "mos": 114,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-154",
+      "mos": 86,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-155",
+      "mos": 31,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-156",
+      "mos": 36,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-157",
+      "mos": 52,
+      "primary_members": 8,
+      "exports": 7,
+      "retained_captures": 47,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-158",
+      "mos": 66,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-159",
+      "mos": 60,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-160",
+      "mos": 63,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-161",
+      "mos": 67,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-162",
+      "mos": 119,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-163",
+      "mos": 116,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-164",
+      "mos": 112,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-165",
+      "mos": 162,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-166",
+      "mos": 176,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-167",
+      "mos": 119,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-168",
+      "mos": 185,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-169",
+      "mos": 344,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-170",
+      "mos": 960,
+      "primary_members": 24,
+      "exports": 7,
+      "retained_captures": 95,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-171",
+      "mos": 336,
+      "primary_members": 42,
+      "exports": 7,
+      "retained_captures": 149,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-172",
+      "mos": 95,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-173",
+      "mos": 240,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-174",
+      "mos": 240,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-175",
+      "mos": 136,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-176",
+      "mos": 136,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-177",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-178",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-179",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-180",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-181",
+      "mos": 10,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-182",
+      "mos": 24,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-183",
+      "mos": 24,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-184",
+      "mos": 24,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-185",
+      "mos": 24,
+      "primary_members": 6,
+      "exports": 7,
+      "retained_captures": 41,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-186",
+      "mos": 24,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-187",
+      "mos": 58,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-188",
+      "mos": 58,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-189",
+      "mos": 58,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-190",
+      "mos": 58,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-191",
+      "mos": 58,
+      "primary_members": 14,
+      "exports": 7,
+      "retained_captures": 65,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-192",
+      "mos": 86,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-193",
+      "mos": 86,
+      "primary_members": 19,
+      "exports": 7,
+      "retained_captures": 80,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-194",
+      "mos": 86,
+      "primary_members": 20,
+      "exports": 7,
+      "retained_captures": 83,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-195",
+      "mos": 86,
+      "primary_members": 20,
+      "exports": 7,
+      "retained_captures": 83,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-196",
+      "mos": 86,
+      "primary_members": 4,
+      "exports": 7,
+      "retained_captures": 35,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-197",
+      "mos": 88,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-198",
+      "mos": 88,
+      "primary_members": 24,
+      "exports": 7,
+      "retained_captures": 95,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-199",
+      "mos": 88,
+      "primary_members": 24,
+      "exports": 7,
+      "retained_captures": 95,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-200",
+      "mos": 88,
+      "primary_members": 24,
+      "exports": 7,
+      "retained_captures": 95,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-201",
+      "mos": 88,
+      "primary_members": 5,
+      "exports": 7,
+      "retained_captures": 38,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-202",
+      "mos": 77,
+      "primary_members": 15,
+      "exports": 7,
+      "retained_captures": 68,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-203",
+      "mos": 77,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-204",
+      "mos": 77,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-205",
+      "mos": 77,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-206",
+      "mos": 77,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-207",
+      "mos": 77,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-208",
+      "mos": 77,
+      "primary_members": 15,
+      "exports": 7,
+      "retained_captures": 68,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-209",
+      "mos": 86,
+      "primary_members": 19,
+      "exports": 7,
+      "retained_captures": 80,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-210",
+      "mos": 86,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-211",
+      "mos": 86,
+      "primary_members": 20,
+      "exports": 7,
+      "retained_captures": 83,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-212",
+      "mos": 86,
+      "primary_members": 21,
+      "exports": 7,
+      "retained_captures": 86,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-213",
+      "mos": 86,
+      "primary_members": 20,
+      "exports": 7,
+      "retained_captures": 83,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-214",
+      "mos": 134,
+      "primary_members": 2,
+      "exports": 7,
+      "retained_captures": 29,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-215",
+      "mos": 134,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-216",
+      "mos": 134,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-217",
+      "mos": 134,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-218",
+      "mos": 134,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-219",
+      "mos": 134,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-220",
+      "mos": 134,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-221",
+      "mos": 41,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-222",
+      "mos": 41,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-223",
+      "mos": 41,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-224",
+      "mos": 41,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-225",
+      "mos": 41,
+      "primary_members": 3,
+      "exports": 7,
+      "retained_captures": 32,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-226",
+      "mos": 41,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-227",
+      "mos": 41,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-228",
+      "mos": 240,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-229",
+      "mos": 240,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-230",
+      "mos": 240,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-231",
+      "mos": 240,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-232",
+      "mos": 240,
+      "primary_members": 25,
+      "exports": 7,
+      "retained_captures": 98,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-233",
+      "mos": 158,
+      "primary_members": 7,
+      "exports": 7,
+      "retained_captures": 44,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-234",
+      "mos": 89,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-235",
+      "mos": 170,
+      "primary_members": 11,
+      "exports": 8,
+      "retained_captures": 79,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-236",
+      "mos": 171,
+      "primary_members": 16,
+      "exports": 7,
+      "retained_captures": 71,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-237",
+      "mos": 129,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-238",
+      "mos": 510,
+      "primary_members": 16,
+      "exports": 8,
+      "retained_captures": 104,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-239",
+      "mos": 77,
+      "primary_members": 16,
+      "exports": 7,
+      "retained_captures": 71,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-240",
+      "mos": 272,
+      "primary_members": 17,
+      "exports": 7,
+      "retained_captures": 74,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-241",
+      "mos": 206,
+      "primary_members": 9,
+      "exports": 8,
+      "retained_captures": 69,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-242",
+      "mos": 88,
+      "primary_members": 13,
+      "exports": 7,
+      "retained_captures": 62,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-243",
+      "mos": 67,
+      "primary_members": 12,
+      "exports": 7,
+      "retained_captures": 59,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-244",
+      "mos": 170,
+      "primary_members": 11,
+      "exports": 8,
+      "retained_captures": 79,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-245",
+      "mos": 170,
+      "primary_members": 16,
+      "exports": 8,
+      "retained_captures": 102,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-246",
+      "mos": 85,
+      "primary_members": 13,
+      "exports": 7,
+      "retained_captures": 62,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-247",
+      "mos": 206,
+      "primary_members": 18,
+      "exports": 8,
+      "retained_captures": 114,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-248",
+      "mos": 143,
+      "primary_members": 20,
+      "exports": 7,
+      "retained_captures": 83,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-249",
+      "mos": 206,
+      "primary_members": 10,
+      "exports": 8,
+      "retained_captures": 70,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-250",
+      "mos": 206,
+      "primary_members": 9,
+      "exports": 8,
+      "retained_captures": 69,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-251",
+      "mos": 171,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-252",
+      "mos": 242,
+      "primary_members": 13,
+      "exports": 8,
+      "retained_captures": 89,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-253",
+      "mos": 410,
+      "primary_members": 15,
+      "exports": 8,
+      "retained_captures": 99,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-254",
+      "mos": 139,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-255",
+      "mos": 129,
+      "primary_members": 20,
+      "exports": 7,
+      "retained_captures": 83,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-256",
+      "mos": 200,
+      "primary_members": 9,
+      "exports": 7,
+      "retained_captures": 50,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-257",
+      "mos": 129,
+      "primary_members": 16,
+      "exports": 7,
+      "retained_captures": 71,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-258",
+      "mos": 510,
+      "primary_members": 19,
+      "exports": 8,
+      "retained_captures": 119,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-259",
+      "mos": 143,
+      "primary_members": 18,
+      "exports": 7,
+      "retained_captures": 77,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-260",
+      "mos": 224,
+      "primary_members": 10,
+      "exports": 7,
+      "retained_captures": 53,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-261",
+      "mos": 248,
+      "primary_members": 12,
+      "exports": 7,
+      "retained_captures": 59,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-262",
+      "mos": 248,
+      "primary_members": 16,
+      "exports": 7,
+      "retained_captures": 71,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-263",
+      "mos": 272,
+      "primary_members": 16,
+      "exports": 7,
+      "retained_captures": 71,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-264",
+      "mos": 272,
+      "primary_members": 16,
+      "exports": 7,
+      "retained_captures": 71,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-265",
+      "mos": 272,
+      "primary_members": 16,
+      "exports": 7,
+      "retained_captures": 71,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-266",
+      "mos": 272,
+      "primary_members": 11,
+      "exports": 7,
+      "retained_captures": 56,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-267",
+      "mos": 272,
+      "primary_members": 12,
+      "exports": 7,
+      "retained_captures": 59,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-268",
+      "mos": 230,
+      "primary_members": 15,
+      "exports": 8,
+      "retained_captures": 99,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-269",
+      "mos": 206,
+      "primary_members": 15,
+      "exports": 8,
+      "retained_captures": 99,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-270",
+      "mos": 205,
+      "primary_members": 15,
+      "exports": 7,
+      "retained_captures": 68,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-271",
+      "mos": 147,
+      "primary_members": 19,
+      "exports": 7,
+      "retained_captures": 80,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-272",
+      "mos": 143,
+      "primary_members": 15,
+      "exports": 7,
+      "retained_captures": 68,
+      "added_details_captures": 4
+    },
+    {
+      "case_id": "OLD-273",
+      "mos": 398,
+      "primary_members": 23,
+      "exports": 8,
+      "retained_captures": 139,
+      "added_details_captures": 4
+    }
+  ]
+}

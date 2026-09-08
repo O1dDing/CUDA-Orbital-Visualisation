@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C12",
+  "input_sha256": "1fd6a24551d54d63866dece52fe715b9bc4b2ce51f3605cb7073df3393020446",
+  "exe_sha256": "0794aa923582c07c7ee7ac1d2a3828086e5ba374aeab8f0bf4aaa03839cf88d4",
+  "started_epoch": 1788853249.101916,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5160000000032596,
+  "log_sha256": "828b9f91046f1a2dd36d2a1d404da34ae6b7a0fa50a6e8310b9d46c09c697e65",
+  "observed_sha256": "3f63e6ab8874f9aea516663cd1dd70c655621ab2e8858320e57dde09594bc340",
+  "finished_epoch": 1788853249.6199694
+}

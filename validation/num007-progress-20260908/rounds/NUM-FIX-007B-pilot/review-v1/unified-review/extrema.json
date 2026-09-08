@@ -1,0 +1,82 @@
+{
+  "round_identity": "8d8a5dbf5ad12c4eed4f923a30a29fe0445881dfd70f130265806166b5f47016",
+  "extrema": {
+    "AO_integral_max_absolute_error": {
+      "value": 2.220446049250313e-16,
+      "case_id": "OLD-001",
+      "mo_zero_based": null
+    },
+    "reference_gram_max_error": {
+      "value": 4.155220389989722e-09,
+      "case_id": "OLD-001",
+      "mo_zero_based": null
+    },
+    "production_gram_max_error": {
+      "value": 4.155220612034327e-09,
+      "case_id": "OLD-001",
+      "mo_zero_based": null
+    },
+    "production_reference_gram_max_error": {
+      "value": 2.286194814154133e-15,
+      "case_id": "OLD-001",
+      "mo_zero_based": null
+    },
+    "electron_trace_error": {
+      "value": 2.792565956255544e-09,
+      "case_id": "OLD-001",
+      "mo_zero_based": null
+    },
+    "available_chemistry_mos": {
+      "count": 15
+    },
+    "sampled_nrms": {
+      "value": 5.140539349949954e-07,
+      "case_id": "OLD-001",
+      "mo_zero_based": 14
+    },
+    "sampled_relative_peak_error": {
+      "value": 1.0306813136216131e-06,
+      "case_id": "OLD-001",
+      "mo_zero_based": 9
+    },
+    "sampled_max_absolute_error": {
+      "value": 6.007611069131347e-07,
+      "case_id": "OLD-001",
+      "mo_zero_based": 14
+    },
+    "sampled_abs_cosine": {
+      "value": 0.9999999999998853,
+      "case_id": "OLD-001",
+      "mo_zero_based": 14
+    },
+    "sampled_unique_points": {
+      "value": 8179,
+      "case_id": "OLD-001",
+      "mo_zero_based": 0
+    },
+    "complete_nrms": {
+      "value": 3.0415359710250746e-07,
+      "case_id": "OLD-001",
+      "mo_zero_based": 1
+    },
+    "complete_relative_peak_error": {
+      "value": 5.36237649123078e-07,
+      "case_id": "OLD-001",
+      "mo_zero_based": 0
+    },
+    "complete_max_absolute_error": {
+      "value": 2.127869644418861e-07,
+      "case_id": "OLD-001",
+      "mo_zero_based": 1
+    },
+    "complete_abs_cosine": {
+      "value": 0.9999999999999561,
+      "case_id": "OLD-001",
+      "mo_zero_based": 1
+    }
+  },
+  "review_barrier_sha256": "b59ecce73bd70a064f348420d3555251e6fa36ede9700ca59dbcae9d097e7a17",
+  "formal_case_passes": 0,
+  "unavailable_reports": [],
+  "script_sha256": "e10ce6d60f979f852f7af54e5a061d3e95b4c42a40d727c95d0a246be6806c36"
+}

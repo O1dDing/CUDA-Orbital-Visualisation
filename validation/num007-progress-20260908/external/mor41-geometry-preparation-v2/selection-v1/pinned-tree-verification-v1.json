@@ -1,0 +1,66 @@
+{
+  "created_epoch": 1788852698.5453618,
+  "source_commit": "089ca8ea4b350e2024a2ed013aed4927cda72b9f",
+  "source_tree": "4eea988d2f8cc300fd65ca602893541a26f98008",
+  "tree_json_sha256": "b54406880f42b9ac06cfb2c14834989857c7d79d948ee886c50a3f1fe60b6068",
+  "archive_sha256": "aedaa61cda0a8febf87c9636346d04695e087ca3c1472288eeef03ae6569a865",
+  "verified_files": {
+    "MOR41/ED14/coord": {
+      "git_blob_sha1": "047894a33e2a051c983eae053c80a1e4d5803c81",
+      "sha256": "e7196b5720040eae3fa90cd4a69726df97f65ef816e3735dcc46b6b37a7cd32d",
+      "bytes": 2493,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-068\\source.coord"
+    },
+    "MOR41/ED14/mol.xyz": {
+      "git_blob_sha1": "682019fb6f90601655d51dd16922c13e74191a30",
+      "sha256": "f81c658806d9d862b5174350cb4aa006719d2132c5242a08fdef88f18a9a0f53",
+      "bytes": 1345,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-068\\starting.xyz"
+    },
+    "MOR41/ED18/coord": {
+      "git_blob_sha1": "8353c2b79c37ecb3b0a2defe59a8d1189ecbfece",
+      "sha256": "87ea078824834885a94cac1a80ed5aedd75c9793773918921fdbcd5662c2cfcb",
+      "bytes": 2414,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-069\\source.coord"
+    },
+    "MOR41/ED18/mol.xyz": {
+      "git_blob_sha1": "78a04c648e8e7243b4138730ef0c4e72f682ba7d",
+      "sha256": "0f21cb80309934dd114d47dee8fe6d9b791fdb9d30e673d986a8d7b382e38140",
+      "bytes": 1302,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-069\\starting.xyz"
+    },
+    "MOR41/PR29/coord": {
+      "git_blob_sha1": "9dfc8b6aa13a8f54b989171eb3d117a6c4cd2425",
+      "sha256": "b5b4ee4251c47247e1a3ccc59711b106cb042e8b5fd53cdbaad2357487a5c5ca",
+      "bytes": 2653,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-070\\source.coord"
+    },
+    "MOR41/PR29/mol.xyz": {
+      "git_blob_sha1": "72e6a0aa3b0d821965ccba0467405a7f2d0cd103",
+      "sha256": "e2e9e490380abd8900c69374d48f58b0ad55954bcf5d96a0537e0621627264e4",
+      "bytes": 1431,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-070\\starting.xyz"
+    },
+    "MOR41/PR38/coord": {
+      "git_blob_sha1": "6c2d46a41f6922465a86b9fc26720bd20ae87988",
+      "sha256": "97a5a22d4c464a6ca609a89462d92d41acaa0c35fb0db9a98000850a99143446",
+      "bytes": 3693,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-071\\source.coord"
+    },
+    "MOR41/PR38/mol.xyz": {
+      "git_blob_sha1": "1b4450efc8ade0f2384841723202c05c44b29d33",
+      "sha256": "e57c083b7b80760c40caf9c97df04e90483f4223afeb12d0f5acb9347fc5721c",
+      "bytes": 1990,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\PREP-071\\starting.xyz"
+    },
+    "README.md": {
+      "git_blob_sha1": "2b7218103f37c39e2764f96bc9bb0994fd7227e2",
+      "sha256": "7d90f80ad1daea5e712b6cc73d2139645515d9a970da999b74c4079dc9e0e77b",
+      "bytes": 740,
+      "local_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\AUTHOR-README.md"
+    }
+  },
+  "verified_file_count": 9,
+  "formal_cases_added": 0,
+  "scope": "Authenticity and exact-byte consistency of selected author data; no physical or COV acceptance."
+}

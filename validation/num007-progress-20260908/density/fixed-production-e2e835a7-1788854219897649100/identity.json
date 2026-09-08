@@ -1,0 +1,22 @@
+{
+  "created_epoch": 1788854219.9111516,
+  "commit": "e2e835a70229b94501127ad336e0ddbc3ea69df3",
+  "preflight": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400",
+  "preflight_sha256": "2f543ad493059b98985d439c742382ca1b27ca683bf9f1053b00b2662bd02d26",
+  "old_baseline_review_sha256": "9191a9afbd5f0c799ff71e28eead3e079c75ef3df49293615d380e8ed0e02278",
+  "controls_manifest_sha256": "feb182a29c8b9eff99df5cb776a68210927594540de0138ba2872f63e2e523dc",
+  "unchanged_reviewer_sha256": "dec2ff8f3c96765185ac216bceef7fccd4a921a39f04642243a1dcbfffb22bde",
+  "source_files": {
+    "reviewer.py": "dec2ff8f3c96765185ac216bceef7fccd4a921a39f04642243a1dcbfffb22bde",
+    "run_fixed_density_controls.py": "14db1ed2df615d770262f85c1ae9f9b370ee40b2c06193f683b00fb12c60a2b8",
+    "validation_process.py": "9dd461a36d6becd6a31bb9edad7f2234601b9cd0f5ba8318063e6bd012184fac"
+  },
+  "own_cores": 4,
+  "own_memory_gib": 64,
+  "core_slot_offset": 8,
+  "reserved_reference_cores": 8,
+  "reserved_reference_memory_gib": 64,
+  "formal_cases_added": 0,
+  "formal_case_passes": 0,
+  "collection_then_full_review": true
+}
