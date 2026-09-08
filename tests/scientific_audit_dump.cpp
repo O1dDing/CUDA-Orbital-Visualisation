@@ -34,6 +34,8 @@ int main(int argc, char** argv) {
         numeric_array(wavefunction.ao_overlap);
         std::cout << ",\"numerical_diagnostics\":";
         cov::write_numerical_diagnostics_json(std::cout,wavefunction);
+        std::cout << ",\"density_evidence\":";
+        cov::write_density_evidence_json(std::cout,wavefunction);
         std::cout << ",\"point_group_source_records\":[";
         for (std::size_t i=0;i<wavefunction.point_group_source_records.size();++i) {
             if (i) std::cout << ',';

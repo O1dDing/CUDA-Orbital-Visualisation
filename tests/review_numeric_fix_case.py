@@ -21,6 +21,7 @@ from gbasis.integrals.overlap import overlap_integral
 from gbasis.evals.eval import evaluate_basis
 from grid_reference_compare import grid_metrics
 from validation_process import atomic_json
+from review_density_matrices import review_density
 
 def sha(path):
     h=hashlib.sha256()
@@ -92,6 +93,9 @@ def review(root,case_id,out):
     diagnostics=[event['data'] for event in events if event['kind']=='input.numerical_diagnostics']
     check('ACTUAL-EXE-METRIC-DATA',len(diagnostics)==1 and diagnostics[0]==production['numerical_diagnostics'],
           {'matching_actual_exe_input_events':len(diagnostics)})
+    density_events=[event['data'] for event in events if event['kind']=='input.density_evidence']
+    check('ACTUAL-EXE-DENSITY-DATA',len(density_events)==1 and density_events[0]==production['density_evidence'],
+          {'matching_actual_exe_density_events':len(density_events)})
     mol=load_one(str(source));basis=tuple(from_iodata(mol));coeff=np.asarray(mol.mo.coeffs)
     source_s=overlap_integral(basis)
     indices,scales=internal_basis_map(mol)
@@ -112,6 +116,8 @@ def review(root,case_id,out):
     mapping_ok=np.array_equal(recorded[:,0],np.arange(len(indices))) and np.array_equal(recorded[:,1],indices) and \
                np.array_equal(recorded[:,2],scales) and np.array_equal(recorded[:,3],scales)
     check('AO-TRANSFORM-PROVENANCE',mapping_ok,{'ao_count':len(indices)})
+    checks.extend(review_density(source,mol,indices,scales,expected_s,actual_s,production['density_evidence'],
+                                limits['electron_trace_error'],out))
     energy_error=float(np.max(np.abs(np.array([mo['energy_hartree'] for mo in production['orbitals']])-mol.mo.energies)))
     check('MO-ENERGIES',energy_error<=limits['energy_error_hartree'],{'max_absolute_error_hartree':energy_error})
     blocks=[]
