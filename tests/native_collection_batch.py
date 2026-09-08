@@ -154,6 +154,16 @@ def make_plan(production):
                             command('capture',f'linear-member-{i+1:04}')]
                     if primary: expanded += [command('click',f'diagram.mo.{primary[0]}')]
     plan=expanded
+    details_mo=primary[0] if primary else selected
+    if primary:
+        # Navigate through actual controls and wheel events; preserve both ends
+        # of the long window, closure, and the reopened selected-member state.
+        plan += select_browser(details_mo)
+        plan += ['click "diagram.details"','hover "diagram.details.close"','capture "orbital-details-top"',
+                 'hover "diagram.details.scope"','capture "orbital-details-bottom"',
+                 'click "diagram.details.close.bottom"','hover "scene.viewport"','capture "orbital-details-closed"',
+                 'click "diagram.details"','hover "diagram.details.close"','capture "orbital-details-reopened"',
+                 'click "diagram.details.close"','hover "scene.viewport"']
     for language in range(1,4):
         plan += ['click "language"','key "Home"']+['key "Down"']*language+['key "Enter"','hover "scene.viewport"',command('capture',f'language-{language}')]
     plan += ['click "language"','key "Home"','key "Enter"','hover "scene.viewport"','capture "language-0"',
@@ -163,6 +173,8 @@ def make_plan(production):
                   export_names=export_names,
                   captures=[json.loads(x[len('capture '):]) for x in plan if x.startswith('capture ')],
                   source_selection_for_controls=primary[0] if primary else selected)
+    expected['orbital_details_member']=details_mo if primary else None
+    expected['orbital_details_captures']=['orbital-details-top','orbital-details-bottom','orbital-details-closed','orbital-details-reopened'] if primary else []
     return '\n'.join(plan)+'\n', expected
 
 

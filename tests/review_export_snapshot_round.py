@@ -35,6 +35,29 @@ def overlapping_rectangles(rectangles):
     return result
 
 
+def review_details_frame(data, selected_mo, visible_target, image_size):
+    """Check actual control/capture evidence without claiming glyph correctness."""
+    failures=[]
+    state=data['state']
+    if not state['scene_matches_applied'] or any(state[k]!=selected_mo for k in
+            ('rendered_mo','applied_mo','drawn_ui_mo','requested_mo')):
+        failures.append('selected-member-mismatch')
+    details=[t for t in data['targets'] if t['id'].startswith('diagram.details.')]
+    if visible_target is None:
+        if details: failures.append('window-remains-open')
+    else:
+        targets=[t for t in details if t['id']==visible_target]
+        if len(targets)!=1 or not targets[0]['visible']:
+            failures.append('required-control-not-visible')
+        elif not all(math.isfinite(v) for v in targets[0]['rect']):
+            failures.append('nonfinite-control-bounds')
+        else:
+            x0,y0,x1,y1=targets[0]['rect'];width,height=image_size
+            if not (0<=x0<x1<=width and 0<=y0<y1<=height):
+                failures.append('required-control-outside-frame')
+    return failures
+
+
 def review_case(root,record,Image):
     terminal=load(root/'cases'/record['case_id']/'terminal.json')
     evidence=root/terminal['evidence_directory']
@@ -62,6 +85,22 @@ def review_case(root,record,Image):
     check(bool(names),'VIEW-COVERAGE','No frozen export-state coverage specified')
     check(len(names)==len(set(names))==len(exports),'VIEW-EXPORT-COUNT',
           {'expected':len(names),'measured':len(exports)})
+    details_frames=[]
+    if expected.get('orbital_details_captures'):
+        controls={'orbital-details-top':'diagram.details.close',
+                  'orbital-details-bottom':'diagram.details.scope',
+                  'orbital-details-closed':None,
+                  'orbital-details-reopened':'diagram.details.close'}
+        check(set(expected['orbital_details_captures'])==set(controls),
+              'VIEW-DETAILS-COVERAGE',expected['orbital_details_captures'])
+        for capture,target in controls.items():
+            data=load(consume('native/'+capture+'.ui.json'))
+            with Image.open(consume('native/'+capture+'.png')) as image:
+                image.load();size=image.size
+            issues=review_details_frame(data,expected['orbital_details_member'],target,size)
+            check(not issues,'VIEW-DETAILS-CONTROL',{'capture':capture,'failures':issues})
+            details_frames.append({'capture':capture,'selected_mo':expected['orbital_details_member'],
+                                   'required_visible_control':target,'image_size':list(size),'pass':not issues})
     linear_clicks=[]
     for mo in expected.get('primary_members',[]):
         capture=f'linear-member-{mo+1:04}'
@@ -184,7 +223,7 @@ def review_case(root,record,Image):
             'snapshot_id':context.get('id'),'export_frame':event['frame'],'selected_mo':selected,
             'rows':len(rows),'members':len(expected_native),'selected_png_checks':len(selected_png)})
     return {'case_id':record['case_id'],'status':'view_subset_pass' if not failures else 'view_subset_fail',
-        'linear_member_clicks':linear_clicks,
+        'linear_member_clicks':linear_clicks,'details_control_frames':details_frames,
         'bundles':bundles,'failures':failures,'consumed_artifacts':consumed,'formal_case_pass':False}
 
 
@@ -214,6 +253,7 @@ def main():
         'all_reviewed':len(results)==manifest['case_count'],
         'status_counts':{s:sum(x['status']==s for x in results) for s in sorted({x['status'] for x in results})},
         'bundle_count':sum(len(x.get('bundles',[])) for x in results),
+        'details_control_frame_count':sum(len(x.get('details_control_frames',[])) for x in results),
         'failure_count':sum(len(x.get('failures',[])) for x in results),
         'wall_seconds':time.perf_counter()-start,'reviewer_sha256':sha(Path(__file__)),
         'collection_barrier_sha256':sha(root/'collection-complete.json'),'formal_case_passes':0,
