@@ -58,22 +58,15 @@ void postprocess_wavefunction(Wavefunction& wf,
     // geometry-derived point group from COV's own operation/permutation engine.
     derive_point_group_from_geometry(wf);
 
-    if (options.keep_density && !wf.orbitals.empty()) {
-        if (wf.total_density_packed.empty() &&
-            options.reconstruct_density_if_missing) {
-            wf.total_density_packed = reconstruct_total_density_packed(wf);
-            wf.total_density_provenance = DataProvenance::Derived;
-        }
-        if (wf.spin_density_packed.empty() &&
-            options.reconstruct_density_if_missing) {
-            wf.spin_density_packed = reconstruct_spin_density_packed(wf);
-            wf.spin_density_provenance = DataProvenance::Derived;
-        }
+    if (options.keep_density &&
+        wf.mo_density_reconstruction.total.diagnostics.status == NumericalStatus::NotComputed) {
+        establish_density(wf, options.reconstruct_density_if_missing);
     }
 
     // Independent AO integrals support rectangular/truncated MO blocks and
     // expose inconsistent producer matrices rather than fitting S to C.
     establish_ao_metric(wf);
+    update_density_metric_diagnostics(wf);
     const bool usable_orbitals=orbital_metric_usable(wf);
 
     // FCHK normally lacks per-MO irreps. Once a validated geometry operation set
@@ -83,7 +76,8 @@ void postprocess_wavefunction(Wavefunction& wf,
         (void)derive_orbital_symmetry(wf);
     }
 
-    if (usable_orbitals && !wf.total_density_packed.empty()) {
+    if (usable_orbitals && wf.total_density_diagnostics.status == NumericalStatus::Available &&
+        wf.spin_density_diagnostics.status == NumericalStatus::Available) {
         derive_bond_and_multicentre_analysis(wf);
     }
 

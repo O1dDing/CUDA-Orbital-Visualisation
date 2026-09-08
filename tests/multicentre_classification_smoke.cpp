@@ -62,10 +62,15 @@ cov::Wavefunction make_three_centre(const bool four_electron) {
     };
 
     wf.orbitals={bonding,nonbonding,antibonding};
+    wf.orbital_occupation_model=cov::OrbitalOccupationModel::SharedIntegerDeterminant;
+    wf.orbital_occupation_model_provenance=cov::DataProvenance::Derived;
+    for(auto& mo:wf.orbitals) {
+        mo.occupation_provenance=cov::DataProvenance::Derived;
+        mo.spin_provenance=cov::DataProvenance::Derived;
+    }
     wf.ao_overlap={1,0,0,0,1,0,0,0,1};
     wf.ao_overlap_provenance=cov::DataProvenance::Derived;
-    wf.total_density_packed=cov::reconstruct_total_density_packed(wf);
-    wf.total_density_provenance=cov::DataProvenance::Derived;
+    cov::establish_density(wf);
     return wf;
 }
 

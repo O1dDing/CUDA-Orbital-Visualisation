@@ -356,7 +356,9 @@ void derive_bond_and_multicentre_analysis(Wavefunction& wavefunction,
 
     const std::size_t n = wavefunction.basis_count;
     if (n == 0 || wavefunction.ao_overlap.size() != n * n ||
-        wavefunction.total_density_packed.empty()) {
+        wavefunction.total_density_packed.empty() || wavefunction.spin_density_packed.empty() ||
+        wavefunction.total_density_diagnostics.status != NumericalStatus::Available ||
+        wavefunction.spin_density_diagnostics.status != NumericalStatus::Available) {
         return;
     }
 

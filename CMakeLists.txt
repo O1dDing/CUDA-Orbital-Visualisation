@@ -358,6 +358,14 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_wavefunction_analysis_smoke PRIVATE cov_parser)
     add_test(NAME wavefunction_analysis_smoke COMMAND cov_wavefunction_analysis_smoke)
 
+    add_executable(cov_density_source_regression tests/density_source_regression.cpp)
+    target_link_libraries(cov_density_source_regression PRIVATE cov_parser)
+    add_test(NAME density_source_regression COMMAND cov_density_source_regression)
+
+    # Read-only evidence from the same production parser/analysis library.
+    add_executable(cov_density_source_probe tests/density_source_probe.cpp)
+    target_link_libraries(cov_density_source_probe PRIVATE cov_parser)
+
     add_executable(cov_overlap_large_smoke tests/overlap_large_smoke.cpp)
     target_link_libraries(cov_overlap_large_smoke PRIVATE cov_parser)
     add_test(NAME overlap_large_smoke COMMAND cov_overlap_large_smoke)

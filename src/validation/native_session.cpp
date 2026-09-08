@@ -304,6 +304,11 @@ void anchor(const std::string& id) {
     if(!enabled)return;const auto p=ImGui::GetCursorScreenPos();hit(id,p,ImVec2(p.x+20,p.y+4));
 }
 void record(const std::string& kind,const std::string& json) {
+    if(enabled && kind=="input.density_evidence") {
+        events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";
+        events.flush();
+        return; // Full matrices belong to the load event, not per-frame traces.
+    }
     if(enabled)trace.push_back("{\"kind\":"+quote(kind)+",\"data\":"+json+"}");
     if(enabled && (kind=="export.actual" || kind=="input.numerical_diagnostics" ||
                    (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {

@@ -38,6 +38,12 @@ cov::Wavefunction make_h2() {
     antibonding.coefficients = {static_cast<float>(ca), static_cast<float>(-ca)};
 
     wf.orbitals = {bonding, antibonding};
+    wf.orbital_occupation_model = cov::OrbitalOccupationModel::SharedIntegerDeterminant;
+    wf.orbital_occupation_model_provenance = cov::DataProvenance::Derived;
+    for (auto& mo : wf.orbitals) {
+        mo.occupation_provenance = cov::DataProvenance::Derived;
+        mo.spin_provenance = cov::DataProvenance::Derived;
+    }
     wf.alpha_electrons = 1;
     wf.beta_electrons = 1;
     return wf;
@@ -86,6 +92,12 @@ cov::Wavefunction make_three_center() {
     };
 
     wf.orbitals = {a, b, c};
+    wf.orbital_occupation_model = cov::OrbitalOccupationModel::SharedIntegerDeterminant;
+    wf.orbital_occupation_model_provenance = cov::DataProvenance::Derived;
+    for (auto& mo : wf.orbitals) {
+        mo.occupation_provenance = cov::DataProvenance::Derived;
+        mo.spin_provenance = cov::DataProvenance::Derived;
+    }
     wf.alpha_electrons = 1;
     wf.beta_electrons = 1;
     return wf;
@@ -109,10 +121,7 @@ int main() {
 
         wf.ao_overlap = overlap.matrix;
         wf.ao_overlap_provenance = cov::DataProvenance::Derived;
-        wf.total_density_packed = cov::reconstruct_total_density_packed(wf);
-        wf.total_density_provenance = cov::DataProvenance::Derived;
-        wf.spin_density_packed = cov::reconstruct_spin_density_packed(wf);
-        wf.spin_density_provenance = cov::DataProvenance::Derived;
+        cov::establish_density(wf);
         cov::derive_bond_and_multicentre_analysis(wf);
 
         if (wf.bond_orders.size() != 1u ||
@@ -132,8 +141,7 @@ int main() {
         }
         wf.ao_overlap = overlap.matrix;
         wf.ao_overlap_provenance = cov::DataProvenance::Derived;
-        wf.total_density_packed = cov::reconstruct_total_density_packed(wf);
-        wf.spin_density_packed = cov::reconstruct_spin_density_packed(wf);
+        cov::establish_density(wf);
         cov::derive_bond_and_multicentre_analysis(wf);
 
         if (wf.multicentre_candidates.size() != 1u ||

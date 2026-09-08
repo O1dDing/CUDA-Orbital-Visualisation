@@ -69,6 +69,43 @@ enum class NumericalStatus : std::uint8_t {
     Failed,
 };
 
+// A format layout and an occupation interpretation are independent of MO
+// display grouping. The shared integer interpretation is an explicit model
+// assumption, not a producer statement about an unrestricted spin partition.
+enum class OrbitalOccupationModel : std::uint8_t {
+    Unspecified = 0,
+    CanonicalShared,
+    ExplicitSpin,
+    SharedIntegerDeterminant,
+    SharedFractionalUnresolved,
+};
+
+struct DensityMatrixDiagnostics {
+    NumericalStatus status = NumericalStatus::NotComputed;
+    DataProvenance input_provenance = DataProvenance::Unavailable;
+    OrbitalOccupationModel occupation_model = OrbitalOccupationModel::Unspecified;
+    DataProvenance model_provenance = DataProvenance::Unavailable;
+    bool occupied_space_complete = false; // in the declared input model
+    double occupation_sum = std::numeric_limits<double>::quiet_NaN();
+    double expected_electron_count = std::numeric_limits<double>::quiet_NaN();
+    double metric_trace = std::numeric_limits<double>::quiet_NaN();
+    std::string detail;
+};
+
+struct DensityMatrixResult {
+    std::vector<double> packed;
+    DataProvenance provenance = DataProvenance::Unavailable;
+    DensityMatrixDiagnostics diagnostics;
+    bool available() const noexcept {
+        return diagnostics.status == NumericalStatus::Available;
+    }
+};
+
+struct DensityReconstruction {
+    DensityMatrixResult total;
+    DensityMatrixResult spin;
+};
+
 struct OrbitalMetricDiagnostics {
     Spin spin = Spin::Alpha;
     std::size_t orbital_count = 0;
@@ -268,6 +305,11 @@ struct MolecularOrbital {
     // carry per-MO irreps. Keeping provenance prevents derived values from being
     // presented as producer data later in the UI/export layer.
     DataProvenance occupation_provenance = DataProvenance::Unavailable;
+    DataProvenance spin_provenance = DataProvenance::Unavailable;
+    std::string spin_source_text;
+    // Index within the literal source spin block. Keeps canonical occupation
+    // identity intact when an in-memory MO list is reordered.
+    std::size_t source_orbital_index = std::numeric_limits<std::size_t>::max();
     DataProvenance symmetry_provenance = DataProvenance::Unavailable;
 
     // Derived after density/overlap/symmetry/bond analysis. Producer data is
@@ -390,6 +432,8 @@ struct Wavefunction {
     std::uint32_t alpha_electrons = 0;
     std::uint32_t beta_electrons = 0;
     DataProvenance electron_counts_provenance = DataProvenance::Unavailable;
+    OrbitalOccupationModel orbital_occupation_model = OrbitalOccupationModel::Unspecified;
+    DataProvenance orbital_occupation_model_provenance = DataProvenance::Unavailable;
     // Gaussian FCHK carries these independently of alpha/beta counts.  Charge
     // zero is meaningful, so provenance rather than a magic value records
     // whether a producer actually supplied it.  Multiplicity zero remains the
@@ -434,6 +478,11 @@ struct Wavefunction {
     std::vector<double> spin_density_packed;
     DataProvenance total_density_provenance = DataProvenance::Unavailable;
     DataProvenance spin_density_provenance = DataProvenance::Unavailable;
+    DensityMatrixDiagnostics total_density_diagnostics;
+    DensityMatrixDiagnostics spin_density_diagnostics;
+    // Preserve the actual producer matrices and the production MO reconstruction
+    // separately. Serialize these once per load, never once per rendered frame.
+    DensityReconstruction mo_density_reconstruction;
 
     // Analytic AO metric from the actual basis, independent of MO completeness.
     // The optional producer matrix remains separate for consistency checks.
@@ -493,6 +542,16 @@ inline const char* data_provenance_name(const DataProvenance provenance) noexcep
         case DataProvenance::Producer: return "producer";
         case DataProvenance::Derived: return "derived";
         default: return "unavailable";
+    }
+}
+
+inline const char* orbital_occupation_model_name(const OrbitalOccupationModel model) noexcept {
+    switch (model) {
+        case OrbitalOccupationModel::CanonicalShared: return "canonical-shared-source-identities";
+        case OrbitalOccupationModel::ExplicitSpin: return "explicit-spin-orbital-occupations";
+        case OrbitalOccupationModel::SharedIntegerDeterminant: return "shared-integer-determinant-assumption";
+        case OrbitalOccupationModel::SharedFractionalUnresolved: return "shared-fractional-spin-unresolved";
+        default: return "unspecified";
     }
 }
 

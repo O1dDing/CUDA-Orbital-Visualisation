@@ -1,4 +1,5 @@
 #include "cov/molden_parser.hpp"
+#include "cov/density.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -295,6 +296,12 @@ void finalise_mo(MolecularOrbital& mo,
             std::to_string(wf.basis_count) +
             " functions. Check Cartesian/spherical shell convention or file completeness.");
     }
+    if (mo.spin_provenance != DataProvenance::Unavailable) {
+        mo.source_orbital_index = static_cast<std::size_t>(std::count_if(
+            wf.orbitals.begin(), wf.orbitals.end(), [&](const auto& other) {
+                return other.spin_provenance != DataProvenance::Unavailable && other.spin == mo.spin;
+            }));
+    }
     wf.orbitals.push_back(std::move(mo));
     mo = MolecularOrbital{};
     have_mo = false;
@@ -311,6 +318,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
     }
 
     Wavefunction wf;
+    wf.source = WavefunctionSource::Molden;
     std::vector<RawShell> raw_shells;
     BasisMarkerState basis_markers;
 
@@ -557,10 +565,13 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         }
 
         if (starts_with_ci(t, "spin=")) {
-            const auto spin = lower(value_after_equals(t));
-            current_mo.spin = (spin.find("beta") != std::string::npos)
-                                  ? Spin::Beta
-                                  : Spin::Alpha;
+            current_mo.spin_source_text = value_after_equals(t);
+            const auto spin = lower(trim(current_mo.spin_source_text));
+            current_mo.spin_provenance = DataProvenance::Unavailable;
+            if (spin == "alpha" || spin == "beta") {
+                current_mo.spin = spin == "beta" ? Spin::Beta : Spin::Alpha;
+                current_mo.spin_provenance = DataProvenance::Producer;
+            }
         } else if (starts_with_ci(t, "occup=")) {
             current_mo.occupation =
                 parse_fortran_double(value_after_equals(t));
@@ -600,50 +611,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         }
     }
 
-    // Molden has no mandatory molecule-level electron counters, but valid MO
-    // occupations contain the same information.  Preserve the distinction
-    // between a derived count and the harmless zero defaults used when the
-    // occupation metadata is incomplete or malformed.
-    const bool has_explicit_beta = std::any_of(
-        wf.orbitals.begin(), wf.orbitals.end(),
-        [](const MolecularOrbital& mo) { return mo.spin == Spin::Beta; });
-    double alpha_count = 0.0;
-    double beta_count = 0.0;
-    bool occupations_valid = !wf.orbitals.empty();
-    for (const auto& mo : wf.orbitals) {
-        if (mo.occupation_provenance == DataProvenance::Unavailable) {
-            occupations_valid = false;
-            break;
-        }
-        const double occupation = static_cast<double>(mo.occupation);
-        const double maximum_occupation=has_explicit_beta?1.0:2.0;
-        if (!std::isfinite(occupation) || occupation < -1.0e-4 ||
-            occupation > maximum_occupation + 1.0e-4) {
-            occupations_valid = false;
-            break;
-        }
-        const double clipped = std::clamp(occupation, 0.0, maximum_occupation);
-        if (has_explicit_beta) {
-            if (mo.spin == Spin::Beta) {
-                beta_count += clipped;
-            } else {
-                alpha_count += clipped;
-            }
-        } else {
-            alpha_count += std::min(clipped, 1.0);
-            beta_count += std::max(clipped - 1.0, 0.0);
-        }
-    }
-    const auto near_integer = [](const double value) {
-        return value >= 0.0 &&
-               value <= static_cast<double>(std::numeric_limits<std::uint32_t>::max()) &&
-               std::abs(value - std::round(value)) <= 1.0e-3;
-    };
-    if (occupations_valid && near_integer(alpha_count) && near_integer(beta_count)) {
-        wf.alpha_electrons = static_cast<std::uint32_t>(std::llround(alpha_count));
-        wf.beta_electrons = static_cast<std::uint32_t>(std::llround(beta_count));
-        wf.electron_counts_provenance = DataProvenance::Derived;
-    }
+    derive_molden_electron_counts(wf);
 
     return wf;
 }

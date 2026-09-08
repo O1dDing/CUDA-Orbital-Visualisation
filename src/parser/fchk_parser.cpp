@@ -391,6 +391,9 @@ void append_orbital_set(Wavefunction& wf,
         MolecularOrbital mo;
         mo.energy_hartree = energies[i];
         mo.spin = spin;
+        mo.spin_provenance = DataProvenance::Producer;
+        mo.spin_source_text = spin == Spin::Alpha ? "Alpha MO coefficients" : "Beta MO coefficients";
+        mo.source_orbital_index = i;
         if (restricted) {
             const float alpha = i < wf.alpha_electrons ? 1.0f : 0.0f;
             const float beta = i < wf.beta_electrons ? 1.0f : 0.0f;
@@ -580,6 +583,9 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
 
     if (alpha_energies && alpha_coefficients) {
         const bool unrestricted = beta_energies && beta_coefficients;
+        wf.orbital_occupation_model = unrestricted ? OrbitalOccupationModel::ExplicitSpin :
+                                                    OrbitalOccupationModel::CanonicalShared;
+        wf.orbital_occupation_model_provenance = DataProvenance::Producer;
         append_orbital_set(wf, *alpha_energies, *alpha_coefficients, basis_map,
                            Spin::Alpha, wf.alpha_electrons, !unrestricted);
         if (unrestricted) {
@@ -597,9 +603,6 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
             validate_density(*total, wf.basis_count, "Total SCF Density");
             wf.total_density_packed = transform_packed_density(*total, basis_map);
             wf.total_density_provenance = DataProvenance::Producer;
-        } else if (options.reconstruct_density_if_missing && !wf.orbitals.empty()) {
-            wf.total_density_packed = reconstruct_total_density_packed(wf);
-            wf.total_density_provenance = DataProvenance::Derived;
         }
 
         if (const auto* spin = find_real_array(records, "Spin SCF Density")) {
@@ -607,6 +610,7 @@ Wavefunction parse_fchk(const std::filesystem::path& path,
             wf.spin_density_packed = transform_packed_density(*spin, basis_map);
             wf.spin_density_provenance = DataProvenance::Producer;
         }
+        establish_density(wf, options.reconstruct_density_if_missing);
     }
 
     return wf;

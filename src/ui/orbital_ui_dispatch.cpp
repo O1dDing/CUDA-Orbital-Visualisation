@@ -141,12 +141,39 @@ void provenance_strip(const Wavefunction& wf, const Language language) {
             orbital_tr(OrbitalText::PointGroup,language),
         point_group_suffix.c_str());
 
+    const bool chinese=language==Language::ChineseSimplified;
+    const auto density_status=[&](NumericalStatus status) {
+        switch(status) {
+            case NumericalStatus::Available:return chinese?"可用":"available";
+            case NumericalStatus::MissingInput:return chinese?"信息不足":"missing information";
+            case NumericalStatus::InvalidInput:return chinese?"输入无效":"invalid input";
+            case NumericalStatus::Failed:return chinese?"计算失败":"calculation failed";
+            default:return chinese?"未计算":"not computed";
+        }
+    };
+    ImGui::TextWrapped(chinese?"总密度：%s（%s）；自旋密度：%s（%s）":
+        "Total density: %s (%s); spin density: %s (%s)",
+        density_status(wf.total_density_diagnostics.status),
+        localised_data_provenance(wf.total_density_provenance,language),
+        density_status(wf.spin_density_diagnostics.status),
+        localised_data_provenance(wf.spin_density_provenance,language));
+    if(wf.spin_density_diagnostics.occupation_model==OrbitalOccupationModel::SharedIntegerDeterminant &&
+       wf.spin_density_diagnostics.status==NumericalStatus::Available) {
+        ImGui::TextWrapped("%s",chinese?
+            "自旋密度按共享整数占据解释：双占据成对，单占据归入 α 自旋。":
+            "Spin density assumes shared integer occupations: double occupation is paired; single occupation is alpha.");
+    } else if(wf.total_density_diagnostics.status==NumericalStatus::Available &&
+              wf.spin_density_diagnostics.status==NumericalStatus::MissingInput) {
+        ImGui::TextWrapped("%s",chinese?
+            "输入可以确定总密度，但不能确定自旋分配；完整 Mayer 键级暂不可用。":
+            "The input determines total density but not its spin partition; full Mayer bond orders are unavailable.");
+    }
+
     if (!wf.enrichment_source.empty()) {
         ImGui::TextDisabled("%s",
             orbital_tr(OrbitalText::GaussianEnrichmentAttached,language));
     }
     if (wf.ao_metric_diagnostics.status!=NumericalStatus::NotComputed) {
-        const bool chinese=language==Language::ChineseSimplified;
         if (wf.ao_metric_diagnostics.status!=NumericalStatus::Available ||
             (!wf.orbitals.empty() && !orbital_metric_usable(wf))) {
             ImGui::TextWrapped("%s",chinese

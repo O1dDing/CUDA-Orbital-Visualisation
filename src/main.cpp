@@ -304,6 +304,9 @@ int main(int argc, char** argv) {
                     std::ostringstream diagnostics;
                     cov::write_numerical_diagnostics_json(diagnostics,wf);
                     cov::validation::record("input.numerical_diagnostics",diagnostics.str());
+                    std::ostringstream density_evidence;
+                    cov::write_density_evidence_json(density_evidence,wf);
+                    cov::validation::record("input.density_evidence",density_evidence.str());
                 }
                 const auto new_mo = initial_orbital(wf);
                 const auto new_box = make_grid_box(wf);

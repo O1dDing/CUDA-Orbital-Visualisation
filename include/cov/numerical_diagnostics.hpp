@@ -75,4 +75,45 @@ inline void write_numerical_diagnostics_json(std::ostream& out,const Wavefunctio
     out<<",\"tolerance\":";numerical_json::number(out,wf.producer_ao_overlap_basis_tolerance);
     out<<"}}";
 }
+
+// Read-only serialization of the matrices and diagnostics used by production.
+// The native validator writes one record per load; no alternate reconstruction
+// or tolerance-dependent calculation is performed by this serializer.
+inline void write_density_evidence_json(std::ostream& out,const Wavefunction& wf) {
+    using namespace numerical_json;
+    const auto matrix=[&](const std::vector<double>& packed,DataProvenance provenance,
+                          const DensityMatrixDiagnostics& info) {
+        out<<"{\"status\":";string(out,numerical_status_name(info.status));
+        out<<",\"provenance\":";string(out,data_provenance_name(provenance));
+        out<<",\"input_provenance\":";string(out,data_provenance_name(info.input_provenance));
+        out<<",\"occupation_model\":";string(out,orbital_occupation_model_name(info.occupation_model));
+        out<<",\"model_provenance\":";string(out,data_provenance_name(info.model_provenance));
+        out<<",\"occupied_space_complete\":"<<(info.occupied_space_complete?"true":"false");
+        out<<",\"occupation_sum\":";number(out,info.occupation_sum);
+        out<<",\"expected_electron_count\":";number(out,info.expected_electron_count);
+        out<<",\"metric_trace\":";number(out,info.metric_trace);
+        out<<",\"reason\":";string(out,info.detail);
+        out<<",\"packed\":[";
+        for(std::size_t i=0;i<packed.size();++i){if(i)out<<',';number(out,packed[i]);}
+        out<<"]}";
+    };
+    out<<"{\"schema\":1,\"basis_count\":"<<wf.basis_count
+       <<",\"ao_representation\":\"COV internal normalized real or Cartesian AO order\","
+         "\"packing\":\"lower triangular: i*(i+1)/2+j, i>=j\","
+         "\"scalar_type\":\"IEEE754-float64\","
+         "\"matrix_units\":\"electron occupation coefficients in the AO expansion\","
+         "\"trace_units\":\"electrons\",\"source_format\":";
+    string(out,wavefunction_source_name(wf.source));
+    out<<",\"actual\":{\"total\":";
+    matrix(wf.total_density_packed,wf.total_density_provenance,wf.total_density_diagnostics);
+    out<<",\"spin\":";
+    matrix(wf.spin_density_packed,wf.spin_density_provenance,wf.spin_density_diagnostics);
+    out<<"},\"production_mo_reconstruction\":{\"total\":";
+    matrix(wf.mo_density_reconstruction.total.packed,wf.mo_density_reconstruction.total.provenance,
+           wf.mo_density_reconstruction.total.diagnostics);
+    out<<",\"spin\":";
+    matrix(wf.mo_density_reconstruction.spin.packed,wf.mo_density_reconstruction.spin.provenance,
+           wf.mo_density_reconstruction.spin.diagnostics);
+    out<<"}}";
+}
 }
