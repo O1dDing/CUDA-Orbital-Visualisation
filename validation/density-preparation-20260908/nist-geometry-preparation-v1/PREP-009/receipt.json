@@ -1,0 +1,20 @@
+{
+  "candidate_id": "PREP-009",
+  "name": "iodine heptafluoride",
+  "elements": {
+    "I": 1,
+    "F": 7
+  },
+  "charge": 0,
+  "url": "https://cccbdb.nist.gov/alldata2x.asp?casno=16921963&charge=0",
+  "scope": "species index; follow actual geometry links after source retrieval",
+  "started_epoch": 1788845893.673043,
+  "http_status": 200,
+  "content_type": "text/html",
+  "charset": null,
+  "resolved_url": "https://cccbdb.nist.gov/alldata1x.asp",
+  "status": "html-retrieved-content-review-pending",
+  "bytes": 30546,
+  "sha256": "bf154f493fd2e68bc6374c50e2c1986fa84a50a0d2626467fd27a6984d351aec",
+  "finished_epoch": 1788845895.5457678
+}

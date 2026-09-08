@@ -1,0 +1,190 @@
+{
+  "candidate_id": "PREP-007",
+  "tables": [
+    {
+      "index": 0,
+      "rows": [
+        [
+          "",
+          "Computational Chemistry Comparison and Benchmark DataBase Release 22 (May 2022) Standard Reference Database 101 National Institute of Standards and Technology"
+        ],
+        [
+          "Home All data for one species Geometry Experimental Experimental Geometries Same bond/angle many molecules Internal Coordinates by type Bond angles Calculated Calculated geometry Rotational constant Moments of inertia Products of moments of inertia BSE Bond lengths Show me a calculated geometry Comparisons Bonds, angles Rotational Constants Products of moments of inertia Point group Bad Calculations Bad moment of inertia Tutorials and Explanations Angle formulas Vibrations Experimental Vibrational frequencies Calculated Frequencies Scale factors Reactions Entropies Ions List Ions Energy Calculated Ionization Energy Compare Ionzation energy Electron Affinity Calculated Electron affinity Compare Electron affinity Proton Affinity Calculated Proton affinity Compare Proton affinity Ionization changes point group Experimental One molecule all properties One property a few molecules Enthalpy of formation Entropy Integrated Heat Capacity Heat Capacity Rotational Constants Vibrational Frequencies Dipole moment Ionization Energy Polarizability Quadrupole Point Groups Geometry Experimental Geometries Internal Coordinates by type Bond angles Rotational Constants Point Groups Diatomic bond lengths Vibrations Vibrational frequencies Diatomic Triatomics Energy Atomization Energy Internal Rotation Electrostatics Dipole Quadrupole Polarizability Reference Data Reference states Spin Splittings Molecules with good enthalpy Enthalpy at 0 Kelvin Calculated Energy Optimized Energy Energy 298K Minimum conformation Hydrogen bonds H bond with counterpoise Reaction Reaction Energy 0K Reaction Energy 298K Internal Rotation Barriers to internal rotation Rotational barrier and dipole Rotational Barrier 2 molecules Orbital HOMO LUMO gap HOMO Orbital Energies Nuclear repulsion energy Correlation Full vs Frozen core energies Partial correlation energies Ion Calculated Ionization Energy Vertical ionization Energy Calculated Electron affinity Calculated Proton affinity Atom charge differences Excited State Singlet triplet gap Electronic state Transition state Basis Set Extrapolation BSE energy BSE Bond lengths Geometry Calculated geometry AIM bond orders One type of bond Rotation Rotational constant Products of moments of inertia Moments of inertia Inertial defects Second moments Point group State symmetry <r2> Sorted by r2 Z-matrix Bad Calculations Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Frequencies Animated vibrations Anharmonic Zero point energy (ZPE) Scale Factors Scale factors Scale factor uncertainty Calculate a scale factor Why scale vibrations Set scaling factors Bad Calculations Bad Vib. HF vs MP2 Bad vib. Calc. vs exp. Big anharmonicity Electrostatics Charges Mulliken CHELP Aim ESP Dipole Dipole Dipole angle Dipole calculation types Quadrupole Polarizability Spin Spin density Entropy and Heat Capacity Entropy Reaction entropy Heat Capacity Reaction Reaction Energy 0K Reaction Energy 298K Isodesmic reactions Transition State Transition state Transition state frequencies Transition state geometries IRC Lookup by property By frequency Comparisons Geometry Bonds, angles Bond, angle, or dihedral DFT grid size on point group DFT grid on bond length Core correlation - bond length Same bond/angle many molecules Isoelectronic diatomics Isoelectronic triatomic angles Average bond lengths Rotation Rotational Constants Products of moments of inertia Point group Vibrations Vibrations 2 calculations Frequency differences One frequency Zero point energy Intensity Intensity for one mode Vibrational intensities Reduced mass comparison Anharmonic Triatomic Scale factors Energy Reaction Reaction Energy 0K Reaction Energy 298K Atomization 0K Atomization 298K Single point vs optimized DFT grid size on energy Semiempirical enthalpy Internal rotation Similar molecules Conformation Sets of isomers Sets of tautomers Isomers Entropy Entropy Heat capacity Entropy of several molecules Integrated heat capacity Reaction entropy Electrostatics Dipole Polarizability Several molecules Quadrupole Ion Compare Ionzation energy Koopman ionization energy Koopman IE for a few molecules Compare Electron affinity Compare Proton affinity Protonation Site Resources Info on Results Calculations Done Method and basis set List molecules One molecule Multiple conformers, states Multiple conformers, states Basis functions used I/O files Input/output files MOL file Z-matrix wfn files Glossary Conversion Forms B to I, I to B Angle formulas Integrated heat Capacity Calculating Enthalpy Links NIST Links NIST webbook bibliographic data CCCBDB Experimental data External links Basis Set Exchange Computational Chemistry List Thermochemistry in Gaussian Minnesota Database Collection Benchmark Energy and Geometry Point Groups Thermochemistry Thermochemistry Molecules with good enthalpy A → B + C Reference states Tutorials Vibrations Why scale vibrations Zero-point energies Entropy Methyl rotor entropy Entropy and conformations Energy Getting enthalpy of formation Vertical vs adiabatic IE Thermo from calculations Electrostatics Dipole parts by point group Quadrupoles Geometry Angle formulas Cost Cost Comparison Timings Comparison Bad Calculations Geometry Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Bad vib. Calc. vs exp. Bad Vib. HF vs MP2 Bad scale factors Low excited states Oddities NaCN Is not linear FAQ Help Units Choose Units Energy Bond length Rotational Constant Moment of Inertia Dipole and Quadrupole Polarizability Explanations Hartree cm-1 Debye Credits Just show me Show me a calculated geometry Summary Using older interface Limit Basis sets Method options List Recent molecules Choose a few Molecules Number of atoms By heavy atoms Diatomics InChI Deuterated Dimers Geometry Point group Point group count Bonds types Isodesmic reactions Bad point group Multiple conformers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants"
+        ],
+        [],
+        [
+          "You are here: Home > Geometry > Calculated > Calculated geometry OR Calculated > Geometry > Calculated geometry"
+        ]
+      ],
+      "preceding_text": "6{} .atom37{} .atom38{} .atom39{} .atom40{} .atom41{} .atom42{} .atom43{} .atom44{} .atom45{} .atom46{} .atom47{} .atom48{} .atom49{} .atom50{} .atom51{} .atom52{} .atom53{} .atom54{} .atom55{} .atom56{} .atom57{} .atom58{} .atom59{} .atom60{} body{display:none !important;} if (self === top) { var antiClickjack = document.getElementById(\"antiClickjack\"); antiClickjack.parentNode.removeChild(antiClickjack); } else { top.location = self.location; }"
+    },
+    {
+      "index": 1,
+      "rows": [
+        [
+          "Atom",
+          "Internal",
+          "",
+          "Principal"
+        ],
+        [
+          "x (Å)",
+          "y (Å)",
+          "z (Å)",
+          "",
+          "a (Å)",
+          "b (Å)",
+          "c (Å)"
+        ],
+        [
+          "Cl1",
+          "0.0000",
+          "0.0000",
+          "0.3727",
+          "",
+          "0.0000",
+          "0.3727",
+          "0.0000"
+        ],
+        [
+          "F2",
+          "0.0000",
+          "0.0000",
+          "-1.2778",
+          "",
+          "0.0000",
+          "-1.2778",
+          "0.0000"
+        ],
+        [
+          "F3",
+          "0.0000",
+          "1.7268",
+          "0.2869",
+          "",
+          "1.7268",
+          "0.2869",
+          "0.0000"
+        ],
+        [
+          "F4",
+          "0.0000",
+          "-1.7268",
+          "0.2869",
+          "",
+          "-1.7268",
+          "0.2869",
+          "0.0000"
+        ]
+      ],
+      "preceding_text": "s, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Home > Geometry > Calculated > Calculated geometry OR Calculated > Geometry > Calculated geometry Geometry for (Chlorine trifluoride) 1 A 1 C2V 1910171554 InChI=1S/ClF3/c2-1(3)4 INChIKey=JOHWNGGYGAVMGU-UHFFFAOYSA-N G3B3 This model chemistry uses a geometry from B3LYP/6-31G* Point group is C 2v"
+    },
+    {
+      "index": 2,
+      "rows": [
+        [
+          "",
+          "Cl1",
+          "F2",
+          "F3",
+          "F4"
+        ],
+        [
+          "Cl1",
+          "1.6505",
+          "1.7289",
+          "1.7289"
+        ],
+        [
+          "F2",
+          "1.6505",
+          "2.3302",
+          "2.3302"
+        ],
+        [
+          "F3",
+          "1.7289",
+          "2.3302",
+          "3.4535"
+        ],
+        [
+          "F4",
+          "1.7289",
+          "2.3302",
+          "3.4535"
+        ]
+      ],
+      "preceding_text": "orine trifluoride) 1 A 1 C2V 1910171554 InChI=1S/ClF3/c2-1(3)4 INChIKey=JOHWNGGYGAVMGU-UHFFFAOYSA-N G3B3 This model chemistry uses a geometry from B3LYP/6-31G* Point group is C 2v Atom Internal Principal x (Å) y (Å) z (Å) a (Å) b (Å) c (Å) Cl1 0.0000 0.0000 0.3727 0.0000 0.3727 0.0000 F2 0.0000 0.0000 -1.2778 0.0000 -1.2778 0.0000 F3 0.0000 1.7268 0.2869 1.7268 0.2869 0.0000 F4 0.0000 -1.7268 0.2869 -1.7268 0.2869 0.0000 Atom - Atom Distances (Å)"
+    },
+    {
+      "index": 3,
+      "rows": [
+        [
+          "Jmol.Info ={ jarPath: \"jmol/java\", jarFile: \"\", j2sPath: \"jmol/j2s\", use: \"HTML5\", // could be JAVA or HTML5 disableJ2SLoadMonitor: false, disableInitialConsole: true } var xyzmodel= \" 4\\n\" + \"clf3_c2\\n\" + \"Cl \"+\"0 \"+\"0 \"+\"0.372703\\n\"+ \"F \"+\"0 \"+\"0 \"+\"-1.277772\\n\"+ \"F \"+\"0 \"+\"1.72676 \"+\"0.286889\\n\"+ \"F \"+\"0 \"+\"-1.72676 \"+\"0.286889\\n\"+ \" END\\n\"; jmolInitialize(\".\",\"JmolAppletSigned0.jar\") jmolAppletInline([\"450\",\"450\"], xyzmodel, \"background gray\")",
+          "",
+          ""
+        ]
+      ],
+      "preceding_text": "oup is C 2v Atom Internal Principal x (Å) y (Å) z (Å) a (Å) b (Å) c (Å) Cl1 0.0000 0.0000 0.3727 0.0000 0.3727 0.0000 F2 0.0000 0.0000 -1.2778 0.0000 -1.2778 0.0000 F3 0.0000 1.7268 0.2869 1.7268 0.2869 0.0000 F4 0.0000 -1.7268 0.2869 -1.7268 0.2869 0.0000 Atom - Atom Distances (Å) Cl1 F2 F3 F4 Cl1 1.6505 1.7289 1.7289 F2 1.6505 2.3302 2.3302 F3 1.7289 2.3302 3.4535 F4 1.7289 2.3302 3.4535 Maximum atom distance is 3.4535Å between atoms F3 and F4."
+    },
+    {
+      "index": 4,
+      "rows": [
+        [
+          "atom1",
+          "atom2",
+          "atom3",
+          "angle",
+          "",
+          "atom1",
+          "atom2",
+          "atom3",
+          "angle"
+        ],
+        [
+          "F2",
+          "Cl1",
+          "F3",
+          "86.726",
+          "",
+          "F2",
+          "Cl1",
+          "F4",
+          "86.726"
+        ],
+        [
+          "F3",
+          "Cl1",
+          "F4",
+          "173.452",
+          ""
+        ]
+      ],
+      "preceding_text": ": \"jmol/j2s\", use: \"HTML5\", // could be JAVA or HTML5 disableJ2SLoadMonitor: false, disableInitialConsole: true } var xyzmodel= \" 4\\n\" + \"clf3_c2\\n\" + \"Cl \"+\"0 \"+\"0 \"+\"0.372703\\n\"+ \"F \"+\"0 \"+\"0 \"+\"-1.277772\\n\"+ \"F \"+\"0 \"+\"1.72676 \"+\"0.286889\\n\"+ \"F \"+\"0 \"+\"-1.72676 \"+\"0.286889\\n\"+ \" END\\n\"; jmolInitialize(\".\",\"JmolAppletSigned0.jar\") jmolAppletInline([\"450\",\"450\"], xyzmodel, \"background gray\") Calculated Bond Angles (degrees) (Ignoring Hydrogens)"
+    }
+  ],
+  "related_links": [
+    {
+      "href": "conformers1x.asp",
+      "text": "Multiple conformers, states",
+      "url": "https://cccbdb.nist.gov/conformers1x.asp"
+    },
+    {
+      "href": "conformerlistx.asp",
+      "text": "Multiple conformers, states",
+      "url": "https://cccbdb.nist.gov/conformerlistx.asp"
+    },
+    {
+      "href": "conformerlistx.asp",
+      "text": "Multiple conformers, states",
+      "url": "https://cccbdb.nist.gov/conformerlistx.asp"
+    },
+    {
+      "href": "conformerlistx.asp",
+      "text": "Multiple conformers, states",
+      "url": "https://cccbdb.nist.gov/conformerlistx.asp"
+    }
+  ],
+  "content_tail": "CCCBDB Cartesian Listing Page 3 .atom1{} .atom2{} .atom3{} .atom4{} .atom5{} .atom6{} .atom7{} .atom8{} .atom9{} .atom10{} .atom11{} .atom12{} .atom13{} .atom14{} .atom15{} .atom16{} .atom17{} .atom18{} .atom19{} .atom20{} .atom21{} .atom22{} .atom23{} .atom24{} .atom25{} .atom26{} .atom27{} .atom28{} .atom29{} .atom30{} .atom31{} .atom32{} .atom33{} .atom34{} .atom35{} .atom36{} .atom37{} .atom38{} .atom39{} .atom40{} .atom41{} .atom42{} .atom43{} .atom44{} .atom45{} .atom46{} .atom47{} .atom48{} .atom49{} .atom50{} .atom51{} .atom52{} .atom53{} .atom54{} .atom55{} .atom56{} .atom57{} .atom58{} .atom59{} .atom60{} body{display:none !important;} if (self === top) { var antiClickjack = document.getElementById(\"antiClickjack\"); antiClickjack.parentNode.removeChild(antiClickjack); } else { top.location = self.location; } C omputational C hemistry C omparison and B enchmark D ata B ase Release 22 (May 2022) Standard Reference Database 101 National Institute of Standards and Technology Home All data for one species Geometry Experimental Experimental Geometries Same bond/angle many molecules Internal Coordinates by type Bond angles Calculated Calculated geometry Rotational constant Moments of inertia Products of moments of inertia BSE Bond lengths Show me a calculated geometry Comparisons Bonds, angles Rotational Constants Products of moments of inertia Point group Bad Calculations Bad moment of inertia Tutorials and Explanations Angle formulas Vibrations Experimental Vibrational frequencies Calculated Frequencies Scale factors Reactions Entropies Ions List Ions Energy Calculated Ionization Energy Compare Ionzation energy Electron Affinity Calculated Electron affinity Compare Electron affinity Proton Affinity Calculated Proton affinity Compare Proton affinity Ionization changes point group Experimental One molecule all properties One property a few molecules Enthalpy of formation Entropy Integrated Heat Capacity Heat Capacity Rotational Constants Vibrational Frequencies Dipole moment Ionization Energy Polarizability Quadrupole Point Groups Geometry Experimental Geometries Internal Coordinates by type Bond angles Rotational Constants Point Groups Diatomic bond lengths Vibrations Vibrational frequencies Diatomic Triatomics Energy Atomization Energy Internal Rotation Electrostatics Dipole Quadrupole Polarizability Reference Data Reference states Spin Splittings Molecules with good enthalpy Enthalpy at 0 Kelvin Calculated Energy Optimized Energy Energy 298K Minimum conformation Hydrogen bonds H bond with counterpoise Reaction Reaction Energy 0K Reaction Energy 298K Internal Rotation Barriers to internal rotation Rotational barrier and dipole Rotational Barrier 2 molecules Orbital HOMO LUMO gap HOMO Orbital Energies Nuclear repulsion energy Correlation Full vs Frozen core energies Partial correlation energies Ion Calculated Ionization Energy Vertical ionization Energy Calculated Electron affinity Calculated Proton affinity Atom charge differences Excited State Singlet triplet gap Electronic state Transition state Basis Set Extrapolation BSE energy BSE Bond lengths Geometry Calculated geometry AIM bond orders One type of bond Rotation Rotational constant Products of moments of inertia Moments of inertia Inertial defects Second moments Point group State symmetry <r2> Sorted by r2 Z-matrix Bad Calculations Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Frequencies Animated vibrations Anharmonic Zero point energy (ZPE) Scale Factors Scale factors Scale factor uncertainty Calculate a scale factor Why scale vibrations Set scaling factors Bad Calculations Bad Vib. HF vs MP2 Bad vib. Calc. vs exp. Big anharmonicity Electrostatics Charges Mulliken CHELP Aim ESP Dipole Dipole Dipole angle Dipole calculation types Quadrupole Polarizability Spin Spin density Entropy and Heat Capacity Entropy Reaction entropy Heat Capacity Reaction Reaction Energy 0K Reaction Energy 298K Isodesmic reactions Transition State Transition state Transition state frequencies Transition state geometries IRC Lookup by property By frequency Comparisons Geometry Bonds, angles Bond, angle, or dihedral DFT grid size on point group DFT grid on bond length Core correlation - bond length Same bond/angle many molecules Isoelectronic diatomics Isoelectronic triatomic angles Average bond lengths Rotation Rotational Constants Products of moments of inertia Point group Vibrations Vibrations 2 calculations Frequency differences One frequency Zero point energy Intensity Intensity for one mode Vibrational intensities Reduced mass comparison Anharmonic Triatomic Scale factors Energy Reaction Reaction Energy 0K Reaction Energy 298K Atomization 0K Atomization 298K Single point vs optimized DFT grid size on energy Semiempirical enthalpy Internal rotation Similar molecules Conformation Sets of isomers Sets of tautomers Isomers Entropy Entropy Heat capacity Entropy of several molecules Integrated heat capacity Reaction entropy Electrostatics Dipole Polarizability Several molecules Quadrupole Ion Compare Ionzation energy Koopman ionization energy Koopman IE for a few molecules Compare Electron affinity Compare Proton affinity Protonation Site Resources Info on Results Calculations Done Method and basis set List molecules One molecule Multiple conformers, states Multiple conformers, states Basis functions used I/O files Input/output files MOL file Z-matrix wfn files Glossary Conversion Forms B to I, I to B Angle formulas Integrated heat Capacity Calculating Enthalpy Links NIST Links NIST webbook bibliographic data CCCBDB Experimental data External links Basis Set Exchange Computational Chemistry List Thermochemistry in Gaussian Minnesota Database Collection Benchmark Energy and Geometry Point Groups Thermochemistry Thermochemistry Molecules with good enthalpy A → B + C Reference states Tutorials Vibrations Why scale vibrations Zero-point energies Entropy Methyl rotor entropy Entropy and conformations Energy Getting enthalpy of formation Vertical vs adiabatic IE Thermo from calculations Electrostatics Dipole parts by point group Quadrupoles Geometry Angle formulas Cost Cost Comparison Timings Comparison Bad Calculations Geometry Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Bad vib. Calc. vs exp. Bad Vib. HF vs MP2 Bad scale factors Low excited states Oddities NaCN Is not linear FAQ Help Units Choose Units Energy Bond length Rotational Constant Moment of Inertia Dipole and Quadrupole Polarizability Explanations Hartree cm-1 Debye Credits Just show me Show me a calculated geometry Summary Using older interface Limit Basis sets Method options List Recent molecules Choose a few Molecules Number of atoms By heavy atoms Diatomics InChI Deuterated Dimers Geometry Point group Point group count Bonds types Isodesmic reactions Bad point group Multiple conformers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Home > Geometry > Calculated > Calculated geometry OR Calculated > Geometry > Calculated geometry Geometry for (Chlorine trifluoride) 1 A 1 C2V 1910171554 InChI=1S/ClF3/c2-1(3)4 INChIKey=JOHWNGGYGAVMGU-UHFFFAOYSA-N G3B3 This model chemistry uses a geometry from B3LYP/6-31G* Point group is C 2v Atom Internal Principal x (Å) y (Å) z (Å) a (Å) b (Å) c (Å) Cl1 0.0000 0.0000 0.3727 0.0000 0.3727 0.0000 F2 0.0000 0.0000 -1.2778 0.0000 -1.2778 0.0000 F3 0.0000 1.7268 0.2869 1.7268 0.2869 0.0000 F4 0.0000 -1.7268 0.2869 -1.7268 0.2869 0.0000 Atom - Atom Distances (Å) Cl1 F2 F3 F4 Cl1 1.6505 1.7289 1.7289 F2 1.6505 2.3302 2.3302 F3 1.7289 2.3302 3.4535 F4 1.7289 2.3302 3.4535 Maximum atom distance is 3.4535Å between atoms F3 and F4. Jmol.Info ={ jarPath: \"jmol/java\", jarFile: \"\", j2sPath: \"jmol/j2s\", use: \"HTML5\", // could be JAVA or HTML5 disableJ2SLoadMonitor: false, disableInitialConsole: true } var xyzmodel= \" 4\\n\" + \"clf3_c2\\n\" + \"Cl \"+\"0 \"+\"0 \"+\"0.372703\\n\"+ \"F \"+\"0 \"+\"0 \"+\"-1.277772\\n\"+ \"F \"+\"0 \"+\"1.72676 \"+\"0.286889\\n\"+ \"F \"+\"0 \"+\"-1.72676 \"+\"0.286889\\n\"+ \" END\\n\"; jmolInitialize(\".\",\"JmolAppletSigned0.jar\") jmolAppletInline([\"450\",\"450\"], xyzmodel, \"background gray\") Calculated Bond Angles (degrees) (Ignoring Hydrogens) atom1 atom2 atom3 angle atom1 atom2 atom3 angle F2 Cl1 F3 86.726 F2 Cl1 F4 86.726 F3 Cl1 F4 173.452 For information on specific bond angles or dihedrals see the geometry comparison page in section Comparisons > Geometry > Bonds, angles . (function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML=\"window.__CF$cv$params={r:'a37bd91e99f602a9',t:'MTc4ODg0ODQzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);\";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();",
+  "source_sha256": "2d1c5ab78a572983bf285ac6597e3f58f1ddd88f5868a4187cd171362119fd36"
+}

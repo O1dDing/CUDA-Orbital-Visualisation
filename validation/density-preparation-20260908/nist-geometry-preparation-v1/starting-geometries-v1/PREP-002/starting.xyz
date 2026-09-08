@@ -1,0 +1,7 @@
+5
+PREP-002; literal NIST Cartesians in angstrom; starting input only
+Ge 0.000 0.000 0.000
+H 0.885 0.885 0.885
+H -0.885 -0.885 0.885
+H -0.885 0.885 -0.885
+H 0.885 -0.885 -0.885

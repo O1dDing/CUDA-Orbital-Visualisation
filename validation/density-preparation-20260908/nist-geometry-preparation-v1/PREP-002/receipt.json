@@ -1,0 +1,20 @@
+{
+  "candidate_id": "PREP-002",
+  "name": "germane",
+  "elements": {
+    "Ge": 1,
+    "H": 4
+  },
+  "charge": 0,
+  "url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+  "scope": "computed HSEh1PBE/6-311G** geometry; singlet minimum in source; starting input only",
+  "started_epoch": 1788845886.2690792,
+  "http_status": 200,
+  "content_type": "text/html",
+  "charset": null,
+  "resolved_url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+  "status": "html-retrieved-content-review-pending",
+  "bytes": 41159,
+  "sha256": "991075aea39fae6a09b7c2d81b13595756ef37f04a213c68238aeb66d963534c",
+  "finished_epoch": 1788845888.3389375
+}

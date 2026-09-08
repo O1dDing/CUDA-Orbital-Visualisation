@@ -1,0 +1,11 @@
+{
+  "source_hashes": {
+    "review_density_source_controls.py": "dec2ff8f3c96765185ac216bceef7fccd4a921a39f04642243a1dcbfffb22bde",
+    "test_density_source_reviewer.py": "e9a5dce1754dfa69289472b6b6e8dbc7eff90b7c5485049c2f0b36f4d3d448dd",
+    "run_density_reviewer_tests.py": "02f13daf8fdc98c218ca4454c72714e16cd5fb59ff55d66096de0638cb040778"
+  },
+  "controls_manifest_sha256": "feb182a29c8b9eff99df5cb776a68210927594540de0138ba2872f63e2e523dc",
+  "cpu_core_slot": 8,
+  "memory_gib": 1,
+  "scope": "Reviewer false-pass prevention tests; no COV execution or current-round result analysis"
+}

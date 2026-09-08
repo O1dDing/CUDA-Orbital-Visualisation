@@ -1,0 +1,45 @@
+{
+  "candidate_id": "PREP-042",
+  "source_url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+  "raw_source_sha256": "53a69483ad2957bf1494da9e0a06311dc6259bbba5ab0eabb397404507fe57e5",
+  "literal_table_sha256": "cb226f8dffdc2471d1e40e5f9325ce4dfbe3fd121b686edade8b751e7748a994",
+  "formal_case": false,
+  "accepted_quality_reference": false,
+  "gaussian_started": false,
+  "cov_executed": false,
+  "status": "literal-starting-geometry-prepared",
+  "charge": 0,
+  "interpretation": {
+    "name": "phenoxy radical",
+    "multiplicity": 2,
+    "state": "2B1",
+    "point_group": "C2v",
+    "coordinate_method": "B3LYP/6-31G*",
+    "source_type": "NIST archived computed geometry",
+    "energy_page_method": "G3B3",
+    "state_table_index": 1,
+    "expected_state_row": [
+      "1",
+      "1",
+      "yes",
+      "C2V",
+      "2B1"
+    ],
+    "limitations": [
+      "Coordinates have three decimal places in angstrom.",
+      "The G3B3 energy-page label does not identify the geometry optimization method."
+    ]
+  },
+  "source_table_index": 5,
+  "atom_count": 12,
+  "element_counts": {
+    "C": 6,
+    "O": 1,
+    "H": 5
+  },
+  "units": "angstrom",
+  "xyz_file": "PREP-042\\starting.xyz",
+  "xyz_sha256": "bf14f5b9b2892b8c31493757212bc5a34899f5965a606c40a58773a8b1159f4c",
+  "transformations": "None; source element order and literal coordinate tokens retained.",
+  "geometry_quality": "Starting coordinates only; future optimization, frequency, stability, environment and identity checks remain required."
+}

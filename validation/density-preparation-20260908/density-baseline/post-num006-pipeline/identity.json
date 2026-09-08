@@ -1,0 +1,20 @@
+{
+  "created_epoch": 1788847919.8092973,
+  "baseline_identity_sha256": "51aaf07bd115cc86954bac9142fa749c55f82a237f1ab45bb55885a06a7fae44",
+  "source_hashes": {
+    "queue_density_source_baseline.py": "4ac3d0dc7d88bf051d49deefb8685791f2e7644340e2a12f1361eb3acfc0c57f",
+    "review_density_source_controls.py": "dec2ff8f3c96765185ac216bceef7fccd4a921a39f04642243a1dcbfffb22bde"
+  },
+  "preceding_round_identity": "389d5ae5700ec4ab04b38b814b533b47b7cf1c646e0a0d09dd7829d2b4d7403b",
+  "tested_reviewer": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-reviewer-preflight-1788847493973793400",
+  "resource_policy": {
+    "own_cores": 4,
+    "own_memory_gib": 64,
+    "core_slot_offset": 8,
+    "independent_gaussian_reserved_cores": 8,
+    "independent_gaussian_reserved_memory_gib": 48
+  },
+  "gaussian_controlled": false,
+  "algorithm_changed": false,
+  "formal_cases_added": 0
+}

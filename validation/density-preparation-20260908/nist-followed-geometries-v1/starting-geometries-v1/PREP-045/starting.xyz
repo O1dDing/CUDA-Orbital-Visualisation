@@ -1,0 +1,8 @@
+6
+PREP-045; literal NIST visualization coordinates in angstrom; B3LYP/6-31G* starting geometry
+C 1.001572 -0.474482 0
+O 0 0.56987 0
+O -1.217689 0.052118 0
+H 1.963285 0.042996 0
+H 0.884396 -1.086002 0.898023
+H 0.884396 -1.086002 -0.898023
