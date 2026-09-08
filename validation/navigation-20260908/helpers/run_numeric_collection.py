@@ -6,7 +6,7 @@ import sys
 import time
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--kind',choices=['pilot','original','g-controls'],required=True)
+parser.add_argument('--kind',choices=['pilot','original','g-controls','diagnostic'],required=True)
 parser.add_argument('--round-id',default='NUM-FIX-002')
 args=parser.parse_args()
 root=Path(r'F:\Codex\2026-09-05\branch-15\outputs\general-fixes-20260906')/(args.round_id+'-'+args.kind)

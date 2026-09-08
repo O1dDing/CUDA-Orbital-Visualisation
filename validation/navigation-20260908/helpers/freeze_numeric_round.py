@@ -11,7 +11,8 @@ REPO=Path(r'F:\Dev\cov-native-validation-20260905')
 CAMPAIGN=Path(r'F:\Codex\2026-09-05\branch-15\outputs\cov-complete-validation-20260906')
 BASE=Path(r'F:\Codex\2026-09-05\branch-15\outputs\general-fixes-20260906')
 parser=argparse.ArgumentParser()
-parser.add_argument('--kind',choices=['pilot','original'],required=True)
+parser.add_argument('--kind',choices=['pilot','original','diagnostic'],required=True)
+parser.add_argument('--case-id',help='One explicitly identified diagnostic case; never a formal replacement')
 parser.add_argument('--round-id',default='NUM-FIX-002')
 parser.add_argument('--production-commit',default='a9bf30a18a16c16e876abec133691b911696da3f')
 args=parser.parse_args()
@@ -31,7 +32,11 @@ assert all(p.startswith('tests/') and p.endswith('.py') for p in git('diff','--n
 campaign=read(CAMPAIGN/'campaign.json')
 selected=campaign['cases']
 if args.kind=='pilot':selected=[x for x in selected if x['case_id']==campaign['pilot_case_id']]
-assert len(selected)==(1 if args.kind=='pilot' else 273)
+if args.kind=='diagnostic':
+    assert args.case_id, 'An explicit case is required for a diagnostic snapshot'
+    selected=[x for x in selected if x['case_id']==args.case_id]
+else:assert args.case_id is None, 'Formal collection and the designated pilot cannot be replaced by a subset'
+assert len(selected)==(273 if args.kind=='original' else 1)
 root.mkdir()
 (root/'programs').mkdir()
 programs={}
@@ -85,7 +90,7 @@ manifest={'schema':2,'name':args.round_id+'-'+args.kind,'kind':args.kind,'git_co
     'case_count':len(cases),'formal_original_case_count':273,'cases':cases,
     'programs':programs,'runner_sources':runners,'input_artifacts':input_hashes,
     'image_dependency_artifacts':image_artifacts,'image_dependency_version':'Pillow 12.3.0',
-    'resources':{'workers':1 if args.kind=='pilot' else 2,'threads_per_worker':2,
+    'resources':{'workers':2 if args.kind=='original' else 1,'threads_per_worker':2,
                  'memory_gib_per_worker':24,'aggregate_cpu_cores':4,'aggregate_memory_gib':64,
                  'core_slot_offset':8,'reserved_independent_reference_cpu_cores':8,
                  'reserved_independent_reference_memory_gib':48},
