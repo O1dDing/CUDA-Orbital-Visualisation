@@ -1,0 +1,263 @@
+{
+  "source_commit": "8e206e188ef84a5e63129ee20e5b95c2f5ad498b",
+  "round_identity": "271958acae7f3a8527a4821efe8be5860e273e58132d8d83d73b3dc26e9f55e5",
+  "status": "review_complete",
+  "observations": [
+    {
+      "capture": "common-details-002",
+      "mo": 15,
+      "target": "details.metal-ligand.end",
+      "kind": "metal-ligand-field-availability",
+      "case_id": "OLD-107",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-107\\attempt-001\\cases\\OLD-107\\native\\common-details-002.png",
+        "sha256": "a04c31870485e7beeb5efa444e11c0e7cf579bbe7c7ec61080c180a9732240d2"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-107-common-details-002.png",
+        "sha256": "a04c31870485e7beeb5efa444e11c0e7cf579bbe7c7ec61080c180a9732240d2"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-107\\attempt-001\\cases\\OLD-107\\native\\common-details-002.ui.json",
+        "sha256": "79f08964a1a8e06870094845eef00c4ff2c8e639b1b0d55625766c26206e5879"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "The organic system visibly states that the local metal-ligand model is not applicable; default zero population, channel and overlap rows are absent."
+    },
+    {
+      "capture": "common-details-004",
+      "mo": 15,
+      "target": "pi.rings.delocalised-pi:2:3:4:5:channel-bundle-1.0.path0",
+      "kind": "ring-path",
+      "case_id": "OLD-107",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-107\\attempt-001\\cases\\OLD-107\\native\\common-details-004.png",
+        "sha256": "db9b1aa15762c1208fddb16e0127dee80582df47aafa735a262b9d2068c8e98b"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-107-common-details-004.png",
+        "sha256": "db9b1aa15762c1208fddb16e0127dee80582df47aafa735a262b9d2068c8e98b"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-107\\attempt-001\\cases\\OLD-107\\native\\common-details-004.ui.json",
+        "sha256": "f3bfd031b37d58ad4686e1e27ce15162b7db1d7aecd53d763d92d83ebd19fb51"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "The first actual skeleton ring path and the limited interpretation scope are readable in the detail panel."
+    },
+    {
+      "capture": "common-details-006",
+      "mo": 15,
+      "target": "pi.rings.delocalised-pi:2:3:4:5:channel-bundle-1.0.additional-connection",
+      "kind": "ring-additional-connection",
+      "case_id": "OLD-107",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-107\\attempt-001\\cases\\OLD-107\\native\\common-details-006.png",
+        "sha256": "7224c387dbc479de5cb51e28981660f901933769871da9d9e2edf388ad875430"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-107-common-details-006.png",
+        "sha256": "7224c387dbc479de5cb51e28981660f901933769871da9d9e2edf388ad875430"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-107\\attempt-001\\cases\\OLD-107\\native\\common-details-006.ui.json",
+        "sha256": "bca16a021495c79c0cb6d2493def7bf31dcc2cab5226977e720c3d81d3e1cc2e"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "Both skeleton paths 1-2-3-1 and 1-4-5-1, shared atom 1, and no additional connection are readable. Metal-ligand analysis remains explicitly not applicable."
+    },
+    {
+      "capture": "common-details-002",
+      "mo": 33,
+      "target": "details.metal-ligand.end",
+      "kind": "metal-ligand-field-availability",
+      "case_id": "OLD-012",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-012\\attempt-001\\cases\\OLD-012\\native\\common-details-002.png",
+        "sha256": "9634051d94e58f3ecbb884561c9064687300f491e234b4ee19a912ba80dd1195"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-012-common-details-002.png",
+        "sha256": "9634051d94e58f3ecbb884561c9064687300f491e234b4ee19a912ba80dd1195"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-012\\attempt-001\\cases\\OLD-012\\native\\common-details-002.ui.json",
+        "sha256": "d040f62b8f5a371fc374cf0c1d9ddbfa6ad1de39999c5a84b52294f8de469d53"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "MO 34 group values remain visible: metal s 20.6%, ligand p 48.5%, resolved sigma/pi 100.0%/0.0%, and overlap +0.005924. Group representative information is labelled separately from the selected member."
+    },
+    {
+      "capture": "common-details-005",
+      "mo": 51,
+      "target": "details.energy-gap.0.scope",
+      "kind": "typed-gap-scope",
+      "case_id": "OLD-012",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-012\\attempt-001\\cases\\OLD-012\\native\\common-details-005.png",
+        "sha256": "7d4bf22bd95085e189f2a4a0cae8e36a663546de1f7254ed890efca9b307ecb4"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-012-common-details-005.png",
+        "sha256": "7d4bf22bd95085e189f2a4a0cae8e36a663546de1f7254ed890efca9b307ecb4"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-012\\attempt-001\\cases\\OLD-012\\native\\common-details-005.ui.json",
+        "sha256": "ecbd21521feaa9a54d0edb1e238a69ad68eebf2a8dc0a3475553103a86674580"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "MO 52 retains metal d 60.9%, ligand p 32.5%, resolved sigma/pi 0.0%/99.8%, and overlap +0.027265. The pi partner splitting 0.225083 Ha and support 0.799 are scoped; catalogue pi acceptor and orbital pi donor evidence remain separately visible. This does not certify the physical mechanism."
+    },
+    {
+      "capture": "common-details-000",
+      "mo": 16,
+      "target": "details.symmetry.origin",
+      "kind": "symmetry-origin",
+      "case_id": "OLD-258",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-258\\attempt-001\\cases\\OLD-258\\native\\common-details-000.png",
+        "sha256": "c156fa66ba2dcf34e4e1efe03a5b7b8bc2fafa42ce086af50081c3f06bc78cd0"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-258-common-details-000.png",
+        "sha256": "c156fa66ba2dcf34e4e1efe03a5b7b8bc2fafa42ce086af50081c3f06bc78cd0"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-258\\attempt-001\\cases\\OLD-258\\native\\common-details-000.ui.json",
+        "sha256": "6f86a940fecd44106e03ad3c2e1f2292528584d2ae267e86e10baa0ecaead510"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "MO 17 alpha, full-orbital N/A, and local A1/D4d explanation remain distinct. Centre coverage 99.996%, local-shell purity 100.000%, and full-target labelled component 99.995% are readable. Dialog title and close control are visible."
+    },
+    {
+      "capture": "common-details-001",
+      "mo": 16,
+      "target": "details.symmetry.members",
+      "kind": "symmetry-member-spins",
+      "case_id": "OLD-258",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-258\\attempt-001\\cases\\OLD-258\\native\\common-details-001.png",
+        "sha256": "c156fa66ba2dcf34e4e1efe03a5b7b8bc2fafa42ce086af50081c3f06bc78cd0"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-258-common-details-001.png",
+        "sha256": "c156fa66ba2dcf34e4e1efe03a5b7b8bc2fafa42ce086af50081c3f06bc78cd0"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-258\\attempt-001\\cases\\OLD-258\\native\\common-details-001.ui.json",
+        "sha256": "6fcc727cf9eaf78bf3bdf76af601275007cda198d45f8bf47ec7dcefdbc403af"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "The member list visibly reads 17 alpha with an intact alpha glyph. The member identity and local label provenance remain readable."
+    },
+    {
+      "capture": "common-details-002",
+      "mo": 16,
+      "target": "details.metal-ligand.end",
+      "kind": "metal-ligand-field-availability",
+      "case_id": "OLD-258",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-258\\attempt-001\\cases\\OLD-258\\native\\common-details-002.png",
+        "sha256": "b146f8adfb80ab58f2cacfcf9dfd793f0dfe97404e0c9571fcbb66f13c40d913"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-258-common-details-002.png",
+        "sha256": "b146f8adfb80ab58f2cacfcf9dfd793f0dfe97404e0c9571fcbb66f13c40d913"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-258\\attempt-001\\cases\\OLD-258\\native\\common-details-002.ui.json",
+        "sha256": "e4b67a2cbfff4f16b279d6a48bc10cc933927b98f03f784c30ea794c4ad7d948"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "Group metal s 84.3%, ligand p 0.5%, resolved sigma/pi 100.0%/0.0%, and overlap -0.003333 are retained and readable."
+    },
+    {
+      "capture": "common-details-001",
+      "mo": 33,
+      "target": "details.symmetry.members",
+      "kind": "symmetry-member-spins",
+      "case_id": "OLD-249",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-249\\attempt-001\\cases\\OLD-249\\native\\common-details-001.png",
+        "sha256": "56799688a16d5a0882d30b6b2557ca85c2fc6a37e5f9b2f715ffe2187e9c1df7"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-249-common-details-001.png",
+        "sha256": "56799688a16d5a0882d30b6b2557ca85c2fc6a37e5f9b2f715ffe2187e9c1df7"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-249\\attempt-001\\cases\\OLD-249\\native\\common-details-001.ui.json",
+        "sha256": "15d2ecb4ede05fcf8df404f137826ba31a98bd7bbf809738ba6e4df58a24067e"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "The selected member is source MO 34, raw index 33, spin Alpha; member 34 alpha is readable. Full-orbital N/A is distinct from local B1/C2v, with centre coverage 97.341%, local-shell purity 100.000%, and full-target component 97.322%. This frame is not a beta observation."
+    },
+    {
+      "capture": "common-details-002",
+      "mo": 33,
+      "target": "details.metal-ligand.end",
+      "kind": "metal-ligand-field-availability",
+      "case_id": "OLD-249",
+      "source": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-249\\attempt-001\\cases\\OLD-249\\native\\common-details-002.png",
+        "sha256": "0a2035b707e66d9d4f689ede89feff0057bbac5d6cc0220cbe7c5bb79a64af64"
+      },
+      "image": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\OLD-249-common-details-002.png",
+        "sha256": "0a2035b707e66d9d4f689ede89feff0057bbac5d6cc0220cbe7c5bb79a64af64"
+      },
+      "metadata": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\cases\\OLD-249\\attempt-001\\cases\\OLD-249\\native\\common-details-002.ui.json",
+        "sha256": "660318d19dc8e9c42529d51ff4f6d67912214626b0a26f82610f2901a953ff1a"
+      },
+      "selected_spin": 0,
+      "visual_status": "pass",
+      "direct_visual_review_passed": true,
+      "observation": "MO 34 group representative scope, C2v first shell and seesaw CN4 geometry are readable. Metal s/p/d 0.0%/0.0%/95.1%, ligand p 2.9%, resolved sigma/pi 0.0%/84.5%, and overlap +0.005928 remain visible, including the final overlap row."
+    }
+  ],
+  "collection_barrier": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\collection-complete.json",
+    "sha256": "f649802a92206966e5e840707b83fb325fa68bae9881471a1b6e2221600c5c66"
+  },
+  "selector_sha256": "e48a94a903a2ee9a0a0625fd8fe622e5c7222fa4edf2e27a7330fb8348a9e080",
+  "formal_case_passes": 0,
+  "all_passed": true,
+  "snapshot_count": 10,
+  "recorded_epoch": 1788958535.0737443,
+  "method": "Direct visual inspection of all ten frozen screenshots, with source, copy and native metadata identities checked. No OCR-derived numerical claims.",
+  "same_source_availability_and_spin_control": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\availability-ui-1788955485419300000\\review-v2\\visual-review.json",
+    "sha256": "fd978dabe819930570b7f39a3531d80fa71808250d7202c920fbf64990e40f0d"
+  },
+  "resolved_finding": "COMMON008-UI-NONAPPLICABLE-FIELDS",
+  "reviewer_sha256": "9a0da4b88ec331c3f74465e527e33c2d1bea8a5da0cb3540ffd4bd91ab4fa2e5",
+  "selection_record": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\pending.json",
+    "sha256": "869fdb1b9430bd1a0e0876ff73da983dd6844f6ecad8fcd0f97f9810bdbe22a9"
+  },
+  "limits": [
+    "This review covers only the pictured regions and current candidate UI semantics.",
+    "The fixed40 OLD-249 representative frames show alpha; beta glyph evidence comes from the separately identified same-source 20-frame control.",
+    "Declared local-model mathematics and readable fields do not establish physical state, geometry or complete chemical interpretation.",
+    "Both earlier failed precheck reviews remain preserved. No old COV observation or pass verdict is substituted for this candidate."
+  ]
+}

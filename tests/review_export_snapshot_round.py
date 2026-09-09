@@ -312,7 +312,7 @@ def main():
         'limitations':['Draw-call semantics do not prove all visible text/glyph positions or clipping.',
                        'PNG stroke probes do not certify all output pixels.',
                        'Chemical/symmetry interpretation and independently managed physical references remain separate.'],
-        'case_reports':{p.name:sha(p) for p in out.glob('OLD-*.json')}}
+        'case_reports':{r['case_id']+'.json':sha(out/(r['case_id']+'.json')) for r in results}}
     atomic_json(out/'summary.json',result)
     print(json.dumps(result),flush=True)
     return 0 if result['status_counts']=={'view_subset_pass':manifest['case_count']} else 2
