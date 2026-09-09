@@ -177,6 +177,7 @@ def make_plan(production):
         if signature in seen_scopes or not row['members']:continue
         seen_scopes.add(signature);mo=row['members'][0]
         require_detail(mo,'details.symmetry.origin','symmetry-origin')
+        require_detail(mo,'details.symmetry.members','symmetry-member-spins')
         if scope.get('local_decomposition'):
             require_detail(mo,'details.symmetry.represented-rank','local-projection-rank')
         if scope.get('local_assignment'):

@@ -120,6 +120,8 @@ int main() {
                           ? nullptr
                           : ImGui::GetIO().Fonts->Fonts.front();
     constexpr ImWchar scientific_glyphs[] = {
+        0x03B1, // α: scoped MO member spin
+        0x03B2, // β: scoped MO member spin
         0x03A0, // Π
         0x2075, // ⁵
         0x2086, // ₆

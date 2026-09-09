@@ -188,7 +188,7 @@ constexpr const char* kSupplementalJapanese =
 // families from atlas-range regressions.
 constexpr const char* kScientificGlyphs =
     "● · – — − ± × → ← ↔ ↑ ↓ "
-    "σ π δ φ Σ Π Δ Φ Γ Π⁵₆ "
+    "α β σ π δ φ Σ Π Δ Φ Γ Π⁵₆ "
     "⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ "
     "₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ′ ″";
 

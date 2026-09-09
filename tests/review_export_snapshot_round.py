@@ -146,7 +146,11 @@ def review_case(root,record,Image):
         drawn=snapshot_records[0]
         paths={ext:consume('native/'+name+'.mo.'+ext) for ext in ('json','csv','svg','png')}
         data=load(paths['json']); context=data.get('view_snapshot') or {}
-        csv_rows=list(csv.DictReader(paths['csv'].open(encoding='utf-8',newline='')))
+        # Scoped evidence can exceed the CSV module's default 128 KiB field
+        # limit. A decoded field cannot be larger than its verified input file.
+        csv.field_size_limit(max(csv.field_size_limit(),paths['csv'].stat().st_size))
+        with paths['csv'].open(encoding='utf-8',newline='') as csv_stream:
+            csv_rows=list(csv.DictReader(csv_stream))
         svg=ET.parse(paths['svg']).getroot()
         with Image.open(paths['png']) as image:
             png_id=image.info.get('cov.view.snapshot')
