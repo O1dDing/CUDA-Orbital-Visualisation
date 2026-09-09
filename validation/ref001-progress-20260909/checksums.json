@@ -1,0 +1,40 @@
+{
+  "files": {
+    "case-status.json": {
+      "bytes": 111629,
+      "sha256": "c31804e8fe4cae28d0463de7b56b10e0a91364aabece8d2cb2c96f85830c516c"
+    },
+    "host-and-runtime.json": {
+      "bytes": 2213,
+      "sha256": "640c1785e6900df24af20ddb65ca116f3450af8ce5250ea87a10d298694cfc1a"
+    },
+    "manifest.json": {
+      "bytes": 829485,
+      "sha256": "930c44447e74abf876f231177de53affc49bcbb0b3ddc5cfe823bfd17e8d95f5"
+    },
+    "OLD-018-timeout-recovery.json": {
+      "bytes": 4615,
+      "sha256": "a80b47de7a86a95b0aae72e07bbadeb7a44f6361388d81d1adbc9a2660e168d9"
+    },
+    "packaging-plan.json": {
+      "bytes": 353,
+      "sha256": "bfecade7960e35d67768ea5503beb22ef7ecf1200e23d82dab4211c78412f9c5"
+    },
+    "stage-status.json": {
+      "bytes": 200530,
+      "sha256": "8f3f2f010b6209263117ed8cd9211f83235a2763a61dbc2a0fa3dbfeddb10e6d"
+    },
+    "assets\\cov-ref001-progress-20260909-001-of-003.zip": {
+      "bytes": 164543757,
+      "sha256": "f64b5dd94151b10201aa84614aa35310c328798bab45095fcaced7ab344807b4"
+    },
+    "assets\\cov-ref001-progress-20260909-002-of-003.zip": {
+      "bytes": 756642789,
+      "sha256": "5a60d1df6eab7aa5fc12bc1b65b3139ce515beb25bd51119415c584bee6d7432"
+    },
+    "assets\\cov-ref001-progress-20260909-003-of-003.zip": {
+      "bytes": 38426580,
+      "sha256": "1e430ae2d9d1f5aebeeec16c84c4a95ef3514c3aaf1b9e4bdf1cd635a6246040"
+    }
+  }
+}

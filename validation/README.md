@@ -1,5 +1,18 @@
 # 验证项目入口
 
+## 2026-09-09 当前接续检查点
+
+[REF-001 增量归档与恢复记录](ref001-progress-20260909/README.md) 已保存并上传，
+[远端校验回执](ref001-progress-20260909/upload-verification.json) 确认 4 个新增资产，
+合计 959,732,968 bytes，大小及 SHA-256 全部一致；旧数据归档和本地原件保留。
+现有证据确认 17 个已收集候选、37 个已完成阶段、OLD-018 超时断点及 OLD-019 已完成 initial。
+原打包 manifest 的 pending 是保留的历史状态，以后续上传回执为完成依据。
+
+最新用户顺序是归档和恢复标记完成后返回 COV COMMON-ROOT-008，
+不要求先立即重启 Gaussian 或完成 runtime v2 迁移。Runtime v2、物理核资源政策和科学精度要求仍有效，
+真实 Gaussian 原生重启验收仍待完成。详情及后续验证门槛见 [handoff.json](ref001-progress-20260909/handoff.json)。
+
+
 ## Gaussian 续算执行层
 
 新的执行入口是 [REF-001 Runtime v2](runtime_v2/README.md)，位于
