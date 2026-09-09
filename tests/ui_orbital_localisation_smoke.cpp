@@ -94,6 +94,7 @@ int main() {
         pair.overlap_character=i==0?0.02:-0.02;
         pair.channel.status=cov::ChemistryStatus::Determined;
         pair.channel.pi=1.0;
+        pair.channel.undetermined=0.0;
         chemistry.interactions.push_back(pair);
     }
     cov::MODiagramData group_data;
