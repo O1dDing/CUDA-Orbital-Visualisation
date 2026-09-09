@@ -111,6 +111,20 @@ def review_case(root,record,Image):
             check(not issues,'VIEW-DETAILS-CONTROL',{'capture':capture,'failures':issues})
             details_frames.append({'capture':capture,'selected_mo':expected['orbital_details_member'],
                                    'required_visible_control':target,'image_size':list(size),'pass':not issues})
+    common_details=[]
+    for request in expected.get('common_root_details',[]):
+        capture=request['capture'];ui=load(consume('native/'+capture+'.ui.json'))
+        with Image.open(consume('native/'+capture+'.png')) as image:size=image.size
+        state=ui['state'];targets=[t for t in ui['targets'] if t['id']==request['target']]
+        visible=len(targets)==1 and targets[0]['visible']
+        if visible:
+            x0,y0,x1,y1=targets[0]['rect'];clip=targets[0]['clip_rect']
+            visible=(0<=x0<x1<=size[0] and 0<=y0<y1<=size[1] and
+                     clip[0]<=x0<x1<=clip[2] and clip[1]<=y0<y1<=clip[3])
+        passed=visible and state['scene_matches_applied'] and all(state[k]==request['mo'] for k in
+            ('rendered_mo','applied_mo','drawn_ui_mo','requested_mo'))
+        check(passed,'VIEW-COMMON-DETAILS',request)
+        common_details.append({**request,'pass':passed})
     linear_clicks=[]
     for mo in expected.get('primary_members',[]):
         capture=f'linear-member-{mo+1:04}'
@@ -162,6 +176,30 @@ def review_case(root,record,Image):
             check((mo['spin'].lower().startswith('b'))==(source['spin']==1),
                   'VIEW-RAW-SPIN',{'bundle':name,'mo':i})
         rows=data['diagram_rows']
+        # CODATA 2022; independent conversion values, same tolerance as the
+        # dedicated six-unit control. Record fields keep the physical type.
+        joule=4.3597447222060e-18*6.02214076e23
+        factors={'Ha':1.0,'eV':27.211386245981,'J/mol':joule,'kJ/mol':joule/1000,
+                 'cal/mol':joule/4.184,'kcal/mol':joule/4184}
+        for array_name,kind in [('pi_interactions','pi-partner'),('crystal_field_gaps','crystal-field')]:
+            records=data.get(array_name,[])
+            svg_records=[node for node in svg.iter() if node.get('data-gap-kind')==kind]
+            check(len(records)==len(svg_records),'VIEW-TYPED-GAP-COUNT',{'bundle':name,'kind':kind})
+            for gap,node in zip(records,svg_records):
+                lower=[production['orbitals'][i]['energy_hartree'] for i in gap['lower_orbitals']]
+                upper=[production['orbitals'][i]['energy_hartree'] for i in gap['upper_orbitals']]
+                valid=bool(lower and upper) and gap['gap_kind']==kind
+                if valid:
+                    lower_mean=sum(lower)/len(lower);upper_mean=sum(upper)/len(upper)
+                    split=upper_mean-lower_mean
+                    valid=(math.isclose(lower_mean,gap['lower_energy_hartree'],abs_tol=1e-12) and
+                           math.isclose(upper_mean,gap['upper_energy_hartree'],abs_tol=1e-12) and
+                           math.isclose(split,gap['splitting_hartree'],abs_tol=1e-12) and
+                           math.isclose(split*factors[gap['display_unit']],gap['splitting_display'],rel_tol=1e-10,abs_tol=1e-12))
+                check(valid,'VIEW-TYPED-GAP-VALUES',{'bundle':name,'kind':kind,'lower':gap['lower_orbitals'],'upper':gap['upper_orbitals']})
+                check(json.loads(node.attrib['data-evidence'])==gap,'VIEW-TYPED-GAP-SVG',{'bundle':name,'kind':kind})
+            column='pi_partner_evidence_json' if kind=='pi-partner' else 'crystal_field_gaps_json'
+            check(all(json.loads(row[column])==records for row in csv_rows),'VIEW-TYPED-GAP-CSV',{'bundle':name,'kind':kind})
         svg_rows=[node for node in svg if node.attrib.get('class')=='mo-level']
         check(len(rows)==data['diagram_row_count']==drawn['row_count']==len(svg_rows),
               'VIEW-ROW-COUNT',name)
@@ -233,7 +271,7 @@ def review_case(root,record,Image):
             'snapshot_id':context.get('id'),'export_frame':event['frame'],'selected_mo':selected,
             'rows':len(rows),'members':len(expected_native),'selected_png_checks':len(selected_png)})
     return {'case_id':record['case_id'],'status':'view_subset_pass' if not failures else 'view_subset_fail',
-        'linear_member_clicks':linear_clicks,'details_control_frames':details_frames,
+        'linear_member_clicks':linear_clicks,'details_control_frames':details_frames,'common_root_details':common_details,
         'bundles':bundles,'failures':failures,'consumed_artifacts':consumed,'formal_case_pass':False}
 
 

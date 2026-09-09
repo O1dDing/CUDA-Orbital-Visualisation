@@ -164,6 +164,58 @@ def make_plan(production):
                  'click "diagram.details.close.bottom"','hover "scene.viewport"','capture "orbital-details-closed"',
                  'click "diagram.details"','hover "diagram.details.close"','capture "orbital-details-reopened"',
                  'click "diagram.details.close"','hover "scene.viewport"']
+    # Cover each new explanation mechanism through drawn controls. Numerical
+    # rows only choose what to inspect; they are not an independent oracle.
+    detail_requests={}
+    def require_detail(mo,target,kind):
+        if mo not in primary:return
+        detail_requests.setdefault(mo,{})[target]=kind
+    seen_scopes=set()
+    for row in production['compact_rows']:
+        scope=row.get('symmetry_explanation',{})
+        signature=(scope.get('origin'),bool(scope.get('local_decomposition')),bool(scope.get('candidate_source')))
+        if signature in seen_scopes or not row['members']:continue
+        seen_scopes.add(signature);mo=row['members'][0]
+        require_detail(mo,'details.symmetry.origin','symmetry-origin')
+        if scope.get('local_decomposition'):
+            require_detail(mo,'details.symmetry.represented-rank','local-projection-rank')
+        if scope.get('local_assignment'):
+            require_detail(mo,'details.symmetry.measure','local-projection-meaning')
+    unrepresented_topologies=[]
+    for family in production.get('pi_topology_assignments',[]):
+        graph=family.get('topology_graph',{})
+        if graph.get('source') in (None,'unavailable'):continue
+        members=sorted(set(family['orbitals']) & set(primary))
+        if not members:
+            unrepresented_topologies.append(family['family_id']);continue
+        mo=members[0];prefix='pi.rings.'+family['family_id']
+        require_detail(mo,prefix+'.source','ring-connectivity-source')
+        witnesses=graph.get('channel_ring_witnesses',[])
+        if not witnesses and len(family['orientation_channels'])>1:
+            require_detail(mo,prefix+'.scope','no-channel-ring-witness-scope')
+        for witness in range(len(witnesses)):
+            for ring in range(2):require_detail(mo,f'{prefix}.{witness}.path{ring}','ring-path')
+            require_detail(mo,f'{prefix}.{witness}.additional-connection','ring-additional-connection')
+    gaps=production.get('pi_interactions',[])+production.get('crystal_field_gaps',[])
+    for index,gap in enumerate(gaps):
+        row_index=gap['retained_level']
+        if row_index>=len(production['compact_rows']):continue
+        members=production['compact_rows'][row_index]['members']
+        if members:require_detail(members[0],f'details.energy-gap.{index}.scope','typed-gap-scope')
+    if gaps and primary:
+        plan += select_browser(primary[0])
+        for unit in range(1,6):
+            plan += ['seek "panel.browser"','click "browser.unit"','key "Home"']+['key "Down"']*unit+['key "Enter"','seek "panel.diagram"']
+            plan += export_view(f'export-gap-unit-{unit}')
+        plan += ['seek "panel.browser"','click "browser.unit"','key "Home"','key "Enter"','seek "panel.diagram"']
+    extra_details=[]
+    for mo,targets in sorted(detail_requests.items()):
+        plan += select_browser(mo)+['click "diagram.details"']
+        for target,kind in targets.items():
+            capture=f'common-details-{len(extra_details):03d}'
+            plan += [command('hover',target),command('capture',capture)]
+            extra_details.append(dict(capture=capture,mo=mo,target=target,kind=kind))
+        plan += ['click "diagram.details.close"','hover "scene.viewport"']
     for language in range(1,4):
         plan += ['click "language"','key "Home"']+['key "Down"']*language+['key "Enter"','hover "scene.viewport"',command('capture',f'language-{language}')]
     plan += ['click "language"','key "Home"','key "Enter"','hover "scene.viewport"','capture "language-0"',
@@ -175,6 +227,8 @@ def make_plan(production):
                   source_selection_for_controls=primary[0] if primary else selected)
     expected['orbital_details_member']=details_mo if primary else None
     expected['orbital_details_captures']=['orbital-details-top','orbital-details-bottom','orbital-details-closed','orbital-details-reopened'] if primary else []
+    expected['common_root_details']=extra_details
+    expected['topology_families_outside_compact_rows']=unrepresented_topologies
     return '\n'.join(plan)+'\n', expected
 
 
