@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/gaussian_ao_transform.hpp"
+#include "cov/topology_graph.hpp"
 
 #include <array>
 #include <cstddef>
@@ -42,6 +43,17 @@ struct PointGroupSourceRecord {
     bool valid = false;
     std::string field_text;
     std::string status;
+};
+
+struct OrbitalSymmetrySourceRecord {
+    std::string source_path;
+    std::size_t line_begin = 0;
+    std::size_t line_end = 0;
+    std::size_t job_segment = 0;
+    std::string detected_group_context;
+    std::string abelian_group_context;
+    std::vector<std::size_t> orbital_indices;
+    std::vector<std::string> labels;
 };
 
 // A derived irrep describes a specified MO subspace in a specified nuclear
@@ -379,6 +391,36 @@ enum class DelocalisedPiTopology : std::uint8_t {
     // canonical MOs mix across the whole molecule. They are selected as one
     // direct-sum active space without claiming a fictitious covalent cycle.
     SymmetryDirectSum,
+    // More than one electronic orientation channel without a proved,
+    // channel-specific ring union. This does not assert molecular acyclicity.
+    MultiChannel,
+};
+
+enum class PiTopologyGraphSource : std::uint8_t {
+    Unavailable = 0,
+    MayerDistanceModel,
+    CovalentDistanceModel,
+};
+
+struct PiChannelRingWitness {
+    std::array<std::size_t,2> channel_indices{};
+    CycleUnionWitness ring_union;
+};
+
+// Structural graph and electronic-channel correspondence are distinct claims.
+// Atom indices refer to the complete input atom list, including non-pi atoms
+// that close a skeletal ring. These are model-selected edges, not input bonds.
+struct PiTopologyGraphEvidence {
+    PiTopologyGraphSource source = PiTopologyGraphSource::Unavailable;
+    DataProvenance bond_order_provenance = DataProvenance::Unavailable;
+    std::size_t atom_count = 0;
+    double minimum_mayer_order = std::numeric_limits<double>::quiet_NaN();
+    double maximum_covalent_radius_factor = std::numeric_limits<double>::quiet_NaN();
+    std::vector<std::pair<std::uint32_t,std::uint32_t>> edges;
+    std::vector<std::uint32_t> examined_hubs;
+    std::vector<std::uint32_t> unscoped_cycle_union_hubs;
+    std::vector<PiChannelRingWitness> channel_ring_witnesses;
+    bool channel_association_search_complete = false;
 };
 
 struct DelocalisedPiAssignment {
@@ -397,6 +439,7 @@ struct DelocalisedPiAssignment {
     // Mayer couplings (which contain legitimate through-bond terms).
     DelocalisedPiTopology topology = DelocalisedPiTopology::Unknown;
     bool cyclic_topology = false;
+    PiTopologyGraphEvidence topology_graph;
     // For a unique branched centre, record the electronically occupied share
     // of its selected oriented-p column.  The normalisation is by that
     // column's selected canonical coverage, so 0..2 electrons has a stable
@@ -457,6 +500,7 @@ struct Wavefunction {
     DataProvenance point_group_detected_provenance = DataProvenance::Unavailable;
     DataProvenance point_group_used_provenance = DataProvenance::Unavailable;
     std::vector<PointGroupSourceRecord> point_group_source_records;
+    std::vector<OrbitalSymmetrySourceRecord> orbital_symmetry_source_records;
     std::vector<DerivedOrbitalSymmetryAssignment> derived_orbital_symmetry_assignments;
 
     // Optional Gaussian LOG/OUT diagnostics.  These fields are populated only

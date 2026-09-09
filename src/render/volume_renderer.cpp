@@ -1,4 +1,5 @@
 #include "cov/volume_renderer.hpp"
+#include "cov/viewer_layout.hpp"
 
 #include "cov/gl_api.hpp"
 
@@ -586,11 +587,9 @@ void VolumeRenderer::render_volume(const int framebuffer_width,
     if (nx_ <= 0 || ny_ <= 0 || nz_ <= 0) return;
 
     const CameraBasis b = camera_basis(camera);
-    const float aspect = framebuffer_height > 0
-                             ? static_cast<float>(framebuffer_width) /
-                                   static_cast<float>(framebuffer_height)
-                             : 1.0f;
-    const float tan_half_fov = std::tan(camera.fov_degrees * kPi / 360.0f);
+    const auto projection = scene_projection(framebuffer_width, framebuffer_height, camera.fov_degrees);
+    const float aspect = projection.aspect;
+    const float tan_half_fov = projection.tan_half_vertical_fov;
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -658,11 +657,9 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     if (wavefunction.atoms.empty()) return;
 
     const CameraBasis b = camera_basis(camera);
-    const float aspect = framebuffer_height > 0
-                             ? static_cast<float>(framebuffer_width) /
-                                   static_cast<float>(framebuffer_height)
-                             : 1.0f;
-    const float tan_half_fov = std::tan(camera.fov_degrees * kPi / 360.0f);
+    const auto projection = scene_projection(framebuffer_width, framebuffer_height, camera.fov_degrees);
+    const float aspect = projection.aspect;
+    const float tan_half_fov = projection.tan_half_vertical_fov;
 
     std::vector<Vec3> points;
     points.reserve(wavefunction.atoms.size());

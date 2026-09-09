@@ -1,5 +1,4 @@
 #include "cov/local_orbital_symmetry.hpp"
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -11,145 +10,9 @@
 
 namespace cov {
 namespace {
-
-using Mat3 = std::array<double, 9>;
-using Vec3 = std::array<double, 3>;
-using ComponentWeights = std::array<double, 5>;
-
-constexpr double kWeightEpsilon = 1.0e-14;
-constexpr double kMinimumCopyConfidence = 0.55;
-
-double determinant(const Mat3& matrix) noexcept {
-    return matrix[0] * (matrix[4] * matrix[8] - matrix[5] * matrix[7])
-         - matrix[1] * (matrix[3] * matrix[8] - matrix[5] * matrix[6])
-         + matrix[2] * (matrix[3] * matrix[7] - matrix[4] * matrix[6]);
-}
-
-bool valid_rotation(const Mat3& rotation) noexcept {
-    for (const double value : rotation) {
-        if (!std::isfinite(value)) return false;
-    }
-    double maximum_error = 0.0;
-    for (std::size_t row = 0; row < 3; ++row) {
-        for (std::size_t column = 0; column < 3; ++column) {
-            double value = 0.0;
-            for (std::size_t k = 0; k < 3; ++k) {
-                value += rotation[3 * k + row] * rotation[3 * k + column];
-            }
-            const double expected = row == column ? 1.0 : 0.0;
-            maximum_error = std::max(maximum_error, std::abs(value - expected));
-        }
-    }
-    return maximum_error <= 1.0e-5 &&
-           std::abs(std::abs(determinant(rotation)) - 1.0) <= 1.0e-5;
-}
-
-Vec3 transpose_multiply(const Mat3& matrix, const Vec3& vector) noexcept {
-    return {
-        matrix[0] * vector[0] + matrix[3] * vector[1] + matrix[6] * vector[2],
-        matrix[1] * vector[0] + matrix[4] * vector[1] + matrix[7] * vector[2],
-        matrix[2] * vector[0] + matrix[5] * vector[1] + matrix[8] * vector[2],
-    };
-}
-
-Mat3 multiply(const Mat3& left, const Mat3& right) noexcept {
-    Mat3 result{};
-    for (std::size_t row = 0; row < 3; ++row) {
-        for (std::size_t column = 0; column < 3; ++column) {
-            for (std::size_t k = 0; k < 3; ++k) {
-                result[3 * row + column] +=
-                    left[3 * row + k] * right[3 * k + column];
-            }
-        }
-    }
-    return result;
-}
-
-Mat3 transpose(const Mat3& matrix) noexcept {
-    return {
-        matrix[0], matrix[3], matrix[6],
-        matrix[1], matrix[4], matrix[7],
-        matrix[2], matrix[5], matrix[8],
-    };
-}
-
-double frobenius_dot(const Mat3& left, const Mat3& right) noexcept {
-    double result = 0.0;
-    for (std::size_t i = 0; i < left.size(); ++i) result += left[i] * right[i];
-    return result;
-}
-
-constexpr double kInvSqrt2 = 0.70710678118654752440;
-constexpr double kInvSqrt6 = 0.40824829046386301637;
-
-// Orthonormal tensor representatives of the five real d functions.  Their
-// order is dz2, dxz, dyz, dx2-y2, dxy.  Gaussian pure-shell indices 1 and 2
-// carry minus signs; those signs are applied when reading coefficients.
-constexpr std::array<Mat3, 5> d_tensor_basis{{
-    Mat3{-kInvSqrt6, 0.0, 0.0,
-          0.0, -kInvSqrt6, 0.0,
-          0.0, 0.0, 2.0 * kInvSqrt6},
-    Mat3{0.0, 0.0, kInvSqrt2,
-          0.0, 0.0, 0.0,
-          kInvSqrt2, 0.0, 0.0},
-    Mat3{0.0, 0.0, 0.0,
-          0.0, 0.0, kInvSqrt2,
-          0.0, kInvSqrt2, 0.0},
-    Mat3{kInvSqrt2, 0.0, 0.0,
-          0.0, -kInvSqrt2, 0.0,
-          0.0, 0.0, 0.0},
-    Mat3{0.0, kInvSqrt2, 0.0,
-          kInvSqrt2, 0.0, 0.0,
-          0.0, 0.0, 0.0},
-}};
-
-Mat3 pure_d_tensor(std::span<const double> coefficients) noexcept {
-    Mat3 tensor{};
-    constexpr std::array<double, 5> signs{1.0, -1.0, -1.0, 1.0, 1.0};
-    for (std::size_t component = 0; component < 5; ++component) {
-        const double coefficient = signs[component] * coefficients[component];
-        for (std::size_t entry = 0; entry < tensor.size(); ++entry) {
-            tensor[entry] += coefficient * d_tensor_basis[component][entry];
-        }
-    }
-    return tensor;
-}
-
-Mat3 cartesian_d_tensor(std::span<const double> coefficients) noexcept {
-    // Internal Cartesian order is xx, yy, zz, xy, xz, yz.  Diagonal basis
-    // functions are x^2/sqrt(3), etc.; cross terms are xy, xz and yz.
-    constexpr double kInvSqrt3 = 0.57735026918962576451;
-    Mat3 tensor{
-        coefficients[0] * kInvSqrt3, 0.5 * coefficients[3],
-            0.5 * coefficients[4],
-        0.5 * coefficients[3], coefficients[1] * kInvSqrt3,
-            0.5 * coefficients[5],
-        0.5 * coefficients[4], 0.5 * coefficients[5],
-            coefficients[2] * kInvSqrt3,
-    };
-    const double trace_third = (tensor[0] + tensor[4] + tensor[8]) / 3.0;
-    tensor[0] -= trace_third;
-    tensor[4] -= trace_third;
-    tensor[8] -= trace_third;
-    return tensor;
-}
-
-Mat3 to_reference_tensor(const Mat3& tensor_input,
-                         const Mat3& rotation_reference_to_input) noexcept {
-    return multiply(
-        multiply(transpose(rotation_reference_to_input), tensor_input),
-        rotation_reference_to_input);
-}
-
-void accumulate_d_weights(ComponentWeights& weights,
-                          const Mat3& tensor_reference) noexcept {
-    for (std::size_t component = 0; component < d_tensor_basis.size(); ++component) {
-        const double amplitude =
-            frobenius_dot(tensor_reference, d_tensor_basis[component]);
-        weights[component] += amplitude * amplitude;
-    }
-}
-
+using ComponentWeights=std::array<double,5>;
+constexpr double kWeightEpsilon=1.0e-14;
+constexpr double kMinimumCopyConfidence=0.55;
 std::optional<std::size_t> basis_component(
     const MetalAOShell shell,
     std::string_view token) noexcept {
@@ -253,6 +116,27 @@ std::optional<LocalIrrepAssignment> classify_copy(
             ?std::string(best_copy->copy->basis_functions):std::string{}};
 }
 
+bool resolved_projection(const LocalAngularProjection& projection) {
+    if(projection.status!=MetricSubspaceStatus::Available || projection.represented_spin_orbital_rank==0 ||
+       !(projection.centre_projection_trace>kWeightEpsilon) || !std::isfinite(projection.centre_mean_fraction)) return false;
+    for(const auto& spin:projection.spins) {
+        const auto& centre=spin.centre;
+        const double tolerance=512.0*std::numeric_limits<double>::epsilon()*
+            static_cast<double>(std::max<std::size_t>(1,centre.basis_dimension))*
+            static_cast<double>(std::max<std::size_t>(1,centre.orbitals.numerical_rank));
+        if(centre.orbitals.numerical_rank!=spin.orbital_indices.size() ||
+           !std::isfinite(spin.angular_partition_residual) || std::abs(spin.angular_partition_residual)>tolerance ||
+           centre.metric_eigen_residual>tolerance || centre.reference.orthonormality_residual>tolerance ||
+           centre.orbitals.orthonormality_residual>tolerance) return false;
+        for(const auto& component:spin.components) {
+            const auto& metric=component.metric;
+            if(metric.status!=MetricSubspaceStatus::Available || !std::isfinite(metric.subspace_overlap_trace) ||
+               metric.reference.orthonormality_residual>tolerance || metric.orbitals.orthonormality_residual>tolerance ||
+               metric.reference.gram_inverse_residual>tolerance || metric.orbitals.gram_inverse_residual>tolerance) return false;
+        }
+    }
+    return true;
+}
 } // namespace
 
 std::optional<LocalIrrepAssignment> classify_local_irrep_by_dimension(
@@ -277,103 +161,77 @@ std::optional<LocalIrrepAssignment> classify_local_irrep_by_dimension(
         }
     }
     if (match==nullptr) return std::nullopt;
-    return LocalIrrepAssignment{
+    LocalIrrepAssignment assignment{
         std::string(match->label),shell,
         repeated_copy?std::uint8_t{0}:match->copy_index,1.0,
         repeated_copy?std::string{}:std::string(match->basis_functions)};
+    assignment.source=LocalIrrepSource::DimensionCandidate;
+    assignment.point_group=std::string(point_group);
+    assignment.confidence=std::numeric_limits<double>::quiet_NaN();
+    return assignment;
 }
 
-std::optional<LocalIrrepAssignment> classify_local_metal_irrep(
-    const Wavefunction& wavefunction,
-    std::span<const std::size_t> orbital_indices,
-    const std::size_t metal_atom,
-    const std::string_view point_group,
-    const std::array<double, 9>& rotation_reference_to_input) {
-    if (metal_atom >= wavefunction.atoms.size() || orbital_indices.empty() ||
-        !find_point_group(point_group) ||
-        !valid_rotation(rotation_reference_to_input)) {
-        return std::nullopt;
-    }
-    for (const std::size_t orbital_index : orbital_indices) {
-        if (orbital_index >= wavefunction.orbitals.size()) return std::nullopt;
-    }
 
-    std::array<ShellEvidence, 3> evidence{{
-        {MetalAOShell::S, {}, 0.0, 0.0},
-        {MetalAOShell::P, {}, 0.0, 0.0},
-        {MetalAOShell::D, {}, 0.0, 0.0},
-    }};
-
-    for (const Shell& shell : wavefunction.shells) {
-        if (shell.atom_index != metal_atom || shell.angular_momentum > 2) continue;
-        const std::size_t count = shell_basis_count(shell);
-        const std::size_t offset = shell.basis_offset;
-        for (const std::size_t orbital_index : orbital_indices) {
-            const auto& coefficients = wavefunction.orbitals[orbital_index].coefficients;
-            if (offset > coefficients.size() || count > coefficients.size() - offset) {
-                return std::nullopt;
-            }
-            const std::span<const double> local(coefficients.data() + offset, count);
-            if (shell.angular_momentum == 0) {
-                const double amplitude = local[0];
-                evidence[0].components[0] += amplitude * amplitude;
-            } else if (shell.angular_momentum == 1) {
-                Vec3 input{};
-                if (shell.pure) {
-                    // Gaussian real-p order is pz, -px, -py.
-                    input = {-local[1], -local[2], local[0]};
-                } else {
-                    input = {local[0], local[1], local[2]};
-                }
-                const Vec3 reference =
-                    transpose_multiply(rotation_reference_to_input, input);
-                for (std::size_t component = 0; component < 3; ++component) {
-                    evidence[1].components[component] +=
-                        reference[component] * reference[component];
-                }
-            } else {
-                const Mat3 input = shell.pure ? pure_d_tensor(local)
-                                              : cartesian_d_tensor(local);
-                accumulate_d_weights(
-                    evidence[2].components,
-                    to_reference_tensor(input, rotation_reference_to_input));
-            }
-        }
+static std::optional<LocalIrrepAssignment> classify_projected_local_irrep(
+    std::shared_ptr<const LocalAngularProjection> projection,
+    std::string_view point_group) {
+    if(!find_point_group(point_group))return std::nullopt;
+    if(!resolved_projection(*projection))return std::nullopt;
+    std::array<ShellEvidence,3> evidence{{
+        {MetalAOShell::S,{},0,0},{MetalAOShell::P,{},0,0},{MetalAOShell::D,{},0,0}}};
+    const auto& traces=projection->component_projection_traces;
+    evidence[0].components[0]=traces[0];
+    evidence[1].components={traces[2],traces[3],traces[1],0,0};
+    for(std::size_t i=0;i<5;++i)evidence[2].components[i]=traces[4+i];
+    for(auto& item:evidence) {
+        for(double trace:item.components)item.weight+=trace;
+        // The denominator includes all represented l=0..4 content, including
+        // Cartesian lower-l directions. Nothing is renormalized away as s/p/d.
+        item.fraction=item.weight/projection->centre_projection_trace;
     }
-
-    double total_weight = 0.0;
-    for (auto& shell_evidence : evidence) {
-        shell_evidence.weight = 0.0;
-        for (const double component : shell_evidence.components) {
-            shell_evidence.weight += component;
-        }
-        total_weight += shell_evidence.weight;
-    }
-    if (total_weight <= kWeightEpsilon || !std::isfinite(total_weight)) {
-        return std::nullopt;
-    }
-    for (auto& shell_evidence : evidence) {
-        shell_evidence.fraction = shell_evidence.weight / total_weight;
-    }
-    std::stable_sort(
-        evidence.begin(), evidence.end(),
-        [](const ShellEvidence& left, const ShellEvidence& right) {
-            return left.fraction > right.fraction;
-        });
-
-    // Prefer the dominant central-metal shell.  If its internal copy is
-    // genuinely ambiguous, a lower-weight shell may still provide a clean
-    // assignment, but only above the conservative shell-specific floor.
-    for (const auto& shell_evidence : evidence) {
-        if (shell_evidence.fraction + kWeightEpsilon <
-            evidence_floor(shell_evidence.shell)) {
-            continue;
-        }
-        if (auto assignment = classify_copy(shell_evidence, point_group)) {
-            return assignment;
-        }
+    std::stable_sort(evidence.begin(),evidence.end(),[](const auto& a,const auto& b){return a.fraction>b.fraction;});
+    for(const auto& item:evidence) {
+        if(item.fraction+kWeightEpsilon<evidence_floor(item.shell))continue;
+        auto assignment=classify_copy(item,point_group);
+        if(!assignment)continue;
+        assignment->source=LocalIrrepSource::MetricAngularProjection;
+        assignment->point_group=std::string(point_group);
+        assignment->centre_mean_fraction=projection->centre_mean_fraction;
+        assignment->angular_fraction_within_centre=item.fraction;
+        assignment->labelled_fraction_of_target=assignment->confidence*item.weight/
+            static_cast<double>(projection->represented_spin_orbital_rank);
+        assignment->projection=std::move(projection);
+        return assignment;
     }
     return std::nullopt;
 }
 
+LocalIrrepAssessment assess_local_metal_irrep(
+    const LocalAngularProjectionWorkspace& workspace,std::span<const std::size_t> orbital_indices,
+    std::string_view point_group) {
+    LocalIrrepAssessment result;
+    result.projection=std::make_shared<const LocalAngularProjection>(workspace.project(orbital_indices));
+    result.numerically_resolved=resolved_projection(*result.projection);
+    result.assignment=classify_projected_local_irrep(result.projection,point_group);
+    if (result.assignment) result.detail="Local angular decomposition supports the displayed conditional label";
+    else if (!find_point_group(point_group)) result.detail="Local decomposition retained; point-group catalogue mapping is unavailable";
+    else if (!result.numerically_resolved) result.detail="Local decomposition retained with its zero, rank or numerical diagnostic; no irrep assigned";
+    else result.detail="Local decomposition is mixed or outside the readable s/p/d label model; no single irrep assigned";
+    return result;
+}
+
+std::optional<LocalIrrepAssignment> classify_local_metal_irrep(
+    const LocalAngularProjectionWorkspace& workspace,std::span<const std::size_t> orbital_indices,
+    std::string_view point_group) {
+    return assess_local_metal_irrep(workspace,orbital_indices,point_group).assignment;
+}
+
+std::optional<LocalIrrepAssignment> classify_local_metal_irrep(
+    const Wavefunction& wavefunction,std::span<const std::size_t> orbital_indices,
+    std::size_t atom,std::string_view point_group,
+    const std::array<double,9>& rotation_reference_to_input) {
+    if(!find_point_group(point_group))return std::nullopt;
+    const LocalAngularProjectionWorkspace workspace(wavefunction,atom,rotation_reference_to_input);
+    return classify_local_metal_irrep(workspace,orbital_indices,point_group);
+}
 } // namespace cov

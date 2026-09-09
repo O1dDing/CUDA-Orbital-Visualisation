@@ -578,8 +578,8 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                 ImGui::Text("%s: %s", tr(Text::Spin, language),
                             spin_name(level.metadata.spin, language));
                 ImGui::Text("%s: %s", tr(Text::Symmetry, language),
-                            level.metadata.symmetry.empty() ? tr(Text::NoneValue, language)
-                                                            : level.metadata.symmetry.c_str());
+                            level.metadata.symmetry_view.label.empty() ? tr(Text::NoneValue, language)
+                                                            : level.metadata.symmetry_view.label.c_str());
                 ImGui::Text("%s: %zu", tr(Text::DegenerateSet, language),
                             level.metadata.degeneracy_size);
                 ImGui::Text("%s: %s", tr(Text::OrbitalFamily, language),

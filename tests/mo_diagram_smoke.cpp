@@ -890,6 +890,27 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
         std::cerr<<filename<<": "<<contract<<" compact-mode contract failed\n";
         return false;
     };
+    for (const auto& assignment:wf.delocalised_pi_assignments) {
+        const auto& graph=assignment.topology_graph;
+        if(!graph.channel_association_search_complete || graph.atom_count!=wf.atoms.size()) {
+            std::cerr<<filename<<": pi family structural graph scope is incomplete\n";
+            return false;
+        }
+        if(assignment.topology==cov::DelocalisedPiTopology::Spiro && graph.channel_ring_witnesses.empty()) {
+            std::cerr<<filename<<": spiro label has no structural ring paths\n";
+            return false;
+        }
+        for(const auto& evidence:graph.channel_ring_witnesses) {
+            if(!cov::verify_cycle_union(static_cast<std::uint32_t>(wf.atoms.size()),graph.edges,evidence.ring_union)) {
+                std::cerr<<filename<<": invalid structural ring paths\n";
+                return false;
+            }
+            for(const auto channel:evidence.channel_indices)if(channel>=assignment.orientation_channels.size()) {
+                std::cerr<<filename<<": structural ring references an absent pi channel\n";
+                return false;
+            }
+        }
+    }
     if (filename.find("057_hexatriene")!=std::string::npos &&
         (!require_pi_mode(true,"conjugated path") ||
          !pi_contract(6u,1u,6u,cov::DelocalisedPiTopology::Path,6.0))) {

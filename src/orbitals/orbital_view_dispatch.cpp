@@ -166,6 +166,9 @@ std::vector<OrbitalMetadata> build_orbital_metadata(
     const auto frontier=find_frontier_orbitals(
         wavefunction.orbitals,filter.occupation_threshold);
     for (std::size_t i=0;i<result.size();++i) {
+        result[i].symmetry=wavefunction.orbitals[i].symmetry;
+        result[i].symmetry_view=molecular_orbital_symmetry(wavefunction,i);
+        result[i].molecular_member_symmetries={result[i].symmetry_view};
         result[i].region=classify_orbital_region(
             wavefunction.orbitals[i],filter);
         result[i].visible=orbital_visible(

@@ -2,6 +2,7 @@
 #include "cov/molecule_style.hpp"
 #include "cov/mo_diagram.hpp"
 #include "cov/numerical_diagnostics.hpp"
+#include "cov/pi_topology_evidence.hpp"
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -36,6 +37,8 @@ int main(int argc, char** argv) {
         cov::write_numerical_diagnostics_json(std::cout,wavefunction);
         std::cout << ",\"density_evidence\":";
         cov::write_density_evidence_json(std::cout,wavefunction);
+        std::cout << ",\"pi_topology_assignments\":";
+        cov::write_pi_topology_assignments_json(std::cout,wavefunction);
         std::cout << ",\"point_group_source_records\":[";
         for (std::size_t i=0;i<wavefunction.point_group_source_records.size();++i) {
             if (i) std::cout << ',';
@@ -205,7 +208,9 @@ int main(int argc, char** argv) {
             numeric_array(row.member_indices);
             std::cout << ",\"counterparts\":";
             numeric_array(row.member_spin_counterparts);
-            std::cout << ",\"symmetry\":" << std::quoted(row.metadata.symmetry)
+            std::cout << ",\"symmetry\":" << std::quoted(row.metadata.symmetry_view.label)
+                      << ",\"source_symmetry\":" << std::quoted(row.metadata.symmetry)
+                      << ",\"symmetry_explanation\":" << cov::orbital_symmetry_json(row.metadata.symmetry_view)
                       << ",\"energy\":" << row.layout_energy_hartree
                       << ",\"occupation\":" << row.total_occupation
                       << ",\"degeneracy\":" << row.metadata.degeneracy_size
@@ -217,7 +222,8 @@ int main(int argc, char** argv) {
             numeric_array(row.annotation.delocalised_pi.orbital_indices);
             std::cout << '}';
         }
-        std::cout << "]}\n";
+        std::cout << "],\"pi_interactions\":" << cov::orbital_energy_gap_array_json(diagram.pi_interactions)
+                  << ",\"crystal_field_gaps\":" << cov::orbital_energy_gap_array_json(diagram.crystal_field_gaps) << "}\n";
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;

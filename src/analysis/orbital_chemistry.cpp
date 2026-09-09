@@ -1247,6 +1247,45 @@ pi_topology_bonded_pairs(const Wavefunction& wf) {
     return result;
 }
 
+PiTopologyGraphEvidence pi_ring_graph_evidence(
+    const Wavefunction& wf,
+    const std::vector<std::pair<std::uint32_t,std::uint32_t>>& bonded_pairs,
+    const std::vector<PiOrientationChannel>& channels) {
+    PiTopologyGraphEvidence evidence;
+    evidence.atom_count=wf.atoms.size();
+    evidence.edges=bonded_pairs;
+    evidence.bond_order_provenance=wf.bond_order_provenance;
+    const bool electronic=wf.bond_order_provenance!=DataProvenance::Unavailable;
+    evidence.source=electronic?PiTopologyGraphSource::MayerDistanceModel:
+        PiTopologyGraphSource::CovalentDistanceModel;
+    evidence.maximum_covalent_radius_factor=electronic?1.45:1.22;
+    if(electronic)evidence.minimum_mayer_order=0.05;
+    if(channels.size()<2u) {
+        evidence.channel_association_search_complete=true;
+        return evidence;
+    }
+    std::vector<std::size_t> degree(wf.atoms.size());
+    for(const auto& [a,b]:bonded_pairs) {++degree[a];++degree[b];}
+    for(std::uint32_t hub=0;hub<wf.atoms.size();++hub) {
+        // Two simple rings sharing only the hub require four distinct
+        // incident edges. The graph test makes no element-specific exception.
+        if(degree[hub]<4u)continue;
+        evidence.examined_hubs.push_back(hub);
+        if(find_cycle_union_at_hub(static_cast<std::uint32_t>(wf.atoms.size()),bonded_pairs,hub))
+            evidence.unscoped_cycle_union_hubs.push_back(hub);
+    }
+    for(std::size_t a=0;a<channels.size();++a)
+    for(std::size_t b=a+1;b<channels.size();++b)
+    for(const auto hub:evidence.unscoped_cycle_union_hubs) {
+        const auto found=find_channel_cycle_union_at_hub(
+            static_cast<std::uint32_t>(wf.atoms.size()),bonded_pairs,hub,
+            {{channels[a].atoms,channels[b].atoms}});
+        if(found.witness)evidence.channel_ring_witnesses.push_back({{{a,b}},*found.witness});
+    }
+    evidence.channel_association_search_complete=true;
+    return evidence;
+}
+
 bool networks_share_atom(const OrientedPiNetwork& a,
                          const OrientedPiNetwork& b) {
     return std::any_of(a.atoms.begin(),a.atoms.end(),[&](const auto atom){
@@ -1256,7 +1295,6 @@ bool networks_share_atom(const OrientedPiNetwork& a,
 
 struct PiNetworkBundle {
     std::vector<std::size_t> networks;
-    bool spiro=false;
     bool haptic_metal=false;
     std::set<std::uint32_t> haptic_metals;
     bool symmetry_direct_sum=false;
@@ -1292,7 +1330,7 @@ std::vector<PiNetworkBundle> pi_network_bundles(
             }
         }
     }
-    auto spiro_coupled=[&](const std::size_t a_index,
+    auto orthogonal_bridge_coupled=[&](const std::size_t a_index,
                             const std::size_t b_index) {
         const auto& a=networks[a_index];
         const auto& b=networks[b_index];
@@ -1309,11 +1347,10 @@ std::vector<PiNetworkBundle> pi_network_bundles(
             if (bridge>=wf.atoms.size()) continue;
             const int z=wf.atoms[bridge].atomic_number;
             if (z<=2 || transition_metal(z) || f_block(z)) continue;
-            // A true spiro bridge is the common atom of two covalent rings:
-            // it has two local neighbours in each orthogonal pi component.
-            // A metal bound once to each of several CO ligands has only one
-            // neighbour per component and must never merge those ligands into
-            // one artificial delocalised-pi family.
+            // This proposes an electronic bundle, not a ring classification.
+            // Two neighbours in each component do not prove closed rings.
+            // Structural ring paths and their channel correspondence are
+            // established separately after the active space is selected.
             return true;
         }
         return false;
@@ -1633,17 +1670,13 @@ std::vector<PiNetworkBundle> pi_network_bundles(
                 if (visited[candidate]) continue;
                 const bool shared=networks_share_atom(
                     networks[current],networks[candidate]);
-                const bool spiro=spiro_coupled(current,candidate);
+                const bool orthogonal_bridge=orthogonal_bridge_coupled(current,candidate);
                 const bool haptic=haptic_metal_coupled(current,candidate);
                 const auto hub=common_hub_cycle_coupled(current,candidate);
                 const bool hub_coupled=hub!=no_hub &&
                     (bundle.symmetry_hub==no_hub ||
                      bundle.symmetry_hub==hub);
-                if (!shared && !spiro && !haptic && !hub_coupled) continue;
-                bundle.spiro=bundle.spiro || spiro ||
-                    (shared && std::abs(dot3(
-                        networks[current].representative_direction,
-                        networks[candidate].representative_direction))<0.35);
+                if (!shared && !orthogonal_bridge && !haptic && !hub_coupled) continue;
                 bundle.haptic_metal=bundle.haptic_metal || haptic;
                 bundle.haptic_metals.insert(
                     network_haptic_metals[candidate].begin(),
@@ -1653,7 +1686,7 @@ std::vector<PiNetworkBundle> pi_network_bundles(
                     bundle.symmetry_hub=hub;
                 }
                 bundle.has_non_direct_sum_join=
-                    bundle.has_non_direct_sum_join || shared || spiro || haptic;
+                    bundle.has_non_direct_sum_join || shared || orthogonal_bridge || haptic;
                 visited[candidate]=true;
                 pending.push_back(candidate);
             }
@@ -2057,12 +2090,16 @@ void attach_planar_p_delocalised_families(
             channel.cyclic=networks[network_index].cyclic;
             assignment.orientation_channels.push_back(std::move(channel));
         }
+        assignment.topology_graph=pi_ring_graph_evidence(
+            wf,bonded_pairs,assignment.orientation_channels);
         if (bundle.haptic_metal) {
             assignment.topology=DelocalisedPiTopology::HapticMetal;
         } else if (bundle.symmetry_direct_sum) {
             assignment.topology=DelocalisedPiTopology::SymmetryDirectSum;
-        } else if (bundle.spiro || bundle.networks.size()>1u) {
+        } else if (!assignment.topology_graph.channel_ring_witnesses.empty()) {
             assignment.topology=DelocalisedPiTopology::Spiro;
+        } else if (bundle.networks.size()>1u) {
+            assignment.topology=DelocalisedPiTopology::MultiChannel;
         } else if (cyclic) {
             assignment.topology=DelocalisedPiTopology::Cycle;
         } else {
@@ -2134,6 +2171,12 @@ void attach_planar_p_delocalised_families(
                  <<"degeneracy-preserving selection including virtual members";
         if (cyclic) rationale<<"; globally coherent cyclic p topology";
         else rationale<<"; no aromaticity claim";
+        if (!assignment.topology_graph.channel_ring_witnesses.empty()) {
+            rationale<<"; explicit skeletal ring paths with channel-specific correspondence"
+                     <<" in the stated first-neighbour graph model";
+        } else if (bundle.networks.size()>1u) {
+            rationale<<"; multiple orientation channels do not by themselves establish a spiro ring union";
+        }
         assignment.rationale=rationale.str();
         assignment.provenance=DataProvenance::Derived;
 

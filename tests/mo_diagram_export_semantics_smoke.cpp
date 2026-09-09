@@ -249,12 +249,13 @@ int main() {
 
     // Screen/SVG semantics must preserve the actual chemistry topology, not
     // collapse every family to the coarser cyclic/non-cyclic flag.
-    const std::array<std::pair<cov::DelocalisedPiTopology,const char*>,3>
+    const std::array<std::pair<cov::DelocalisedPiTopology,const char*>,4>
         topology_contracts{{
             {cov::DelocalisedPiTopology::HapticMetal,"haptic-metal"},
             {cov::DelocalisedPiTopology::Spiro,"spiro"},
             {cov::DelocalisedPiTopology::SymmetryDirectSum,
              "symmetry-direct-sum"},
+            {cov::DelocalisedPiTopology::MultiChannel,"multi-channel"},
         }};
     for (const auto& [topology,machine]:topology_contracts) {
         data.levels[0].annotation.delocalised_pi.topology=topology;

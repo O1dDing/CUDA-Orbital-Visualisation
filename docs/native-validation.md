@@ -30,6 +30,15 @@ The first plan line is `COV_VALIDATION 1`. Supported commands are:
 | `capture "name"` | Capture the completed visible viewer + ImGui back buffer |
 | `volume "name" "zero-based-MO"` | Read the texture just consumed by the renderer |
 | `wait "label"` | Wait four drawn frames |
+| `window width height` | Resize the actual GLFW window; defaults remain 2100x1250 |
+| `drag "semantic.id" dx dy` | Move to the observed target, press, move by logical pixels, then release |
+| `wheel "semantic.id" amount` | Move to the observed target and send a vertical wheel event |
+
+Window controls accept integral client sizes from 640x360 to 7680x4320 and
+verify the actual framebuffer against the request. Pointer controls feed
+normal ImGui events; they never write the camera or selection directly.
+Their delivered events and resulting camera/GL viewport are recorded so the
+external reviewer can check scene/panel separation and actual resize behavior.
 
 The plan owns input while active. GLFW cursor events are cleared and the
 ordered native event batch is processed in the same frame, with event

@@ -1,5 +1,6 @@
 #include "cov/cuda_orbital.hpp"
 #include "cov/numerical_diagnostics.hpp"
+#include "cov/pi_topology_evidence.hpp"
 #include <sstream>
 #include "cov/file_dialog.hpp"
 #include "cov/gl_api.hpp"
@@ -11,6 +12,7 @@
 #include "cov/ui.hpp"
 #include "cov/volume_renderer.hpp"
 #include "cov/validation.hpp"
+#include "cov/viewer_layout.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -218,9 +220,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    glfwSetWindowSizeLimits(window, 640, 360, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(window);
     if (cov::validation::active()) {
-        glfwSetWindowSize(window, 2100, 1250);
+        glfwSetWindowSize(window, cov::validation::window_width(), cov::validation::window_height());
         glfwSetWindowTitle(window, "COV native validation");
     }
     glfwSwapInterval(1);
@@ -307,6 +310,9 @@ int main(int argc, char** argv) {
                     std::ostringstream density_evidence;
                     cov::write_density_evidence_json(density_evidence,wf);
                     cov::validation::record("input.density_evidence",density_evidence.str());
+                    std::ostringstream topology_evidence;
+                    cov::write_pi_topology_assignments_json(topology_evidence,wf);
+                    cov::validation::record("input.pi_topology_evidence",topology_evidence.str());
                 }
                 const auto new_mo = initial_orbital(wf);
                 const auto new_box = make_grid_box(wf);
@@ -355,9 +361,7 @@ int main(int argc, char** argv) {
             throw std::runtime_error("Native validation input failed: "+status_detail);
         }
 
-        double last_x = 0.0;
-        double last_y = 0.0;
-        glfwGetCursorPos(window, &last_x, &last_y);
+        bool scene_drag_active = false;
 
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
@@ -369,56 +373,65 @@ int main(int argc, char** argv) {
                 g_dropped_path.clear();
             }
 
-            int fb_w = 1, fb_h = 1;
+            if (cov::validation::active()) {
+                int window_width=0, window_height=0;
+                glfwGetWindowSize(window,&window_width,&window_height);
+                if (window_width!=cov::validation::window_width() ||
+                    window_height!=cov::validation::window_height()) {
+                    glfwSetWindowSize(window,cov::validation::window_width(),cov::validation::window_height());
+                    glfwPollEvents();
+                }
+            }
+            int fb_w = 0, fb_h = 0;
             glfwGetFramebufferSize(window, &fb_w, &fb_h);
-            if (cov::validation::active() && (fb_w != 2100 || fb_h != 1250)) {
-                throw std::runtime_error("Validation framebuffer is not the requested 2100x1250 size");
+            if (cov::validation::active() && (fb_w != cov::validation::window_width() ||
+                                             fb_h != cov::validation::window_height())) {
+                throw std::runtime_error("Validation framebuffer differs from the requested size");
             }
-            glViewport(0, 0, fb_w, fb_h);
-            glClearColor(0.025f, 0.031f, 0.043f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            if (wavefunction) {
-                // Geometry is rendered first into colour + depth. The implicit
-                // orbital surface then depth-tests against it and alpha-blends
-                // over geometry behind the lobe. This preserves correct front/
-                // back occlusion while allowing a genuinely transparent glass skin.
-                renderer.render_geometry(*wavefunction, grid_box, fb_w, fb_h, camera,
-                                         molecule_render);
-                renderer.render_volume(fb_w, fb_h, isovalue, camera,
-                                       molecule_render.orbital_opacity,
-                                       orbital_material, orbital_surface_mode);
-                cov::validation::after_scene(renderer,grid_box,mo_index);
+            if (fb_w <= 0 || fb_h <= 0) {
+                glfwWaitEventsTimeout(0.05);
+                continue;
             }
-
             ImGui_ImplOpenGL2_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             cov::validation::input_frame();
             ImGui::NewFrame();
-
             ImGuiIO& io = ImGui::GetIO();
-            double mx = 0.0, my = 0.0;
-            glfwGetCursorPos(window, &mx, &my);
-            if (!io.WantCaptureMouse &&
-                glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-                camera.yaw += static_cast<float>((mx - last_x) * 0.007);
-                camera.pitch += static_cast<float>((my - last_y) * 0.007);
-                camera.pitch = std::clamp(camera.pitch, -1.45f, 1.45f);
+            const auto layout = cov::viewer_layout(io.DisplaySize.x, io.DisplaySize.y,
+                                                    fb_w, fb_h, ui_scale);
+            const auto& viewport = layout.framebuffer;
+            const bool over_scene = layout.scene.contains(io.MousePos.x, io.MousePos.y);
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                scene_drag_active = over_scene && !io.WantCaptureMouse;
             }
-            if (!io.WantCaptureMouse && std::abs(io.MouseWheel) > 0.0f) {
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) scene_drag_active = false;
+            if (scene_drag_active && over_scene && !io.WantCaptureMouse) {
+                camera.yaw += io.MouseDelta.x * 0.007f;
+                camera.pitch = std::clamp(camera.pitch + io.MouseDelta.y * 0.007f, -1.45f, 1.45f);
+            }
+            if (over_scene && !io.WantCaptureMouse && std::abs(io.MouseWheel) > 0.0f) {
                 camera.distance *= std::pow(0.88f, io.MouseWheel);
                 camera.distance = std::clamp(camera.distance, 1.1f, 6.0f);
             }
-            last_x = mx;
-            last_y = my;
+            glViewport(0, 0, fb_w, fb_h);
+            glClearColor(0.025f, 0.031f, 0.043f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+            if (wavefunction && viewport.width > 0 && viewport.height > 0) {
+                // Geometry and the actual orbital texture share one viewport,
+                // projection and depth buffer, outside the control panel.
+                renderer.render_geometry(*wavefunction, grid_box, viewport.width, viewport.height,
+                                         camera, molecule_render);
+                renderer.render_volume(viewport.width, viewport.height, isovalue, camera,
+                                       molecule_render.orbital_opacity,
+                                       orbital_material, orbital_surface_mode);
+                cov::validation::after_scene(renderer, grid_box, mo_index);
+            }
+            cov::validation::scene_view(layout, camera);
+            glViewport(0, 0, fb_w, fb_h);
 
-            const float margin = 14.0f * ui_scale;
-            const float panel_width = std::min(540.0f * ui_scale,
-                                               std::max(370.0f, io.DisplaySize.x * 0.46f));
-            const float panel_height = std::max(320.0f, io.DisplaySize.y - margin * 2.0f);
-
-            ImGui::SetNextWindowPos(ImVec2(margin, margin), ImGuiCond_Always);
-            ImGui::SetNextWindowSize(ImVec2(panel_width, panel_height), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(layout.controls.x, layout.controls.y), ImGuiCond_Always);
+            ImGui::SetNextWindowSize(ImVec2(layout.controls.width, layout.controls.height), ImGuiCond_Always);
             ImGui::SetNextWindowBgAlpha(0.965f);
             constexpr ImGuiWindowFlags panel_flags =
                 ImGuiWindowFlags_NoTitleBar |
@@ -428,6 +441,10 @@ int main(int argc, char** argv) {
                 ImGuiWindowFlags_NoSavedSettings;
 
             ImGui::Begin("##cov_control_panel", nullptr, panel_flags);
+            const auto panel_position = ImGui::GetWindowPos();
+            const auto panel_size = ImGui::GetWindowSize();
+            cov::validation::hit("layout.control-panel", panel_position,
+                ImVec2(panel_position.x + panel_size.x, panel_position.y + panel_size.y));
 
             if (ImGui::BeginTable("##cov_header", 2,
                                   ImGuiTableFlags_SizingStretchProp |

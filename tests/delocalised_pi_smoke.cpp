@@ -657,9 +657,12 @@ int main(const int argc,char** argv) {
         std::abs(open_assignment.electron_count-6.0)>1.0e-8 ||
         open_assignment.orientation_channels.size()!=2u ||
         open_assignment.cyclic_topology ||
+        open_assignment.topology!=cov::DelocalisedPiTopology::MultiChannel ||
+        !open_assignment.topology_graph.channel_ring_witnesses.empty() ||
+        !open_assignment.topology_graph.channel_association_search_complete ||
         open_assignment.rationale.find("2 orientation channel(s)")==
             std::string::npos) {
-        std::cerr<<"UHF O2 alpha/beta orthogonal-p subspace is incomplete\n";
+        std::cerr<<"UHF O2 orthogonal-p subspace was lost or mislabelled as a ring union\n";
         return EXIT_FAILURE;
     }
     double direction_dot=0.0;

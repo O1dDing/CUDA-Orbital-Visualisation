@@ -9,7 +9,7 @@ int bitmap_text_width(const std::string& text, const int scale) {
 void draw_delta_pi_png(Canvas& canvas,
                        const int right_x,
                        const int centre_y,
-                       const ExportPiColour colour) {
+                       const ExportPiColour colour, const bool crystal_field=false) {
     // Raster exports use vector strokes for the same compact Δπ symbol as the
     // interactive canvas.  This avoids depending on a platform bitmap font for
     // Greek glyphs and keeps the symbol legible at all supported export sizes.
@@ -21,6 +21,10 @@ void draw_delta_pi_png(Canvas& canvas,
     canvas.line(delta_x, centre_y + 5, delta_x + 10, centre_y + 5,
                 colour.r, colour.g, colour.b, 2);
 
+    if (crystal_field) {
+        draw_text(canvas,delta_x+14,centre_y-4,"CF",colour.r,colour.g,colour.b,1);
+        return;
+    }
     const int pi_x = delta_x + 14;
     canvas.line(pi_x, centre_y - 4, pi_x + 10, centre_y - 4,
                 colour.r, colour.g, colour.b, 2);
@@ -34,7 +38,8 @@ void draw_pi_interactions_png(Canvas& canvas,
                               const MODiagramData& data,
                               const std::vector<PositionedLevel>& positioned) {
     std::size_t rendered = 0;
-    for (const auto& interaction : data.pi_interactions) {
+    for (const auto* gap : orbital_energy_gaps(data)) {
+        const auto& interaction=*gap;
         const auto bracket = export_pi_bracket(interaction, positioned);
         if (!bracket) continue;
         const ExportPiColour colour = export_pi_colour(interaction.kind);
@@ -45,7 +50,8 @@ void draw_pi_interactions_png(Canvas& canvas,
         canvas.line(x, top, x, bottom, colour.r, colour.g, colour.b, 2);
         canvas.line(x - cap, top, x, top, colour.r, colour.g, colour.b, 2);
         canvas.line(x - cap, bottom, x, bottom, colour.r, colour.g, colour.b, 2);
-        draw_delta_pi_png(canvas, x - cap - 5, (top + bottom) / 2, colour);
+        draw_delta_pi_png(canvas, x - cap - 5, (top + bottom) / 2, colour,
+                          interaction.gap_kind==OrbitalEnergyGapKind::CrystalField);
         ++rendered;
     }
 }

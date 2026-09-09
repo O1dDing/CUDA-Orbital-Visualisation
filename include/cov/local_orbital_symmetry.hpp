@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/model.hpp"
+#include "cov/local_angular_projection.hpp"
 #include "cov/point_group_catalog.hpp"
 
 #include <array>
@@ -13,19 +14,41 @@
 
 namespace cov {
 
-// Symmetry assignment made from the central atom's local s/p/d AO content.
+// Local s/p/d explanation, independent of all producer/whole-molecule labels.
 // copy_index is retained because lower-symmetry groups can contain multiple
 // independent copies carrying the same textual irrep label.  Zero means that
 // the irrep label is determined but equivalent copies are internally mixed.
+enum class LocalIrrepSource { MetricAngularProjection, DimensionCandidate };
+
 struct LocalIrrepAssignment {
     std::string label;
     MetalAOShell shell = MetalAOShell::S;
     std::uint8_t copy_index = 1;
     double confidence = 0.0;
     std::string basis_functions;
+    LocalIrrepSource source = LocalIrrepSource::DimensionCandidate;
+    std::string point_group;
+    double centre_mean_fraction = std::numeric_limits<double>::quiet_NaN();
+    double angular_fraction_within_centre = std::numeric_limits<double>::quiet_NaN();
+    double labelled_fraction_of_target = std::numeric_limits<double>::quiet_NaN();
+    // Full target identities, alpha/beta blocks, centre, axes, reference sources,
+    // ranks and residuals belong to this local explanation only.
+    std::shared_ptr<const LocalAngularProjection> projection;
 };
 
-// Coefficient-free fallback for a complete local subspace.  It succeeds only
+struct LocalIrrepAssessment {
+    std::shared_ptr<const LocalAngularProjection> projection;
+    std::optional<LocalIrrepAssignment> assignment;
+    bool numerically_resolved = false;
+    std::string detail;
+};
+
+// Retains the computed decomposition even when no single readable irrep wins.
+// A failed/mixed numerical assessment is not replaced by dimensional certainty.
+[[nodiscard]] LocalIrrepAssessment assess_local_metal_irrep(
+    const LocalAngularProjectionWorkspace&,std::span<const std::size_t>,std::string_view point_group);
+
+// A dimension-based candidate, without a numerical confidence. It succeeds only
 // when all irrep copies with the supplied dimension carry one textual label;
 // genuinely different same-dimensional irreps remain unassigned.
 [[nodiscard]] std::optional<LocalIrrepAssignment>
@@ -36,15 +59,21 @@ classify_local_irrep_by_dimension(
 
 // rotation_reference_to_input is a row-major orthogonal matrix mapping a
 // vector in the point-group reference frame into the input molecular frame.
-// The classifier rotates central-metal AO amplitudes back to the reference
-// frame, then scores the catalogued s/p/d irreps.  Equivalent repeated copies
-// are first aggregated by label; failure to select a copy therefore never
-// discards an otherwise rigorous irrep assignment.
+// The classifier projects actual MO subspaces through S onto joint radial
+// angular references. Its confidence is conditional on the stated local shell,
+// not evidence that the full MO transforms as this irrep. Repeated equal labels
+// aggregate; unresolved copy identity is retained as zero.
 [[nodiscard]] std::optional<LocalIrrepAssignment> classify_local_metal_irrep(
     const Wavefunction& wavefunction,
     std::span<const std::size_t> orbital_indices,
     std::size_t metal_atom,
     std::string_view point_group,
     const std::array<double, 9>& rotation_reference_to_input);
+
+// Reuse a workspace prepared outside the group loop.
+[[nodiscard]] std::optional<LocalIrrepAssignment> classify_local_metal_irrep(
+    const LocalAngularProjectionWorkspace& workspace,
+    std::span<const std::size_t> orbital_indices,
+    std::string_view point_group);
 
 } // namespace cov

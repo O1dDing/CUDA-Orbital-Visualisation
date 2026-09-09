@@ -2,10 +2,12 @@
 
 #include "cov/model.hpp"
 #include "cov/orbital_view.hpp"
+#include "cov/pi_pair_evidence.hpp"
 
 #include <algorithm>
 #include <cstddef>
 #include <filesystem>
+#include <limits>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -108,6 +110,7 @@ struct DelocalisedPiDescriptor {
     std::size_t orientation_channels = 0;
     bool cyclic_topology = false;
     std::vector<PiOrientationChannel> orientation_channel_details;
+    PiTopologyGraphEvidence topology_graph;
     std::string label;
     AnnotationSource source = AnnotationSource::Unavailable;
     double confidence = 0.0;
@@ -126,6 +129,7 @@ struct DelocalisedPiDescriptor {
         case DelocalisedPiTopology::Spiro: return "S";
         case DelocalisedPiTopology::HapticMetal: return "H";
         case DelocalisedPiTopology::SymmetryDirectSum: return "D";
+        case DelocalisedPiTopology::MultiChannel: return "M";
         default: return "?";
     }
 }
@@ -197,6 +201,8 @@ struct MODiagramOptions {
     int width = 1200;
     int height = 900;
     bool include_hidden_in_metadata = true;
+    double weak_crystal_field_split_hartree = 0.020;
+    double weak_crystal_field_overlap = 0.025;
 };
 
 enum class PiInteractionKind {
@@ -206,7 +212,9 @@ enum class PiInteractionKind {
     WeakNearNonbonding,
 };
 
-struct PiInteractionDescriptor {
+enum class OrbitalEnergyGapKind { PiPartner, CrystalField };
+
+struct OrbitalEnergyGapDescriptor {
     std::size_t lower_level = 0;
     std::size_t upper_level = 0;
     std::vector<std::size_t> lower_orbitals;
@@ -218,7 +226,26 @@ struct PiInteractionDescriptor {
     bool lower_visible = true;
     bool upper_visible = true;
     std::size_t retained_level = 0;
+    std::shared_ptr<const PiPartnerAssessment> orbital_evidence;
+    OrbitalEnergyGapKind gap_kind = OrbitalEnergyGapKind::PiPartner;
+    OrbitalSymmetryExplanation lower_symmetry_scope;
+    OrbitalSymmetryExplanation upper_symmetry_scope;
+    double lower_energy_hartree = std::numeric_limits<double>::quiet_NaN();
+    double upper_energy_hartree = std::numeric_limits<double>::quiet_NaN();
+    double lower_energy_spread_hartree = std::numeric_limits<double>::quiet_NaN();
+    double upper_energy_spread_hartree = std::numeric_limits<double>::quiet_NaN();
+    double weak_split_threshold_hartree = std::numeric_limits<double>::quiet_NaN();
+    double weak_overlap_threshold = std::numeric_limits<double>::quiet_NaN();
+    std::shared_ptr<const WeakCrystalFieldAssessment> crystal_field_evidence;
 };
+
+// Source compatibility for callers that construct actual pi partner records.
+using PiInteractionDescriptor = OrbitalEnergyGapDescriptor;
+[[nodiscard]] const char* orbital_energy_gap_kind_name(OrbitalEnergyGapKind kind) noexcept;
+[[nodiscard]] std::string orbital_energy_gap_json(
+    const OrbitalEnergyGapDescriptor& gap, EnergyUnit unit = EnergyUnit::Hartree);
+[[nodiscard]] std::string orbital_energy_gap_array_json(
+    const std::vector<OrbitalEnergyGapDescriptor>& gaps, EnergyUnit unit = EnergyUnit::Hartree);
 
 [[nodiscard]] const char* pi_interaction_kind_name(
     PiInteractionKind kind) noexcept;
@@ -365,7 +392,12 @@ struct MODiagramData {
     bool spin_counterparts_partial = false;
     std::size_t spin_counterpart_pair_count = 0;
     std::size_t spin_counterpart_unmatched_visible = 0;
+    // Different-irrep local d-level gaps never contribute to pi partner counts.
+    std::vector<OrbitalEnergyGapDescriptor> crystal_field_gaps;
 };
+
+[[nodiscard]] std::vector<const OrbitalEnergyGapDescriptor*> orbital_energy_gaps(
+    const MODiagramData& data);
 
 struct MODiagramViewSnapshot {
     const MODiagramData data;

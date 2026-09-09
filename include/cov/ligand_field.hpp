@@ -11,10 +11,8 @@
 
 namespace cov {
 
-// Once a locally degenerate subspace carries this much selected-metal d
-// character, its Oh/Td d irrep is determined by its dimension (Eg/E or
-// T2g/T2).  Keeping this shared avoids the browser and reduced diagram using
-// different cutoffs for ligand-dominated antibonding partners.
+// Admission floor for a readable local d-shell explanation. Dimensions alone
+// yield a candidate; only the S-metric projection provides angular evidence.
 inline constexpr double kLocalDIrrepWeightFloor=0.02;
 
 enum class LigandFieldGeometry {
@@ -65,11 +63,9 @@ struct LigandFieldEnvironment {
 [[nodiscard]] LigandFieldEnvironment analyse_ligand_field_environment(
     const Wavefunction& wavefunction);
 
-// Apply local parent-group labels to the same per-MO metadata consumed by the
-// orbital browser, diagram tooltips and exports.  Producer labels are never
-// overwritten: only unavailable members of a confidently recovered central-
-// metal valence subspace are filled.  This keeps the ordinary MO table and
-// the reduced ligand-field diagram on one metadata path.
+// Add local explanations to symmetry_view, with explicit target membership,
+// geometry/axes and evidence. MolecularOrbital::symmetry and metadata.symmetry
+// retain the full-orbital label; dimension/partner/spin candidates stay marked.
 void apply_local_ligand_field_symmetry(
     const Wavefunction& wavefunction,
     std::vector<OrbitalMetadata>& metadata);

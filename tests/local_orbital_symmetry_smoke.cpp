@@ -60,6 +60,13 @@ cov::Wavefunction base_wavefunction(const bool pure_d=true) {
     wf.shells.push_back({0,0,0,1,1,1});
     wf.shells.push_back({0,0,0,4,2,static_cast<std::uint8_t>(pure_d)});
     wf.basis_count=pure_d?9u:10u;
+    // Controlled angular metric: pure functions are orthonormal. Cartesian d
+    // diagonal functions have overlap 1/3; their scalar radial direction is
+    // independent of the separate s reference in this mathematical fixture.
+    wf.ao_overlap.assign(wf.basis_count*wf.basis_count,0);
+    for(std::size_t i=0;i<wf.basis_count;++i)wf.ao_overlap[i*wf.basis_count+i]=1;
+    if(!pure_d)for(std::size_t i=4;i<7;++i)for(std::size_t j=4;j<7;++j)
+        if(i!=j)wf.ao_overlap[i*wf.basis_count+j]=1.0/3.0;
     return wf;
 }
 
@@ -119,6 +126,8 @@ void expect(const cov::Wavefunction& wf,
     require(assignment->shell==shell,"unexpected dominant AO shell");
     require(assignment->copy_index==copy,"irrep copy index was merged or changed");
     require(assignment->confidence>0.99999,"unexpectedly weak assignment confidence");
+    require(assignment->source==cov::LocalIrrepSource::MetricAngularProjection && assignment->projection,
+            "metric result must retain its source and scoped evidence");
 }
 
 } // namespace
@@ -156,7 +165,7 @@ int main() {
         expect(wf,{0},"D4d",r2,"E3",cov::MetalAOShell::D);
     }
 
-    // Cartesian d uses xx,yy,zz,xy,xz,yz and removes the scalar trace.
+    // A traceless Cartesian d example remains d; scalar directions are separately retained.
     {
         auto wf=base_wavefunction(false);
         add_orbital(wf,rotated_cartesian_d_coefficients(r1,4));

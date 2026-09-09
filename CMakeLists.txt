@@ -32,6 +32,9 @@ add_library(cov_parser
     src/analysis/density.cpp
     src/analysis/overlap.cpp
     src/analysis/overlap_basis.cpp
+    src/metric_subspace.cpp
+    src/local_angular_generators.cpp
+    src/local_angular_projection.cpp
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
     src/analysis/point_group_catalog.cpp
@@ -39,6 +42,7 @@ add_library(cov_parser
     src/analysis/orbital_symmetry_final.cpp
     src/analysis/orbital_chemistry.cpp
     src/analysis/pi_topology.cpp
+    src/analysis/topology_graph.cpp
 )
 set_source_files_properties(src/parser/molden_parser.cpp PROPERTIES
     COMPILE_DEFINITIONS "parse_molden=parse_molden_format"
@@ -70,6 +74,10 @@ add_library(cov_orbitals
     src/analysis/orbital_tracking.cpp
     src/orbitals/orbital_view.cpp
     src/orbitals/orbital_view_dispatch.cpp
+    src/orbitals/orbital_symmetry_scope.cpp
+    src/orbitals/orbital_symmetry_json.cpp
+    src/orbitals/pi_pair_evidence.cpp
+    src/orbitals/orbital_energy_gap.cpp
     src/orbitals/coordination_geometry.cpp
     src/orbitals/ligand_field.cpp
     src/orbitals/mo_diagram_v2.cpp
@@ -345,6 +353,16 @@ if(COV_BUILD_TESTS)
     add_executable(cov_scientific_audit_dump tests/scientific_audit_dump.cpp)
     target_link_libraries(cov_scientific_audit_dump PRIVATE cov_parser cov_molecule cov_orbitals)
 
+    # These collectors emit raw records for independently frozen control
+    # reviewers. A successful process alone is not a scientific verdict.
+    foreach(probe symmetry_scope energy_gap_scope pi_prior viewport_layout
+                  local_irrep_scope local_projection angular_generators topology_evidence)
+        add_executable(cov_${probe}_probe tests/${probe}_probe.cpp)
+        target_link_libraries(cov_${probe}_probe PRIVATE cov_orbitals)
+        target_compile_options(cov_${probe}_probe PRIVATE
+            $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
+    endforeach()
+
     add_executable(cov_reference_manifest_regression
         tests/reference_manifest_regression.cpp)
     target_link_libraries(cov_reference_manifest_regression PRIVATE
@@ -421,6 +439,9 @@ if(COV_BUILD_TESTS)
     add_executable(cov_pi_topology_smoke tests/pi_topology_smoke.cpp)
     target_link_libraries(cov_pi_topology_smoke PRIVATE cov_orbitals)
     add_test(NAME pi_topology_smoke COMMAND cov_pi_topology_smoke)
+    add_executable(cov_topology_graph_smoke tests/topology_graph_smoke.cpp)
+    target_link_libraries(cov_topology_graph_smoke PRIVATE cov_parser)
+    add_test(NAME topology_graph_smoke COMMAND cov_topology_graph_smoke)
 
     add_executable(cov_interaction_graph_smoke tests/interaction_graph_smoke.cpp)
     target_link_libraries(cov_interaction_graph_smoke PRIVATE cov_molecule cov_parser)

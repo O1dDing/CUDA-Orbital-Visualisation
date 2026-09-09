@@ -59,7 +59,7 @@ constexpr auto kStrings = std::to_array<LocalisedString>({
     {"path-delocalised pi", "链状 π 离域", "鎖状 π 非局在化", "délocalisation π en chaîne"},
     {"cyclic-delocalised pi", "环状 π 离域", "環状 π 非局在化", "délocalisation π cyclique"},
     {"branched-resonance pi network", "支化共振 π 网络", "分岐共鳴 π ネットワーク", "réseau π à résonance ramifiée"},
-    {"orthogonal spiro pi network", "螺环正交 π 网络", "スピロ直交 π ネットワーク", "réseau π spiro orthogonal"},
+    {"pi network with a skeletal spiro union", "含骨架螺连接的 π 网络", "骨格スピロ接合を持つ π ネットワーク", "réseau π avec jonction spiro du squelette"},
     {"haptic metal-pi", "多触点金属–π", "多点金属–π", "contact haptique métal–π"},
     {"symmetry-equivalent pi direct sum", "对称等价 π 子体系直和", "対称等価 π 部分系の直和", "somme directe de sous-systèmes π équivalents"},
     {"atoms", "原子", "原子", "atomes"},
@@ -120,6 +120,53 @@ constexpr auto kStrings = std::to_array<LocalisedString>({
     {"unmatched visible", "可见未配对", "表示中の未対応", "visibles non appariées"},
     {"raw-MO recovered groups", "原始 MO 恢复组", "生 MO 復元群", "groupes récupérés des OM brutes"},
     {"compact active space unavailable", "紧凑活性空间不可用", "コンパクト活性空間を利用できません", "espace actif compact indisponible"},
+    {"multiple pi orientation channels", "多方向 π 通道", "複数方向の π チャネル", "canaux π à orientations multiples"},
+    {"Skeletal ring evidence", "骨架环证据", "骨格環の根拠", "Preuve des cycles du squelette"},
+    {"Connectivity model", "连接模型", "結合グラフのモデル", "Modèle de connectivité"},
+    {"Mayer order and covalent-radius distance", "Mayer 键级与共价半径距离", "Mayer 結合次数と共有結合半径距離", "indice de Mayer et distance des rayons covalents"},
+    {"Covalent-radius distance", "共价半径距离", "共有結合半径距離", "distance des rayons covalents"},
+    {"Common ring atom", "两环共用原子", "両環の共有原子", "Atome commun aux deux cycles"},
+    {"Ring path", "环路径", "環経路", "Chemin cyclique"},
+    {"Additional connection between these rings", "两环另有连接", "両環間の追加接続", "Connexion supplémentaire entre ces cycles"},
+    {"No channel-specific ring union was found in this model; this does not assert that the molecule is acyclic.", "当前模型内未找到与这些通道对应的螺连接；这不表示整个分子无环。", "このモデルではチャネルに対応するスピロ接合が見つかりません。分子全体が非環式であるとの主張ではありません。", "Aucune jonction spiro propre à ces canaux n’a été trouvée dans ce modèle ; cela ne signifie pas que la molécule est acyclique."},
+    {"Edges are selected by the stated model. Skeletal ring paths and cyclic pi channels are separate properties.", "连接边由所示模型选取。骨架环路径与 π 通道是否闭环分别记录。", "結合辺は表示モデルにより選択されます。骨格環と π チャネルの環状性は別の性質です。", "Les arêtes sont choisies par le modèle indiqué. Les cycles du squelette et les canaux π cycliques sont des propriétés distinctes."},
+    {"Full-orbital label", "完整轨道标签", "全軌道のラベル", "Étiquette de l’OM entière"},
+    {"Symmetry explanation", "对称性解释", "対称性の解釈", "Interprétation de symétrie"},
+    {"local", "局部", "局所", "local"},
+    {"candidate", "候选", "候補", "candidat"},
+    {"source", "来源", "出力", "source"},
+    {"whole MO", "整体", "全体", "OM entière"},
+    {"mixed", "混合", "混合", "mixte"},
+    {"Local angular projection", "局部角向投影", "局所角成分の射影", "Projection angulaire locale"},
+    {"Candidate from shell dimension", "壳层维数候选", "殻の次元からの候補", "Candidat issu de la dimension de la couche"},
+    {"Candidate from a pi partner", "π 伙伴候选", "π パートナーからの候補", "Candidat issu d’un partenaire π"},
+    {"Candidate from the other spin", "另一自旋的候选", "他スピンからの候補", "Candidat issu de l’autre spin"},
+    {"Molecular symmetry operations", "整体分子对称操作", "分子全体の対称操作", "Opérations de symétrie moléculaire"},
+    {"MO subspace members", "MO 子空间成员", "MO 部分空間の要素", "Membres du sous-espace des OM"},
+    {"Candidate source members", "候选来源成员", "候補の出典軌道", "Membres à l’origine du candidat"},
+    {"Centre coverage of target subspace", "中心对目标子空间的覆盖率", "対象部分空間の中心被覆率", "Couverture du sous-espace par le centre"},
+    {"Purity within the local shell", "局部壳层内纯度", "局所殻内の純度", "Pureté dans la couche locale"},
+    {"Labelled local component / full target", "所标局部分量 / 完整目标", "ラベル付き局所成分 / 全対象", "Composante locale étiquetée / cible entière"},
+    {"These are unweighted subspace overlaps, not electron populations. Local purity alone does not classify the whole MO.", "以上是未按占据加权的子空间重叠度，不是电子布居；局部纯度不能单独判定完整 MO。", "これらは占有数で重み付けしない部分空間の重なりであり、電子数ではありません。局所純度のみでは全 MO を分類できません。", "Il s’agit de recouvrements de sous-espaces non pondérés par les occupations, pas de populations électroniques. La pureté locale ne classe pas à elle seule l’OM entière."},
+    {"The printed label’s point-group binding is unresolved; the reported groups below are source context.", "打印标签所用点群尚未独立确定；下方点群保留为来源上下文。", "印字ラベルの点群との対応は未確定です。以下の点群は出力の文脈です。", "Le groupe associé à l’étiquette imprimée reste indéterminé ; les groupes ci-dessous sont le contexte de la source."},
+    {"Local reference axes in input coordinates", "输入坐标中的局部参考轴", "入力座標での局所基準軸", "Axes de référence locaux dans les coordonnées d’entrée"},
+
+    {"Angular subspace / full target", "角向子空间 / 完整目标", "角部分空間 / 全対象", "Sous-espace angulaire / cible entière"},
+    {"Represented spin-orbital rank", "已表示的自旋轨道秩", "表現されたスピン軌道のランク", "Rang représenté des spin-orbitales"},
+    {"Maximum numerical residual", "最大数值残差", "最大数値残差", "Résidu numérique maximal"},
+    {"No single local irrep is assigned. The decomposition and numerical status are retained.", "未赋予单一局部不可约表示；分解及数值状态予以保留。", "単一の局所既約表現を割り当てていません。分解と数値状態を保持します。", "Aucune représentation locale unique n’est attribuée. La décomposition et l’état numérique sont conservés."},
+    {"Crystal-field gap", "晶场能隙", "結晶場ギャップ", "Écart du champ cristallin"},
+    {"crystal-field gaps", "晶场能隙数", "結晶場ギャップ数", "écarts du champ cristallin"},
+    {"Interpretation support (not probability)", "解释支持评分（非概率）", "解釈の支持度（確率ではない）", "Score de soutien (pas une probabilité)"},
+    {"Ligand catalogue prior", "配体目录先验", "配位子カタログの事前情報", "A priori du catalogue des ligands"},
+    {"sigma only", "仅 σ", "σ のみ", "σ uniquement"},
+    {"pi donor", "π 给体", "π 供与体", "donneur π"},
+    {"pi acceptor", "π 受体", "π 受容体", "accepteur π"},
+    {"ambiguous", "不确定", "曖昧", "ambigu"},
+    {"Orbital evidence / prior", "轨道证据与先验", "軌道の証拠と事前情報", "Preuve orbitale / a priori"},
+    {"consistent", "一致", "整合", "cohérent"},
+    {"contradicted by the orbitals", "轨道证据推翻先验", "軌道の証拠と矛盾", "contredit par les orbitales"},
+    {"Approximate nonbonding describes the local metal–ligand contribution. Both energy endpoints and their full MO members are retained.", "近似非键描述局部金属–配体贡献；两个能量端点及其完整 MO 成员均保留。", "近似的な非結合性は局所金属–配位子成分を表します。両端のエネルギーと全 MO 要素を保持します。", "Le caractère approximativement non liant décrit la contribution locale métal–ligand. Les deux énergies et tous leurs membres OM sont conservés."},
 });
 
 static_assert(kStrings.size() == static_cast<std::size_t>(OrbitalText::Count));
@@ -348,6 +395,8 @@ std::string localised_diagram_selection_summary(
     }
     out << "; " << orbital_tr(OrbitalText::PiPairs, language)
         << '=' << data.pi_interactions.size()
+        << "; " << orbital_tr(OrbitalText::CrystalFieldGaps, language)
+        << '=' << data.crystal_field_gaps.size()
         << "; " << orbital_tr(OrbitalText::ProtectedOverflow, language)
         << '=' << data.selection.protected_overflow_count;
     if (data.spin_counterpart_pair_count > 0u) {

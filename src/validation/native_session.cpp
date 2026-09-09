@@ -4,6 +4,7 @@
 #include <imgui_internal.h>
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
@@ -22,6 +23,7 @@ struct Target { ImVec2 lo, hi; ImGuiWindow* window; ImRect clip; };
 struct Command { std::string op, id, value; std::vector<float> args; };
 bool enabled = false;
 bool hidden_window = false;
+int requested_window_width = 2100, requested_window_height = 1250;
 std::filesystem::path output;
 std::string export_name="actual-export";
 std::vector<Command> commands;
@@ -37,6 +39,7 @@ std::vector<std::string> trace;
 std::string evaluation_reason;
 float kernel_ms = 0;
 ImVec2 injected_mouse(-100,-100);
+std::string scene_view_json = "null";
 bool volume_command(const Command& c) { return c.op=="volume" || c.op=="volume_full"; }
 void write_volume_binary(const std::filesystem::path& path, const std::vector<float>& volume) {
     static_assert(sizeof(float)==4 && std::numeric_limits<float>::is_iec559,
@@ -115,6 +118,7 @@ std::string state_json(std::size_t applied, const ui::OrbitalUIState& ui, const 
     s << "{\"schema\":1,\"frame\":" << frame << ",\"elapsed_seconds\":" << elapsed()
       << ",\"rendered_mo\":" << rendered_mo << ",\"applied_mo\":" << applied
       << ",\"drawn_ui_mo\":" << drawn_ui_mo << ",\"requested_mo\":" << requested_mo
+      << ",\"scene_view\":" << scene_view_json
       << ",\"diagram_generation\":" << diagram_generation
       << ",\"rendered_generation\":" << rendered_generation << ",\"volume_generation\":" << generation
       << ",\"scene_matches_applied\":" << (rendered_mo==applied?"true":"false")
@@ -161,8 +165,26 @@ bool configure(int argc, char** argv) {
         if(line.empty() || line[0]=='#') continue;
         std::istringstream r(line); Command c; r>>c.op;
         if(c.op=="scene") {float x;while(r>>x)c.args.push_back(x);if(c.args.size()!=6)throw std::runtime_error("scene requires opacity yaw pitch distance iso resolution");}
-        else { r>>std::quoted(c.id); if(c.op=="text" || volume_command(c)) r>>std::quoted(c.value); }
-        if(c.op!="scene"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name") throw std::runtime_error("unknown plan command");
+        else if(c.op=="window") {
+            float width=0,height=0; std::string extra;
+            if(!(r>>width>>height) || (r>>extra) || !std::isfinite(width) || !std::isfinite(height) ||
+               width<640 || width>7680 || height<360 || height>4320 ||
+               std::floor(width)!=width || std::floor(height)!=height)
+                throw std::runtime_error("window requires integral width 640..7680 and height 360..4320");
+            c.args={width,height};
+        }
+        else {
+            r>>std::quoted(c.id);
+            if(c.op=="text" || volume_command(c)) r>>std::quoted(c.value);
+            if(c.op=="drag" || c.op=="wheel") {
+                float x=0,y=0; std::string extra;
+                if(!(r>>x) || (c.op=="drag" && !(r>>y)) || (r>>extra) ||
+                   !std::isfinite(x) || !std::isfinite(y) || std::abs(x)>10000 || std::abs(y)>10000)
+                    throw std::runtime_error("drag/wheel requires finite bounded pointer deltas");
+                c.args={x,y};
+            }
+        }
+        if(c.op!="scene"&&c.op!="window"&&c.op!="drag"&&c.op!="wheel"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name") throw std::runtime_error("unknown plan command");
         if(c.op=="export-name" && (c.id.empty() || c.id.find_first_not_of(
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")!=std::string::npos)) {
             throw std::runtime_error("export-name requires a plain artifact name");
@@ -184,6 +206,8 @@ bool configure(int argc, char** argv) {
 }
 bool active(){return enabled;}
 bool background(){return enabled&&hidden_window;}
+int window_width(){return requested_window_width;}
+int window_height(){return requested_window_height;}
 bool done(){return enabled&&next>=commands.size();}
 int result(){return failures?2:0;}
 void begin_frame(OrbitCamera& camera, MoleculeRenderSettings& settings, float& iso, int& resolution, bool& resize) {
@@ -191,6 +215,10 @@ void begin_frame(OrbitCamera& camera, MoleculeRenderSettings& settings, float& i
     ++frame; previous=std::move(targets);targets.clear();trace.clear();evaluation_reason.clear();
     if(done())return;
     auto& c=commands[next];
+    if(c.op=="window") {
+        requested_window_width=static_cast<int>(c.args[0]);
+        requested_window_height=static_cast<int>(c.args[1]);
+    }
     if(c.op=="scene") {
         settings.orbital_opacity=c.args[0];camera.yaw=c.args[1];camera.pitch=c.args[2];camera.distance=c.args[3];iso=c.args[4];
         const int requested=static_cast<int>(c.args[5]);
@@ -208,6 +236,7 @@ void input_frame() {
     io.AddFocusEvent(true);
     io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
     if(c.op=="scene")return;
+    if(c.op=="window") {if(++stage>=4)complete_command=true;return;}
     // Destination naming alone; the following real button click still owns
     // the production export. Existing COV_VALIDATION 1 plans keep the default.
     if(c.op=="export-name") {export_name=c.id;complete_command=true;return;}
@@ -236,6 +265,22 @@ void input_frame() {
     // frames even if the action closes its own window. Final captures, rather
     // than continued target existence, establish whether the action succeeded.
     if(c.op=="hover") {if(++stage>=4)complete_command=true;return;}
+    if(c.op=="wheel" || c.op=="drag") {
+        if(c.op=="wheel" && stage==1) io.AddMouseWheelEvent(0,c.args[0]);
+        if(c.op=="drag") {
+            if(stage==1)io.AddMouseButtonEvent(0,true);
+            if(stage==2) {
+                injected_mouse.x+=c.args[0];injected_mouse.y+=c.args[1];
+                io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
+            }
+            if(stage==3)io.AddMouseButtonEvent(0,false);
+        }
+        events<<"{\"kind\":\"input.pointer\",\"frame\":"<<frame<<",\"command\":"<<next
+              <<",\"op\":"<<quote(c.op)<<",\"stage\":"<<stage
+              <<",\"mouse\":["<<injected_mouse.x<<','<<injected_mouse.y<<"]}\n";
+        if(++stage>=6)complete_command=true;
+        return;
+    }
     // A real input sequence, observed hit rectangle -> down -> up. The
     // production Button/Selectable/canvas path remains the sole state writer.
     if(stage==1)io.AddMouseButtonEvent(0,true);
@@ -295,6 +340,28 @@ void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t m
     out.close();if(!out)throw std::runtime_error("texture evidence metadata write failed");
     complete_command=true;
 }
+void scene_view(const ViewerLayout& layout, const OrbitCamera& camera) {
+    if (!enabled) return;
+    GLint viewport[4]{};
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    const auto projection = scene_projection(viewport[2], viewport[3], camera.fov_degrees);
+    const auto& scene = layout.scene;
+    targets["scene.viewport"] = {ImVec2(scene.x, scene.y), ImVec2(scene.x + scene.width, scene.y + scene.height),
+        nullptr, ImRect(ImVec2(scene.x, scene.y), ImVec2(scene.x + scene.width, scene.y + scene.height))};
+    std::ostringstream out; out << std::setprecision(17);
+    out << "{\"viewport_source\":\"GL_VIEWPORT read after scene rendering\",\"framebuffer_size\":["
+        << layout.framebuffer_width << ',' << layout.framebuffer_height << "],\"window_size\":["
+        << layout.window_width << ',' << layout.window_height << "],\"gl_viewport_xywh\":["
+        << viewport[0] << ',' << viewport[1] << ',' << viewport[2] << ',' << viewport[3]
+        << "],\"logical_scene_xywh\":[" << scene.x << ',' << scene.y << ',' << scene.width << ',' << scene.height
+        << "],\"control_panel_xywh\":[" << layout.controls.x << ',' << layout.controls.y << ','
+        << layout.controls.width << ',' << layout.controls.height << "],\"camera\":{\"yaw\":" << camera.yaw
+        << ",\"pitch\":" << camera.pitch << ",\"distance\":" << camera.distance
+        << ",\"fov_degrees\":" << camera.fov_degrees << ",\"fov_scope\":\"shorter viewport dimension\"}"
+        << ",\"projection_inputs\":{\"aspect\":" << projection.aspect << ",\"tan_half_vertical_fov\":"
+        << projection.tan_half_vertical_fov << ",\"source\":\"shared renderer projection function; not uniform readback\"}}";
+    scene_view_json = out.str();
+}
 void hit(const std::string& id,ImVec2 lo,ImVec2 hi) {
     if(!enabled)return;auto* w=ImGui::GetCurrentWindow();
     targets[id]={lo,hi,w,w->ClipRect};
@@ -307,10 +374,10 @@ void anchor(const std::string& id) {
     if(!enabled)return;const auto p=ImGui::GetCursorScreenPos();hit(id,p,ImVec2(p.x+20,p.y+4));
 }
 void record(const std::string& kind,const std::string& json) {
-    if(enabled && kind=="input.density_evidence") {
+    if(enabled && (kind=="input.density_evidence" || kind=="input.pi_topology_evidence")) {
         events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";
         events.flush();
-        return; // Full matrices belong to the load event, not per-frame traces.
+        return; // Full input evidence belongs to the load event, not per-frame traces.
     }
     if(enabled)trace.push_back("{\"kind\":"+quote(kind)+",\"data\":"+json+"}");
     if(enabled && (kind=="export.actual" || kind=="input.numerical_diagnostics" ||
@@ -333,8 +400,6 @@ std::filesystem::path export_base(const std::filesystem::path& original) {
 }
 void end_frame(int width,int height,std::size_t applied,const ui::OrbitalUIState& ui,const Wavefunction* wf) {
     if(!enabled)return;
-    targets["scene.viewport"]={ImVec2(width*0.7f,height*0.2f),ImVec2(width*0.9f,height*0.7f),nullptr,
-                               ImRect(ImVec2(0,0),ImVec2(static_cast<float>(width),static_cast<float>(height)))};
     const auto state=state_json(applied,ui,wf);frames<<state<<'\n';
     if(!done() && complete_command) {
         const auto c=commands[next];

@@ -73,6 +73,7 @@ struct SymmetryBlock {
     std::vector<std::string> beta;
     bool explicit_spin = false;
     std::size_t job_segment = 0;
+    OrbitalSymmetrySourceRecord source;
 };
 
 struct TextRecord {
@@ -150,6 +151,7 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
     }
     result.opened = true;
     wavefunction.point_group_source_records.clear();
+    wavefunction.orbital_symmetry_source_records.clear();
 
     std::vector<std::string> lines;
     std::string line;
@@ -222,6 +224,15 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
 
         SymmetryBlock block;
         block.job_segment=job_segment;
+        const auto source_path_utf8=path.u8string();
+        block.source.source_path.assign(source_path_utf8.begin(),source_path_utf8.end());
+        block.source.line_begin=i+1u;
+        block.source.line_end=i+1u;
+        block.source.job_segment=job_segment;
+        if (point_group_detected && point_group_detected->job_segment==job_segment)
+            block.source.detected_group_context=point_group_detected->value;
+        if (point_group_used && point_group_used->job_segment==job_segment)
+            block.source.abelian_group_context=point_group_used->value;
         Spin current_spin = Spin::Alpha;
         for (std::size_t j = i + 1u; j < lines.size() && j < i + 80u; ++j) {
             const std::string s = trim(lines[j]);
@@ -246,6 +257,7 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
 
             const auto labels = parenthesized_labels(s);
             if (labels.empty()) continue;
+            block.source.line_end=j+1u;
             auto& target = current_spin == Spin::Alpha ? block.alpha : block.beta;
             target.insert(target.end(), labels.begin(), labels.end());
         }
@@ -299,6 +311,12 @@ GaussianLogEnrichmentResult enrich_from_gaussian_log(
 
     if (symmetry_segment_ok && symmetry_dimensions_ok &&
         !last_block.alpha.empty()) {
+        auto source=last_block.source;
+        source.orbital_indices=alpha_indices;
+        source.orbital_indices.insert(source.orbital_indices.end(),beta_indices.begin(),beta_indices.end());
+        source.labels=last_block.alpha;
+        source.labels.insert(source.labels.end(),last_block.beta.begin(),last_block.beta.end());
+        wavefunction.orbital_symmetry_source_records.push_back(std::move(source));
         for (std::size_t i = 0; i < alpha_indices.size(); ++i) {
             auto& mo = wavefunction.orbitals[alpha_indices[i]];
             mo.symmetry = last_block.alpha[i];

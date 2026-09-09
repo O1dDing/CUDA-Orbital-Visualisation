@@ -1,5 +1,6 @@
 #include "cov/ligand_field.hpp"
 #include "cov/local_orbital_symmetry.hpp"
+#include "cov/pi_pair_evidence.hpp"
 
 #include <algorithm>
 #include <array>
@@ -214,6 +215,7 @@ double central_metal_weight(const MolecularOrbital& orbital,
 }
 
 struct LocalOrbitalGroup {
+    OrbitalSymmetryExplanation explanation;
     std::vector<std::size_t> members;
     Spin spin=Spin::Alpha;
     double energy=0.0;
@@ -416,14 +418,18 @@ void propagate_spin_counterpart_labels(
         if (reverse.index!=alpha || reverse.score<minimum_score ||
             reverse.score-reverse.runner_up<minimum_margin) continue;
         const bool alpha_labelled=!normalised_symmetry(
-            metadata[alpha].symmetry).empty();
+            metadata[alpha].symmetry_view.label).empty();
         const bool beta_labelled=!normalised_symmetry(
-            metadata[beta].symmetry).empty();
+            metadata[beta].symmetry_view.label).empty();
         if (alpha_labelled==beta_labelled) continue;
         if (alpha_labelled) {
-            metadata[beta].symmetry=metadata[alpha].symmetry;
+            const std::array<std::size_t,1> target{beta};
+            metadata[beta].symmetry_view=candidate_orbital_symmetry(
+                metadata[alpha].symmetry_view,OrbitalSymmetryOrigin::SpinCounterpartCandidate,target,match.score);
         } else {
-            metadata[alpha].symmetry=metadata[beta].symmetry;
+            const std::array<std::size_t,1> target{alpha};
+            metadata[alpha].symmetry_view=candidate_orbital_symmetry(
+                metadata[beta].symmetry_view,OrbitalSymmetryOrigin::SpinCounterpartCandidate,target,match.score);
         }
     }
 }
@@ -559,12 +565,8 @@ std::vector<LocalOrbitalGroup> initial_orbital_groups(
         double channel_weight=0.0;
         double overlap=0.0;
         group.spin=spin;
-        if (base<metadata.size()) {
-            const std::string current=normalised_symmetry(metadata[base].symmetry);
-            if (!current.empty() && current!="?" && current!="n/a") {
-                group.symmetry=metadata[base].symmetry;
-            }
-        }
+        // Local classification starts without borrowing a molecular label.
+        // Identical text in a producer group need not mean the same local axes.
         for (std::size_t index=base;index<end;++index) {
             const auto& orbital=wavefunction.orbitals[index];
             group.members.push_back(index);
@@ -628,11 +630,15 @@ void propagate_pi_partner_labels(
     std::vector<LocalOrbitalGroup>& groups) {
     const std::string point_group=environment.local_point_group();
     const LocalPiRole role=local_pi_role(wavefunction,environment);
-    if (role==LocalPiRole::SigmaOnly) return;
+    const LigandPiPrior prior=role==LocalPiRole::SigmaOnly?LigandPiPrior::SigmaOnly:
+        role==LocalPiRole::Donor?LigandPiPrior::Donor:
+        role==LocalPiRole::Acceptor?LigandPiPrior::Acceptor:
+        role==LocalPiRole::Ambiguous?LigandPiPrior::Ambiguous:LigandPiPrior::Unresolved;
     struct Candidate {
         std::size_t known=0u;
         std::size_t missing=0u;
         double score=0.0;
+        std::shared_ptr<const PiPartnerAssessment> evidence;
     };
     std::vector<Candidate> candidates;
     for (std::size_t first=0;first<groups.size();++first) {
@@ -647,50 +653,11 @@ void propagate_pi_partner_labels(
             if (!normalised_symmetry(missing.symmetry).empty()) continue;
             const auto& lower=a.energy<=b.energy?a:b;
             const auto& upper=a.energy<=b.energy?b:a;
-            if (lower.pi_fraction<0.60 || upper.pi_fraction<0.60 ||
-                lower.metal[2]+lower.ligand_p<0.18 ||
-                upper.metal[2]+upper.ligand_p<0.18) continue;
-            const double split=upper.energy-lower.energy;
-            if (split>1.50) continue;
-            const double lower_composition=lower.ligand_p-lower.metal[2];
-            const double upper_composition=upper.ligand_p-upper.metal[2];
-            const double donor=lower_composition-upper_composition;
-            const double acceptor=-donor;
-            const double opposite=std::max(
-                0.0,-lower.metal_ligand_overlap*
-                         upper.metal_ligand_overlap);
-            constexpr double weak_split=0.020;
-            constexpr double weak_overlap=0.025;
-            const bool weak=split<=weak_split &&
-                std::abs(lower.metal_ligand_overlap)<=weak_overlap &&
-                std::abs(upper.metal_ligand_overlap)<=weak_overlap;
-            const bool complementary=lower_composition*upper_composition<0.0 &&
-                std::abs(lower_composition)>=0.05 &&
-                std::abs(upper_composition)>=0.05;
-            if (!weak && !complementary) continue;
-            const bool directed=lower.metal_ligand_overlap*
-                    upper.metal_ligand_overlap<0.0 &&
-                std::abs(lower.metal_ligand_overlap)>=weak_overlap &&
-                std::abs(upper.metal_ligand_overlap)>=weak_overlap;
-            const double expected_contrast=
-                role==LocalPiRole::Donor?donor:
-                (role==LocalPiRole::Acceptor?acceptor:
-                 std::max(donor,acceptor));
-            if (!weak && !directed && expected_contrast<0.18) continue;
-            if (weak && std::max(lower.metal[2],upper.metal[2])<0.08) {
-                continue;
-            }
-            if ((role==LocalPiRole::Donor ||
-                 role==LocalPiRole::Acceptor) && expected_contrast<0.18) {
-                continue;
-            }
-            const double score=2.0*std::min(
-                    lower.pi_fraction,upper.pi_fraction)+
-                2.0*std::max(0.0,expected_contrast)+
-                2.0*std::sqrt(opposite)-0.08*split;
-            if (score<0.75) continue;
-            candidates.push_back({
-                a_known?first:second,a_known?second:first,score});
+            auto evidence=std::make_shared<const PiPartnerAssessment>(assess_pi_partner(
+                {lower.energy,lower.metal[2],lower.ligand_p,lower.pi_fraction,lower.metal_ligand_overlap},
+                {upper.energy,upper.metal[2],upper.ligand_p,upper.pi_fraction,upper.metal_ligand_overlap},prior));
+            if(!evidence->accepted)continue;
+            candidates.push_back({a_known?first:second,a_known?second:first,evidence->ranking_score,evidence});
         }
     }
     std::sort(candidates.begin(),candidates.end(),[](const auto& left,
@@ -702,7 +669,12 @@ void propagate_pi_partner_labels(
         if (used.count(candidate.known) || used.count(candidate.missing)) {
             continue;
         }
-        groups[candidate.missing].symmetry=groups[candidate.known].symmetry;
+        const auto& source=groups[candidate.known];
+        auto& target=groups[candidate.missing];
+        target.symmetry=source.symmetry;
+        target.explanation=candidate_orbital_symmetry(source.explanation,
+            OrbitalSymmetryOrigin::PiPartnerCandidate,target.members,candidate.score);
+        target.explanation.pi_partner_evidence=candidate.evidence;
         used.insert(candidate.known);
         used.insert(candidate.missing);
     }
@@ -771,33 +743,22 @@ void merge_local_pseudodegenerate_groups(
 }
 
 void recover_local_group_symmetry(
-    const Wavefunction& wavefunction,
+    const LocalAngularProjectionWorkspace& workspace,
     const LigandFieldEnvironment& environment,
     std::vector<LocalOrbitalGroup>& groups) {
     if (!environment.available()) return;
-    const std::string point_group=environment.local_point_group();
-    for (auto& group:groups) {
+    for(auto& group:groups) {
         const int family=dominant_family(group);
-        // A ligand-only group can contain round-off-sized coefficients on the
-        // centre.  Treating those as metal-shell evidence corrupts valid
-        // producer irreps and can make the browser disagree with the diagram.
-        std::optional<LocalIrrepAssignment> assignment;
-        if (family>=0) {
-            assignment=classify_local_metal_irrep(
-                wavefunction,group.members,environment.metal_atom,point_group,
-                environment.rotation_reference_to_input);
+        if(family<0) {
+            group.symmetry.clear();group.explanation={};
+            group.local_irrep_copy=0;group.locally_classified=false;
+            continue;
         }
-        if (!assignment) {
-            if (family>=0) {
-                assignment=classify_local_irrep_by_dimension(
-                    point_group,static_cast<MetalAOShell>(family),
-                    group.members.size());
-            }
-        }
-        if (!assignment) continue;
-        group.symmetry=assignment->label;
-        group.local_irrep_copy=assignment->copy_index;
-        group.locally_classified=true;
+        group.explanation=evaluate_local_orbital_symmetry(workspace,environment,group.members,family);
+        group.symmetry=group.explanation.label;
+        group.local_irrep_copy=group.explanation.local_assignment
+            ?group.explanation.local_assignment->copy_index:0u;
+        group.locally_classified=static_cast<bool>(group.explanation.local_assignment);
     }
 }
 
@@ -889,13 +850,14 @@ void apply_local_ligand_field_symmetry(
         analyse_ligand_field_environment(wavefunction);
     if (!environment.available()) return;
 
-    auto groups=initial_orbital_groups(
-        wavefunction,metadata,environment);
-    recover_local_group_symmetry(wavefunction,environment,groups);
+    const LocalAngularProjectionWorkspace workspace(wavefunction,environment.metal_atom,
+        environment.rotation_reference_to_input);
+    auto groups=initial_orbital_groups(wavefunction,metadata,environment);
+    recover_local_group_symmetry(workspace,environment,groups);
     if (environment.equivalent_ligand_elements) {
         merge_local_pseudodegenerate_groups(
             environment.local_point_group(),groups);
-        recover_local_group_symmetry(wavefunction,environment,groups);
+        recover_local_group_symmetry(workspace,environment,groups);
     }
     propagate_pi_partner_labels(wavefunction,environment,groups);
     for (const auto& group:groups) {
@@ -903,12 +865,7 @@ void apply_local_ligand_field_symmetry(
         if (symmetry.empty()) continue;
         for (const auto member:group.members) {
             if (member>=metadata.size()) continue;
-            const std::string current=normalised_symmetry(
-                metadata[member].symmetry);
-            if (group.locally_classified || current.empty() ||
-                current=="?" || current=="n/a") {
-                metadata[member].symmetry=symmetry;
-            }
+            metadata[member].symmetry_view=group.explanation;
         }
     }
     propagate_spin_counterpart_labels(wavefunction,metadata);

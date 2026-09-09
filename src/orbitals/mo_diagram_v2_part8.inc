@@ -11,17 +11,7 @@ const char* machine_bonding_class(const BondingClass value) noexcept {
 
 const char* machine_pi_topology(
     const DelocalisedPiTopology value) noexcept {
-    switch (value) {
-        case DelocalisedPiTopology::Path: return "path";
-        case DelocalisedPiTopology::Cycle: return "cycle";
-        case DelocalisedPiTopology::BranchedResonance:
-            return "branched-resonance";
-        case DelocalisedPiTopology::Spiro: return "spiro";
-        case DelocalisedPiTopology::HapticMetal: return "haptic-metal";
-        case DelocalisedPiTopology::SymmetryDirectSum:
-            return "symmetry-direct-sum";
-        default: return "unknown";
-    }
+    return pi_topology_name(value);
 }
 
 const char* machine_scf_status(const ScfConvergenceStatus value) noexcept {
@@ -310,38 +300,8 @@ bool write_mo_diagram_json(const MODiagramData& data,
             << (index+1u<data.local_geometries.size()?",":"") << "\n";
     }
     out << "  ],\n";
-    out << "  \"pi_interactions\": [\n";
-    for (std::size_t i = 0; i < data.pi_interactions.size(); ++i) {
-        const auto& interaction = data.pi_interactions[i];
-        out << "    {\n";
-        out << "      \"kind\": \""
-            << export_pi_kind_id(interaction.kind) << "\",\n";
-        out << "      \"description\": \""
-            << json_escape(pi_interaction_kind_name(interaction.kind)) << "\",\n";
-        out << "      \"symmetry\": \""
-            << json_escape(interaction.symmetry) << "\",\n";
-        out << "      \"lower_level\": " << interaction.lower_level << ",\n";
-        out << "      \"upper_level\": " << interaction.upper_level << ",\n";
-        out << "      \"retained_level\": " << interaction.retained_level << ",\n";
-        out << "      \"lower_orbitals\": ";
-        write_json_index_array(out, interaction.lower_orbitals);
-        out << ",\n";
-        out << "      \"upper_orbitals\": ";
-        write_json_index_array(out, interaction.upper_orbitals);
-        out << ",\n";
-        out << "      \"splitting_hartree\": " << std::setprecision(17)
-            << interaction.splitting_hartree << ",\n";
-        out << "      \"splitting_display\": "
-            << convert_hartree(interaction.splitting_hartree, options.energy_unit)
-            << ",\n";
-        out << "      \"confidence\": " << interaction.confidence << ",\n";
-        out << "      \"lower_visible\": "
-            << (interaction.lower_visible ? "true" : "false") << ",\n";
-        out << "      \"upper_visible\": "
-            << (interaction.upper_visible ? "true" : "false") << "\n";
-        out << "    }" << (i + 1 < data.pi_interactions.size() ? "," : "") << "\n";
-    }
-    out << "  ],\n";
+    out << "  \"pi_interactions\": " << orbital_energy_gap_array_json(data.pi_interactions,options.energy_unit) << ",\n";
+    out << "  \"crystal_field_gaps\": " << orbital_energy_gap_array_json(data.crystal_field_gaps,options.energy_unit) << ",\n";
     out << "  \"delocalised_pi_families\": [\n";
     std::set<std::string> exported_pi_families;
     bool first_pi_family=true;
@@ -380,6 +340,8 @@ bool write_mo_diagram_json(const MODiagramData& data,
         } else {
             out << "null";
         }
+        out << ",\"topology_graph\":";
+        write_pi_topology_graph_json(out,pi.topology_graph);
         out << '}';
     }
     out << "\n  ],\n";
@@ -389,7 +351,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << "    {\"row_index\":" << i
             << ",\"layout_energy_hartree\":" << std::setprecision(17)
             << level.layout_energy_hartree
-            << ",\"symmetry\":\"" << json_escape(level.metadata.symmetry)
+            << ",\"symmetry\":\"" << json_escape(level.metadata.symmetry_view.label)
             << "\",\"member_orbitals\":";
         if (level.member_indices.empty()) {
             write_json_index_array(out, std::vector<std::size_t>{level.metadata.orbital_index});
@@ -397,6 +359,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
             write_json_index_array(out, level.member_indices);
         }
         const auto members=mo_diagram_member_views(data,level);
+        out << ",\"symmetry_explanation\":" << orbital_symmetry_json(level.metadata.symmetry_view);
         out << ",\"representative_metadata_index\":" << level.metadata.orbital_index
             << ",\"layout_energy_meaning\":\"row-layout-value-not-an-individual-MO-energy\""
             << ",\"energy_spread_hartree\":" << level.energy_spread_hartree
@@ -459,8 +422,13 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << ",\n      \"coordinate_scope\": \"" << (row?"row-layout":"unplotted-energy-map") << "\",\n";
         out << "      \"occupation\": " << item.occupation << ",\n";
         out << "      \"spin\": \"" << spin_name(item.spin) << "\",\n";
-        out << "      \"symmetry\": \"" << json_escape(item.symmetry) << "\",\n";
-        out << "      \"symmetry_display\": \"" << json_escape(format_symmetry_unicode(item.symmetry)) << "\",\n";
+        out << "      \"symmetry\": \"" << json_escape(item.symmetry_view.label) << "\",\n";
+        out << "      \"symmetry_display\": \"" << json_escape(orbital_symmetry_compact_text(item.symmetry_view)) << "\",\n";
+        out << "      \"source_symmetry\": \"" << json_escape(item.symmetry) << "\",\n";
+        out << "      \"symmetry_explanation\": " << orbital_symmetry_json(item.symmetry_view) << ",\n";
+        out << "      \"source_symmetry_explanation\": ";
+        out << (item.molecular_member_symmetries.empty() ? "null" :
+            orbital_symmetry_json(item.molecular_member_symmetries.front())) << ",\n";
         out << "      \"degeneracy_size\": " << item.degeneracy_size << ",\n";
         out << "      \"region\": \"" << region_name(item.region) << "\",\n";
         out << "      \"included_in_diagram\": " << (row ? "true" : "false") << ",\n";
@@ -513,10 +481,13 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << ",\n      \"delocalised_pi_orientation_channel_details\": ";
         if (annotation.delocalised_pi.topology_available) {
             write_json_pi_channels(
-                out,annotation.delocalised_pi.orientation_channel_details);
+                 out,annotation.delocalised_pi.orientation_channel_details);
         } else {
             out << "null";
         }
+        out << ",\n";
+        out << "      \"delocalised_pi_topology_graph\": ";
+        write_pi_topology_graph_json(out,annotation.delocalised_pi.topology_graph);
         out << ",\n";
         out << "      \"delocalised_pi_label\": \"" << json_escape(annotation.delocalised_pi.label) << "\",\n";
         out << "      \"delocalised_pi_source\": \"" << annotation_source_name(annotation.delocalised_pi.source) << "\",\n";
@@ -543,7 +514,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
         return false;
     }
     out << "diagram_mode,index,raw_mo,label,energy_hartree,energy_display,energy_unit,display_coordinate,"
-           "energy_axis_mode,transform_name,symmetry,symmetry_display,occupation,spin,"
+           "energy_axis_mode,transform_name,symmetry,symmetry_display,source_symmetry,symmetry_explanation_json,occupation,spin,"
            "degeneracy_size,region,included_in_diagram,visible,selected,orbital_family,"
            "family_source,family_confidence,bonding_class,bonding_source,bonding_confidence,"
            "multicentre_available,multicentre_centres,multicentre_electrons,multicentre_label,"
@@ -567,7 +538,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "multicentre_source_subspace_id,multicentre_source_subspace_electron_count,"
            "stability_detail,source_title,source_route,enrichment_source,"
            "view_snapshot_id,view_origin,view_selection_anchor,view_inspected_orbital_index,"
-           "diagram_row_index,coordinate_scope,row_member_orbitals,row_spin_counterparts\n";
+           "diagram_row_index,coordinate_scope,row_member_orbitals,row_spin_counterparts,delocalised_pi_topology_graph,crystal_field_gap_count,crystal_field_gaps_json,pi_partner_evidence_json\n";
     const std::string ligand_atoms = csv_index_list(data.ligand_field_ligand_atoms);
     const std::string pi_interactions = csv_pi_interaction_summary(data);
     const std::string local_geometries = csv_local_geometry_summary(data);
@@ -588,7 +559,8 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             << csv_escape(energy_unit_symbol(options.energy_unit)) << ',' << coordinate << ','
             << energy_axis_mode_name(options.energy_axis_mode) << ','
             << energy_transform_name(options.energy_axis_mode) << ','
-            << csv_escape(item.symmetry) << ',' << csv_escape(format_symmetry_unicode(item.symmetry)) << ','
+            << csv_escape(item.symmetry_view.label) << ',' << csv_escape(orbital_symmetry_compact_text(item.symmetry_view)) << ','
+            << csv_escape(item.symmetry) << ',' << csv_escape(orbital_symmetry_json(item.symmetry_view)) << ','
             << item.occupation << ',' << spin_name(item.spin) << ',' << item.degeneracy_size << ','
             << region_name(item.region) << ',' << (row ? 1 : 0) << ','
             << (item.visible ? 1 : 0) << ',' << (item.selected ? 1 : 0) << ','
@@ -694,6 +666,12 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             }
             out << csv_escape(csv_index_list(primary)) << ',' << csv_escape(csv_index_list(counterparts));
         } else out << ',';
+        std::ostringstream topology_evidence;
+        write_pi_topology_graph_json(topology_evidence,annotation.delocalised_pi.topology_graph);
+        out << ',' << csv_escape(topology_evidence.str());
+        out << ',' << data.crystal_field_gaps.size()
+            << ',' << csv_escape(orbital_energy_gap_array_json(data.crystal_field_gaps,options.energy_unit))
+            << ',' << csv_escape(orbital_energy_gap_array_json(data.pi_interactions,options.energy_unit));
         out << '\n';
     }
     if (!out) {

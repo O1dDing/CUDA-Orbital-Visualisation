@@ -133,15 +133,7 @@ void write_svg_electron(std::ostream& out,
 }
 
 const char* svg_pi_topology_id(const DelocalisedPiTopology topology) noexcept {
-    switch (topology) {
-        case DelocalisedPiTopology::Path: return "path";
-        case DelocalisedPiTopology::Cycle: return "cycle";
-        case DelocalisedPiTopology::BranchedResonance: return "branched-resonance";
-        case DelocalisedPiTopology::Spiro: return "spiro";
-        case DelocalisedPiTopology::HapticMetal: return "haptic-metal";
-        case DelocalisedPiTopology::SymmetryDirectSum: return "symmetry-direct-sum";
-        default: return "unknown";
-    }
+    return pi_topology_name(topology);
 }
 
 void write_svg_delocalised_pi(std::ostream& out,
@@ -163,11 +155,15 @@ void write_svg_delocalised_pi(std::ostream& out,
     if (pi.topology_available) {
         out << svg_pi_topology_id(pi.topology) << "; "
             << pi.orientation_channels << " orientation channel(s); "
-            << (pi.cyclic_topology ? "cyclic" : "non-cyclic");
+            << (pi.cyclic_topology ? "cyclic pi channel" : "no cyclic pi channel claim");
     } else {
         out << "topology unavailable";
     }
     out << "</title>\n";
+    std::ostringstream graph_evidence;
+    write_pi_topology_graph_json(graph_evidence,pi.topology_graph);
+    out << "<metadata class=\"pi-topology-graph\">"
+        << xml_escape(graph_evidence.str()) << "</metadata>\n";
     out << "<text x=\"" << base_x << "\" y=\"" << y
         << "\" fill=\"" << colour << "\" font-family=\"" << kSvgFontFamily << "\" font-size=\"10\">Π</text>\n";
     if (pi.participating_atoms > 0) {
@@ -226,7 +222,8 @@ std::optional<ExportPiBracket> export_pi_bracket(
     if (interaction.retained_level >= positioned.size()) return std::nullopt;
 
     ExportPiBracket bracket;
-    if (interaction.kind == PiInteractionKind::WeakNearNonbonding ||
+    if ((interaction.gap_kind==OrbitalEnergyGapKind::PiPartner &&
+         interaction.kind == PiInteractionKind::WeakNearNonbonding) ||
         !interaction.lower_visible || !interaction.upper_visible ||
         interaction.lower_level >= positioned.size() ||
         interaction.upper_level >= positioned.size()) {
@@ -269,7 +266,8 @@ bool write_mo_diagram_svg(const MODiagramData& data,
          << "\" height=\"" << height << "\" viewBox=\"0 0 "
          << width << ' ' << height << "\" data-diagram-row-count=\""
          << data.levels.size() << "\" data-pi-interaction-count=\""
-         << data.pi_interactions.size() << "\" data-diagram-mode=\""
+         << data.pi_interactions.size() << "\" data-crystal-field-gap-count=\""
+         << data.crystal_field_gaps.size() << "\" data-diagram-mode=\""
          << mo_diagram_mode_name(data.mode) << "\" data-view-snapshot=\""
          << (data.view?xml_escape(data.view->id):"") << "\">\n";
     out << "<rect width=\"100%\" height=\"100%\" fill=\"#fbfcfe\"/>\n";
@@ -315,8 +313,11 @@ bool write_mo_diagram_svg(const MODiagramData& data,
                              level.metadata.region == OrbitalRegion::Virtual ? "#778496" : "#29384c";
         const auto members=mo_diagram_member_views(data,level);
         out << "<g class=\"mo-level\" data-row-index=\"" << row_index
-            << "\" data-symmetry=\"" << xml_escape(level.metadata.symmetry)
+            << "\" data-symmetry=\"" << xml_escape(level.metadata.symmetry_view.label)
+            << "\" data-symmetry-origin=\"" << orbital_symmetry_origin_name(level.metadata.symmetry_view.origin)
+            << "\" data-symmetry-explanation=\"" << xml_escape(orbital_symmetry_json(level.metadata.symmetry_view))
             << "\" data-member-count=\"" << members.size() << "\">\n";
+        out << "<title>" << xml_escape(orbital_symmetry_compact_text(level.metadata.symmetry_view)) << "</title>\n";
         for (std::size_t member_index=0;member_index<members.size();++member_index) {
             const auto& member=members[member_index];
             const double x=item.x+(static_cast<double>(member_index)-
@@ -345,11 +346,14 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         }
     }
 
-    out << "<g id=\"pi-interactions\">\n";
+    out << "<g id=\"orbital-energy-gaps\">\n";
     std::size_t rendered_interactions = 0;
-    for (std::size_t interaction_index = 0;
-         interaction_index < data.pi_interactions.size(); ++interaction_index) {
-        const auto& interaction = data.pi_interactions[interaction_index];
+    for (const bool cf:{false,true}) {
+    const auto& gaps=cf?data.crystal_field_gaps:data.pi_interactions;
+    out << "<g id=\"" << (cf?"crystal-field-gaps":"pi-interactions") << "\">\n";
+    for (std::size_t interaction_index = 0; interaction_index < gaps.size(); ++interaction_index) {
+        const auto& interaction = gaps[interaction_index];
+        const char* symbol=cf?"ΔCF":"Δπ";
         const auto bracket = export_pi_bracket(interaction, positioned);
         if (!bracket) continue;
         const ExportPiColour colour = export_pi_colour(interaction.kind);
@@ -357,15 +361,16 @@ bool write_mo_diagram_svg(const MODiagramData& data,
                          static_cast<double>(rendered_interactions) * 48.0;
         constexpr double cap = 7.0;
         const double middle = 0.5 * (bracket->top + bracket->bottom);
-        out << "<g class=\"pi-interaction\" data-interaction-index=\""
-            << interaction_index << "\" data-kind=\""
-            << export_pi_kind_id(interaction.kind) << "\">\n";
-        out << "<title>" << xml_escape(pi_interaction_kind_name(interaction.kind));
+        out << "<g class=\"" << (cf?"crystal-field-gap":"pi-interaction") << "\" data-interaction-index=\""
+            << interaction_index << "\" data-gap-kind=\"" << orbital_energy_gap_kind_name(interaction.gap_kind)
+            << "\" data-kind=\"" << (cf?"weak-crystal-field":export_pi_kind_id(interaction.kind))
+            << "\" data-evidence=\"" << xml_escape(orbital_energy_gap_json(interaction,options.energy_unit)) << "\">\n";
+        out << "<title>" << xml_escape(cf?"Local crystal-field separation":pi_interaction_kind_name(interaction.kind));
         if (!interaction.symmetry.empty()) {
             out << " · " << xml_escape(interaction.symmetry);
         }
-        out << " · Δπ=" << std::setprecision(10)
-            << interaction.splitting_hartree << " Ha · confidence="
+        out << " · " << symbol << "=" << std::setprecision(10)
+            << interaction.splitting_hartree << " Ha · support (not probability)="
             << std::setprecision(4) << interaction.confidence << "</title>\n";
         out << "<line x1=\"" << x << "\" y1=\"" << bracket->top
             << "\" x2=\"" << x << "\" y2=\"" << bracket->bottom
@@ -379,9 +384,11 @@ bool write_mo_diagram_svg(const MODiagramData& data,
         out << "<text x=\"" << x - cap - 5.0 << "\" y=\"" << middle + 4.0
             << "\" text-anchor=\"end\" fill=\"" << colour.hex
             << "\" font-family=\"" << kSvgFontFamily
-            << "\" font-size=\"13\">Δπ</text>\n";
+            << "\" font-size=\"13\">" << symbol << "</text>\n";
         out << "</g>\n";
         ++rendered_interactions;
+    }
+    out << "</g>\n";
     }
     out << "</g>\n";
 

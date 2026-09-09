@@ -14,7 +14,7 @@ struct OrbitCamera {
     float yaw = 0.65f;
     float pitch = 0.35f;
     float distance = 2.2f;
-    float fov_degrees = 42.0f;
+    float fov_degrees = 42.0f; // Field of view across the shorter viewport dimension.
 };
 
 enum class OrbitalMaterial : std::uint8_t {

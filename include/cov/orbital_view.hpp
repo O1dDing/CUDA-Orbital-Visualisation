@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/model.hpp"
+#include "cov/orbital_symmetry_scope.hpp"
 
 #include <cstddef>
 #include <optional>
@@ -167,6 +168,10 @@ struct OrbitalMetadata {
     OrbitalRegion region = OrbitalRegion::Virtual;
     bool visible = true;
     bool selected = false;
+    // Full-orbital label above remains tied to orbital_index. Display grouping
+    // and local explanations below have their own explicit member/scope record.
+    OrbitalSymmetryExplanation symmetry_view;
+    std::vector<OrbitalSymmetryExplanation> molecular_member_symmetries;
 };
 
 [[nodiscard]] std::vector<OrbitalMetadata> build_orbital_metadata(
