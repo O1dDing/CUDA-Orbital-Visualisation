@@ -36,4 +36,4 @@ g壳层的旧视图汇总仅为OLD文件名登记哈希，两个AUX报告因此�
 完整科学通过仍为0。原273加至少50个不同外部分子的最终验收、物理参考裁决与最终EXE交付仍未完成。
 旧NUM-FIX-007C不重跑；不覆盖旧失败或原始材料；不发布COV release，不更改正式标签或main/feat分支。
 
-文件身份见[artifact-index.json](artifact-index.json)。这里只保存小型回执，全部原始证据保留原位置。
+文件身份见[artifact-index.json](artifact-index.json)。本目录的JSON关闭Git换行转换，以保留回执的原始字节及SHA-256。这里只保存小型回执，全部原始证据保留原位置。
