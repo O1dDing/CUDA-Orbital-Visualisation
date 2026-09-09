@@ -60,6 +60,8 @@ struct OrbitalSymmetryExplanation {
 [[nodiscard]] const char* orbital_symmetry_origin_name(OrbitalSymmetryOrigin) noexcept;
 [[nodiscard]] bool orbital_symmetry_is_local(const OrbitalSymmetryExplanation&) noexcept;
 [[nodiscard]] bool orbital_symmetry_is_candidate(const OrbitalSymmetryExplanation&) noexcept;
+// Numerical absence is distinct from a computed mixed, zero or invalid span.
+[[nodiscard]] bool orbital_symmetry_missing_local_input(const OrbitalSymmetryExplanation&) noexcept;
 [[nodiscard]] OrbitalSymmetryExplanation molecular_orbital_symmetry(
     const Wavefunction&, std::size_t orbital_index);
 [[nodiscard]] OrbitalSymmetryExplanation local_orbital_symmetry(

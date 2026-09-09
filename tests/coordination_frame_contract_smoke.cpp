@@ -253,6 +253,11 @@ cov::Wavefunction central_spd_wavefunction() {
     wavefunction.shells.push_back({0, 0, 0, 1, 1, 1});
     wavefunction.shells.push_back({0, 0, 0, 4, 2, 1});
     wavefunction.basis_count = 9;
+    // This fixture uses orthonormal, single-centre pure angular functions.
+    // Supply their metric explicitly; absent overlap data is not identity S.
+    wavefunction.ao_overlap.assign(81u, 0.0);
+    for (std::size_t i = 0; i < 9u; ++i)
+        wavefunction.ao_overlap[i * 9u + i] = 1.0;
     return wavefunction;
 }
 

@@ -524,8 +524,9 @@ bool merge_resolved_five_d_run(std::vector<LocalOrbitalGroup>& groups) {
         for (std::size_t i=0;i<groups.size();++i) {
             if (groups[i].spin!=spin) continue;
             const int family=dominant_family(groups[i]);
+            const auto& scope=groups[i].explanation;
             const bool candidate=family==2 && groups[i].members.size()==1u &&
-                                 normalised_symmetry(groups[i].symmetry).empty();
+                !scope.local_assignment && orbital_symmetry_missing_local_input(scope);
             if (!candidate) {
                 if (family==2 && flush()) return true;
                 continue;

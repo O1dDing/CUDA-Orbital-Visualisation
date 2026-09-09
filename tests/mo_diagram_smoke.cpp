@@ -3,6 +3,7 @@
 #include "cov/local_orbital_symmetry.hpp"
 #include "cov/molecule_style.hpp"
 #include "cov/pi_topology.hpp"
+#include "cov/pi_pair_evidence.hpp"
 #include "cov/point_group_catalog.hpp"
 #include "cov/wavefunction_io.hpp"
 
@@ -138,17 +139,24 @@ bool validate_local_symmetry_missing_markers() {
     auto above_metadata=metadata_for(above);
     cov::apply_local_ligand_field_symmetry(above,above_metadata);
     if (!std::all_of(above_metadata.begin(),above_metadata.end(),[](const auto& item) {
-            return item.symmetry=="T2g";
+            return item.symmetry_view.label=="T2g" &&
+                   item.symmetry_view.origin==cov::OrbitalSymmetryOrigin::LocalDimensionCandidate;
         })) {
-        std::cerr<<"missing local-symmetry markers were not recovered\n";
+        std::cerr<<"missing local input did not retain a scoped dimension candidate\n";
         return false;
+    }
+    for (std::size_t i=0;i<above_metadata.size();++i) {
+        if (above_metadata[i].symmetry!=missing[i]) {
+            std::cerr<<"local dimension candidate overwrote the original label\n";
+            return false;
+        }
     }
 
     auto below=make_block(2,0.019);
     auto below_metadata=metadata_for(below);
     cov::apply_local_ligand_field_symmetry(below,below_metadata);
     if (std::any_of(below_metadata.begin(),below_metadata.end(),[](const auto& item) {
-            return item.symmetry=="T2g";
+            return item.symmetry_view.label=="T2g";
         })) {
         std::cerr<<"sub-threshold metal-d noise was grouped\n";
         return false;
@@ -158,7 +166,7 @@ bool validate_local_symmetry_missing_markers() {
     auto low_p_metadata=metadata_for(low_p);
     cov::apply_local_ligand_field_symmetry(low_p,low_p_metadata);
     if (std::any_of(low_p_metadata.begin(),low_p_metadata.end(),[](const auto& item) {
-            return item.symmetry=="T1u";
+            return item.symmetry_view.label=="T1u";
         })) {
         std::cerr<<"low metal-p noise used the metal-d grouping floor\n";
         return false;
@@ -212,8 +220,8 @@ bool validate_ligand_only_noise_preserves_producer_irrep() {
     const auto noise_only=cov::classify_local_metal_irrep(
         wavefunction,members,environment.metal_atom,
         environment.local_point_group(),environment.rotation_reference_to_input);
-    if (!noise_only || noise_only->label!="Eg") {
-        std::cerr<<"ligand-only noise fixture no longer exercises false Eg classification\n";
+    if (noise_only) {
+        std::cerr<<"missing metric and repeated tiny coefficients produced an irrep proof\n";
         return false;
     }
 
@@ -223,7 +231,10 @@ bool validate_ligand_only_noise_preserves_producer_irrep() {
         wavefunction,options.selected_index,options.degeneracy,options.filter);
     if (metadata.size()!=3u ||
         !std::all_of(metadata.begin(),metadata.end(),[](const auto& item) {
-            return item.symmetry=="T1g" && item.degeneracy_size==3u;
+            return item.symmetry=="T1g" && item.degeneracy_size==3u &&
+                   item.symmetry_view.label=="T1g" &&
+                   item.symmetry_view.origin==cov::OrbitalSymmetryOrigin::Producer &&
+                   item.symmetry_view.point_group.empty();
         })) {
         std::cerr<<"ligand-only metal noise overwrote producer T1g metadata\n";
         return false;
@@ -277,20 +288,31 @@ bool validate_resolved_five_d_runs() {
     const auto td=make_case(
         synthetic_td_environment(),{{-0.1000,-0.0998,-0.0968,-0.0966,-0.0964}});
     const bool td_ok=std::all_of(td.begin(),td.begin()+2u,[](const auto& item) {
-            return item.symmetry=="E";
+            return item.symmetry_view.label=="E" &&
+                   item.symmetry_view.origin==cov::OrbitalSymmetryOrigin::LocalDimensionCandidate;
         }) && std::all_of(td.begin()+2u,td.end(),[](const auto& item) {
-            return item.symmetry=="T2";
+            return item.symmetry_view.label=="T2" &&
+                   item.symmetry_view.origin==cov::OrbitalSymmetryOrigin::LocalDimensionCandidate;
         });
     const auto oh=make_case(
         synthetic_oh_environment(),{{-0.1000,-0.0998,-0.0996,-0.0966,-0.0964}});
     const bool oh_ok=std::all_of(oh.begin(),oh.begin()+3u,[](const auto& item) {
-            return item.symmetry=="T2g";
+            return item.symmetry_view.label=="T2g" &&
+                   item.symmetry_view.origin==cov::OrbitalSymmetryOrigin::LocalDimensionCandidate;
         }) && std::all_of(oh.begin()+3u,oh.end(),[](const auto& item) {
-            return item.symmetry=="Eg";
+            return item.symmetry_view.label=="Eg" &&
+                   item.symmetry_view.origin==cov::OrbitalSymmetryOrigin::LocalDimensionCandidate;
         });
     if (!td_ok || !oh_ok) {
         std::cerr<<"resolved weak-field five-d run was greedily mispartitioned\n";
         return false;
+    }
+    for (std::size_t i=0;i<td.size();++i) {
+        const std::string raw=i%2u==0u?"N/A":"?";
+        if (td[i].symmetry!=raw || oh[i].symmetry!=raw) {
+            std::cerr<<"five-d dimension candidate overwrote a source label\n";
+            return false;
+        }
     }
     return true;
 }
@@ -482,6 +504,48 @@ bool validate_pi_topology_and_two_sided_composition() {
         std::cerr<<"low-coordinate terminal nitrogen was forced sigma-only\n";
         return false;
     }
+    // Controlled P-centred call-path evidence. Three external single bonds
+    // trigger the catalogue's sigma-only prior, while the supplied MO pair
+    // independently carries either donor or acceptor mixing. This fixture
+    // makes no electronic-structure claim about a physical phosphine.
+    for (const bool donor:{true,false}) {
+        auto phosphorus=synthetic_oh_pi_pair(15,0,0.0,
+            donor?0.10:0.70,donor?0.70:0.10,
+            donor?0.70:0.10,donor?0.10:0.70);
+        for (std::size_t centre=1u;centre<=6u;++centre) {
+            for (std::size_t substituent=0u;substituent<3u;++substituent) {
+                const auto atom_index=phosphorus.atoms.size();
+                auto atom=phosphorus.atoms[centre];
+                atom.symbol="H";atom.atomic_number=1;
+                atom.x+=1.0+0.1*static_cast<double>(substituent);
+                phosphorus.atoms.push_back(atom);
+                cov::BondOrderRecord bond;
+                bond.atom_a=static_cast<std::uint32_t>(centre);
+                bond.atom_b=static_cast<std::uint32_t>(atom_index);
+                bond.mayer_order=0.80;
+                phosphorus.bond_orders.push_back(bond);
+            }
+        }
+        const auto data=cov::build_mo_diagram_data(phosphorus,options);
+        const auto wanted=donor?cov::PiInteractionKind::Donor:cov::PiInteractionKind::Acceptor;
+        if (data.pi_interactions.size()!=1u || data.pi_interactions.front().kind!=wanted ||
+            !data.pi_interactions.front().orbital_evidence ||
+            data.pi_interactions.front().orbital_evidence->prior!=cov::LigandPiPrior::SigmaOnly ||
+            !data.pi_interactions.front().orbital_evidence->accepted) {
+            std::cerr<<"P-centred catalogue prior overrode the supplied orbital evidence\n";
+            return false;
+        }
+        for (auto& orbital:phosphorus.orbitals) {
+            for (auto& interaction:orbital.chemistry.interactions) {
+                interaction.channel.pi=0.0;interaction.channel.sigma=1.0;
+                interaction.channel.dominant=cov::OrbitalAngularFamily::Sigma;
+            }
+        }
+        if (!cov::build_mo_diagram_data(phosphorus,options).pi_interactions.empty()) {
+            std::cerr<<"P-centred composition without a pi channel produced a pi partner\n";
+            return false;
+        }
+    }
     return true;
 }
 
@@ -564,6 +628,19 @@ void add_spin_matching_orbital(cov::Wavefunction& wavefunction,
     orbital.occupation=1.0f;
     orbital.spin=spin;
     orbital.symmetry=symmetry;
+    // This matching fixture supplies a declared representation and common
+    // axes. A bare producer point-group string does not define the label's
+    // scope. Molecular symmetry detection itself is tested separately.
+    orbital.symmetry_provenance=cov::DataProvenance::Derived;
+    cov::DerivedOrbitalSymmetryAssignment assignment;
+    assignment.point_group=wavefunction.point_group_detected;
+    assignment.label=symmetry;
+    assignment.orbital_indices={wavefunction.orbitals.size()};
+    assignment.axes_available=true;
+    assignment.principal_axis={0.0,0.0,1.0};
+    assignment.secondary_axis={1.0,0.0,0.0};
+    assignment.axis_convention="declared synthetic representation";
+    wavefunction.derived_orbital_symmetry_assignments.push_back(assignment);
     orbital.coefficients=coefficients;
     orbital.chemistry.available=true;
     orbital.chemistry.valence_manifold=true;
@@ -597,6 +674,15 @@ bool validate_general_spin_counterpart_matching() {
         family_data.spin_counterpart_pair_count!=1u ||
         family_data.spin_counterpart_unmatched_visible!=0u) {
         std::cerr<<"same-irrep spin pair was rejected by metal-family drift\n";
+        return false;
+    }
+    auto unresolved=family;
+    unresolved.derived_orbital_symmetry_assignments.clear();
+    for (auto& orbital:unresolved.orbitals)
+        orbital.symmetry_provenance=cov::DataProvenance::Unavailable;
+    const auto unresolved_data=cov::build_mo_diagram_data(unresolved,options);
+    if (unresolved_data.spin_counterparts_collapsed) {
+        std::cerr<<"unscoped matching text bypassed the metal-family guard\n";
         return false;
     }
 

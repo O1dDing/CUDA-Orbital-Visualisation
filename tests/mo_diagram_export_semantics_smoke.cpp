@@ -67,6 +67,12 @@ cov::OrbitalMetadata metadata(const std::size_t index,
     result.energy_hartree = energy;
     result.occupation = index == 0 ? 2.0f : 0.0f;
     result.symmetry = symmetry;
+    // Direct export fixture: model a supplied label with unresolved axes.
+    // The exporter consumes the scoped value, while preserving the raw label.
+    result.symmetry_view.label = symmetry;
+    result.symmetry_view.origin = cov::OrbitalSymmetryOrigin::Producer;
+    result.symmetry_view.orbital_indices = {index};
+    result.symmetry_view.source_path = "synthetic-export-fixture";
     result.region = index == 0 ? cov::OrbitalRegion::Valence
                                : cov::OrbitalRegion::Virtual;
     return result;
@@ -198,6 +204,8 @@ int main() {
     pi.symmetry = "T2g";
     pi.kind = cov::PiInteractionKind::Acceptor;
     pi.splitting_hartree = 0.30;
+    pi.lower_energy_hartree = -0.20;
+    pi.upper_energy_hartree = 0.10;
     pi.confidence = 0.87;
     data.pi_interactions.push_back(pi);
 

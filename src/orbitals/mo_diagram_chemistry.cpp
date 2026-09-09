@@ -585,9 +585,10 @@ bool merge_resolved_five_d_run(const Wavefunction& wavefunction,
         for (std::size_t i=0;i<groups.size();++i) {
             if (group_spin(wavefunction,groups[i])!=spin) continue;
             const int family=dominant_metal_family(groups[i].level);
+            const auto& scope=groups[i].level.metadata.symmetry_view;
             const bool candidate=family==2 &&
                 groups[i].level.member_indices.size()==1u &&
-                normalised_symmetry(groups[i].level.metadata.symmetry_view.label).empty();
+                !scope.local_assignment && orbital_symmetry_missing_local_input(scope);
             if (!candidate) {
                 if (family==2 && flush()) return true;
                 continue;

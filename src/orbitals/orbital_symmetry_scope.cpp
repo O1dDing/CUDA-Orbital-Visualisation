@@ -90,6 +90,10 @@ OrbitalSymmetryExplanation local_orbital_symmetry(const LocalIrrepAssignment& as
     result.local_decomposition = assignment.projection;
     return result;
 }
+bool orbital_symmetry_missing_local_input(const OrbitalSymmetryExplanation& value) noexcept {
+    return value.local_decomposition &&
+        value.local_decomposition->status == MetricSubspaceStatus::MissingInput;
+}
 OrbitalSymmetryExplanation evaluate_local_orbital_symmetry(
     const LocalAngularProjectionWorkspace& workspace,const LigandFieldEnvironment& environment,
     std::span<const std::size_t> indices,int family) {

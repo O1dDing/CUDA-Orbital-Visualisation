@@ -130,12 +130,18 @@ void copy_path_to_buffer(const std::filesystem::path& path,
     std::snprintf(buffer.data(), buffer.size(), "%s", value.c_str());
 }
 
+void disabled_wrapped(const char* text) {
+    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+    ImGui::TextWrapped("%s", text);
+    ImGui::PopStyleColor();
+}
+
 void metric_row(const char* label, const char* value) {
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
-    ImGui::TextDisabled("%s", label);
+    disabled_wrapped(label);
     ImGui::TableNextColumn();
-    ImGui::TextUnformatted(value);
+    ImGui::TextWrapped("%s", value);
 }
 
 void push_recent(std::vector<std::filesystem::path>& recent,
@@ -446,18 +452,15 @@ int main(int argc, char** argv) {
             cov::validation::hit("layout.control-panel", panel_position,
                 ImVec2(panel_position.x + panel_size.x, panel_position.y + panel_size.y));
 
-            if (ImGui::BeginTable("##cov_header", 2,
-                                  ImGuiTableFlags_SizingStretchProp |
-                                  ImGuiTableFlags_NoSavedSettings)) {
-                ImGui::TableSetupColumn("##brand", ImGuiTableColumnFlags_WidthStretch);
-                ImGui::TableSetupColumn("##language", ImGuiTableColumnFlags_WidthFixed,
-                                        142.0f * ui_scale);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::TextUnformatted(cov::ui::tr(cov::ui::Text::AppTitle, language));
-                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::Tagline, language));
-                ImGui::TableNextColumn();
-                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::LanguageLabel, language));
+            // Keep the complete panel reachable when the window is short.
+            ImGui::BeginChild("##cov_panel_scroll", ImVec2(0, 0), false,
+                              ImGuiWindowFlags_None);
+            const auto brand = [&] {
+                ImGui::TextWrapped("%s", cov::ui::tr(cov::ui::Text::AppTitle, language));
+                disabled_wrapped(cov::ui::tr(cov::ui::Text::Tagline, language));
+            };
+            const auto language_control = [&] {
+                disabled_wrapped(cov::ui::tr(cov::ui::Text::LanguageLabel, language));
                 int language_index = static_cast<int>(language);
                 ImGui::SetNextItemWidth(-1.0f);
                 if (ImGui::Combo("##language_combo", &language_index,
@@ -467,23 +470,38 @@ int main(int argc, char** argv) {
                         cov::ui::tr(cov::ui::Text::AppTitle, language));
                 }
                 cov::validation::item("language");
+            };
+            const float header_width = ImGui::CalcTextSize(
+                cov::ui::tr(cov::ui::Text::AppTitle, language)).x +
+                142.0f * ui_scale + 4.0f * ImGui::GetStyle().ItemSpacing.x;
+            if (ImGui::GetContentRegionAvail().x < header_width) {
+                brand();
+                ImGui::Spacing();
+                language_control();
+            } else if (ImGui::BeginTable("##cov_header", 2,
+                                  ImGuiTableFlags_SizingStretchProp |
+                                  ImGuiTableFlags_NoSavedSettings)) {
+                ImGui::TableSetupColumn("##brand", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("##language", ImGuiTableColumnFlags_WidthFixed,
+                                        142.0f * ui_scale);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                brand();
+                ImGui::TableNextColumn();
+                language_control();
                 ImGui::EndTable();
             }
 
             ImGui::Spacing();
             cov::ui::status_badge(status_label(status, language), status_tone(status));
             if (!status_detail.empty()) {
-                ImGui::SameLine();
-                ImGui::TextDisabled("%s", status_detail.c_str());
+                disabled_wrapped(status_detail.c_str());
             } else {
-                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::IdleHint, language));
+                disabled_wrapped(cov::ui::tr(cov::ui::Text::IdleHint, language));
             }
-            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::ExperimentalNote, language));
+            disabled_wrapped(cov::ui::tr(cov::ui::Text::ExperimentalNote, language));
             ImGui::Separator();
             ImGui::Spacing();
-
-            ImGui::BeginChild("##cov_panel_scroll", ImVec2(0, 0), false,
-                              ImGuiWindowFlags_None);
 
             cov::ui::begin_card("##file_card", 192.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::FileSection, language));
@@ -501,10 +519,10 @@ int main(int argc, char** argv) {
                 }
             }
             if (!current_file.empty()) {
-                ImGui::SameLine();
-                ImGui::TextDisabled("%s: %s",
-                    cov::ui::tr(cov::ui::Text::CurrentFile, language),
-                    path_to_utf8(current_file.filename()).c_str());
+                const std::string file_label = std::string(
+                    cov::ui::tr(cov::ui::Text::CurrentFile, language)) + ": " +
+                    path_to_utf8(current_file.filename());
+                disabled_wrapped(file_label.c_str());
             }
 
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoldenPath, language));
