@@ -559,9 +559,7 @@ void draw_level_details(const MODiagramData& data,
     ImGui::TextDisabled("%s",orbital_tr(OrbitalText::SymmetryOriginalLabel,language));
     draw_symmetry_scope_details(metadata.symmetry_view,wavefunction,language,"details.symmetry");
     ImGui::Separator();
-    ImGui::TextWrapped(language==Language::ChineseSimplified?
-        "以下为能级组代表数据（MO %zu）；与上方所选成员的原始数据分别解释。":
-        "Group representative data below (MO %zu); interpret it separately from the selected member above.",
+    ImGui::TextWrapped(orbital_tr(OrbitalText::GroupRepresentativeData,language),
         level.metadata.raw_mo_number);
     if (!data.ligand_field_point_group.empty()) {
         labelled_value(orbital_tr(OrbitalText::LocalLigandField, language),
@@ -651,17 +649,31 @@ void draw_level_details(const MODiagramData& data,
 
     labelled_number(orbital_tr(OrbitalText::GroupOccupation, language),
                     fixed_number(level.total_occupation,3));
-    labelled_number(orbital_tr(OrbitalText::MetalSPD, language),
-                    fixed_number(100.0*level.metal_s_weight,1)+"% / "+
-                    fixed_number(100.0*level.metal_p_weight,1)+"% / "+
-                    fixed_number(100.0*level.metal_d_weight,1)+"%");
-    labelled_number(orbital_tr(OrbitalText::LigandP, language),
-                    fixed_number(100.0*level.ligand_p_weight,1)+"%");
-    labelled_number(orbital_tr(OrbitalText::SigmaPiChannel, language),
-                    fixed_number(100.0*level.sigma_fraction,1)+"% / "+
-                    fixed_number(100.0*level.pi_fraction,1)+"%");
-    labelled_number(orbital_tr(OrbitalText::MetalLigandOverlap, language),
-                    fixed_number(level.metal_ligand_overlap,6));
+    const auto ml=metal_ligand_detail_availability(wavefunction,data,level);
+    ImGui::TextDisabled("%s",orbital_tr(OrbitalText::MetalLigandGroupAnalysis,language));
+    if (ml.scope==ChemistryStatus::NotApplicable || ml.scope==ChemistryStatus::Unavailable) {
+        ImGui::TextWrapped("%s",orbital_tr(ml.scope==ChemistryStatus::NotApplicable
+            ?OrbitalText::MetalLigandNotApplicable:OrbitalText::MetalLigandUnavailable,language));
+        cov::validation::item("details.metal-ligand.scope");
+    } else {
+        cov::validation::item("details.metal-ligand.scope");
+        const auto unavailable=orbital_tr(OrbitalText::Unavailable,language);
+        labelled_number(orbital_tr(OrbitalText::MetalSPD, language),ml.populations
+            ?fixed_number(100.0*level.metal_s_weight,1)+"% / "+
+             fixed_number(100.0*level.metal_p_weight,1)+"% / "+
+             fixed_number(100.0*level.metal_d_weight,1)+"%":unavailable);
+        cov::validation::item("details.metal-ligand.populations");
+        labelled_number(orbital_tr(OrbitalText::LigandP, language),ml.populations
+            ?fixed_number(100.0*level.ligand_p_weight,1)+"%":unavailable);
+        labelled_number(orbital_tr(OrbitalText::MetalLigandSigmaPiChannel, language),ml.channels
+            ?fixed_number(100.0*level.sigma_fraction,1)+"% / "+
+             fixed_number(100.0*level.pi_fraction,1)+"%":unavailable);
+        cov::validation::item("details.metal-ligand.channels");
+        labelled_number(orbital_tr(OrbitalText::MetalLigandOverlap, language),ml.overlap
+            ?fixed_number(level.metal_ligand_overlap,6):unavailable);
+        cov::validation::item("details.metal-ligand.overlap");
+    }
+    cov::validation::item("details.metal-ligand.end");
     if (level.raw_data_fallback) {
         labelled_value(orbital_tr(OrbitalText::Selection, language),
                        orbital_tr(OrbitalText::RecoveredFromRawMOBlock, language),

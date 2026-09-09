@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <string_view>
 
@@ -74,6 +75,67 @@ int main() {
         require_contains(cov::ui::orbital_tr(OrbitalText::LevelGroupContainsMOs, language),
                          "%zu", "level group member count format");
     }
+
+    // A group can have a measured zero overlap from opposite signed member
+    // contributions. Missing member evidence must not be averaged as a zero,
+    // and populated numeric fields cannot establish applicability by themselves.
+    cov::Wavefunction group_source;
+    group_source.atoms.resize(2);
+    group_source.atoms[0].atomic_number=24;
+    group_source.atoms[1].atomic_number=6;
+    group_source.orbitals.resize(2);
+    for (std::size_t i=0;i<2;++i) {
+        auto& chemistry=group_source.orbitals[i].chemistry;
+        chemistry.available=true;
+        chemistry.ao_contributions.push_back({0,3,2,"3d",0.2});
+        chemistry.ao_contributions.push_back({1,2,1,"2p",0.8});
+        cov::OrbitalPairInteraction pair;
+        pair.atom_a=0;pair.atom_b=1;
+        pair.overlap_character=i==0?0.02:-0.02;
+        pair.channel.status=cov::ChemistryStatus::Determined;
+        pair.channel.pi=1.0;
+        chemistry.interactions.push_back(pair);
+    }
+    cov::MODiagramData group_data;
+    group_data.ligand_field_point_group="declared local frame";
+    group_data.ligand_field_metal_atom=0;
+    group_data.ligand_field_ligand_atoms={1};
+    cov::MODiagramLevel group_level;
+    group_level.member_indices={0,1};
+    group_level.metal_d_weight=0.2;
+    group_level.ligand_p_weight=0.8;
+    group_level.pi_fraction=1.0;
+    auto availability=cov::metal_ligand_detail_availability(group_source,group_data,group_level);
+    require(availability.scope==cov::ChemistryStatus::Determined && availability.populations &&
+            availability.overlap && availability.channels && group_level.metal_ligand_overlap==0.0,
+            "measured group zero was confused with missing evidence");
+    auto incomplete_source=group_source;
+    incomplete_source.orbitals[1].chemistry.interactions.clear();
+    availability=cov::metal_ligand_detail_availability(incomplete_source,group_data,group_level);
+    require(availability.populations && !availability.overlap && !availability.channels,
+            "a missing member interaction was presented as measured zero");
+    incomplete_source.orbitals[1].chemistry.available=false;
+    availability=cov::metal_ligand_detail_availability(incomplete_source,group_data,group_level);
+    require(!availability.populations && !availability.overlap && !availability.channels,
+            "a partially unavailable group was presented as complete");
+    auto invalid_level=group_level;
+    invalid_level.metal_ligand_overlap=std::numeric_limits<double>::quiet_NaN();
+    require(!cov::metal_ligand_detail_availability(group_source,group_data,invalid_level).overlap,
+            "a non-finite overlap was presented as available");
+    auto missing_scope=group_data;
+    missing_scope.ligand_field_ligand_atoms.clear();
+    require(cov::metal_ligand_detail_availability(group_source,missing_scope,group_level).scope==
+                cov::ChemistryStatus::Unavailable,"missing local context was declared not applicable");
+    auto organic_source=group_source;
+    organic_source.atoms[0].atomic_number=6;
+    availability=cov::metal_ligand_detail_availability(organic_source,group_data,group_level);
+    require(availability.scope==cov::ChemistryStatus::NotApplicable && !availability.populations &&
+            !availability.overlap && !availability.channels,
+            "organic group displayed metal-ligand defaults");
+    auto atomic_source=group_source;
+    atomic_source.atoms.resize(1);
+    require(cov::metal_ligand_detail_availability(atomic_source,group_data,group_level).scope==
+                cov::ChemistryStatus::NotApplicable,"isolated atom acquired a metal-ligand scope");
 
     require(std::string_view(cov::ui::orbital_tr(
                 OrbitalText::CoordinationGeometry,

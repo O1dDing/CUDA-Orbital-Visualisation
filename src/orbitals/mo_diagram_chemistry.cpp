@@ -2663,4 +2663,85 @@ MODiagramData build_mo_diagram_data(
     return data;
 }
 
+MetalLigandDetailAvailability metal_ligand_detail_availability(
+    const Wavefunction& wavefunction, const MODiagramData& data,
+    const MODiagramLevel& level) {
+    MetalLigandDetailAvailability result;
+    if (wavefunction.atoms.empty()) return result;
+    bool metal=false, ligand=false;
+    for (const auto& atom:wavefunction.atoms) {
+        if (atom.atomic_number<=0) return result;
+        if (transition_metal(atom.atomic_number)) metal=true;
+        else ligand=true;
+    }
+    if (!metal || !ligand) {
+        result.scope=ChemistryStatus::NotApplicable;
+        return result;
+    }
+    if (data.ligand_field_point_group.empty() ||
+        data.ligand_field_metal_atom>=wavefunction.atoms.size() ||
+        !transition_metal(wavefunction.atoms[data.ligand_field_metal_atom].atomic_number) ||
+        data.ligand_field_ligand_atoms.empty() || level.member_indices.empty()) return result;
+    LigandScope scope;
+    scope.available=true;
+    scope.metal=data.ligand_field_metal_atom;
+    for (const auto atom:data.ligand_field_ligand_atoms) {
+        if (atom>=wavefunction.atoms.size() || atom==scope.metal ||
+            transition_metal(wavefunction.atoms[atom].atomic_number)) return result;
+        scope.direct_donors.insert(atom);
+    }
+    result.scope=ChemistryStatus::Determined;
+    result.populations=true;
+    result.overlap=true;
+    bool valid_channels=true;
+    double channel_weight=0.0;
+    for (const auto index:level.member_indices) {
+        if (index>=wavefunction.orbitals.size() ||
+            !wavefunction.orbitals[index].chemistry.available) {
+            result.populations=false;
+            result.overlap=false;
+            valid_channels=false;
+            continue;
+        }
+        const auto& chemistry=wavefunction.orbitals[index].chemistry;
+        if (chemistry.ao_contributions.empty()) result.populations=false;
+        for (const auto& contribution:chemistry.ao_contributions) {
+            if (contribution.atom_index>=wavefunction.atoms.size() ||
+                !std::isfinite(contribution.weight)) result.populations=false;
+        }
+        bool found_pair=false;
+        for (const auto& pair:chemistry.interactions) {
+            if (!scoped_metal_ligand_pair(wavefunction,pair,&scope)) continue;
+            found_pair=true;
+            if (!std::isfinite(pair.overlap_character)) {
+                result.overlap=false;
+                valid_channels=false;
+                continue;
+            }
+            const auto& channel=pair.channel;
+            if (!std::isfinite(channel.sigma) || !std::isfinite(channel.pi) ||
+                !std::isfinite(channel.delta) || !std::isfinite(channel.phi)) {
+                valid_channels=false;
+                continue;
+            }
+            const double resolved=channel.sigma+channel.pi+channel.delta+channel.phi;
+            const double weight=std::abs(bounded_overlap_character(pair.overlap_character))*resolved;
+            if (channel.status==ChemistryStatus::Determined ||
+                channel.status==ChemistryStatus::Percentages) channel_weight+=weight;
+            else if (weight>1.0e-12) valid_channels=false;
+        }
+        if (!found_pair) {
+            result.overlap=false;
+            valid_channels=false;
+        }
+    }
+    result.populations=result.populations &&
+        std::isfinite(level.metal_s_weight) && std::isfinite(level.metal_p_weight) &&
+        std::isfinite(level.metal_d_weight) && std::isfinite(level.ligand_p_weight);
+    result.overlap=result.overlap && std::isfinite(level.metal_ligand_overlap);
+    result.channels=valid_channels && channel_weight>1.0e-12 &&
+        std::isfinite(level.sigma_fraction) && std::isfinite(level.pi_fraction);
+    return result;
+}
+
 } // namespace cov

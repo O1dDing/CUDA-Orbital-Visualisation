@@ -435,6 +435,18 @@ struct MODiagramMemberView {
     const Wavefunction& wavefunction,
     const MODiagramOptions& options);
 
+// Availability of the local metal/first-shell fields shown for a row's
+// representative members. A default numeric zero is not availability evidence.
+struct MetalLigandDetailAvailability {
+    ChemistryStatus scope = ChemistryStatus::Unavailable;
+    bool populations = false;
+    bool overlap = false;
+    bool channels = false;
+};
+[[nodiscard]] MetalLigandDetailAvailability metal_ligand_detail_availability(
+    const Wavefunction& wavefunction, const MODiagramData& data,
+    const MODiagramLevel& level);
+
 struct MODiagramExportResult {
     bool svg = false;
     bool png = false;

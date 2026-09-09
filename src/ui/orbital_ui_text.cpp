@@ -173,6 +173,11 @@ constexpr auto kStrings = std::to_array<LocalisedString>({
     {"The selected orbital is outside the current diagram; its data remain available in the orbital browser and selected-orbital analysis.", "所选轨道未包含在当前能级图中；可在轨道列表和所选轨道化学分析中查看其信息。", "選択した軌道は現在の図に含まれていません。軌道一覧と選択軌道の解析で情報を確認できます。", "L’orbitale sélectionnée est absente du diagramme actuel ; ses données restent accessibles dans la liste des orbitales et l’analyse de l’orbitale sélectionnée."},
     {"Data scope: the selected orbital and its level group in the current view.", "数据范围：当前视图中的所选轨道及其能级组。", "データの範囲：現在の表示で選択した軌道とその準位群。", "Portée des données : l’orbitale sélectionnée et son groupe de niveaux dans la vue actuelle."},
     {"Level group contains %zu MOs", "能级组含 %zu 个 MO", "準位群には %zu 個の MO が含まれます", "Le groupe de niveaux contient %zu OM"},
+    {"Group representative data below (MO %zu); interpret it separately from the selected member above.", "以下为能级组代表数据（MO %zu）；与上方所选成员的原始数据分别解释。", "以下は準位群の代表データ（MO %zu）です。上の選択軌道の生データとは分けて解釈してください。", "Données du représentant du groupe ci-dessous (OM %zu) ; à interpréter séparément du membre sélectionné ci-dessus."},
+    {"Local metal–ligand group analysis", "局部金属–配体组分析", "局所金属–配位子群の解析", "Analyse locale métal–ligand du groupe"},
+    {"This diagram’s local metal–ligand model is not applicable.", "本图的局部金属–配体模型不适用。", "この図の局所金属–配位子モデルは適用対象外です。", "Le modèle local métal–ligand de ce diagramme ne s’applique pas."},
+    {"Local metal–ligand group data are unavailable.", "局部金属–配体组数据不可用。", "局所金属–配位子群のデータを利用できません。", "Les données locales métal–ligand du groupe sont indisponibles."},
+    {"M–L sigma / pi (resolved channels)", "M–L σ / π（已解析通道）", "M–L σ / π（分解済みチャネル）", "M–L σ / π (canaux résolus)"},
 });
 
 static_assert(kStrings.size() == static_cast<std::size_t>(OrbitalText::Count));

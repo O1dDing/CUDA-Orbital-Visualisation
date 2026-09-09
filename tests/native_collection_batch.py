@@ -178,6 +178,7 @@ def make_plan(production):
         seen_scopes.add(signature);mo=row['members'][0]
         require_detail(mo,'details.symmetry.origin','symmetry-origin')
         require_detail(mo,'details.symmetry.members','symmetry-member-spins')
+        require_detail(mo,'details.metal-ligand.end','metal-ligand-field-availability')
         if scope.get('local_decomposition'):
             require_detail(mo,'details.symmetry.represented-rank','local-projection-rank')
         if scope.get('local_assignment'):

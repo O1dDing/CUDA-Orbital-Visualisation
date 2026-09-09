@@ -173,6 +173,11 @@ enum class OrbitalText : std::size_t {
     OrbitalDetailsOutsideDiagram,
     OrbitalDetailsDataScope,
     LevelGroupContainsMOs,
+    GroupRepresentativeData,
+    MetalLigandGroupAnalysis,
+    MetalLigandNotApplicable,
+    MetalLigandUnavailable,
+    MetalLigandSigmaPiChannel,
     Count,
 };
 
