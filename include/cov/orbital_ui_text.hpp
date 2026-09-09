@@ -167,6 +167,12 @@ enum class OrbitalText : std::size_t {
     CatalogueConsistent,
     CatalogueContradicted,
     GapLocalScopeExplanation,
+    OrbitalDetails,
+    CloseOrbitalDetails,
+    OrbitalDetailsHint,
+    OrbitalDetailsOutsideDiagram,
+    OrbitalDetailsDataScope,
+    LevelGroupContainsMOs,
     Count,
 };
 

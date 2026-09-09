@@ -167,6 +167,12 @@ constexpr auto kStrings = std::to_array<LocalisedString>({
     {"consistent", "一致", "整合", "cohérent"},
     {"contradicted by the orbitals", "轨道证据推翻先验", "軌道の証拠と矛盾", "contredit par les orbitales"},
     {"Approximate nonbonding describes the local metal–ligand contribution. Both energy endpoints and their full MO members are retained.", "近似非键描述局部金属–配体贡献；两个能量端点及其完整 MO 成员均保留。", "近似的な非結合性は局所金属–配位子成分を表します。両端のエネルギーと全 MO 要素を保持します。", "Le caractère approximativement non liant décrit la contribution locale métal–ligand. Les deux énergies et tous leurs membres OM sont conservés."},
+    {"Orbital details", "轨道详情", "軌道の詳細", "Détails de l’orbitale"},
+    {"Close details", "关闭详情", "詳細を閉じる", "Fermer les détails"},
+    {"Select the orbital, then open Orbital details for the full explanation.", "选中轨道后，通过“轨道详情”查看完整说明。", "軌道を選択し、「軌道の詳細」を開くと詳しい説明が表示されます。", "Sélectionnez une orbitale, puis ouvrez « Détails de l’orbitale » pour consulter l’explication complète."},
+    {"The selected orbital is outside the current diagram; its data remain available in the orbital browser and selected-orbital analysis.", "所选轨道未包含在当前能级图中；可在轨道列表和所选轨道化学分析中查看其信息。", "選択した軌道は現在の図に含まれていません。軌道一覧と選択軌道の解析で情報を確認できます。", "L’orbitale sélectionnée est absente du diagramme actuel ; ses données restent accessibles dans la liste des orbitales et l’analyse de l’orbitale sélectionnée."},
+    {"Data scope: the selected orbital and its level group in the current view.", "数据范围：当前视图中的所选轨道及其能级组。", "データの範囲：現在の表示で選択した軌道とその準位群。", "Portée des données : l’orbitale sélectionnée et son groupe de niveaux dans la vue actuelle."},
+    {"Level group contains %zu MOs", "能级组含 %zu 个 MO", "準位群には %zu 個の MO が含まれます", "Le groupe de niveaux contient %zu OM"},
 });
 
 static_assert(kStrings.size() == static_cast<std::size_t>(OrbitalText::Count));

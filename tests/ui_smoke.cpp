@@ -145,6 +145,7 @@ int main() {
         0x6807, 0x51C6,                 // 标准
         0x67D4, 0x548C, 0x81EA, 0x52A8, 0x6253, 0x5149, // 柔和自动打光
         0x8BBE, 0x5907,                 // 设备
+        0x5173, 0x95ED, 0x8BE6, 0x60C5, // 关闭详情
     };
     if (std::strstr(cov::ui::font_status(), "ZH fallback missing") == nullptr &&
         !expect_glyphs(primary, chinese_glyphs,
@@ -158,6 +159,7 @@ int main() {
         0x8ECC, 0x9053, 0x30DE, 0x30C6, 0x30EA, 0x30A2, 0x30EB, // 軌道マテリアル
         0x6A19, 0x6E96,                                             // 標準
         0x30BD, 0x30D5, 0x30C8, 0x81EA, 0x52D5, 0x7167, 0x660E,   // ソフト自動照明
+        0x8A73, 0x7D30, 0x9589,                                  // 詳細・閉じる
     };
     if (std::strstr(cov::ui::font_status(), "JA fallback missing") == nullptr &&
         !expect_glyphs(primary, japanese_glyphs,

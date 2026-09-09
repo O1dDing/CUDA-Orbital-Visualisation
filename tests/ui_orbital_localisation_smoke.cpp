@@ -57,6 +57,22 @@ int main() {
         }
         require(std::string_view(cov::ui::orbital_ui_glyph_seed(language)).size() > 100u,
                 "glyph seed is unexpectedly short");
+        for (const auto key : {OrbitalText::OrbitalDetails,
+                               OrbitalText::CloseOrbitalDetails,
+                               OrbitalText::OrbitalDetailsHint,
+                               OrbitalText::OrbitalDetailsOutsideDiagram,
+                               OrbitalText::OrbitalDetailsDataScope,
+                               OrbitalText::LevelGroupContainsMOs}) {
+            const std::string_view text = cov::ui::orbital_tr(key, language);
+            require_contains(cov::ui::orbital_ui_glyph_seed(language), text,
+                             "orbital details glyph seed");
+            if (language != Language::English) {
+                require(text != cov::ui::orbital_tr(key, Language::English),
+                        "orbital details still uses the English fallback");
+            }
+        }
+        require_contains(cov::ui::orbital_tr(OrbitalText::LevelGroupContainsMOs, language),
+                         "%zu", "level group member count format");
     }
 
     require(std::string_view(cov::ui::orbital_tr(

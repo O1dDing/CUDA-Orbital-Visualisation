@@ -769,7 +769,6 @@ void draw_level_tooltip(const MODiagramData& data,
     if(orbital_index>=data.metadata.size() || orbital_index>=wavefunction.orbitals.size())return;
     const auto& metadata=data.metadata[orbital_index];
     const auto& actual=wavefunction.orbitals[orbital_index];
-    const bool chinese=language==Language::ChineseSimplified;
     const ImVec2 work_size=ImGui::GetMainViewport()->WorkSize;
     ImGui::SetNextWindowSizeConstraints(ImVec2(0,0),ImVec2(std::max(120.0f,work_size.x-24.0f),std::max(120.0f,work_size.y-24.0f)));
     ImGui::BeginTooltip();
@@ -789,10 +788,9 @@ void draw_level_tooltip(const MODiagramData& data,
         labelled_value(tr(Text::BondingClassLabel,language),bonding_ui(annotation.bonding_class,language),bonding_colour(annotation.bonding_class));
     }
     if(level.member_indices.size()>1)
-        ImGui::Text(chinese?"能级组含 %zu 个 MO":"Level group contains %zu MOs",level.member_indices.size());
+        ImGui::Text(orbital_tr(OrbitalText::LevelGroupContainsMOs,language),level.member_indices.size());
     ImGui::Separator();
-    ImGui::TextWrapped("%s",chinese?"选中轨道后，通过“轨道详情”查看完整说明。":
-        "Select the orbital, then open Orbital details for the full explanation.");
+    ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsHint,language));
     ImGui::PopTextWrapPos();
     ImGui::EndTooltip();
 }
@@ -1491,8 +1489,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     ImGui::EndChild();
     if (ImGui::Button(tr(Text::ExportBundle, language), ImVec2(-1.0f, 0.0f))) actions.export_diagram = true;
     cov::validation::item("diagram.export");
-    const bool chinese=language==Language::ChineseSimplified;
-    if(ImGui::Button(chinese?"轨道详情":"Orbital details",ImVec2(-1.0f,0.0f)))
+    if(ImGui::Button(orbital_tr(OrbitalText::OrbitalDetails,language),ImVec2(-1.0f,0.0f)))
         state.show_diagram_details=true;
     cov::validation::item("diagram.details");
     if(state.show_diagram_details) {
@@ -1502,10 +1499,11 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
             ImGuiCond_Appearing,ImVec2(.5f,.5f));
         ImGui::SetNextWindowSize(ImVec2(std::min(720.0f*ui_scale,work.x*.8f),work.y*.7f),ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSizeConstraints(ImVec2(180.0f,120.0f),ImVec2(std::max(180.0f,work.x-24.0f),std::max(120.0f,work.y-24.0f)));
-        const bool visible=ImGui::Begin(chinese?"轨道详情###cov.orbital.details":"Orbital details###cov.orbital.details",
+        const std::string details_title=std::string(orbital_tr(OrbitalText::OrbitalDetails,language))+"###cov.orbital.details";
+        const bool visible=ImGui::Begin(details_title.c_str(),
             &state.show_diagram_details,ImGuiWindowFlags_HorizontalScrollbar);
         if(visible) {
-            if(ImGui::Button(chinese?"关闭详情":"Close details"))state.show_diagram_details=false;
+            if(ImGui::Button(orbital_tr(OrbitalText::CloseOrbitalDetails,language)))state.show_diagram_details=false;
             cov::validation::item("diagram.details.close");
             ImGui::Separator();
             ImGui::PushTextWrapPos(0.0f);
@@ -1514,14 +1512,13 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                 draw_level_details(data,data.levels[*row],wavefunction,state,language,selected_index);
             } else if(selected_index<wavefunction.orbitals.size()) {
                 ImGui::Text("MO %zu",selected_index+1);
-                ImGui::TextWrapped("%s",chinese?"所选轨道未包含在当前能级图中；可在轨道列表和所选轨道化学分析中查看其信息。":
-                    "The selected orbital is outside the current diagram; its data remain available in the orbital browser and selected-orbital analysis.");
+                ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsOutsideDiagram,language));
             }
             ImGui::Separator();
-            ImGui::TextWrapped("%s",chinese?"数据范围：当前视图中的所选轨道及其能级组。":
-                "Data scope: the selected orbital and its level group in the current view.");
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsDataScope,language));
             cov::validation::item("diagram.details.scope");
-            if(ImGui::Button(chinese?"关闭详情##bottom":"Close details##bottom"))state.show_diagram_details=false;
+            const std::string close_bottom=std::string(orbital_tr(OrbitalText::CloseOrbitalDetails,language))+"##bottom";
+            if(ImGui::Button(close_bottom.c_str()))state.show_diagram_details=false;
             cov::validation::item("diagram.details.close.bottom");
             ImGui::PopTextWrapPos();
         }
