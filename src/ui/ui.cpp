@@ -418,9 +418,11 @@ void begin_card(const char* id, const float height) {
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.082f, 0.108f, 0.145f, 0.94f));
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.18f, 0.23f, 0.30f, 0.90f));
     ImGui::BeginChild(id, ImVec2(0.0f, height), true, ImGuiWindowFlags_None);
+    ImGui::PushTextWrapPos(0.0f);
 }
 
 void end_card() {
+    ImGui::PopTextWrapPos();
     ImGui::EndChild();
     ImGui::PopStyleColor(2);
     ImGui::PopStyleVar();
