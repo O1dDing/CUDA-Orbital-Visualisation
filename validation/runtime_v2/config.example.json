@@ -4,5 +4,7 @@
   "gaussian": "F:\\CalChem\\Gaussian\\Gaussian 16 W",
   "core_budget": null,
   "timeout_hours": 72,
-  "disk_reserve_gib": 20
+  "disk_reserve_gib": 20,
+  "opt_step_checkpoints": "auto",
+  "freq_recovery": "auto"
 }

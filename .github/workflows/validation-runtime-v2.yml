@@ -28,6 +28,8 @@ jobs:
           python-version: '3.12'
       - name: Policy, mocked Gaussian, real frozen registry, and Windows Job tests
         run: python -X utf8 validation/runtime_v2/test_runtime.py
+      - name: Fast RAM pause, cold snapshots and restart gates
+        run: python -X utf8 validation/runtime_v2/test_fast_pause.py
       - name: Existing frozen recovery tests
         env:
           TEMP: ${{ runner.temp }}

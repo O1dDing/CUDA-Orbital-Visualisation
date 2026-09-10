@@ -1,3 +1,10 @@
+## 2026-09-10 计算快速暂停入口
+
+[REF-001 快速暂停版 2.1](runtime_v2/FAST_PAUSE.md)：4/hold 保留内存现场快速暂停（不可关机），
+6/resume 原地继续，10/pause 在已验收的优化段或子阶段边界停止，8/interrupt 冷保存 CHK/RWF。
+新数据位于 work/runtime-v2-fastpause，不热覆盖旧作业；优化段/RWF 续算需本机 native-acceptance 能力回执。
+真实 Gaussian 原生验收仍不能由 CI 替代。以下保留既有科学验证和归档入口。
+
 # 验证项目入口
 
 ## 2026-09-09 COMMON-ROOT-008 新全量验证

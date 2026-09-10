@@ -15,6 +15,11 @@ import subprocess
 import threading
 import time
 
+from fast_checkpoint import ActiveClock
+from windows_pause import JobPause
+
+SUPPORTS_RAM_PAUSE = True
+
 
 def api():
     if os.name != 'nt' or ct.sizeof(ct.c_void_p) != 8:
@@ -92,7 +97,9 @@ _LAUNCH_LOCK = threading.Lock()
 
 
 def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
-             cancel=lambda: False, on_started=lambda x: None, on_tick=lambda x: None) -> dict:
+             cancel=lambda: False, on_started=lambda x: None, on_tick=lambda x: None,
+             hold=lambda: False, on_hold_error=lambda x: None,
+             on_timeout=None) -> dict:
     if not 1 <= cores <= 14 or memory_gib < 1 or timeout <= 0:
         raise ValueError('Invalid resource envelope')
     k, v = api()
@@ -107,6 +114,12 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
     console = (cwd / 'launcher.log').open('ab')
     begin, started = time.monotonic(), time.time()
     reason = None
+    pause = JobPause(k, job)
+    clock = ActiveClock(begin)
+    timeout_notified = False
+    hold_failed = False
+    pause_error = None
+    last_pause_scan = 0.0
     try:
         limits = v.EXTENDEDLIMIT()
         limits.BasicLimitInformation.LimitFlags = 0x200 | 0x2000  # JOB_MEMORY | KILL_ON_JOB_CLOSE
@@ -163,19 +176,60 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
             if not accounting.ActiveProcesses:
                 break
             now = time.monotonic()
-            if reason is None and (cancel() or now - begin >= timeout):
-                reason = 'operator_interrupt' if now - begin < timeout else 'timeout'
+            # Exhausted active time parks the computation when the caller can
+            # persist a hold command. Utilities retain their bounded timeout.
+            if reason is None and clock.active(now) >= timeout and not timeout_notified:
+                timeout_notified = True
+                if on_timeout is not None:
+                    on_timeout()
+                else:
+                    reason = 'timeout'
+            if reason is None and cancel():
+                reason = 'operator_interrupt'
+            if reason is not None:
                 v.require(k.TerminateJobObject(job, 123 if reason == 'operator_interrupt' else 124))
-            if now - last_tick >= 2:
-                on_tick({'elapsed_seconds': now - begin, 'active_processes': accounting.ActiveProcesses,
+            else:
+                wanted = bool(hold())
+                if not wanted:
+                    hold_failed = False
+                previous_hold = pause.held
+                if wanted and not hold_failed and (not pause.held or now - last_pause_scan > 1):
+                    try:
+                        pause.hold(refresh=pause.held)
+                        last_pause_scan = time.monotonic()
+                    except Exception as error:
+                        # hold() rolls back partial suspensions. Never silently
+                        # turn a failed RAM pause into a kill of the calculation.
+                        if pause.held:
+                            raise
+                        hold_failed = True
+                        pause_error = str(error)
+                        on_hold_error(pause_error)
+                elif not wanted and pause.held:
+                    pause.resume()
+                clock.set_held(pause.held, time.monotonic())
+                if previous_hold != pause.held:
+                    last_tick = 0.0
+            now = time.monotonic()
+            if now - last_tick >= .5:
+                on_tick({'elapsed_seconds': now - begin,
+                         'active_elapsed_seconds': clock.active(now),
+                         'ram_paused_seconds': clock.paused(now),
+                         'active_processes': accounting.ActiveProcesses,
+                         'execution_state': 'ram_paused' if pause.held else 'running',
+                         'pause_is_disk_checkpoint': False,
+                         'suspended_thread_handles': len(pause.handles),
+                         'pause_error': pause_error,
                          'tree_cpu_seconds': (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7})
                 last_tick = now
-            time.sleep(0.25)
+            time.sleep(0.1)
         exit_code = wt.DWORD()
         v.require(k.GetExitCodeProcess(proc.hProcess, ct.byref(exit_code)))
         v.require(k.QueryInformationJobObject(job, 9, ct.byref(limits), ct.sizeof(limits), None))
         return {'pid': proc.dwProcessId, 'argv': [str(x) for x in argv], 'started_epoch': started,
                 'finished_epoch': time.time(), 'wall_seconds': time.monotonic() - begin,
+                'active_wall_seconds': clock.active(time.monotonic()),
+                'ram_paused_seconds': clock.paused(time.monotonic()),
                 'tree_cpu_seconds': (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7,
                 'peak_tree_commit_bytes': limits.PeakJobMemoryUsed, 'cores': cores,
                 'memory_limit_gib': memory_gib, 'cpu_rate_hard_cap': rate_value,
@@ -187,6 +241,7 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
             k.TerminateJobObject(job, 125)
             while k.QueryInformationJobObject(job, 1, ct.byref(remaining), ct.sizeof(remaining), None) and remaining.ActiveProcesses:
                 time.sleep(0.05)
+        pause.close_after_exit()
         k.CloseHandle(job)
         if proc.hThread:
             k.CloseHandle(proc.hThread)
