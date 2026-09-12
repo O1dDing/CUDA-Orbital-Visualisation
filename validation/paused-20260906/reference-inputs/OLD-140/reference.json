@@ -1,0 +1,33 @@
+{
+  "case_id": "OLD-140",
+  "original_case_identity": "ce1d56539a05733f90c73e8eea565399b02761710a2bc3f9bc24a1991e0051e4",
+  "purpose": {
+    "kind": "isolated_atom_or_ion",
+    "reference_geometry": "single_atom",
+    "basis": "Candidate equilibrium at the specified charge and multiplicity",
+    "competing_states_required": false,
+    "vibration_applicability": "not_applicable_no_internal_nuclear_coordinates",
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPP",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Default quality reference",
+  "ecp_core_electrons_by_atomic_number": {
+    "11": 0
+  },
+  "explicit_electrons": 10,
+  "alpha_electrons": 5,
+  "beta_electrons": 5,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "04c770030b64e9d2f6109833ef0dfc5d7b83ac385c77114b8e2802bbe8b0f493",
+  "initial_input_sha256": "7105ec690c02afc011344c65c78ba224970fb0531603094a463a192f98825466",
+  "identity": "af6228e9e00dad492deafa9275a88090d05dc401de0086908094d0cf1f4da28e"
+}

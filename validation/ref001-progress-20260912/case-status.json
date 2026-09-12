@@ -1,0 +1,4579 @@
+{
+  "case_count": 273,
+  "counts": {
+    "candidate_collected": 90,
+    "needs_review": 2,
+    "partially_collected": 2,
+    "not_started": 179
+  },
+  "cases": [
+    {
+      "case_id": "OLD-001",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "b96f46dc7176604f374389d3ed5a9e9c8cbde293b659c6c45b432b7ef99a3568",
+      "reference_identity": "d4a906857abaf3b41ec032d3bc4107476fe5e2fd022018e427872d17371316fb",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-002",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "b5f78938f49906ce167f90a1a97b752b40591382fff218be84241c1c008519d5",
+      "reference_identity": "bf239f69ed04615251b12a77eb4b11574d64a9bf02f188f02ca96632144c0791",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-003",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e6510e6eaa319320c8adaa78609ba9d1589bf5818b8989fce65c193579f9499a",
+      "reference_identity": "9e4919f9a432fa113d3e8c5718bbdea8de7a17d37ea283876d1ac4b39bf2fb78",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-004",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "bee5e8abcf657a3b050b2c5faec067db103da0dbe77f1da3f2c8899dc2ab41ca",
+      "reference_identity": "5c6bb7c9d6f25f1ef767875172b11e9f3ec5c7fc63d611421c4b53eca0780748",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-005",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e02b7f9d4cb6082dbe1196b43896545690db0cf28b8dcf55619f3d28ffb23289",
+      "reference_identity": "08ab08ad46032174d7e2bebbe60fe4ab4734d08fe30f34025238fd4232e6a5f1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-006",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "a7baacf78245d12f7fbb0055c9f8f3e25c5fa8f8779d7b2631cb811a6376951a",
+      "reference_identity": "164bb129d1cb94a8a5e9b66e2b878f0e04c0960d50578e892fdec5dd5b01f076",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-007",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "b615c147c6991d01de4aaa142fe591cc0c2c7e0478a0b89cea2fed4927d1ef72",
+      "reference_identity": "97262ed540e4934b9c72d16bc27e784fc9ad4e704e7b4a39571edecbd0a09677",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-008",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "86da807fb235a9f7ed44d76d66b386d2cdff636d24562a1a9db153f2862b106f",
+      "reference_identity": "8c7b7c8dfbda8460e769779452ae7ed77cf32cfbe724f6e374c010f2acf29a5b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-009",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "f03b65d2eb05624c64fbec2cef67e1d3cf4603b8a84f93ffe098dd645cc957df",
+      "reference_identity": "870e0536a4bb467f5a4f35dd0fe03b6125335553c2ed9daf10ab0945c82e6ecd",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-010",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "a87d73e6be71573aba6c238facdf77c7656c74acd787099e5c16705fc8a4f084",
+      "reference_identity": "b4b9644ddc4fdec26f647ac79305d9a666ef70e6e6422744243b0da8656baef7",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-011",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "d74347f8d6543fbfd9a369e43b7486ab2d53b6f885c4b73634fcd9a41ff2bd9c",
+      "reference_identity": "745e30d307aa6c08ef40867f9a317b1b8e875f5990864e5884b7b36cd15f4241",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-012",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e8abe3c71b4410c44e4ba701e94dc09b43ea383370da1d9a0b3c731ca50f4ea2",
+      "reference_identity": "1fccc9f91294f1a1ef46ba5c7a8f1b40376ad532f66c148549ce6bd80879305b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-013",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "freq-01",
+        "opt-00",
+        "opt-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e55fe3683cbf0386b36db1ebd7d9aa8df1643a5fc334840270442f60a4e524f6",
+      "reference_identity": "9f2e8a9190594a5f2a610afe572cbb50baf7d735a5b035f6032c8bf820c228b7",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-014",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "a9916a2d4a6c9f76f582d7856faadb7172fa7d89fd76c897bb5eee6bfda24ec8",
+      "reference_identity": "c1c400ec24902c94fb73b9da834cbe2a8771d05087268cc7be4131f328a61bd0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-015",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e616d9f2665d78f08877c03460c54a2442e9f91fd9e01b74de114e4d31f3bc6e",
+      "reference_identity": "78c2966324da01384815ef288494b5c5e2733872321960244125b33f02aeda66",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-016",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "force-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "6bb6bd9213048a829543da83641e167fb325f7d05fe213b1c88d88d0cdddfc45",
+      "reference_identity": "5ecf601e16e87dddd635e2f2a88ac191053534dd2b0d1e0c327f918a31ae3a28",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-017",
+      "status": "candidate_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "force-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "65c0ec05fd2bc14d88b82b5ff1be4d086ccead7b412e474177888118ab3c07bb",
+      "reference_identity": "3e8fccbe7bcf83a945d53d6e8ac45adce37ae42fdd2084273ff52e03a62f7468",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-018",
+      "status": "needs_review",
+      "recorded_result": null,
+      "review": {
+        "status": "needs_review",
+        "reason": "legacy_timeout",
+        "legacy_stage": "F:\\CalChem\\COV\\Resume\\work\\jobs\\REF-001\\OLD-018\\initial\\stage.json"
+      },
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "46ea735557238dba9d694005501d2accbed74a4f2e871781c916be322de63a87",
+      "reference_identity": "15768923561f7e6af5acb1218baa599c34bc02e280bb79045e8f3365fff1d9cb",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-019",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-019",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789053998.5396996
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "40d1eb731e45b3cf03524143960c47221e31a6c79ec2216783d7b1b7cdeb64eb",
+      "reference_identity": "327d06adaa721c3da4cc0ed8522690ca9a21ce8fb5fd2eae8b3047fff9d4ee11",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-020",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-020",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789056949.5338178
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "fd36c440b5656932dd9739f16b744b5b67c2bfd3f512f9946fa4e3b5fcd11d29",
+      "reference_identity": "0ac7c0d8c80efa3458927050940c8d6009f9c6de023d0826d3019aba03e2eac4",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-021",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-021",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789054716.8006923
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "eb39c4376cf14f9b05c2e8ae6a84e38e2fc46ecb8513f1b079a91e1e5d6e0e17",
+      "reference_identity": "af5d21a2918319fbb501b313112ed80ad8f8b7f56f93e57d8d27b6a08688d03a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-022",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-022",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789056145.8657925
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "ad75aa52783f1fa15f00021a5e84cd3d315450f18060db95ba29a23b9122156d",
+      "reference_identity": "8e441720f45b22129c289c98765f973900408ee6406c7d94cb0b0dbad215fb3e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-023",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-023",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789058227.754026
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "700b11d59133b54d396814784ae6cc88eca97bc26d08e365cae839b88b13bbfa",
+      "reference_identity": "1755d52b1ba76ea5ac4d7046d341322e3b0850ed4379062decba0c70e2c0c194",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-024",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-024",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789061316.4546611
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "bd406fe5d4d1d38ee1a45901c54ec8c238dee6028a73ceab5488f48747f25253",
+      "reference_identity": "d9f81e15ffda5757d6d71db9443609cf442efa76141e9956f4acd3bb289bdde0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-025",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-025",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789067176.5648496
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "97a7febb1db4ba3b7bedc2587cb4148b4ab5d840db7630505e44dcf3685a8284",
+      "reference_identity": "d7daa1975b69da20f2b6a7fa54e79d39c4417a4fb5cb61758aac0d0419fa8bed",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-026",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-026",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789064911.3798826
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "76db1cc88a0f852e2d7010e6a03e505ce162f6d9d4e08e86bd0f9915263332d4",
+      "reference_identity": "ed8419df32a193097f697816c12aadaacd5d60537bf202f915c6f1b46c2cd036",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-027",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-027",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789067458.883438
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "1e5d0c9939a2d2ae5a6e3547341bc9eac1fa925a840f9159cf1ffc2f40f6de16",
+      "reference_identity": "a69efa48d076e22b06e9f684d94bd902e63e8f0d0f2f77148af90335aa1afbcb",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-028",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-028",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "freq-01",
+          "opt-00",
+          "opt-01",
+          "stability-00",
+          "stability-01"
+        ],
+        "finished_epoch": 1789141415.9217541
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "freq-01",
+        "opt-00",
+        "opt-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "eb914724084a6477f7d760eaec714def6fe10a1f0407cc5defa5d124694617bb",
+      "reference_identity": "a9919e6c15fd5f74c5b7e1a4da7d97f79635898c3e8d5b6ad4cc5f39b221651f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-029",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-029",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789140401.7034009
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "07c2a5f841fd793cdeec374953d5dc5685ed0cd3bfabd7dee0500efbc3ccba8b",
+      "reference_identity": "4d21a0471879a075913190a64694b535bea5fbfa5ff592f6bb80322507c7c394",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-030",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-030",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789141363.2747214
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "038908834352fa62f732e722cf0e020724f9726c1e21d409f59d34db11126652",
+      "reference_identity": "06b76d9e069c559448acb9ceb07252cef69b597fc3cbd7c0ec21c35070dc2e5e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-031",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-031",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789142568.3765697
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "244bf4c91a6b4f2ffe7d7cf76d2eb8f03bd82dfff6072f4cf7f40712b7b920a2",
+      "reference_identity": "73230cdd53bd327bedacf6c9e1437b7dedfb29fa36bd9716bf2a7c8a929412f2",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-032",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-032",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789143120.4875224
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "ea7574680c3961f02061bdc8647575307cf9b861ca8c30230038901a825733de",
+      "reference_identity": "51cf3d450bad2cc2139e74fa75a1f8fdb051790e5c1ad7e3f7837ec795ffebd9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-033",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-033",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789144701.230548
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "0bf6a24f46b703506cd2931db21fc4bc6c7163969b44572be96d35394517ce95",
+      "reference_identity": "0ab2e39bfeae8b530a0937f90577d5e054242749ad8c2ba0bb0b15ced4acc3f0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-034",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-034",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789144701.7591083
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "d2d650ae9da187f1940d89d114b21769bd4af318e557828b14c383c8f010343b",
+      "reference_identity": "764c7e738839c466c50e73e10457b035ae5de34012108f3c771e08e0c4ab48be",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-035",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-035",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789146552.1380622
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "17ee0531e6b7065b3041002d8ec69591a6f932d49c6dc1840e5a11d0767befe8",
+      "reference_identity": "4a2189dbff605c1e2d842dc76d805201ad0ad15e421f086e7b32f33a000e1e2d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-036",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-036",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789146551.8671927
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "efaa3aa914746959b0a00a1c99308d726dda61eed363d94ea9b6666cc26624fb",
+      "reference_identity": "241ddfe6737a2e3d83c7b52645658e5daf76f07f5a9750899102a08301f46bbe",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-037",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-037",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789149370.7782285
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "2b824431780f6bf175a7817fa6c957efcc44290abb451235d6defcf7620037d2",
+      "reference_identity": "f851f0c445059787301194aefdbd3c84074978d637c9fe8771464af45db5a7d5",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-038",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-038",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789149773.384928
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "9895cbb8ef4824fa2fae43d3c5722056d34f31eae6bc0093f52b71a062c44b0a",
+      "reference_identity": "89883e9151629fed7bb7f9e10b973b12dde1b6b70c24c067fa64f6a9433d9afc",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-039",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-039",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789149799.2645602
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "621affb5764580ebcb5d380e28e8196ed92923067e73d8fe0c792e18cde60c28",
+      "reference_identity": "7f7d4e64fdcf1ecf7427eca8cf73b91db6d63b3ec69eeca9dfa2674a6853b8d2",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-040",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-040",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789149799.5282254
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "9accc06af82c7851b18ef559e959e50d1117dc8b0d63ac9297e95801972f19ca",
+      "reference_identity": "11e34872873b30702afe5f8b4dda52f023c01228c30cece0a8a93b09546e5764",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-041",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-041",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "force-00",
+          "force-01",
+          "stability-00",
+          "stability-01"
+        ],
+        "finished_epoch": 1789149833.310701
+      },
+      "review": null,
+      "completed_stage_records": [
+        "force-00",
+        "force-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "17401f6dcd169b2a17659e6198ce52131a206c351c609d954c01da616e832ea5",
+      "reference_identity": "5e9a6cc79d55dbaf79a95f608dd80ed1e3d14372f80a58dd24afdc2fb5e65917",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-042",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-042",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789149868.7892916
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "1a96562748085482d90386d054e86d876d78bd397d6dff9f4b7aa2ccf53f8681",
+      "reference_identity": "b0cc309afa3bb907968e7e173f3346a609fd5f6bf07aaa5a886a020bcf4234bd",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-043",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-043",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789149895.9105384
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "59c2457ce268f321e0c1aac77c7617362749a407d732f52666109279ae43b312",
+      "reference_identity": "f872d0ded902c9dacc5c8a251f838292a0ee1875a2290d51549338cde852ad57",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-044",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-044",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "freq-01",
+          "opt-00",
+          "opt-01",
+          "stability-00",
+          "stability-01"
+        ],
+        "finished_epoch": 1789150145.248506
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "freq-01",
+        "opt-00",
+        "opt-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "d0b5f904676ffd9d00d40509230cdc47df6e2f3d1422ccb78037cb0d1595932b",
+      "reference_identity": "a711f274fdd25e96807921f344d01ac7ff08a9b3b8dcdc48f5b383bbd179b62d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-045",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-045",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "freq-01",
+          "opt-00",
+          "opt-01",
+          "stability-00",
+          "stability-01"
+        ],
+        "finished_epoch": 1789150226.8335378
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "freq-01",
+        "opt-00",
+        "opt-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "79c22a2d358fe40bbb1ee36b9fc0b5707ba7183ff5c4369445c7267d044a9128",
+      "reference_identity": "7fb4c02fb48da79b1bdb32c458a8aeb8c49665e1bce8454bd1171505971b8544",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-046",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-046",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "freq-01",
+          "opt-00",
+          "opt-01",
+          "stability-00",
+          "stability-01"
+        ],
+        "finished_epoch": 1789150565.2685778
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "freq-01",
+        "opt-00",
+        "opt-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "1ba76b382015401a57f7efacc76f9e1862f6f7fe848062a808d59b0bab5e950e",
+      "reference_identity": "ec07a39602a0cd12667ee3947c84948281ffac193df5e286ecea2fd3ee7a15af",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-047",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-047",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789150462.085662
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "bdd99b69b47fdf3bfe7f3485c886ad15e26db5a63750d66411ac0b5384546f7d",
+      "reference_identity": "2fd35aad4c5cca18e01c75b446ca2f50902b4e364af3c804dfd1ad2ffb72dc9a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-048",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-048",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789150647.0805724
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "b9431697751f76e375afd9203810c0e3877f8ccf05d74d775f3171bc78a6a5e8",
+      "reference_identity": "34169d670c2d530838b0c5425d457d00eef66825c8a4b449070cf186b19d9c93",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-049",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-049",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789150713.7164357
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "2df06406072031c953aa052b69456636643241f9b33c3fca5dd91a090098c3e3",
+      "reference_identity": "52229ac51e81f2d8dc34cdd7d68c83ffadc174d322e57611e2f8a82fbae77c76",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-050",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-050",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789150791.4796197
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "face87f65dd9d1f582382493aaa24b5b2f79ab5ba7d8d9e89a04a11a24f81ca2",
+      "reference_identity": "5aa6c3ecf78355fae6099ec7ca75998cfa486df3987bdfd563cdaab24960ec94",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-051",
+      "status": "needs_review",
+      "recorded_result": null,
+      "review": {
+        "status": "needs_review",
+        "stage": "stability-00",
+        "reason": "Gaussian failure; no unbounded retry: F:\\CalChem\\COV\\Resume\\work\\runtime-v2-fastpause\\jobs\\OLD-051\\stability-00\\attempt-0001\\job.log",
+        "epoch": 1789152252.514858
+      },
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00"
+      ],
+      "next_stage": "stability-00",
+      "verification_issues": [],
+      "original_case_identity": "cf02808ca10477406e31b8e07ea6360c38ca7fbc8a5e34a50c2b7fe409307f2c",
+      "reference_identity": "ea1d168fa08f4fa871597734112111900956037b059ede87e63d70874792147d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-052",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-052",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "freq-01",
+          "opt-00",
+          "opt-01",
+          "stability-00",
+          "stability-01"
+        ],
+        "finished_epoch": 1789151362.5469694
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "freq-01",
+        "opt-00",
+        "opt-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e3b4d77f3a64c1c8700e9a8c9a7a09007efebd2023ff45a38411ff0e6058b6df",
+      "reference_identity": "50f25be125d3a569eb1960acff7a98ad89f9e3c22ae8d6422b129f1de851e5ff",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-053",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-053",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789151610.545752
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "07c4a5cc2b33419832c1c339d737cdaeca79f3ffe51a4f4450ab15b2e928d1c6",
+      "reference_identity": "8f29edae32fc7df4191d9c0aa19891a6a3beb3a55d27e1920d9fa17e047d59e9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-054",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-054",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789151729.3004491
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "0d139bedd88702992ee361aec1ce95ed45d4c72fed5d7cedfb873795e8e08d4a",
+      "reference_identity": "cfba2a1528f344b7212a60d68802ea6a8f8e626599bdd11b19cdce10eeda0971",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-055",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-055",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789151905.2575805
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "4703af01b1b0b1dec5bd26a272f510792cc0f0b49ab6be426d4360ae8d8cdde4",
+      "reference_identity": "169db2036d3d846f64374a57451b21e44b17ebed5f7705470d12c4a66825e3ed",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-056",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-056",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152160.3975108
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "92d0307ab3d616f19e629c90f2b183589efa6cd8322bb2cb2eca12180a1340a1",
+      "reference_identity": "3cdd5d5bc5d26e3449ab9034675c754a43fbbe96f0dbbefd239759bd546c48ec",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-057",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-057",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152325.5731013
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "f390daf854b9bf7a1c6c065826a184f0a09d73def6bb7af4fd369382410b5707",
+      "reference_identity": "dbf237e9b423544c3a10ec0b127625bc0908bc2ffc9ca9231d183769c580ac9a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-058",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-058",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152403.2764072
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "d935e9ee34075e67fe194493a12ee5ec417edd5af0fd7c7bbd3d65ca1014f80f",
+      "reference_identity": "fed66c753c5baccce3597a6017ab3c9178b299898efb5206da8cfad5b4b1edfc",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-059",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-059",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152474.9208617
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "685395329e30e71ca384322c0de73306de35ee759d459d69f959471b08fd37a6",
+      "reference_identity": "5ee7ff58ab19a3ee4f1837cdb683e9df620c610477db44901006d6ae532e9b5a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-060",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-060",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152542.2402196
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "ded207b5b78ae04556f6b4874b6ec848eac355d684583422932fa6582719d1d3",
+      "reference_identity": "8a57b4364547c97e43414061f8be0a4100dc595251416c0ec6bb5de41ce1943e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-061",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-061",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152688.0422728
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "d49653bc99c4fd8c17a189a55723c4ff2bc7d0f56386eaf9249d3edf1e8d387a",
+      "reference_identity": "c9851ec06964716be61a795f9ccd897dafbe315b3a679db62ff1d1d9250e655c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-062",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-062",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152798.1163847
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e215eaa8c547d0ca5971b80d81471c26f895d72b9dcc7485a137c83baa22861c",
+      "reference_identity": "87e773b952647ca9a7fa9806c3b4518333e35fae0d3a610a47cea2f0fbd0aaa3",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-063",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-063",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789152930.1732967
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "2f1acb9b1210626cdbe383df6dce6ac6e96bff403433c8a2e85c371d846ff357",
+      "reference_identity": "a32aa0faaf598279ff074577995e5fca79b6ce2e196e85ebe8d84c5086d67703",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-064",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-064",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789153094.6479049
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "28f1a1b70a30c023a9f9211f247ee454a479ad7e0e069dde0787c598786c6ef9",
+      "reference_identity": "88ac67a8a32cd4f0eef51e9223086426d3943e57d8ff0ba5e48919e6df84b160",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-065",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-065",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789153301.318322
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "88c013d36ab8831216b858d9b225061ea6f97b084bb9dcd3faf3adf1a8373646",
+      "reference_identity": "5679f9ddc0b24c3be44f9294f8f59492af74f2973ceb56346e7d26c1110c3015",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-066",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-066",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789153459.6989532
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "cab0d626fc965cde31862bd1579f09eeb1c29d83cdeae33663a1b405fb5501f9",
+      "reference_identity": "b45a3b4bcb9ffecdbcdfb1cec015829c09ab43214ac22274404a38f7ee357fb1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-067",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-067",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789153775.156329
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "6cd708cf2e84cdd65330984abae38da808a10b1fbed239650f92e04a601949d4",
+      "reference_identity": "11d154f5481924ff6d5fe0cd582974e35e114a28f503cd5d4d87324493f1aa57",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-068",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-068",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789154056.4969566
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "7d29504c947164dc3f4c4808bc9bfee38a5737cd2909a3708371ee644c7d63da",
+      "reference_identity": "b57baaa17fa2b9a61bee7e85f5e4929b317e7740bbb3261374d8c9e9d8cf1a32",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-069",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-069",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789154525.025785
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "68307f0849afca86d34fcae8d6d94d90afab44d08f5412d39726608d18029aef",
+      "reference_identity": "28a4575db880e4dcc783667e1e4808176ca19b4c78696b26a8e679d2337c2ff3",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-070",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-070",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789154879.362178
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "5ff7553b293d31159a1c9e58e244244b71a1f7b59faa906fb8036000e2f0a1c2",
+      "reference_identity": "937ee083ef84d24ba17867a96773c224630285ea8afca963cf4c9aabe62f3ca4",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-071",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-071",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789155642.8078554
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "9ac1e14431e25f1fbd858b598ed1f102368593ea7fdac540e49bd2b5b96250fd",
+      "reference_identity": "0f68537b2da7228c1c30fa29d0853050730c98f978aa9d6ea5fbd0785ee3ed07",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-072",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-072",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789155762.4123476
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "9d2bd2ce0a0be2e5e372cb35ce6e54387ea2eff489ce4931caef99e36c9a6585",
+      "reference_identity": "780f8d5cca6198d2ec448b591e88b538d691236c08af7e2e3cba2b344d3e2e52",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-073",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-073",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789158097.478652
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "cea0732ab903a521a86b11976ed2995e034e5778b244d2b51a705d8cbddf8ec6",
+      "reference_identity": "7342fe200558003ad09387a7f3df5362cdf9f7ab204dd84c4546238ac898fbc6",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-074",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-074",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789156594.3121467
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "97631ccd6e00b836d740af2261f5b5364f7149aa7432cdc02e2440b10eaa9468",
+      "reference_identity": "92465500e0ba924196a96d2ab41948a16467da188c112de52cd1f888e91030ad",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-075",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-075",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789158097.2077858
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "e9187ca6dcb8d8334052bf8427ac2eb83b2b2accaf668b4efd61be04d3ce7ab9",
+      "reference_identity": "21455914e8e6a519ade5c66add59a82f8a7d44ebbd95e90ae69748c13e94ecb7",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-076",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-076",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789159858.4640028
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "ae566993cca3c566969db0cbc3903c598e112e40743db9a9c20c28a317d62948",
+      "reference_identity": "2efd84c9ba66da582d4d6d1b0ed10c55bdd96ee7e9276cc552c70d69cf35e1e3",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-077",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-077",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789159025.3719385
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "c70a9910cd18fdc8a160ab5dc488e96ebc1e9a153bb6690585543c085f96bbaa",
+      "reference_identity": "97963b2aad5dafeb0760959bcc6c5cde8f91ddf3d0bebebe21cde4eb32b5b013",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-078",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-078",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789166516.8830562
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "8ebe98b17cfc14021fad588dc7ccda9fe6baa66aa4585a43881eda1e2dec9d39",
+      "reference_identity": "95429b7c38af5cb1238ca37c9be4de4904d9516aa87cb5293709ac9292b1b867",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-079",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-079",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789160424.5390933
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "dbec8cc23f0dcf2db6a3db159cef464c28a5ae2b047ac211d4766ea8a4ce6c87",
+      "reference_identity": "5abe31e9f88e85379be2634f3c450ad072ffc116f573d8527e9bdc28ec2ac2db",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-080",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-080",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789160719.4676473
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "5225935eac5b0518f4402aaa5f7c4e1310353138fc272725c3e40280c8b1a940",
+      "reference_identity": "cb81c03765ce3ad4ef23fcb9c64d96b2ee3119ff65400ee7f74ae57fc924651a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-081",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-081",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789161211.8428657
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "cd8fc51af3232223af655519f851a39262b2ecbff101dabe464af88af2358603",
+      "reference_identity": "87ce00003fbfff552b6bb6bfbd8def366859bf3f6b495ac67e1ee309b73f031e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-082",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-082",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "freq-01",
+          "opt-00",
+          "opt-01",
+          "stability-00",
+          "stability-01"
+        ],
+        "finished_epoch": 1789162240.1597652
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "freq-01",
+        "opt-00",
+        "opt-01",
+        "stability-00",
+        "stability-01"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "8319d3b1703023c84c3742fe2428f8f01a844c4f5d25dfdcdfd4d442a4b3fbba",
+      "reference_identity": "93c86b2b99631a78045cc7b5e41c5680796e150db5b6b9eb682972dd3c6d251f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-083",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-083",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789162741.40421
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "fe81a1b54b1b510b38e83764ae13648c35e11e79b46e23bd8ed7bd0984c8e6bc",
+      "reference_identity": "bb7a849740a2cfe2549612131fc5aad84b95a2310a3c170a310792f21a459c32",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-084",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-084",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789164260.1643121
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "f7eb2a5726430cd94bbe66b853cb88e67084dc86ae9d800b99c5cfd3a3463605",
+      "reference_identity": "cf96ce1de67372a1d7958e14e5c3bfb6a416a24e520521689f5c42d4a1a4e38a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-085",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-085",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789168575.6646554
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "8428b62ac18d0faf81052c67398524388aec5a069af206f6eeb2e8dba1ee3ffc",
+      "reference_identity": "a267bc584b998413eefc42d497bbc362b11ac9cd5b4b3b6fe21271efa17a5303",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-086",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-086",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789183020.824816
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "526ff121565c6ac235890b5b043b5b8cf41c84554f949754453142902d3d6a5c",
+      "reference_identity": "440394ba2ee6ac847e81394feef6d5bff4da7468b84217e3a6ad30c971044bce",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-087",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-087",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789183655.4827003
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "2dcbc250a325580f076fbb01b839d4c4543fa56c68851bbf2d1b9927bb3c69fd",
+      "reference_identity": "0e3cb32a3470c68481340397ad3255541fe2f9fbcc9ded8c41825a4051ba51b0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-088",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-088",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789192810.693937
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "f982aa0aa810e8c487fd75ff8c37480b7de82ad4be19dcfffb2e6569b2ea4514",
+      "reference_identity": "fea503346ad2099e1c92f078b46ea6afb4e2a582a1b12c6c91a1977fc4d73a39",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-089",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-089",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789196390.1405177
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "4f47128a3814368bf323779828c2d6ad10ae550383dc60d77ba79dcf9032e3f7",
+      "reference_identity": "e678dbfd462e0a49457364162ca583fa9743af557058c4c0102b68c13ad86591",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-090",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-090",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789197313.7310708
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "2338d04bafb8575e40ef8d571057a736ea0bf9c75844ca09ef96ace85aba6a06",
+      "reference_identity": "de15b6b2dbd4b12c00d96cec8ae3273f6ba64f61b8424aa6e8c1964596e2f91d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-091",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-091",
+        "scientific_pass": false,
+        "competing_states_pending": true,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789198018.3773482
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "a4609c9d0c1943ed1b864dc47494a2e9b71fe5be2aa54e00f249f862d4442fde",
+      "reference_identity": "9ce939e4770f9f518de19b65fbed52bdfec7ad0d0198f2097ea002a04b632aa1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-092",
+      "status": "candidate_collected",
+      "recorded_result": {
+        "status": "candidate_collected",
+        "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+        "case_id": "OLD-092",
+        "scientific_pass": false,
+        "competing_states_pending": false,
+        "stages": [
+          "freq-00",
+          "opt-00",
+          "stability-00"
+        ],
+        "finished_epoch": 1789200773.992716
+      },
+      "review": null,
+      "completed_stage_records": [
+        "freq-00",
+        "opt-00",
+        "stability-00"
+      ],
+      "next_stage": "candidate_collected",
+      "verification_issues": [],
+      "original_case_identity": "d59062bc0ae9d94328445704cf166d54ef818a33627bba3b39eeb67d1b9c8da4",
+      "reference_identity": "24ba5f9e143a005b88b77dfe4b5531e2be548c366602f2bfe794c3e865b889c9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-093",
+      "status": "partially_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "opt-00"
+      ],
+      "next_stage": "freq-00",
+      "verification_issues": [],
+      "original_case_identity": "c0f21f2cc28f5d306e236a1ca26ff2241bb68b5f530a86c198429f2974008932",
+      "reference_identity": "7a5988432462c522d1bd98844d01d736740c069db4ab2e4f6f25cae68ad3fee6",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-094",
+      "status": "partially_collected",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [
+        "opt-00"
+      ],
+      "next_stage": "freq-00",
+      "verification_issues": [],
+      "original_case_identity": "304f2bb5530ac48f455a8c9df34b2cd1d11dafe9413af37542891ff2a6644977",
+      "reference_identity": "c61d3f8ba15009b503d165716294bbdee818499e2eeb11822bf51f2a3420b854",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-095",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "7fe0cb099a89c20089903ca11be820252c9b13f313be8f52bfa7cecf6fb90fa5",
+      "reference_identity": "669d6378b60012d397ab561697d90030cbad6536d7ec796016ebd0579757bf78",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-096",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "55e7b26db0461290a46088a706f69c5434f1b61a8b003ced53f950675a0cf8af",
+      "reference_identity": "f5310313b5cddfc31e3931e27017a021779464615fafc6b1700a7448bdc2819f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-097",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2cc64727f74dfbc120ff2f8c3d9da9b15a7b5f73ea2b670f8b06a6c9ca84382c",
+      "reference_identity": "4ac86809ea86df811f5181db54888564e5a6d2f4577d833510c667ca4ac858a2",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-098",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "fbce38bd5af248bf1e6e49b3ff43381fdb1c8c26823d0dd1b589ef58324fb4e3",
+      "reference_identity": "30e6667f6119806c46c612ec379d07803214543282a916dd4eea7aa70842f47b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-099",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "23d4fa49e33d05c01bd5dda0fb03abfea98982e1c767181c6787822f4cbca44d",
+      "reference_identity": "8f9f8a2584523a73aa5d29585b6e119c943acd7b7396db9f5e73930231cf65d2",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-100",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "dbc608c92ba41dc26168b592904f7f544393f0a1590c7d679a53ab076cc44968",
+      "reference_identity": "15587d791ab03fb7809a4e6c7c235a272160374eec40c6dd802a3a8f4d822287",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-101",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "a05266d24a398fea2746fe1b7e4961a336446a7596901a8ad34c28e50982320c",
+      "reference_identity": "d6e7107bb36c39093e5573a5dc6cd80e11e2e9efeed1baf956feec206c33c125",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-102",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2c64de3cf6ff2d226bc876ca2e952888cbbf0b5af533b7b474512b4371988ef8",
+      "reference_identity": "de2666ec1d8b86f58eecf7624f746650eb91affc005b182809feb06a1bca2ec1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-103",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "c32c9789700c9e38999e5eec90de120f91e53cb263b969f3372e2a1c47dae2cf",
+      "reference_identity": "0d8d59c6fee4c0fcacd1b21132ca50471e3023949a5ff2151f77d6c4bcca7e42",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-104",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "18f7e73865d12e5e6c2a1d43e1054084735818bee566ac15f7359d1cd44c10e4",
+      "reference_identity": "3ba3598519acec2136acb561aed144b332e5f38334d7fedbce607abc061ab759",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-105",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "3a9db0f9c535ec36387830dbcea6bc31500d1799a06eadcf63bd21cc305ea03f",
+      "reference_identity": "7883a38f28f3e3558b14b2aa4a639f4c8ac4fb691a7fa3d6315bf071c229326c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-106",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "e3a4450a990d6350978a3829ce1b6de63f1edfbfbaddd670306e07d3bab7b0e8",
+      "reference_identity": "88c76ca25370f2c2b1d29631f20c6a17195e189b204290d6ea531e375502ce80",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-107",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "eb96a2dd10a02ef9bfc8b980f7cae06841f4a927ae75e0f73d2ead39169aca67",
+      "reference_identity": "9c61a6892f28ec25f557388a185b176dcb9029795031c58b9ad2a9153c5a1d91",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-108",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2d9a18688de06d4845a6867e775de93b50982c8d68c2b1bb58bd3562930ff97a",
+      "reference_identity": "e6c62ca320b7e2113e82f8858cc0cc8c5c7415dbf9c9f6e17933d08a2b308841",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-109",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "261fd417a7bb9e2ae3f93f850ae412bfe1ffe8fe6f3965408e86358ca7958a45",
+      "reference_identity": "fd429f81faafbd81570773c6ee33396eb4314a4d7261172c695232f612200f60",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-110",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "00b278b2c4a7f56cc32724578fdeeaf3529e67a41381c298a27f39d57bfde6bd",
+      "reference_identity": "22715da3bc872e52ff2a136bf0a0a2ef64c9e53d7f935d53a8ae163525ff3613",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-111",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "ddd4d325564483d71e8ab04e08d61328037fe025a9ec5a01a6547e1dcec1affb",
+      "reference_identity": "4e13e6d078b37f6aac212c362a231bd2673d37561d84ed33a15a1d1cbd3edea8",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-112",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "f92d3578d85bf68b28e1fd52e10c60c6e63521f7dd6feb303c1a364c2a235936",
+      "reference_identity": "6c567c28b95881fc3f42fb9f599e490d3f8ab57e2649f310dc44659188f78dcf",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-113",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "285e497bf291e9d243238ce3e0d0334479f4abd6868eaf0c6202ddbb9e56ee21",
+      "reference_identity": "0735f78b9f52bc94b802453be621b638144e86aab7be837adf6d4c8be8d8c7d9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-114",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "c97b2491c3fa5ac499b2de8ab41810102c122599307a710f9f0b4904ecf1a5fb",
+      "reference_identity": "596bba0cfab14c6a9c4bd2b5356810252a60f1451ff956bf7c7cf8eb6505ae93",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-115",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "6c8ff744f890dd00202f87db4a7c3410feb56e3f3dba759b77e8a19e648f009e",
+      "reference_identity": "f279b6f0992df739d8a79ae536e16603b2572e4198581d46ca0c772df5b5c8e4",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-116",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "54d257101a6735bdd1993724843e8c8720e3b116d30d25949590e7653f4bcd79",
+      "reference_identity": "2c454e4032a941306b50e45f22cc380e3203106754ee82fb1dc3b7fc228b148f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-117",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "73fb5025b816e7976a24ae45edd800bede27448480a016c8ec7e2bb91e20bcd7",
+      "reference_identity": "ff2e6a7a998fa9664c883791a58d769368862cc42c3181b81e1dc287e6a8fa46",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-118",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "219003947c8113060fa7bf9415c5fe53a22d10f9d4f3f31bb3b253b2cf3a3d46",
+      "reference_identity": "02776ff183f593cc4982191cc526b142deb154821c764612f6bbf3c96070a88e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-119",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "4e30c6f74476e57d7ac8cd0fc6f3c5c6a0659984b569c7963bedc021071ac734",
+      "reference_identity": "c07b5691ce0b2562a0ed92b5fc697b086cd4892450ea706c7505019564baccb9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-120",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "e050dfbe89618764c803143775cf0a6a68b03ee81395f4a58f30d535a4333ac1",
+      "reference_identity": "8db8b61c88b184e74dfce1b4d75cea72298dd9db1f6b3381087c2f8be7a032b4",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-121",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "edd85e78851cb6f03494b1bad88e65a5e4eb474f17c644cc20698cd751334bfa",
+      "reference_identity": "296df5d8755d605b5a6d5e76b7ae3fe4eedf08182bcef643b207fd8efb5804f3",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-122",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "193ad0d5a028d8c9d322761cca193309f543e13238557a3ad723b3856d415b15",
+      "reference_identity": "16697e5c66a9834da48d17c7b0d9cac3dd809324736384c6bb8a5f34be718047",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-123",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "069e900c22b9906addd932315c273d253d2e9aa1a78b1d83a7d9c844157fe0cc",
+      "reference_identity": "56c2898b7385c0140df3831f7a35a54fc26dc12349736dcff75178ce74a77e5d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-124",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "4751b4b9f7297503094210a99c74d9834f96161d8995c4d2e6a984141c50e084",
+      "reference_identity": "f8c8ded2d24caa3e0c8581ede56dc92a9939ef7eea98209449c1362af1c9d7aa",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-125",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "77df6aba5cf2357fcf16131fa8cd13578781694db775c884619d35e722be1a32",
+      "reference_identity": "52c705e38587196d9ecd6abc13d0336a03ff87eb905bec95cf1941786f731a23",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-126",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "91b3a749232c197ad29827beaca3cdd9d42922293c651224b69d11fe9ceea708",
+      "reference_identity": "a61c5cd6d1e131093988a86f7a6ab519b29ec170db204ba0c8f70f72c3eb6dc7",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-127",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "9c5c31e789215091baa8b71626dab6e9a123e799529c1f1a3f2f6c633b260f76",
+      "reference_identity": "3ecaee4e9cbc3272f3f2d33f0aa3abaa2ab66ea571f41e8f5eef78034222fc2e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-128",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "5332a0876327d1e6732e1ae6b408e92c99b3121b7c5aaa5e0a5f03fbdf8e130e",
+      "reference_identity": "d62eac30cfea0b0ba66c9a6f8b5eb91df0cca3235270252f090bb36910040e4d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-129",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "500ec1d3663bcad7119f0cecd54bdb844ca855dcffdb7f5e02435f513eb853e7",
+      "reference_identity": "bf62f7c9d34be44291f82537716b9babc6059097de9cf7415e07b947d9088f8a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-130",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "44e34a0528cee784f5e4763e6afbc6e57ed56112a50137b1a56dc4c042dfd4c4",
+      "reference_identity": "4a6c79114357a88741cc813e79a68f0063b9ad7bcca185d2b837727d3d2cf23d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-131",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "d3822788a57ba1f5d0acccf1a8528607e3740c7ed52758472926e1d1ab4dc6ea",
+      "reference_identity": "7a754bfe2d6ddb93d652375004a0519c2c6a554306bef37b7cad906e34f3d834",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-132",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "d74c285a5d45a6654da03fe852f57301b3248021ec264029acb2a883b43b69d2",
+      "reference_identity": "e88c643bcfba5e7686e023a5dff9ec0ebdb0791fcd2102c17c211a9d7a0c12c8",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-133",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "3d0635d8ac2253d4f1d29f91016e4d9e684ff56494c7e2f67678c17ffd99bffa",
+      "reference_identity": "3fb60c56c1094c16c9f6c634ea61baf76e83b4b8bb66153699dcfbc6a2471a5c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-134",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "197f0d0bdb6891e699161ad6a94f290b9c3b019b419d9c63e51858f1bcb8ad7a",
+      "reference_identity": "efbbe87e4b3bd5b0a6858a66217fe01b0614926c71932a85aeb0aadd6ea79395",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-135",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "17ba1abdbeaa088df8430978d3a08a2c1df556e9304ead7fedc722c91be51694",
+      "reference_identity": "716c161d05bb1fa19eacf6cad2210c3e79bd7b3ee12e736c5914e319bea931f7",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-136",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "1b08ba4272464323ee57f15106eb655d3366686be164dc7e9d677b19c6c81d6b",
+      "reference_identity": "a1cedba2383b44138baa7136a9fbc27cb70845e444fab11382f182d1c85a7046",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-137",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "7a86768139fa043dfa511af7c7d85020edaaafd7536486bfa6c47f0a499174c2",
+      "reference_identity": "7a386778172a0b3a7af44f6329e251ce9c2d823fe10c2357af5a8813e22410b0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-138",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "fb9dfd47908ca5ed7146da1ee9a8c90c6759113b8d35af64939fa98c23246b6e",
+      "reference_identity": "3a5723bafe1b35f4ce6edd45655d478a93e0794488eff6c81530553a1650d24f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-139",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "89876730145d4a4f8194f3252d11f6b0ab4039bea9915d383da843ee64794e8f",
+      "reference_identity": "faab74423fe49c8653cddf0d3918feb75567f574863232eba434e9a74f0163e0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-140",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "ce1d56539a05733f90c73e8eea565399b02761710a2bc3f9bc24a1991e0051e4",
+      "reference_identity": "af6228e9e00dad492deafa9275a88090d05dc401de0086908094d0cf1f4da28e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-141",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "f2eafd79bf267bac3415065470968ea3aea84c93084b63f7b7f5aa6a2bb44d55",
+      "reference_identity": "f94ec5d894a7499b3a7e90fd444c84c340070ec5eed6ebbef9724d465a9c1819",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-142",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "7d4e509913c4e615286552f62d824d7aa942534a00ab9442f1943732bf467f47",
+      "reference_identity": "640b94f86a3cdfc9d1364b4f9e545d3ccc1aa3098d89b5e58741f4035239e355",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-143",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "724aa848b9c1e3e9602f7ce1f4c005b43bd239965edf3f3b371213f167555565",
+      "reference_identity": "3e1af25ae36121e4c15ff176f822df9e4536b3e38068651fb8c4f06826f60eac",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-144",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "e6641928b71ae33e3d1b79a076d060d88356f9fee2114eba2cb1ce52fed06d75",
+      "reference_identity": "0d14a5389f738f3ec9c95e78a09b35f9756a15cb7e5430767f584fe74bcc60a5",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-145",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "84dbe5511fb4a809d00e67082a7aa90d414b2ed394ce0c831ad7ee393fe3e1ba",
+      "reference_identity": "3002911633c35bceced9440a3d8b9fc0ffae35d6c0ae085a979abc593b6f6d5b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-146",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "30d28cc8d58f16eca7cc3ada258aa72ece1da526c054875d0ef84739a7205df9",
+      "reference_identity": "c024bfba633df93eac585b918bd5ac25281bfe0310938e7a794f5303358a067d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-147",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "f310966681d2c79799d738eb4562436f2f8df3a090059052314da7fecf2a1f65",
+      "reference_identity": "3f1d16ce25d7426eccef2ebcccf3de4ae62e1aecb54f5b018304f5d5d6ee8f8d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-148",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "sp-00",
+      "verification_issues": [],
+      "original_case_identity": "92fd3c7ef35a2d543f76a0447d18d1a89415a6a36e030e985ff677a8251309f4",
+      "reference_identity": "3a53eeaa2899f3321bad3d29dd5462f7a49eef3ff283ed63f4d2d3724ece8116",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-149",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "dd4bc419d2aada99e78024bd50303289bb7890cfefac8e2772aa2a849155f4ba",
+      "reference_identity": "4988ff0ae8997d980f29d7e8b36b2da178f37736b8e4e1e80a122ddb2ede302b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-150",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "1c884c60027e9b8b43122d3cbf0c0aa69e967da6e650eb180211331813f52903",
+      "reference_identity": "9310d6bc200b3d1cde5a5d22ffffca768a826141f53e370fbb910dbda43ec629",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-151",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "36e944f32ed4057eae8a0b74689d92fa07e48c9e9847f8d1eb2d34c2a124d01d",
+      "reference_identity": "cd8d0cd33934e5c017aad671dc90538f1aaa60305d58ac192e7ed288afd368c1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-152",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2b9906944e6cd9edd04f068eca26192d58acc23c69165c94562fb7f4f2c2a434",
+      "reference_identity": "db4b89a9a8743f4e0adb616a7b0364f522b01f8497d088ead2cf0e5df78d5c3c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-153",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "482ba29f64460208f16efc809b1cbf6cf45f9af3744eb9ae28f48c61f44b7056",
+      "reference_identity": "01f38c9de1965bae32febf3a5a99334df71faaba7e8d9340cdb9c3b485905767",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-154",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "559b35cba5765fdc33cf8c49c2d1a76622230c8a1418e3627a723b695e666e4d",
+      "reference_identity": "6881fe03045e314670fdb2fc1ff796ab02377f4348066dacc74d8db0889846c6",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-155",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "a9dae77eb700d447d6bb96c706c92389cea4039ac88668ceb940f82bb2e19672",
+      "reference_identity": "212178701714fe26ef83ea04f52779fd4fc03d6f6d15b749af89dfb606b9e671",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-156",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "680ccabc6d37bc0a6fd4fcd6918a0650882cf44cf46ec9723ab639b86f0d3858",
+      "reference_identity": "17e9f4ed60420e756940d7bae5ca1ec3f8c485f49ca95e4ecd3f15448e8966cf",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-157",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "4133dc91bcc750e8178211c4270978239a09d705547dc4b624bc47a1d88d2b25",
+      "reference_identity": "159d7c6a285769b2a3bb9e663565e2a87d3a5d224b46de44f1b2049c9c5bf1c5",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-158",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "c61ae998a72e5c7fd5bd590e9f58ca79ea205b3d9f37911bfba165e4f531d064",
+      "reference_identity": "19a169dee07ce1b5afca7a100c430ed0d873798bc60c4137242c47eeda144bca",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-159",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "38d3bcce8425bd9876cbbe21eab8ae301bae79b8f2e231905c37fba8590b20b1",
+      "reference_identity": "dedec964001e94ca854c611ec730ae872b949360bb0aa64e2b647f9fe9bfa2f0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-160",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "07db63dadf5a27c3c80ed736210d207c5171a1aef4c8574834c270f02eaf4baa",
+      "reference_identity": "0ec45b38b09c5bcf3209901c1d81ac423efec215727876d1015958ae91b0520a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-161",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "e18f09e0472b9d388ed89b41e9d0b61c3a7f1d261f3cbc8b48c07ba3fd1fe6e5",
+      "reference_identity": "2ebff7166b54a242c61285e38b5e3c8087032bf2176cda4340676218cb04d845",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-162",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2af9cea3f6107a0844028059dc445ff263bdf36b1d885f4cc7a83407afcd78cd",
+      "reference_identity": "d2fde6fad44cb3c1905e3167376ed9f0e9323f90549134dfb4fd1e4fe628b79a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-163",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2ec6a442ca6927f3b120540fe1966b5f06b281b6e1b2cc836e4b70108265a35b",
+      "reference_identity": "78a3503314ff8525294f72d6c89d3bef10e2fedf64f4a234fcfea074620569bb",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-164",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "b99d6dd42c497380a09da76d53a1a292c3f01d227e1db8bf6d1a4978b4124b85",
+      "reference_identity": "c9e461fbfc4887eb3288d3921ff835ef2160825e47dfa7b65e748178daa6828b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-165",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "302faf5503016a8b5e158690fd4ebc60eae36aa6daf5b84b2b0d0b08bc9cd293",
+      "reference_identity": "8fe0e9aca11599e2f695259a56bb05146df6399ad551c8223ebe21104e18a6c1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-166",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "dff6b3eb0368243b2750d8906a7da2dc5b61cfd310f0694e474b103593a1a8a8",
+      "reference_identity": "b874cb5b1f59ca7e459c41f687ebdfcb327226e8a7c918fb4b1e9774dfdf6f7f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-167",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "116b44c4ef0cb7f55371fcb670110b5e28adc1db75778127fccc14feb841a8e1",
+      "reference_identity": "1bea1992066d55ad168f83dc87c199d5d865e2dbdb744aef5c233d60430222c6",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-168",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "9838be37bbdac82b528a2dbaf16c8d2918490081fd5e5279ea65481c823a38d2",
+      "reference_identity": "8c8dc5ea5aef7eb980203ba73ab8007673c46737d00d91475a25462226708d8f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-169",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "ef0d3a1e0c8c2cacba658004a040862f46192de57f381b7743e4a33beedcb410",
+      "reference_identity": "53141f85f722c8ac587cc51f2d2ae85dbd1bc6f815297f4265b0131bc31b15fe",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-170",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "b95302782eea9b248c4428bf367b20ee27efe2b0211f6a32d0cfa9f02ac35473",
+      "reference_identity": "49da9a7fd64f5d2073e17f05f2d5b96937359a210f8ec1c50b53dcb50b8f0f76",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-171",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "0cc023897ad0c4c682e05e208113524c3d1493b5eed7d6f8f285e837d1f93afa",
+      "reference_identity": "5388d9d5f5f9e0fa2a32fc2a964548bd692650e7e9d69f41ab3b4345c5fee768",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-172",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "a82fce3aa1e8ee89e705e69156880572131bbc72ef696dedba0df1f2966b91e2",
+      "reference_identity": "e2ef56546952b6e69ce31c6c6ac7578c032be77d25e49767b9d910fdb53162f1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-173",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2eece2ed1462a9ff04c0e95e3dd6622ba694c7086a985b8dd1e1c7f70c8922c6",
+      "reference_identity": "20428bc44ec315c5097778a4f474aecd5f8f2d6219bff08ca9fa8bce2bbf4cd2",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-174",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "81323561cdcdd706b0001c9bb88fa376a7f91761f250d0cc36aea7eec7eeb9e3",
+      "reference_identity": "c772d6f2398471bfb8daad9d8f43108f40c6804353c0fadf7d7e0af335c418e3",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-175",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "36655f8f4331f29dcfddd8014498c6806cd00d1dbb1f014da70e479b9866dbd5",
+      "reference_identity": "d0b6b29572ed10e43afdbbc636f5e0a390886cd6d1cc58059d84731851010082",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-176",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "074b06dff8c0dd64437e460fd9c96f98beec9c1b16be4ca3998d1018317eec09",
+      "reference_identity": "b121c0d710d9c4f61e6aa4a80a28cb45abcb8e1562ff56955135390afb84d9c0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-177",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "2850453047449d046b99b270f110ee75d0bc87b90037ab147d0ba8b99e3fcbb0",
+      "reference_identity": "a8e15683c73a1db8076376ea5f6550e3a1cc8099d991e2b5687e5cc1dd15adcf",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-178",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "e3f89baecc79da402cd4ab75c3deae298d69991ec72079f88e2c6450afd56729",
+      "reference_identity": "e61905c68b5d36061ee1d314ec1c56087022ac58a07da56c75e5c007482551e0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-179",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "5a5f3cd28af42dfab9ab6385904d10bea8ac87498b1c5470c67e4453c9a17276",
+      "reference_identity": "99b4165e981c46c5f2ef486f08eb9f5eb401a34a5abd2dc2878ad00baa6e1e40",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-180",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "9baf7e1564415555152238ce30b92fb4d95e8f01b943de1aa7a47f46b48902bc",
+      "reference_identity": "2a05f89a84afb2927fb84291780b2a22748d1994f9b4f4732660cea2307eec66",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-181",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "ebbccb6ec05136b7d4703babd3de0562ea5dd19d2dbb9db705709bddfd0c8989",
+      "reference_identity": "570b37c5864b4f6f25034cc6e56eecdee0bba5164258bced6225cf71cf382d1d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-182",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "eff160d12f6f370b8ec7d378ede642aa8ab4337aaaa259440f834b235aa190fe",
+      "reference_identity": "cd93aa14edbdd0bc17e97bc6b8f3915c3f7387b1e85b97407e62ae6e5ceb4d1f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-183",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "cfebea6593e8cf486da215822b14331afe28dee759ce01905729c55f4120b86d",
+      "reference_identity": "a907b20f7ca2e98d3a12f4687ff6008addf7eda7eb9b51b651bf3174e9b1b61c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-184",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "91c46425d9473246a681dbe4dfb4abd61dd7af28ee14ec96f10f6345dc339deb",
+      "reference_identity": "9430f5aa29db9c37130194d089ad0d10e4aabed7b5db272b433eaf5155e28d13",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-185",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "fc1d4bb3b1269b9b8dbbf84530c16066c79becc77a38ca72afacd6de2fc9ab66",
+      "reference_identity": "8ba91f0f3c779a65746775f8386d3ff0c38c875f63c9afd139ddbb1a8cc7d8a2",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-186",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "1f22d8f790a16a42c73d1bfb5192f1f491506255d7abfc3074539469c08fb7ff",
+      "reference_identity": "51865924010108d4a1bba17a72ed421c52954d4ace07215b5c9b55ce455d9ac5",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-187",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "524074128a51a077069088072be8f223525d2558f4546ac0c040595ec8fc0dd0",
+      "reference_identity": "5aaa560a96491c11eecafa140b48bec70318efb8aa192746cc3d8d5f2832e8e0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-188",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "a48225c6009f9d91c6a338391c8a92d0fc40004b3f8d67fb93ebd041594ab5c6",
+      "reference_identity": "4c763ae95f91aca770117f2a11142da6e45b3274c4830b1b38e629385bc61c6e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-189",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "8db30032ae748e4c85e5f00a70fc74b9dd7fb2792f19b8ac5c14174a949b206b",
+      "reference_identity": "c789185d7de5237a605d4c09c48887b40159ca6a30531d575c5c5a50970c6469",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-190",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "d2a130cb9d588c076f0b4e444eb19cc33c7a263327fd059174f13d7d800f11c3",
+      "reference_identity": "320d0cc951ddb9c6e58d0787d3b87ac2e2b249af79281c7b3f0d303430bb27ed",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-191",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "d97d3079bb5dd6a3cd7accfc2441883c87fea33c1af6937f6ef3acde119c7e48",
+      "reference_identity": "c0f052506f773e45775504489794b9bfb198770dcff45d93c4c8668183e0452a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-192",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "709264f67fd2518038ef775fc3dac15e2b0ea18a3be2aee7a7beb570d8c8cb71",
+      "reference_identity": "5914807e33e51d8846bb534f68bc26ff68dec1a0afb7760e5ffe50b1d01c17e6",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-193",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "c933ecb0b400cf8a2d457b71389dc22f4f8b9e408a7287cc3b64c8d159c75138",
+      "reference_identity": "8c52803a4918d14a53d36b50229389b3f58d6183251c3439ba97055c020e9035",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-194",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "5bd6c74593eacb90bd8821a727ffc3b9b51c9fe9bf84a18e78a706bf1692f9c7",
+      "reference_identity": "1fae8442f7a239c0a0788a3160f0e414c48db76326e382ac11d4330b88575d0d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-195",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "9283bcd56a2f7f5058acb72129a5c72d0c4f7b69dfe5d71935c67a3e8e4db222",
+      "reference_identity": "f969cf283bc0f6742eb00846369ca9fc6351b78897826ceecac5d0055982a14c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-196",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "24468b5ece2717a85a7c4ad2c46dd5e2740d2b07c5cd8af5098895dbae5c7606",
+      "reference_identity": "ed84b39784a509b0139b6553e1ec12afd2c95065264ced17cb2c8eccc57f44d8",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-197",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "07bc9d14753c04f0c0c3923d8eac107d3f24d7bdd86936d054d342d6433a59a7",
+      "reference_identity": "896a97e3e7cb60754251aad8fdc2a616da3377e1cfde41d88b21e394eee3cec7",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-198",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "84cdbabceaa6209ee8d40825fdcd2fda20dfc0e90b730a4fff9ad7e28ac03f80",
+      "reference_identity": "bbd4697d2fca2dd3e3bf60101880dc356c0d1979a9dec9d7fbb16573b1fa6103",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-199",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "9e2e86ef9866f26d94037457d0f1106f5cdf5fbeb75eabf26761e49f7bffd957",
+      "reference_identity": "f74622aa3246ea63794f51104e72017960632596d5776d33a1e9aa757fb34365",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-200",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "13c40e61381ac27b40c48564c4a3b1d2bbccddf4ebda63f92904ed9a25bab541",
+      "reference_identity": "28a79134757f68961f1043551d916ad77b81cdf2a8d898217e60096051cad2da",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-201",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "edca7040f7fe4cb7d17c596e89e8e736b8fd2637a70e57914047e673af0ec5ed",
+      "reference_identity": "2ea00b32b699cb43d3fe53ca45a673ef69e9e4948a9060dfa162fecfa4818214",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-202",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "a2a9c42b3c6b222b54ba2701ca6d9452124588970b66f0299379bd9df22b0f87",
+      "reference_identity": "30ae3af6759114690033e128d7a5f4e9ac51cd3cfe2ea465f94c2053bdfc8468",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-203",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "ddc892b3c6a80a91cac24de28e5346ef3e08e966de66123f5fe1115d6177ceb7",
+      "reference_identity": "67500658646cd207d068d0454fc4255b27271799e0ec308cff0fc928f28951ba",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-204",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "f70e4f3c79f30eac04932733db821c8d7c3dc400fd6ef0af6eb1a224777a558d",
+      "reference_identity": "c7d72f8d0d39efc02f21fb806dfe30596dc340f4332568eda3adc87c9b072e69",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-205",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "8101aa28766f374258796225eea0705c7a0fb25e1d88d88c48ae445eb698f1fc",
+      "reference_identity": "ca45f17a57f86ff09e3aef13e90b1b209cf7859554ed8182bca21cecf2021fbc",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-206",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "2b921a4a18a7436d09455c45ad46e76e0328cafc134d982d5aadc84ad884ae5f",
+      "reference_identity": "e6a6b5b1a5b46ee9512d00a4c822fec6aa60380bad4bf6a6132772f19a929a8d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-207",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "97b03810d2681a6077863bfe0b5715ea4c9c08835ada7b0522c611f3cffd39c4",
+      "reference_identity": "b882c7af5a3d9a0e8d5df01585aa5423163f322af0ff93a987bc664165fe64d1",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-208",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "91714cb596fefed689a5863f2dfe5142ae94cfab1181617e13244763495b3409",
+      "reference_identity": "ffb5de7952e0511babd5aa5775386cc105f0607ce35d6a0c2bfb390d3eb76916",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-209",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "73206e04e0a49f3169272e4aa7ccd1a201709c20ef29d7d50532ab4695fc27ed",
+      "reference_identity": "5aca794d171468b32d8a0e5f19404d8b70455290e226300347c9d192290ebf88",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-210",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "22297db6ef834daabe9c6f3f41f0eb86730695e402dda67c6157678ff65822ee",
+      "reference_identity": "ee960594c1effa8ab498580b28757b3b3a16a64f43e540abbd4baed28410ea2c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-211",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "22ecc975e95222247d51bc982d6427804227a1d0a45be73b06113cab9ce15c46",
+      "reference_identity": "28cfc5aad5db3df2453bbd5fecceb8a8a578f40cc58e3b7a43638055c9c4e486",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-212",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "74c72fd45dfc9c62d8c46c38d65e27c4c577b6d0bd9a278259fda1766a54eb77",
+      "reference_identity": "481faef8bf378d8011bcc3931c0baff2aa117f5aa88e077fbade6bf05a474fa4",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-213",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "2490c02a3d3daa22af1519bc506f6d26047ee1452dc32f0fdf792cf43535c530",
+      "reference_identity": "1d9ade20d8fdb42509f78bc9a83cf08f54bbceb4f328b3024ddc948fb22f9bbd",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-214",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "2c1e62fce17fd2afc596a9eb8a67b85f42aa1b0d0156649275478e93e26a27b1",
+      "reference_identity": "365436ed4930f54d83ad35b5917df0b04887341c84b6feff9668e9620c17d972",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-215",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "ccb7b1967158e9cf3b3d1971138fa9c5bddb5b24b08b7c7bf42299ee6f084924",
+      "reference_identity": "a95f22a323b6eb18773864c3b7c66ed1d0c49c1e568f5e67a06269d55d61fd89",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-216",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "3e4e3248938d6dd1fb38385281434ba4d69d135e72f5ed96a8eaee780832d2c1",
+      "reference_identity": "84416d9122bb0e39bfa133d1d88eb1c198a862e946b2d3b50fbeb9d1102d5b39",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-217",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "d3f521d7d2d3c2817d1f123002b66a02179f14af30ec7e16e290677585ae1d42",
+      "reference_identity": "0461e454a177a82459e703c3d9e30c612b4b0535651fcdea256e6bef47193fbb",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-218",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "c0693bd77f443ad52a85b588b7d497378b0f14dc0ae2b6c8e02e1d6c364c88ee",
+      "reference_identity": "93ea19cc4d5da5624677448f1b9358ca77dd16c177c90e41478dee8a6e0eca76",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-219",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "de42065cfeb32dacf2fdbfd72f77a68449ce3f115bbf67f57e8bbab04965a78c",
+      "reference_identity": "73b3db80745126bbdf66b16b82c2c2188fa387843bf3c54a3e3898e2da326443",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-220",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "b5d64e9ae55daa621e52ccd0ab48178cf9aec010580009541ecfd367ca742d1a",
+      "reference_identity": "2d3cb99d5495f0818cf63e0adf407d954f794a057aaacd5b3e4524e5c63cc703",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-221",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "0a7748c3bd1bb126dfcd4f40fd869ea3d280598ee16c53ccc1c288735de37b0d",
+      "reference_identity": "d644ef3efba494f85d2ae20c8bb74f67a9f380f296ffd69aeb4148a8cbb45288",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-222",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "c4ad8ee34ea060c22eb1c69155b87a510fe820cbcf5ecd5cb9bbb303696eaf5d",
+      "reference_identity": "e0bff103ae5da364ab6999f67966aed085cf06e87f80943cba49c0d5c2aff68b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-223",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "33238061e6bda3cfcd99b81a32658df4a58469820a70b93c71dae5668fe06072",
+      "reference_identity": "d7d8d489e2cb2b778dbc55bd9687092ae691a7a997712f1254911c754d473028",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-224",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "b7c6fadb6db1b9f2acf6dfefec25834ed322697102ed5f6b6af58fe73f6486c3",
+      "reference_identity": "4fc94d07c6c50ec17694198d2ea31f9715a2be72d097b9e3e4e64b7233595f3f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-225",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "d947067bc2acca51f019c9a47a76cfa6c15fdb62a2686aa2e2f588f53bb44f2c",
+      "reference_identity": "fb60376c5ba402b6dadac87e030d43f3dcd96816dcce934903d0952dd88ff928",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-226",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "929cc41e0cfb6b46b22c7fce93ddb52cf9c7227ea066b576229c62f58fa33a35",
+      "reference_identity": "4958350d09956108ddeff521e302d836c62f84308764639b9acb9bafd578c700",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-227",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "035975bfcd1f7440d3244bfed794db47a6d10f6d571ca386fec618d74ff43f1f",
+      "reference_identity": "b80003c7e1a2dfeff09328f73df1e8793a3a47cb29acf7c68bae4b2289af0e80",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-228",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "e8ad298bba0b8e594ddf2f5ee59df9416d0c4b0faefe3587291d86a0b4a570bc",
+      "reference_identity": "5a582747c957bad2002b1c3788a7bdcf6419946251fde0378f251358a6e4905d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-229",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "55b27af146f75b05ba8285007b7ecfa009876d98e98f666083f7f55db16a62db",
+      "reference_identity": "e422731eafde32e2dd824bc48d137e2861bf48d871a98a24543bd4f7f922916b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-230",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "663d5bfd00eaabc86a7f7572def67502a7a73aa1717f68c51cd0c35f2fc594e3",
+      "reference_identity": "7aa90c144d2145daad22194fe6dd2cfe6f026be3e9511ab4213d5a4c3072e333",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-231",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "51207d475d3e3952ba5d6433980c6265436d216a75aabbe1a8aa522754a1fa2b",
+      "reference_identity": "9f755dd434c392912046313c68fd1fe2ed1190b30709e85b11437f837d72c983",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-232",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "force-00",
+      "verification_issues": [],
+      "original_case_identity": "bf0683861e44e2adb15c7568ae800a78d7807094500e7a6a2031785872d9d339",
+      "reference_identity": "8ebea8dc7404b7ec18959ac25514be6f757ebe0df7766bde31dc8585412a54dd",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-233",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "e6af6ff06b4503f4f9784331e7e65b4f028dc293fbeefe029c64356396584110",
+      "reference_identity": "ba11f2dda560f23c0045fd33f6afd27f476d27b66d7c737707b258fb9966f406",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-234",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "4ec07fdf401c7782049e7e84b7b3586ac6b009d145eca64573edc0a4588a27c1",
+      "reference_identity": "b9def06270467b3e2217ebfde2e217e6a8e345e1636cf36a36a665ebadc328a8",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-235",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "ecafc79c63b86c7012389a704845738ed2bcc5985f481bc2ecf569b5b291b5a4",
+      "reference_identity": "1bb814612ce5ce2a7dce6d126ccd35e39ee5596918ef3bc24875bcbb39e226ef",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-236",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "558fffc1a327abc34644898adf8bc32096ad987206f0ee0db7d94cabe5910ef4",
+      "reference_identity": "2718c67abcfe0296b5406fdb28bf49d44ae3aaeb2ee3bd81f1fb2e0b83cc04d0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-237",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "d7b17387d9ac9922f6c93c79b2c890c4eb71836813affeab0901b5e3c550f76d",
+      "reference_identity": "86e7950751866a22315f9dfe282e2b2e81550603de5c049694387726ee19fce4",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-238",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "03f7d69dc329b81c339883b52ed967780d5ab5fd161cdc305f041ba58c000db0",
+      "reference_identity": "e7696d18496fc22159cebcf9ea59a3e069fbbc197a8055b0c166b981993f4437",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-239",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "9046844e5a40d126d3dafe2b7320092cda780019755039cfdcbdde67080023e6",
+      "reference_identity": "80958db54d638f3e4944844c63eddf4906bb2be5e9901e03f44c899e5077c86f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-240",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "216bdd0ddfe66ffb62fcc9765c17f9ce0b16db8189c9c084f0cf761fe6ae9911",
+      "reference_identity": "0301583fa53571fe2cc55bd83fe0e84a7555b8222e17dc602fb9fed1e76ea33b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-241",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "2dd45b9fada8991afe118d40a7f256b4c3e40a43c4293647a4e21bcedc06db38",
+      "reference_identity": "9347f1a0b71c160b7872794096f371f9d5e92ee282a3b1a63f05bd9b57380cf3",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-242",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "7ed5a52983588cef4e1ebba478cd7c21ba3679a27c9df71c0b1c76505dd777a0",
+      "reference_identity": "0cd9e21b7ac1bbd0618fd92fcf3dca9e4de4de9c0b4b859ebb56ac1a925c401e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-243",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "94db5b629138f81784dacfc0aedcfcd99ccf9848cca5a9878a01d6bf1bbebae2",
+      "reference_identity": "eb2352d8da0c73343da678fafc90c2d76cc9f6a5f99b2278742bb3b98abeee3b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-244",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "9a9d4863be5f4467b037e8d8089d2b943491912322aaf8055b5c77d6a793a7f7",
+      "reference_identity": "332451d7d86cecbe7d38f8d3d067c69d17ed193ac2b24bf3e2021ac6944590f9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-245",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "6caa16c704c326bf1908c08ff42d99bf63fb8e34029bd518451f6f8e7fa22304",
+      "reference_identity": "8cd4bfcd5fede9b5976f36592dc07c9668ea2586f27da70f2fcc06158ba95d9a",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-246",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "64e2f5782134f860c0f00ddc1454a38ffb67743584a064abca265036e4a1f537",
+      "reference_identity": "e0955acd9b031d884115490312f6d43e46ec3e9a158dcfcf3cef0cb331a23203",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-247",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "4cb4faf452d117e986303a59a40bd8122326716a57b15e049beb1c2c8b841073",
+      "reference_identity": "968bbbc95504600c953c691e3b94a891443c1e5a7cb9035bfa36ef078a34b004",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-248",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "bb3da67cef492b2ba320595eec03f2ef034e89bab62b848171f8f119c25a7b14",
+      "reference_identity": "577bf1c084bc49e142ef43a77f7aa6a453b84b09ac341be40dfbb72b406d933f",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-249",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "6a43594ff94d0d1e8e5ce8ab466ca038acd2e3fc5e12d63ea4ed897150e304a3",
+      "reference_identity": "3af7a1ee6bb231177b455c9cfddfb66a50d86b5527415d6eac6c840db625d603",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-250",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "9cc57a26837e8c489138164a6c38e6bd41bd386369ec1419472db3d19782f4b3",
+      "reference_identity": "176b84f85ac21475ab43cee0ee886049a67ef1d328e0ae5320190343f8700d74",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-251",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "ab02ade19a632017cf464c756e9336b150b5afcecf32a64fe509597d9e614a04",
+      "reference_identity": "e82627eb8043232f15daa1289b7a77c8dac9fb266e52367d7793cf6575275c3e",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-252",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "c6a13eaf449dc79d70b388b60d2d3a6d940619ad1d8c96d915c1c2808a588a3b",
+      "reference_identity": "f30220c8a239a6a5a5e1b049eccee92ce9e24b796dbbb963e8a0d7aedfe2a516",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-253",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "8f3dd25097f012a94e5f6469ec3a1057ccbb65dbc66d4644c0d8b96d428d95dc",
+      "reference_identity": "0f19339ddcc7cc312fa82f25bf4d7ec337382160c6c65b58aec23bd963f2909b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-254",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "18318c305dd54dd23fa56016a971f1bcd18898f15fe2c3357a04bd6396f30798",
+      "reference_identity": "d91e4d297ef9ed8b0c5bca11ead4936d3a7dac1828f721bf98f5f06a6be7293d",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-255",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "b8d750a056fe99c04502f53e6a85e4aca1f042fa0abc61b64057b68e9586ac11",
+      "reference_identity": "4e783682d5e7203fb481e75175e134fc033b3e5a4337d6baf4a8a03ca53e38af",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-256",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "083145e40c0116aae94ec4dd460ca6c91a6fcb9f2f688e3d73cbf196be72778b",
+      "reference_identity": "e4372bb32872a31cea4f72578680d8268b81e839a21cbd07ffb208137228ffbe",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-257",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "663cb94ff78c59105f5005cf0584e6204e52b7cc20b80c648ca742cf52912913",
+      "reference_identity": "d6d4df3c1357796238cb5d4faaa8e2c13c7a0918cf772920401dd31d6fff6453",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-258",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "795a45cb358f8c193951f769ec80d4972c5aecac4bb00eaf0f0d34be911a236f",
+      "reference_identity": "7b37a1f73f9030b78599294adb95abba42a37b176f0f58720d7d2f0da7b3c4f9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-259",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "fb9e325d894abb82256f989bef0ea01668b8038822fd8a7c8294fa9c7c35b942",
+      "reference_identity": "108b0b7887951586b6b13df157a8326bc223368b66960c2e5d7a68e383ad988c",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-260",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "418b3f81d82eb18318364e61e9044b16e6d45b8ebbb553299bc946c40296e61e",
+      "reference_identity": "f2153ad54ba9e57fd086081228e8c10b46365528207c9fed5e9f7740f30d38b6",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-261",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "9dc4a3bdc98f49928c67f048c883511284f24b28a4ae045403ced909bbf5c767",
+      "reference_identity": "8db259db271e1f7199a9d6200a7696b649fdb54a875363708b7361b6733e6ace",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-262",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "a6821bfc00d71112a228b2ce56124f830b8141c582c9e42b915681ada0fff2e4",
+      "reference_identity": "7223ab180513170cefb83dfdd9bc1a293f662d0623b9860c06ab842a6ec1a7fb",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-263",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "385d77fba526b8623b80c453df0b77bd1d4dc47ecd479232563c112f8e0f2b4d",
+      "reference_identity": "e42c716372f076ac32174a348ae07e6ba860e6fe0001f347d7af0262aef8022b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-264",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "f17804e76d0ff1995c14a834634e0d072e3f06ec682836b29482b37108a09c8d",
+      "reference_identity": "c4f2079719e82fb696cec69530bc70d0406d9f2d03579f72fdb39755771d97f3",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-265",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "37f9eac72ffb08e586cb45952c59ce43afee2eaaf9f3ed7c99cb6856762030be",
+      "reference_identity": "393dfcef77e32905a965ff6acd2f5f2c9a651534b6a3b82f30280be46f682d70",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-266",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "90512a61cdf1d339423c5e63d8f838fd7d55214cd1c6305b3f01372d8f95d972",
+      "reference_identity": "bb70a06f564055801359033d5502178624fce5b9723e1e9bc4eaca107037ea9b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-267",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "d420473d6089256d5fb3cbb456f46b1047b86cde54eac7b3d1f2d56cb7579293",
+      "reference_identity": "9d53c3e98a629be8de06710530a2cede41d1764593a4b18c4090fa7ed9ce54a9",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-268",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "135f117f4d36fb6047d4572a6c7759dafd0c7dc30025eff804ed8130891afe6b",
+      "reference_identity": "cb0ba71a16f6ab53984dce720c758b75c07a936b2ea34e99e614cf90dc96be52",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-269",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "43ddcb61bea0e31182012fcd9314d9425b6948c7f04b81ad7369d1364c417b53",
+      "reference_identity": "de3dd5d47cb946368c07a20f54cedb690957be452b91b769beb706f6814a66a0",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-270",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "5bfc01fdb5f132731561be3b8d83b76411f2ec2a493088bd1698c21f3e91a424",
+      "reference_identity": "971452de6b6e60156de4802bcb23b7c04f25d45251244ead0968182fd4d75e2b",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-271",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "11d55dd45d0b4bafe5a85a6f0ce794c8ccd1e2b6f11bf8c93b49b64468fec1f4",
+      "reference_identity": "a05e22cdede8afad3b396f470ea9999bdf716bffdba8fe59f3d8f54df55ff860",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-272",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "b4418224bd383bf95fead4daa8ae05e1ec537f56e6dfd5909dfc649978d01a1b",
+      "reference_identity": "c80296447717c14af39ef686fcd78037751ded586bead92b116f3477f45eb255",
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-273",
+      "status": "not_started",
+      "recorded_result": null,
+      "review": null,
+      "completed_stage_records": [],
+      "next_stage": "opt-00",
+      "verification_issues": [],
+      "original_case_identity": "a8763852633c7da8edc40137579126dd7fb3f114631a56208bda213967a50d36",
+      "reference_identity": "54f60b8f59f13941ba00fca158839fbbb7b145c5d0695388e0511c051f862fea",
+      "scientific_pass": false
+    }
+  ],
+  "scientific_passes": 0
+}

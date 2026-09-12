@@ -1,0 +1,10 @@
+{
+  "created_epoch": 1788846604.4080946,
+  "source_files": {
+    "density_print_precision_reference.py": "0723edc14160a950f367f91cae20b3bc32a405d6a6257acbf81533c3dffe4500",
+    "test_density_print_precision_reference.py": "cbae824d7567f081c447085dc6ec885da134355778f634aa9f497132c70e35ad"
+  },
+  "cpu_core_slot": 8,
+  "memory_gib": 1,
+  "scope": "Seven independent arithmetic controls only; no current-round case analysis or production changes"
+}

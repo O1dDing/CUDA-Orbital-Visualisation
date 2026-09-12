@@ -1,0 +1,40 @@
+{
+  "case_id": "OLD-172",
+  "original_case_identity": "a82fce3aa1e8ee89e705e69156880572131bbc72ef696dedba0df1f2966b91e2",
+  "purpose": {
+    "kind": "equilibrium_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Candidate equilibrium at the specified charge and multiplicity",
+    "competing_states_required": false,
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {
+    "contains_formal_anionic_fragment": true,
+    "meaning": "Intended zwitterion or salt/ion-pair composition from the original input; physical charge distribution and relaxed structure remain to be verified",
+    "source_gjf": "F:\\CalChem\\Gaussian\\Files\\.gjf\\molecular_ion_master_20260831\\135_glycine_zwitterion_PBE1PBE_def2SVP.gjf",
+    "source_title": "135 glycine zwitterion fixed COV validation geometry"
+  },
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPPD",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Net anion or documented anionic fragment",
+  "ecp_core_electrons_by_atomic_number": {
+    "1": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0
+  },
+  "explicit_electrons": 40,
+  "alpha_electrons": 20,
+  "beta_electrons": 20,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "548c6cb0641dd7ae6c13ecdf376a961cf6cb447e75653c0e06ab1ed9efcb3d1a",
+  "initial_input_sha256": "b19637dd261d715d717eb13d7f25241fcdefdda7bd0ddcc262595d189c6a9897",
+  "identity": "e2ef56546952b6e69ce31c6c6ac7578c032be77d25e49767b9d910fdb53162f1"
+}

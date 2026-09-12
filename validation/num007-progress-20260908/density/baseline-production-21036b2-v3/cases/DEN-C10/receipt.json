@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C10",
+  "input_sha256": "b0c06a61357fe207a3e59fe1e71eab340b0e6570fab0f0afa71ed318ab4ef189",
+  "exe_sha256": "0794aa923582c07c7ee7ac1d2a3828086e5ba374aeab8f0bf4aaa03839cf88d4",
+  "started_epoch": 1788853248.0569193,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5159999999741558,
+  "log_sha256": "f244134a659e3c3471800119c089a0b2c69b0cc0f44a2613501129f53d6fdd70",
+  "observed_sha256": "6a76ef7aaf2de724f57e820ff5a9b5e0295869f292ad947780576402e94cea20",
+  "finished_epoch": 1788853248.5787518
+}

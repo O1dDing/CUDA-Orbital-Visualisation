@@ -1,0 +1,32 @@
+{
+  "case_id": "OLD-223",
+  "original_case_identity": "33238061e6bda3cfcd99b81a32658df4a58469820a70b93c71dae5668fe06072",
+  "purpose": {
+    "kind": "scan_frame",
+    "reference_geometry": "fixed",
+    "basis": "Original registered scan frame; no minimum requirement",
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPPD",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Net anion or documented anionic fragment",
+  "ecp_core_electrons_by_atomic_number": {
+    "1": 0,
+    "9": 0
+  },
+  "explicit_electrons": 20,
+  "alpha_electrons": 10,
+  "beta_electrons": 10,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "3e70f61b95063f25000a29e1a06ad7b216648831f79bb976be821b35b7816092",
+  "initial_input_sha256": "5e83980386456e3a72e2188fc0330209fc30d99875e1a80bf29426ac85e19fbc",
+  "identity": "d7d8d489e2cb2b778dbc55bd9687092ae691a7a997712f1254911c754d473028"
+}

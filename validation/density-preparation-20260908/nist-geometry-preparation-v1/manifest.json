@@ -1,0 +1,69 @@
+{
+  "expected_sources": 5,
+  "sources": [
+    {
+      "candidate_id": "PREP-002",
+      "name": "germane",
+      "elements": {
+        "Ge": 1,
+        "H": 4
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+      "scope": "computed HSEh1PBE/6-311G** geometry; singlet minimum in source; starting input only"
+    },
+    {
+      "candidate_id": "PREP-007",
+      "name": "chlorine trifluoride",
+      "elements": {
+        "Cl": 1,
+        "F": 3
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+      "scope": "experimental-data index; initial state row D3h is nonminimum; explicit C2v minimum is another conformer; no Cartesian values observed in web extraction"
+    },
+    {
+      "candidate_id": "PREP-008",
+      "name": "bromine pentafluoride",
+      "elements": {
+        "Br": 1,
+        "F": 5
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+      "scope": "experimental-data index; coordinate payload and original references to be reviewed"
+    },
+    {
+      "candidate_id": "PREP-009",
+      "name": "iodine heptafluoride",
+      "elements": {
+        "I": 1,
+        "F": 7
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/alldata2x.asp?casno=16921963&charge=0",
+      "scope": "species index; follow actual geometry links after source retrieval"
+    },
+    {
+      "candidate_id": "PREP-042",
+      "name": "phenoxy radical",
+      "elements": {
+        "C": 6,
+        "H": 5,
+        "O": 1
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+      "scope": "G3B3 result page whose geometry is explicitly B3LYP/6-31G*; doublet minimum; starting input only"
+    }
+  ],
+  "timeout_seconds": 20,
+  "maximum_bytes": 2097152,
+  "concurrent_requests": 1,
+  "automatic_retries": 0,
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "gaussian_started": false,
+  "script_sha256": "94c90a68218d6ddd195bbd9687f0d297a98750c60dfacddcf6108e2e46815fa5"
+}

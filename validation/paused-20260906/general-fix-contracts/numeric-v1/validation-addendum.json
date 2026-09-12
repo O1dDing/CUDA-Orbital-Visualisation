@@ -1,0 +1,13 @@
+{
+  "recorded_at": "2026-09-06T14:38:32+08:00",
+  "contract_status": "prepared_not_applied",
+  "new_confirmed_issue_id": "NUM-003",
+  "evidence": "regression-fixtures\\producer-overlap-v1\\post-batch-review-v1\\review.json",
+  "component_probe_all_terminal": true,
+  "production_scientific_issues_fixed": [],
+  "runtime_findings": [
+    "EVID-RUN-001",
+    "EVID-RUN-003"
+  ],
+  "formal_case_passes": 0
+}

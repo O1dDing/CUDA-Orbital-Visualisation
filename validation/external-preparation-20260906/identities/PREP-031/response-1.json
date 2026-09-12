@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 20277173,
+        "MolecularFormula": "C7H12",
+        "ConnectivitySMILES": "C1CC2(C1)CCC2",
+        "InChIKey": "LBJQKYPPYSCCBH-UHFFFAOYSA-N",
+        "IUPACName": "spiro[3.3]heptane",
+        "Charge": 0
+      }
+    ]
+  }
+}

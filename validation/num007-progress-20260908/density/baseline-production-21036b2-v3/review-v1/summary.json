@@ -1,0 +1,785 @@
+{
+  "all_control_inputs_terminal": true,
+  "controls": 20,
+  "controls_satisfying_recorded_requirements": 8,
+  "controls_with_failures_or_evidence_gaps": 12,
+  "formal_cases_added": 0,
+  "formal_case_passes": 0,
+  "baseline": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3",
+  "manifest_sha256": "feb182a29c8b9eff99df5cb776a68210927594540de0138ba2872f63e2e523dc",
+  "records": [
+    {
+      "control_id": "DEN-C01",
+      "checks": {
+        "total": {
+          "passed": false,
+          "expected_status": "missing-input",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "missing-input",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-TOTAL-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-TOTAL-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "3a1733d49ded78c3c806acbdb50dee209528910e9865092b7a88d1bd47480789"
+    },
+    {
+      "control_id": "DEN-C02",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 4.440892098500626e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": false,
+          "maximum_absolute_error": 1.265200413750355,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-SPIN-MATRIX",
+          "detail": {
+            "passed": false,
+            "maximum_absolute_error": 1.265200413750355,
+            "fixed_absolute_tolerance": 2e-12
+          }
+        },
+        {
+          "code": "DENSITY-SPIN-MODEL-EVIDENCE",
+          "detail": "The shared-integer determinant interpretation is not exposed by the production result."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "9117f8f59a4fb9d1b71c43444aa5e534212463cf60cfd29dda8cfd9aa18fee04"
+    },
+    {
+      "control_id": "DEN-C03",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 4.440892098500626e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": false,
+          "maximum_absolute_error": 1.0566149209460305,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-SPIN-MATRIX",
+          "detail": {
+            "passed": false,
+            "maximum_absolute_error": 1.0566149209460305,
+            "fixed_absolute_tolerance": 2e-12
+          }
+        },
+        {
+          "code": "DENSITY-SPIN-MODEL-EVIDENCE",
+          "detail": "The shared-integer determinant interpretation is not exposed by the production result."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "0aa4774880ef076c9f6f5bd4e8a3dc918c6278283015e4dbbe8296354737d531"
+    },
+    {
+      "control_id": "DEN-C04",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 1.1102230246251565e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "missing-input-unless-external-model-supplied",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "0da36842ff81964e93216d87387bd9f2084ffd3a72b4aac67a24741582693ba6"
+    },
+    {
+      "control_id": "DEN-C05",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 1.1102230246251565e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "missing-input-unless-external-model-supplied",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 0
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "44da3a19499c72e661639eb6681aa73aece7d7575929f4d136e22b19e78da86c"
+    },
+    {
+      "control_id": "DEN-C06",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer": {
+          "expected_records": 1,
+          "actual_records": 1,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "eed143d50767eea8596ae703816bf6f1e1fab956f22cc3c794b81dc2c4100ac0"
+    },
+    {
+      "control_id": "DEN-C07",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer": {
+          "expected_records": 1,
+          "actual_records": 1,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "885c60b4b85e3465d18154203015d70348a674dd83172988710655b07e194621"
+    },
+    {
+      "control_id": "DEN-C08",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer": {
+          "expected_records": 1,
+          "actual_records": 1,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "314fe69f6f0549cbbb5575a67f39d86df98468c60f62d0fb34377170686f79ef"
+    },
+    {
+      "control_id": "DEN-C09",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer": {
+          "expected_records": 0,
+          "actual_records": 0,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "25171d3a6c165eb5bf0f531b33ef9588ba10350d6ee56b584f08a6a4caf66910"
+    },
+    {
+      "control_id": "DEN-C10",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "missing-input-unless-explicit-model-supplied",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "6a76ef7aaf2de724f57e820ff5a9b5e0295869f292ad947780576402e94cea20"
+    },
+    {
+      "control_id": "DEN-C11",
+      "checks": {
+        "total": {
+          "passed": false,
+          "expected_status": "invalid-input-or-unsupported-input-purpose",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "invalid-input-or-unsupported-input-purpose",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 0
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-TOTAL-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-TOTAL-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "46fa1128151c184cc9982b2d5378ed6126babcaa9b6ac28783126b60a025b52c"
+    },
+    {
+      "control_id": "DEN-C12",
+      "checks": {
+        "total": {
+          "passed": false,
+          "expected_status": "invalid-input-or-unsupported-input-purpose",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "invalid-input-or-unsupported-input-purpose",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 0
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-TOTAL-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-TOTAL-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "3f63e6ab8874f9aea516663cd1dd70c655621ab2e8858320e57dde09594bc340"
+    },
+    {
+      "control_id": "DEN-C13",
+      "checks": {
+        "total": {
+          "passed": false,
+          "expected_status": "invalid-input-or-unsupported-input-purpose",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "invalid-input-or-unsupported-input-purpose",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 0
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-TOTAL-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-TOTAL-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "e3fb85ca2a112748fd9681d2ed6ee10fcc0dd0a2b5fab0c06622083e48a14724"
+    },
+    {
+      "control_id": "DEN-C14",
+      "checks": {
+        "total": {
+          "passed": false,
+          "expected_status": "invalid-input",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "invalid-input",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-TOTAL-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-TOTAL-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "6654fb23a3247dec467a3a121863b1c995e15bc8c0308ef50e9fb8dd5496b4de"
+    },
+    {
+      "control_id": "DEN-C15",
+      "checks": {
+        "parser": {
+          "passed": true,
+          "status": "rejected",
+          "reason": "MO contains 2 coefficient entries, but the parsed basis contains 3 functions. Check Cartesian/spherical shell convention or file completeness."
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "6bbcde72a41b5ff4e9b60d86f45635b413863fff4fb85fabdc0de1d84d44b77a"
+    },
+    {
+      "control_id": "DEN-C16",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer": {
+          "expected_records": 0,
+          "actual_records": 0,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "d9594f4748ca4a01f99277b0c839b49deea21ed0ff9bccf8be25dcbd1dc7a16f"
+    },
+    {
+      "control_id": "DEN-C17",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 2.220446049250313e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer": {
+          "expected_records": 0,
+          "actual_records": 0,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "762da6b1b22ad6ee33da111141183e6f48e14b234894c1b00da8e69970f6bea0"
+    },
+    {
+      "control_id": "DEN-C18",
+      "checks": {
+        "total": {
+          "passed": false,
+          "expected_status": "missing-input-occupied-subspace",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "spin": {
+          "passed": false,
+          "expected_status": "missing-input-occupied-subspace",
+          "observed_status": null,
+          "provenance": 2,
+          "matrix_entries": 6
+        },
+        "raw_reconstructed_total": {
+          "passed": false
+        },
+        "raw_reconstructed_spin": {
+          "passed": false
+        },
+        "full_mayer_availability": {
+          "passed": false
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-TOTAL-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-TOTAL-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-SPIN-FALSE-AVAILABILITY",
+          "detail": "Unknown/invalid density is represented by entries or a usable provenance."
+        },
+        {
+          "code": "DENSITY-SPIN-STATUS-EVIDENCE",
+          "detail": "No explicit availability status and explanation for unknown/invalid density."
+        },
+        {
+          "code": "DENSITY-TRUNCATED-OCCUPIED-SPACE",
+          "detail": "Raw total reconstruction returned a complete-looking matrix from incomplete occupied space."
+        },
+        {
+          "code": "DENSITY-TRUNCATED-OCCUPIED-SPACE",
+          "detail": "Raw spin reconstruction returned a complete-looking matrix from incomplete occupied space."
+        },
+        {
+          "code": "DENSITY-MAYER-INCOMPLETE",
+          "detail": "Full total/spin Mayer analysis is marked usable without both known densities."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "198d368d49d77fa6a3d4dd3379acf52f8a7f5adcafe881cea70ad17775b1c8bb"
+    },
+    {
+      "control_id": "DEN-C19",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 0.0,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "raw_reconstructed_total": {
+          "passed": false
+        },
+        "raw_reconstructed_spin": {
+          "passed": false
+        },
+        "full_mayer": {
+          "expected_records": 0,
+          "actual_records": 0,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [
+        {
+          "code": "DENSITY-TRUNCATED-OCCUPIED-SPACE",
+          "detail": "Raw total reconstruction returned a complete-looking matrix from incomplete occupied space."
+        },
+        {
+          "code": "DENSITY-TRUNCATED-OCCUPIED-SPACE",
+          "detail": "Raw spin reconstruction returned a complete-looking matrix from incomplete occupied space."
+        }
+      ],
+      "control_requirements_satisfied": false,
+      "formal_case_pass": false,
+      "observed_sha256": "d08ac10a098177b59fab935fde23cd5766eb1c96b18cc353a30077185cbf9780"
+    },
+    {
+      "control_id": "DEN-C20",
+      "checks": {
+        "total": {
+          "passed": true,
+          "maximum_absolute_error": 1.1102230246251565e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "spin": {
+          "passed": true,
+          "maximum_absolute_error": 1.1102230246251565e-16,
+          "fixed_absolute_tolerance": 2e-12
+        },
+        "full_mayer": {
+          "expected_records": 0,
+          "actual_records": 0,
+          "record_floor": 0.02
+        }
+      },
+      "issues": [],
+      "control_requirements_satisfied": true,
+      "formal_case_pass": false,
+      "observed_sha256": "f2dd9e07fb1bcfafa304bff62865cad6a6d31b7f88cb1ddfb3e1b31b4444c735"
+    }
+  ],
+  "metamorphic_relations": [
+    {
+      "control_id": "DEN-C03",
+      "reference_control": "DEN-C02",
+      "field": "total",
+      "status": "measured",
+      "passed": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "control_id": "DEN-C03",
+      "reference_control": "DEN-C02",
+      "field": "spin",
+      "status": "measured",
+      "passed": false,
+      "maximum_absolute_error": 1.2614725579091308
+    },
+    {
+      "control_id": "DEN-C07",
+      "reference_control": "DEN-C06",
+      "field": "total",
+      "status": "measured",
+      "passed": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "control_id": "DEN-C07",
+      "reference_control": "DEN-C06",
+      "field": "spin",
+      "status": "measured",
+      "passed": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "control_id": "DEN-C08",
+      "reference_control": "DEN-C06",
+      "field": "total",
+      "status": "measured",
+      "passed": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "control_id": "DEN-C08",
+      "reference_control": "DEN-C06",
+      "field": "spin",
+      "status": "measured",
+      "passed": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "control_id": "DEN-C17",
+      "reference_control": "DEN-C16",
+      "field": "total",
+      "status": "measured",
+      "passed": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "control_id": "DEN-C17",
+      "reference_control": "DEN-C16",
+      "field": "spin",
+      "status": "measured",
+      "passed": true,
+      "maximum_absolute_error": 0.0
+    }
+  ],
+  "scientific_scope": "Finite-AO parser/density/Mayer diagnostic controls only; no molecule, physical-reference or rendering acceptance."
+}

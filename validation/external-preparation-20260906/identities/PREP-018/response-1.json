@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 138768,
+        "MolecularFormula": "B3H6N3",
+        "ConnectivitySMILES": "B1NBNBN1",
+        "InChIKey": "BGECDVWSWDRFSP-UHFFFAOYSA-N",
+        "IUPACName": "1,3,5,2,4,6-triazatriborinane",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 166638194,
+        "MolecularFormula": "C5HFeN6O",
+        "ConnectivitySMILES": "[C-]#N.[C-]#N.[C-]#N.[C-]#N.[C-]#N.N=O.[Fe+5]",
+        "InChIKey": "SJCKVGOQDNJZFE-UHFFFAOYSA-N",
+        "IUPACName": "iron(5+);nitroxyl;pentacyanide",
+        "Charge": 0
+      }
+    ]
+  }
+}

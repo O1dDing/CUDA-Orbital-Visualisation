@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C20",
+  "input_sha256": "1c685efdd505f121da6e2cddfa7859992ceaa3e6f8cd0b9ea248208537a374ee",
+  "exe_sha256": "94dca3439868b6b092b548b7f220d9a2cbd3d3d69fdc47777194d4bdbb657a5c",
+  "started_epoch": 1788854240.4301379,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5,
+  "log_sha256": "00adf07000762d736a1332c691bff84619e6e0539f49f36c412d957cbb37720d",
+  "observed_sha256": "9565158661f36cadae2e4f635d5708c8e57035aab2818b3b3cebc39c1845881d",
+  "finished_epoch": 1788854240.9455094
+}

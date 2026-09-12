@@ -16,6 +16,12 @@ struct FileDialogResult {
     }
 };
 
-[[nodiscard]] FileDialogResult open_molden_file_dialog();
+[[nodiscard]] FileDialogResult open_wavefunction_file_dialog();
+
+// Compatibility alias for the PR #2 viewer call-site. FCHK is now included in
+// the dialog and the function may be removed once all callers use the generic name.
+[[nodiscard]] inline FileDialogResult open_molden_file_dialog() {
+    return open_wavefunction_file_dialog();
+}
 
 } // namespace cov

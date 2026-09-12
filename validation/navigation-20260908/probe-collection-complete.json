@@ -1,0 +1,1142 @@
+{
+  "status": "all_collection_terminal",
+  "round_identity": "a799ed5b21ff6eaefcc70611f886cef2ebb21861e7b2fcd407d967fca0c7c0bb",
+  "all_terminal": true,
+  "expected_cases": 1,
+  "terminal_cases": 1,
+  "collection_counts": {
+    "complete": 1,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "wall_seconds_this_session": 50.823767099995166,
+  "finished_epoch": 1788840931.1554856,
+  "scientific_analysis": "ready after this barrier; not yet performed",
+  "formal_case_passes": 0,
+  "cases": [
+    {
+      "case_id": "OLD-013",
+      "input": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+      "started_at": "2026-09-08T12:14:40.377856+08:00",
+      "collection_status": "complete",
+      "scientific_analysis": "deferred",
+      "inspection_process": {
+        "argv": [
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\programs\\cov_scientific_audit_dump.exe",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+          "--interactions"
+        ],
+        "cwd": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production",
+        "stdin_path": null,
+        "console_log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production\\launcher.log",
+        "pid": 38020,
+        "started_epoch": 1788840880.3828561,
+        "finished_epoch": 1788840880.9197507,
+        "wall_seconds": 0.5320000000065193,
+        "exit_code": 0,
+        "timed_out": false,
+        "completion_policy": "entire_tree",
+        "finite_driver_helpers": [],
+        "root_exit_observation": {
+          "exit_code": 0,
+          "active_job_processes": 0
+        },
+        "terminated_declared_helpers": [],
+        "cpu_mask": 327680,
+        "cpu_rate_hard_cap": null,
+        "core_count": 2,
+        "memory_limit_gib": 24,
+        "peak_tree_commit_bytes": 8019968,
+        "tree_process_count": 2,
+        "tree_cpu_seconds": 0.328125,
+        "lifecycle_schema_version": 2,
+        "lifecycle_clock": "perf_counter_ns from run_tree entry; integer ticks and observer time retained",
+        "lifecycle_clock_origin_nanoseconds": 183049448385100,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "legacy_wall_seconds_clock_info": {
+          "implementation": "GetTickCount64()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 0.015625
+        },
+        "epoch_clock_info": {
+          "implementation": "GetSystemTimeAsFileTime()",
+          "monotonic": false,
+          "adjustable": true,
+          "resolution": 0.015625
+        },
+        "lifecycle_events": [
+          {
+            "sequence": 0,
+            "phase": "supervisor_enter",
+            "elapsed_nanoseconds": 900,
+            "elapsed_seconds": 9e-07,
+            "epoch": 1788840880.3818564,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 4200,
+            "after_observer_elapsed_seconds": 4.2e-06
+          },
+          {
+            "sequence": 1,
+            "phase": "job_creation_enter",
+            "elapsed_nanoseconds": 138600,
+            "elapsed_seconds": 0.0001386,
+            "epoch": 1788840880.3818564,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 140100,
+            "after_observer_elapsed_seconds": 0.0001401
+          },
+          {
+            "sequence": 2,
+            "phase": "job_created",
+            "elapsed_nanoseconds": 160200,
+            "elapsed_seconds": 0.0001602,
+            "epoch": 1788840880.3818564,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 161000,
+            "after_observer_elapsed_seconds": 0.000161
+          },
+          {
+            "sequence": 3,
+            "phase": "standard_stream_open_enter",
+            "elapsed_nanoseconds": 163300,
+            "elapsed_seconds": 0.0001633,
+            "epoch": 1788840880.3818564,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 163700,
+            "after_observer_elapsed_seconds": 0.0001637
+          },
+          {
+            "sequence": 4,
+            "phase": "standard_streams_opened",
+            "elapsed_nanoseconds": 311900,
+            "elapsed_seconds": 0.0003119,
+            "epoch": 1788840880.3828561,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 313400,
+            "after_observer_elapsed_seconds": 0.0003134
+          },
+          {
+            "sequence": 5,
+            "phase": "resource_limits_enter",
+            "elapsed_nanoseconds": 315000,
+            "elapsed_seconds": 0.000315,
+            "epoch": 1788840880.3828561,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 315900,
+            "after_observer_elapsed_seconds": 0.0003159
+          },
+          {
+            "sequence": 6,
+            "phase": "resource_limits_installed",
+            "elapsed_nanoseconds": 341400,
+            "elapsed_seconds": 0.0003414,
+            "epoch": 1788840880.3828561,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 342100,
+            "after_observer_elapsed_seconds": 0.0003421
+          },
+          {
+            "sequence": 7,
+            "phase": "process_creation_enter",
+            "elapsed_nanoseconds": 598300,
+            "elapsed_seconds": 0.0005983,
+            "epoch": 1788840880.3828561,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 599100,
+            "after_observer_elapsed_seconds": 0.0005991
+          },
+          {
+            "sequence": 8,
+            "phase": "process_created_suspended",
+            "elapsed_nanoseconds": 35386200,
+            "elapsed_seconds": 0.0353862,
+            "epoch": 1788840880.4165914,
+            "observer_called": false,
+            "pid": 38020,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 35393800,
+            "after_observer_elapsed_seconds": 0.0353938
+          },
+          {
+            "sequence": 9,
+            "phase": "job_assignment_enter",
+            "elapsed_nanoseconds": 35395700,
+            "elapsed_seconds": 0.0353957,
+            "epoch": 1788840880.4165914,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 35396500,
+            "after_observer_elapsed_seconds": 0.0353965
+          },
+          {
+            "sequence": 10,
+            "phase": "job_assigned",
+            "elapsed_nanoseconds": 35436100,
+            "elapsed_seconds": 0.0354361,
+            "epoch": 1788840880.4165914,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 35437600,
+            "after_observer_elapsed_seconds": 0.0354376
+          },
+          {
+            "sequence": 11,
+            "phase": "started_callback_enter",
+            "elapsed_nanoseconds": 35438800,
+            "elapsed_seconds": 0.0354388,
+            "epoch": 1788840880.4165914,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 35439800,
+            "after_observer_elapsed_seconds": 0.0354398
+          },
+          {
+            "sequence": 12,
+            "phase": "started_callback_returned",
+            "elapsed_nanoseconds": 37020300,
+            "elapsed_seconds": 0.0370203,
+            "epoch": 1788840880.4190993,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37023500,
+            "after_observer_elapsed_seconds": 0.0370235
+          },
+          {
+            "sequence": 13,
+            "phase": "resume_thread_enter",
+            "elapsed_nanoseconds": 37024100,
+            "elapsed_seconds": 0.0370241,
+            "epoch": 1788840880.4190993,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37024900,
+            "after_observer_elapsed_seconds": 0.0370249
+          },
+          {
+            "sequence": 14,
+            "phase": "thread_resumed",
+            "elapsed_nanoseconds": 37038200,
+            "elapsed_seconds": 0.0370382,
+            "epoch": 1788840880.4190993,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37038800,
+            "after_observer_elapsed_seconds": 0.0370388
+          },
+          {
+            "sequence": 15,
+            "phase": "tree_monitor_enter",
+            "elapsed_nanoseconds": 37040700,
+            "elapsed_seconds": 0.0370407,
+            "epoch": 1788840880.4190993,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37041500,
+            "after_observer_elapsed_seconds": 0.0370415
+          },
+          {
+            "sequence": 16,
+            "phase": "root_exit_observed",
+            "elapsed_nanoseconds": 537329000,
+            "elapsed_seconds": 0.537329,
+            "epoch": 1788840880.9197507,
+            "observer_called": false,
+            "exit_code": 0,
+            "active_job_processes": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 537335700,
+            "after_observer_elapsed_seconds": 0.5373357
+          },
+          {
+            "sequence": 17,
+            "phase": "tree_empty",
+            "elapsed_nanoseconds": 537338200,
+            "elapsed_seconds": 0.5373382,
+            "epoch": 1788840880.9197507,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 537339300,
+            "after_observer_elapsed_seconds": 0.5373393
+          },
+          {
+            "sequence": 18,
+            "phase": "final_accounting_collected",
+            "elapsed_nanoseconds": 537343800,
+            "elapsed_seconds": 0.5373438,
+            "epoch": 1788840880.9197507,
+            "observer_called": false,
+            "exit_code": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 537344600,
+            "after_observer_elapsed_seconds": 0.5373446
+          },
+          {
+            "sequence": 19,
+            "phase": "cleanup_enter",
+            "elapsed_nanoseconds": 537841400,
+            "elapsed_seconds": 0.5378414,
+            "epoch": 1788840880.9197507,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 537842800,
+            "after_observer_elapsed_seconds": 0.5378428
+          },
+          {
+            "sequence": 20,
+            "phase": "cleanup_complete",
+            "elapsed_nanoseconds": 538063200,
+            "elapsed_seconds": 0.5380632,
+            "epoch": 1788840880.9197507,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 538065000,
+            "after_observer_elapsed_seconds": 0.538065
+          }
+        ]
+      },
+      "inspection_seconds": 0.5433605999860447,
+      "native_process": {
+        "argv": [
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\programs\\cov_validation.exe",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+          "--validation-plan",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\case.plan",
+          "--validation-output",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native",
+          "--validation-background"
+        ],
+        "cwd": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-native",
+        "stdin_path": null,
+        "console_log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-native\\launcher.log",
+        "pid": 73024,
+        "started_epoch": 1788840881.3498082,
+        "finished_epoch": 1788840923.1418006,
+        "wall_seconds": 41.796999999991385,
+        "exit_code": 0,
+        "timed_out": false,
+        "completion_policy": "entire_tree",
+        "finite_driver_helpers": [],
+        "root_exit_observation": {
+          "exit_code": 0,
+          "active_job_processes": 0
+        },
+        "terminated_declared_helpers": [],
+        "cpu_mask": 327680,
+        "cpu_rate_hard_cap": null,
+        "core_count": 2,
+        "memory_limit_gib": 24,
+        "peak_tree_commit_bytes": 768618496,
+        "tree_process_count": 2,
+        "tree_cpu_seconds": 16.515625,
+        "lifecycle_schema_version": 2,
+        "lifecycle_clock": "perf_counter_ns from run_tree entry; integer ticks and observer time retained",
+        "lifecycle_clock_origin_nanoseconds": 183050415354800,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "legacy_wall_seconds_clock_info": {
+          "implementation": "GetTickCount64()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 0.015625
+        },
+        "epoch_clock_info": {
+          "implementation": "GetSystemTimeAsFileTime()",
+          "monotonic": false,
+          "adjustable": true,
+          "resolution": 0.015625
+        },
+        "lifecycle_events": [
+          {
+            "sequence": 0,
+            "phase": "supervisor_enter",
+            "elapsed_nanoseconds": 1200,
+            "elapsed_seconds": 1.2e-06,
+            "epoch": 1788840881.3488092,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 6000,
+            "after_observer_elapsed_seconds": 6e-06
+          },
+          {
+            "sequence": 1,
+            "phase": "job_creation_enter",
+            "elapsed_nanoseconds": 194900,
+            "elapsed_seconds": 0.0001949,
+            "epoch": 1788840881.3488092,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 197200,
+            "after_observer_elapsed_seconds": 0.0001972
+          },
+          {
+            "sequence": 2,
+            "phase": "job_created",
+            "elapsed_nanoseconds": 220700,
+            "elapsed_seconds": 0.0002207,
+            "epoch": 1788840881.3488092,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 221700,
+            "after_observer_elapsed_seconds": 0.0002217
+          },
+          {
+            "sequence": 3,
+            "phase": "standard_stream_open_enter",
+            "elapsed_nanoseconds": 224500,
+            "elapsed_seconds": 0.0002245,
+            "epoch": 1788840881.3488092,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 225200,
+            "after_observer_elapsed_seconds": 0.0002252
+          },
+          {
+            "sequence": 4,
+            "phase": "standard_streams_opened",
+            "elapsed_nanoseconds": 491800,
+            "elapsed_seconds": 0.0004918,
+            "epoch": 1788840881.3498082,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 494800,
+            "after_observer_elapsed_seconds": 0.0004948
+          },
+          {
+            "sequence": 5,
+            "phase": "resource_limits_enter",
+            "elapsed_nanoseconds": 496700,
+            "elapsed_seconds": 0.0004967,
+            "epoch": 1788840881.3498082,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 498100,
+            "after_observer_elapsed_seconds": 0.0004981
+          },
+          {
+            "sequence": 6,
+            "phase": "resource_limits_installed",
+            "elapsed_nanoseconds": 523800,
+            "elapsed_seconds": 0.0005238,
+            "epoch": 1788840881.3498082,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 524600,
+            "after_observer_elapsed_seconds": 0.0005246
+          },
+          {
+            "sequence": 7,
+            "phase": "process_creation_enter",
+            "elapsed_nanoseconds": 1018600,
+            "elapsed_seconds": 0.0010186,
+            "epoch": 1788840881.3498082,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 1020400,
+            "after_observer_elapsed_seconds": 0.0010204
+          },
+          {
+            "sequence": 8,
+            "phase": "process_created_suspended",
+            "elapsed_nanoseconds": 260319700,
+            "elapsed_seconds": 0.2603197,
+            "epoch": 1788840881.6092865,
+            "observer_called": false,
+            "pid": 73024,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 260330000,
+            "after_observer_elapsed_seconds": 0.26033
+          },
+          {
+            "sequence": 9,
+            "phase": "job_assignment_enter",
+            "elapsed_nanoseconds": 260331900,
+            "elapsed_seconds": 0.2603319,
+            "epoch": 1788840881.6092865,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 260332700,
+            "after_observer_elapsed_seconds": 0.2603327
+          },
+          {
+            "sequence": 10,
+            "phase": "job_assigned",
+            "elapsed_nanoseconds": 260381100,
+            "elapsed_seconds": 0.2603811,
+            "epoch": 1788840881.6092865,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 260382200,
+            "after_observer_elapsed_seconds": 0.2603822
+          },
+          {
+            "sequence": 11,
+            "phase": "started_callback_enter",
+            "elapsed_nanoseconds": 260382700,
+            "elapsed_seconds": 0.2603827,
+            "epoch": 1788840881.6092865,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 260383100,
+            "after_observer_elapsed_seconds": 0.2603831
+          },
+          {
+            "sequence": 12,
+            "phase": "started_callback_returned",
+            "elapsed_nanoseconds": 263212000,
+            "elapsed_seconds": 0.263212,
+            "epoch": 1788840881.6122875,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 263218600,
+            "after_observer_elapsed_seconds": 0.2632186
+          },
+          {
+            "sequence": 13,
+            "phase": "resume_thread_enter",
+            "elapsed_nanoseconds": 263219300,
+            "elapsed_seconds": 0.2632193,
+            "epoch": 1788840881.6122875,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 263219800,
+            "after_observer_elapsed_seconds": 0.2632198
+          },
+          {
+            "sequence": 14,
+            "phase": "thread_resumed",
+            "elapsed_nanoseconds": 263242800,
+            "elapsed_seconds": 0.2632428,
+            "epoch": 1788840881.6122875,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 263243200,
+            "after_observer_elapsed_seconds": 0.2632432
+          },
+          {
+            "sequence": 15,
+            "phase": "tree_monitor_enter",
+            "elapsed_nanoseconds": 263245900,
+            "elapsed_seconds": 0.2632459,
+            "epoch": 1788840881.6122875,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 263249400,
+            "after_observer_elapsed_seconds": 0.2632494
+          },
+          {
+            "sequence": 16,
+            "phase": "root_exit_observed",
+            "elapsed_nanoseconds": 41793325400,
+            "elapsed_seconds": 41.7933254,
+            "epoch": 1788840923.1418006,
+            "observer_called": false,
+            "exit_code": 0,
+            "active_job_processes": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41793332300,
+            "after_observer_elapsed_seconds": 41.7933323
+          },
+          {
+            "sequence": 17,
+            "phase": "tree_empty",
+            "elapsed_nanoseconds": 41793333600,
+            "elapsed_seconds": 41.7933336,
+            "epoch": 1788840923.1418006,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41793334200,
+            "after_observer_elapsed_seconds": 41.7933342
+          },
+          {
+            "sequence": 18,
+            "phase": "final_accounting_collected",
+            "elapsed_nanoseconds": 41793340100,
+            "elapsed_seconds": 41.7933401,
+            "epoch": 1788840923.1418006,
+            "observer_called": false,
+            "exit_code": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41793340900,
+            "after_observer_elapsed_seconds": 41.7933409
+          },
+          {
+            "sequence": 19,
+            "phase": "cleanup_enter",
+            "elapsed_nanoseconds": 41793714300,
+            "elapsed_seconds": 41.7937143,
+            "epoch": 1788840923.1418006,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41793715500,
+            "after_observer_elapsed_seconds": 41.7937155
+          },
+          {
+            "sequence": 20,
+            "phase": "cleanup_complete",
+            "elapsed_nanoseconds": 41793765300,
+            "elapsed_seconds": 41.7937653,
+            "epoch": 1788840923.142304,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41793766300,
+            "after_observer_elapsed_seconds": 41.7937663
+          }
+        ]
+      },
+      "native_seconds": 41.801611000002595,
+      "native_session": {
+        "schema": 1,
+        "seconds": 41.121199,
+        "frames": 6336,
+        "commands": 979,
+        "failed_commands": 0,
+        "capture_status": "completed",
+        "scientific_verdict": "external checker required"
+      },
+      "orbitals": 216,
+      "texture_count": 216,
+      "sample_points_min": 8179,
+      "sample_points_max": 8179,
+      "screenshots": 90,
+      "export_png": true,
+      "complete_texture_grids": [
+        {
+          "mo": 83,
+          "shape": [
+            128,
+            128,
+            128
+          ],
+          "metadata": "frontier-0084-128.volume.json",
+          "binary": "frontier-0084-128.volume.f32"
+        },
+        {
+          "mo": 83,
+          "shape": [
+            64,
+            64,
+            64
+          ],
+          "metadata": "frontier-0084-64.volume.json",
+          "binary": "frontier-0084-64.volume.f32"
+        },
+        {
+          "mo": 84,
+          "shape": [
+            128,
+            128,
+            128
+          ],
+          "metadata": "frontier-0085-128.volume.json",
+          "binary": "frontier-0085-128.volume.f32"
+        },
+        {
+          "mo": 84,
+          "shape": [
+            64,
+            64,
+            64
+          ],
+          "metadata": "frontier-0085-64.volume.json",
+          "binary": "frontier-0085-64.volume.f32"
+        }
+      ],
+      "primary_members": 21,
+      "spin_counterparts": 0,
+      "selection_records": [
+        {
+          "capture": "member-0043-surface",
+          "requested_mo": 42,
+          "observed_mo": 42
+        },
+        {
+          "capture": "member-0048-surface",
+          "requested_mo": 47,
+          "observed_mo": 47
+        },
+        {
+          "capture": "member-0049-surface",
+          "requested_mo": 48,
+          "observed_mo": 48
+        },
+        {
+          "capture": "member-0058-surface",
+          "requested_mo": 57,
+          "observed_mo": 57
+        },
+        {
+          "capture": "member-0060-surface",
+          "requested_mo": 59,
+          "observed_mo": 59
+        },
+        {
+          "capture": "member-0061-surface",
+          "requested_mo": 60,
+          "observed_mo": 60
+        },
+        {
+          "capture": "member-0062-surface",
+          "requested_mo": 61,
+          "observed_mo": 61
+        },
+        {
+          "capture": "member-0063-surface",
+          "requested_mo": 62,
+          "observed_mo": 62
+        },
+        {
+          "capture": "member-0064-surface",
+          "requested_mo": 63,
+          "observed_mo": 63
+        },
+        {
+          "capture": "member-0065-surface",
+          "requested_mo": 64,
+          "observed_mo": 64
+        },
+        {
+          "capture": "member-0070-surface",
+          "requested_mo": 69,
+          "observed_mo": 69
+        },
+        {
+          "capture": "member-0082-surface",
+          "requested_mo": 81,
+          "observed_mo": 81
+        },
+        {
+          "capture": "member-0083-surface",
+          "requested_mo": 82,
+          "observed_mo": 82
+        },
+        {
+          "capture": "member-0084-surface",
+          "requested_mo": 83,
+          "observed_mo": 83
+        },
+        {
+          "capture": "member-0085-surface",
+          "requested_mo": 84,
+          "observed_mo": 84
+        },
+        {
+          "capture": "member-0087-surface",
+          "requested_mo": 86,
+          "observed_mo": 86
+        },
+        {
+          "capture": "member-0088-surface",
+          "requested_mo": 87,
+          "observed_mo": 87
+        },
+        {
+          "capture": "member-0089-surface",
+          "requested_mo": 88,
+          "observed_mo": 88
+        },
+        {
+          "capture": "member-0091-surface",
+          "requested_mo": 90,
+          "observed_mo": 90
+        },
+        {
+          "capture": "member-0092-surface",
+          "requested_mo": 91,
+          "observed_mo": 91
+        },
+        {
+          "capture": "member-0098-surface",
+          "requested_mo": 97,
+          "observed_mo": 97
+        }
+      ],
+      "missing": [],
+      "integrity_errors": [],
+      "failed_actions": [],
+      "note": "Collection completeness only; scientific correctness and visual/chemical review deferred.",
+      "finished_at": "2026-09-08T12:15:30.126070+08:00",
+      "wall_seconds": 49.749234699993394,
+      "ordinary_process": {
+        "argv": [
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\programs\\cov_scientific_audit_dump_off.exe",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+          "--interactions"
+        ],
+        "cwd": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production-off",
+        "stdin_path": null,
+        "console_log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production-off\\launcher.log",
+        "pid": 76888,
+        "started_epoch": 1788840930.1330693,
+        "finished_epoch": 1788840930.67409,
+        "wall_seconds": 0.5469999999913853,
+        "exit_code": 0,
+        "timed_out": false,
+        "completion_policy": "entire_tree",
+        "finite_driver_helpers": [],
+        "root_exit_observation": {
+          "exit_code": 0,
+          "active_job_processes": 0
+        },
+        "terminated_declared_helpers": [],
+        "cpu_mask": 327680,
+        "cpu_rate_hard_cap": null,
+        "core_count": 2,
+        "memory_limit_gib": 24,
+        "peak_tree_commit_bytes": 7979008,
+        "tree_process_count": 2,
+        "tree_cpu_seconds": 0.34375,
+        "lifecycle_schema_version": 2,
+        "lifecycle_clock": "perf_counter_ns from run_tree entry; integer ticks and observer time retained",
+        "lifecycle_clock_origin_nanoseconds": 183099200083800,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "legacy_wall_seconds_clock_info": {
+          "implementation": "GetTickCount64()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 0.015625
+        },
+        "epoch_clock_info": {
+          "implementation": "GetSystemTimeAsFileTime()",
+          "monotonic": false,
+          "adjustable": true,
+          "resolution": 0.015625
+        },
+        "lifecycle_events": [
+          {
+            "sequence": 0,
+            "phase": "supervisor_enter",
+            "elapsed_nanoseconds": 800,
+            "elapsed_seconds": 8e-07,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 3600,
+            "after_observer_elapsed_seconds": 3.6e-06
+          },
+          {
+            "sequence": 1,
+            "phase": "job_creation_enter",
+            "elapsed_nanoseconds": 193100,
+            "elapsed_seconds": 0.0001931,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 194000,
+            "after_observer_elapsed_seconds": 0.000194
+          },
+          {
+            "sequence": 2,
+            "phase": "job_created",
+            "elapsed_nanoseconds": 213500,
+            "elapsed_seconds": 0.0002135,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 214000,
+            "after_observer_elapsed_seconds": 0.000214
+          },
+          {
+            "sequence": 3,
+            "phase": "standard_stream_open_enter",
+            "elapsed_nanoseconds": 216300,
+            "elapsed_seconds": 0.0002163,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 217000,
+            "after_observer_elapsed_seconds": 0.000217
+          },
+          {
+            "sequence": 4,
+            "phase": "standard_streams_opened",
+            "elapsed_nanoseconds": 385700,
+            "elapsed_seconds": 0.0003857,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 388000,
+            "after_observer_elapsed_seconds": 0.000388
+          },
+          {
+            "sequence": 5,
+            "phase": "resource_limits_enter",
+            "elapsed_nanoseconds": 388900,
+            "elapsed_seconds": 0.0003889,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 389500,
+            "after_observer_elapsed_seconds": 0.0003895
+          },
+          {
+            "sequence": 6,
+            "phase": "resource_limits_installed",
+            "elapsed_nanoseconds": 409100,
+            "elapsed_seconds": 0.0004091,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 409800,
+            "after_observer_elapsed_seconds": 0.0004098
+          },
+          {
+            "sequence": 7,
+            "phase": "process_creation_enter",
+            "elapsed_nanoseconds": 657300,
+            "elapsed_seconds": 0.0006573,
+            "epoch": 1788840930.1330693,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 657900,
+            "after_observer_elapsed_seconds": 0.0006579
+          },
+          {
+            "sequence": 8,
+            "phase": "process_created_suspended",
+            "elapsed_nanoseconds": 37863500,
+            "elapsed_seconds": 0.0378635,
+            "epoch": 1788840930.1700864,
+            "observer_called": false,
+            "pid": 76888,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37871500,
+            "after_observer_elapsed_seconds": 0.0378715
+          },
+          {
+            "sequence": 9,
+            "phase": "job_assignment_enter",
+            "elapsed_nanoseconds": 37873600,
+            "elapsed_seconds": 0.0378736,
+            "epoch": 1788840930.1700864,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37874500,
+            "after_observer_elapsed_seconds": 0.0378745
+          },
+          {
+            "sequence": 10,
+            "phase": "job_assigned",
+            "elapsed_nanoseconds": 37922900,
+            "elapsed_seconds": 0.0379229,
+            "epoch": 1788840930.1700864,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37923700,
+            "after_observer_elapsed_seconds": 0.0379237
+          },
+          {
+            "sequence": 11,
+            "phase": "started_callback_enter",
+            "elapsed_nanoseconds": 37924400,
+            "elapsed_seconds": 0.0379244,
+            "epoch": 1788840930.1700864,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 37925200,
+            "after_observer_elapsed_seconds": 0.0379252
+          },
+          {
+            "sequence": 12,
+            "phase": "started_callback_returned",
+            "elapsed_nanoseconds": 39656800,
+            "elapsed_seconds": 0.0396568,
+            "epoch": 1788840930.172087,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39660500,
+            "after_observer_elapsed_seconds": 0.0396605
+          },
+          {
+            "sequence": 13,
+            "phase": "resume_thread_enter",
+            "elapsed_nanoseconds": 39661100,
+            "elapsed_seconds": 0.0396611,
+            "epoch": 1788840930.172087,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39661900,
+            "after_observer_elapsed_seconds": 0.0396619
+          },
+          {
+            "sequence": 14,
+            "phase": "thread_resumed",
+            "elapsed_nanoseconds": 39674900,
+            "elapsed_seconds": 0.0396749,
+            "epoch": 1788840930.172087,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39675500,
+            "after_observer_elapsed_seconds": 0.0396755
+          },
+          {
+            "sequence": 15,
+            "phase": "tree_monitor_enter",
+            "elapsed_nanoseconds": 39677400,
+            "elapsed_seconds": 0.0396774,
+            "epoch": 1788840930.172087,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39678000,
+            "after_observer_elapsed_seconds": 0.039678
+          },
+          {
+            "sequence": 16,
+            "phase": "root_exit_observed",
+            "elapsed_nanoseconds": 540512300,
+            "elapsed_seconds": 0.5405123,
+            "epoch": 1788840930.6730833,
+            "observer_called": false,
+            "exit_code": 0,
+            "active_job_processes": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 540519200,
+            "after_observer_elapsed_seconds": 0.5405192
+          },
+          {
+            "sequence": 17,
+            "phase": "tree_empty",
+            "elapsed_nanoseconds": 540520600,
+            "elapsed_seconds": 0.5405206,
+            "epoch": 1788840930.6730833,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 540521500,
+            "after_observer_elapsed_seconds": 0.5405215
+          },
+          {
+            "sequence": 18,
+            "phase": "final_accounting_collected",
+            "elapsed_nanoseconds": 540526200,
+            "elapsed_seconds": 0.5405262,
+            "epoch": 1788840930.6730833,
+            "observer_called": false,
+            "exit_code": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 540527000,
+            "after_observer_elapsed_seconds": 0.540527
+          },
+          {
+            "sequence": 19,
+            "phase": "cleanup_enter",
+            "elapsed_nanoseconds": 541032200,
+            "elapsed_seconds": 0.5410322,
+            "epoch": 1788840930.67409,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 541033600,
+            "after_observer_elapsed_seconds": 0.5410336
+          },
+          {
+            "sequence": 20,
+            "phase": "cleanup_complete",
+            "elapsed_nanoseconds": 541253800,
+            "elapsed_seconds": 0.5412538,
+            "epoch": 1788840930.67409,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 541254900,
+            "after_observer_elapsed_seconds": 0.5412549
+          }
+        ]
+      },
+      "evidence_directory": "cases\\OLD-013\\attempt-001\\cases\\OLD-013",
+      "source_sha256": "6a7060eaa8d022b547063ad01bb007585cfd1964677ede08c75789a19cbfb98f",
+      "round_identity": "a799ed5b21ff6eaefcc70611f886cef2ebb21861e7b2fcd407d967fca0c7c0bb",
+      "evidence_manifest": "cases\\OLD-013\\attempt-001\\evidence-manifest.json",
+      "evidence_manifest_sha256": "479b95545e13b4e7f4050318f2310666bcb9253be41d4786315072a453b3fdbf",
+      "wall_seconds_including_ordinary_and_packaging": 50.75753130001249
+    }
+  ]
+}

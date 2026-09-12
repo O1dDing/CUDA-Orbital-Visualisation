@@ -1,0 +1,60 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "ordinary_exe": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\delivery\\COV-3752f8a-Windows-20260912\\ordinary\\cov.exe",
+    "sha256": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6"
+  },
+  "all_passed": true,
+  "scope": "Final delivery directory ordinary startup and manual file load, followed by normal application exit.",
+  "frames": [
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\01-startup.json",
+        "sha256": "8b5bf9b63f4876c9c77bb3f159708c99f4ee04dad8aa637483c804a3a227ec3e"
+      },
+      "step": "Exact frozen ordinary program launched from intended delivery directory. Ready panel and file controls rendered normally.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\01-startup-0.jpg",
+          "sha256": "ad43b0824792291611fa938b64f2522d437083d932f6134ff4f9be03dbe61d7d"
+        }
+      ],
+      "direct_visual_review_passed": true
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\02-loaded.json",
+        "sha256": "a8217a19745ac0e930f03416ec346d486edbf2bfedb867210b55e9971b5c80e3"
+      },
+      "step": "Manual file-path load succeeded from delivery directory: 5 atoms, 43 shells, 103 basis functions and 206 orbitals; actual red/blue 3D scene rendered.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\02-loaded-0.jpg",
+          "sha256": "8a3ff1d973ca290db7a6410deef09a2e2cae918380748f6acdd32b92863f4fc2"
+        }
+      ],
+      "direct_visual_review_passed": true
+    }
+  ],
+  "process_and_exit": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\process-and-exit.json",
+    "sha256": "73f06e4c1fa5eebe1ba6e3697134f5e1ace71b4d6bd4e3bcb40291f11761293f"
+  },
+  "exit_window": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\exit-confirmed.json",
+    "sha256": "95e6f285c142d13d8cfbde62b5e48d12031c064a41424e7ab0ea737006d3f70c"
+  },
+  "observations": [
+    "Ready panel and path controls rendered normally on the first startup from this directory.",
+    "Manual path load of OLD-249 rendered the 3D scene and displayed 5 atoms, 43 shells, 103 basis functions and 206 orbitals.",
+    "The program closed normally; process and window absence were independently confirmed."
+  ],
+  "earlier_full_ordinary_interaction": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\review.json",
+    "sha256": "6feac8c6bbc944f13737763b519536a74147b80cfe4666f066f5baf590aced6d"
+  },
+  "startup_history": "One preserved blank startup, then four consecutive successful normal startups of the identical ordinary file. The fourth was from the final delivery directory. Cause of the initial blank remains unknown; no source fix for it is claimed.",
+  "gaussian_started": false,
+  "formal_case_passes": 0,
+  "recorded_epoch": 1789211933.6349597
+}

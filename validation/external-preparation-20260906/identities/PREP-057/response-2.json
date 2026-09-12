@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 122658,
+        "MolecularFormula": "C6H24CoN6+3",
+        "ConnectivitySMILES": "C(CN)N.C(CN)N.C(CN)N.[Co+3]",
+        "InChIKey": "JHBWUDJPQWKJHP-UHFFFAOYSA-N",
+        "IUPACName": "cobalt(3+);tris(ethane-1,2-diamine)",
+        "Charge": 3
+      }
+    ]
+  }
+}

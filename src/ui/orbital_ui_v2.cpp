@@ -1,20 +1,205 @@
 #include "cov/orbital_ui.hpp"
+#include "cov/validation.hpp"
 
 #include "cov/mo_diagram.hpp"
+#include "cov/mo_diagram_layout.hpp"
+#include "cov/orbital_ui_text.hpp"
+#include "cov/local_orbital_symmetry.hpp"
 
 #include <imgui.h>
 
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <iomanip>
 #include <map>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace cov::ui {
 namespace {
+
+constexpr ImU32 kSigmaColour = IM_COL32(57, 210, 232, 255);
+constexpr ImU32 kPiColour = IM_COL32(226, 93, 220, 255);
+constexpr ImU32 kDeltaColour = IM_COL32(244, 155, 65, 255);
+constexpr ImU32 kPhiColour = IM_COL32(55, 199, 170, 255);
+constexpr ImU32 kBondingColour = IM_COL32(77, 218, 145, 255);
+constexpr ImU32 kAntibondingColour = IM_COL32(244, 93, 105, 255);
+constexpr ImU32 kNonbondingColour = IM_COL32(235, 181, 65, 255);
+constexpr ImU32 kSymmetryColour = IM_COL32(177, 125, 245, 255);
+constexpr ImU32 kMulticentreColour = IM_COL32(238, 194, 89, 255);
+constexpr ImU32 kNumericColour = IM_COL32(93, 174, 255, 255);
+constexpr ImU32 kUnavailableColour = IM_COL32(128, 149, 177, 255);
+
+ImVec4 text_colour(const ImU32 colour) {
+    return ImGui::ColorConvertU32ToFloat4(colour);
+}
+
+void labelled_value(const char* label, const std::string& value, const ImU32 colour) {
+    cov::validation::field(label,value);
+    ImGui::Text("%s:", label);
+    ImGui::SameLine();
+    ImGui::TextColored(text_colour(colour), "%s", value.c_str());
+}
+
+const char* localised_catalogue_prior(LigandPiPrior prior, Language language) {
+    switch(prior) {
+        case LigandPiPrior::SigmaOnly:return orbital_tr(OrbitalText::CatalogueSigmaOnly,language);
+        case LigandPiPrior::Donor:return orbital_tr(OrbitalText::CatalogueDonor,language);
+        case LigandPiPrior::Acceptor:return orbital_tr(OrbitalText::CatalogueAcceptor,language);
+        case LigandPiPrior::Ambiguous:return orbital_tr(OrbitalText::CatalogueAmbiguous,language);
+        default:return orbital_tr(OrbitalText::UnknownSource,language);
+    }
+}
+void labelled_number(const char* label, const std::string& value) {
+    cov::validation::field(label,value);
+    labelled_value(label, value, kNumericColour);
+}
+
+std::string fixed_number(const double value, const int precision) {
+    std::ostringstream result;
+    result.setf(std::ios::fixed, std::ios::floatfield);
+    result.precision(precision);
+    result << value;
+    return result.str();
+}
+
+ImU32 family_colour(const std::string_view family) {
+    if (family == "sigma") return kSigmaColour;
+    if (family == "pi") return kPiColour;
+    if (family == "delta") return kDeltaColour;
+    if (family == "phi") return kPhiColour;
+    return kUnavailableColour;
+}
+
+ImU32 bonding_colour(const BondingClass value) {
+    switch (value) {
+        case BondingClass::Bonding: return kBondingColour;
+        case BondingClass::Antibonding: return kAntibondingColour;
+        case BondingClass::Nonbonding: return kNonbondingColour;
+        default: return kUnavailableColour;
+    }
+}
+
+std::string superscript_number_ui(const std::size_t value) {
+    static constexpr const char* digits[] = {"⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"};
+    std::string result;
+    for (const char digit : std::to_string(value)) result += digits[digit - '0'];
+    return result;
+}
+
+std::string subscript_number_ui(const int value) {
+    static constexpr const char* digits[] = {"₀", "₁", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "₉"};
+    std::string result;
+    for (const char digit : std::to_string(std::max(0, value))) result += digits[digit - '0'];
+    return result;
+}
+
+std::string pi_descriptor_ui(const DelocalisedPiDescriptor& descriptor) {
+    std::string result=std::string("Π")+
+        superscript_number_ui(descriptor.participating_atoms)+
+        subscript_number_ui(static_cast<int>(
+            std::lround(descriptor.participating_electrons)));
+    const std::string topology_suffix=compact_pi_topology_suffix(descriptor);
+    if (!topology_suffix.empty()) result+=' '+topology_suffix;
+    return result;
+}
+
+const char* pi_topology_value(const DelocalisedPiDescriptor& descriptor,
+                              const Language language) {
+    if (!descriptor.topology_available) return "N/A";
+    switch (descriptor.topology) {
+        case DelocalisedPiTopology::Path:
+            return orbital_tr(OrbitalText::TopologyPath, language);
+        case DelocalisedPiTopology::Cycle:
+            return orbital_tr(OrbitalText::TopologyCycle, language);
+        case DelocalisedPiTopology::BranchedResonance:
+            return orbital_tr(OrbitalText::TopologyBranchedResonance, language);
+        case DelocalisedPiTopology::Spiro:
+            return orbital_tr(OrbitalText::TopologySpiro, language);
+        case DelocalisedPiTopology::HapticMetal:
+            return orbital_tr(OrbitalText::TopologyHapticMetal, language);
+        case DelocalisedPiTopology::SymmetryDirectSum:
+            return orbital_tr(OrbitalText::TopologySymmetryDirectSum, language);
+        case DelocalisedPiTopology::MultiChannel:
+            return orbital_tr(OrbitalText::TopologyMultiChannel, language);
+        default:
+            return "N/A";
+    }
+}
+
+std::string pi_channel_detail(const DelocalisedPiDescriptor& descriptor,
+                              const Language language) {
+    std::ostringstream out;
+    out << std::fixed << std::setprecision(3);
+    for (std::size_t index=0;index<descriptor.orientation_channel_details.size();++index) {
+        if (index) out << " | ";
+        const auto& channel=descriptor.orientation_channel_details[index];
+        out << (index+1u) << ": "
+            << orbital_tr(OrbitalText::ChannelAtoms, language) << ' ';
+        for (std::size_t atom=0;atom<channel.atoms.size();++atom) {
+            if (atom) out << '-';
+            out << (channel.atoms[atom]+1u);
+        }
+        out << "; n=(" << channel.direction[0] << ',' << channel.direction[1]
+            << ',' << channel.direction[2] << "); "
+            << orbital_tr(OrbitalText::Coherence, language) << '='
+            << channel.coherence;
+    }
+    return out.str();
+}
+
+const char* intermediate_toggle_label(const Language language) {
+    return orbital_tr(OrbitalText::HideIntermediateFrameworkMOs, language);
+}
+
+void draw_pi_ring_evidence(const DelocalisedPiDescriptor& descriptor,
+                          const Language language) {
+    const auto& graph=descriptor.topology_graph;
+    if(graph.source==PiTopologyGraphSource::Unavailable)return;
+    const auto source=graph.source==PiTopologyGraphSource::MayerDistanceModel
+        ?OrbitalText::MayerDistanceModel:OrbitalText::CovalentDistanceModel;
+    ImGui::Separator();
+    ImGui::TextUnformatted(orbital_tr(OrbitalText::RingTopologyEvidence,language));
+    const std::string source_text=std::string(orbital_tr(OrbitalText::ConnectivityModel,language))+": "+orbital_tr(source,language);
+    cov::validation::field(orbital_tr(OrbitalText::ConnectivityModel,language),orbital_tr(source,language));
+    ImGui::TextWrapped("%s",source_text.c_str());
+    cov::validation::item("pi.rings."+descriptor.family_id+".source");
+    ImGui::TextWrapped("%s",orbital_tr(OrbitalText::RingGraphModelExplanation,language));
+    if(graph.channel_ring_witnesses.empty() && descriptor.orientation_channels>1u) {
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::NoChannelRingWitness,language));
+        cov::validation::item("pi.rings."+descriptor.family_id+".scope");
+    }
+    for(std::size_t i=0;i<graph.channel_ring_witnesses.size();++i) {
+        const auto& witness=graph.channel_ring_witnesses[i];
+        const auto base="pi.rings."+descriptor.family_id+"."+std::to_string(i);
+        labelled_number(orbital_tr(OrbitalText::RingUnionCentre,language),
+                        std::to_string(witness.ring_union.hub+1u));
+        labelled_number(orbital_tr(OrbitalText::OrientationChannels,language),
+                        std::to_string(witness.channel_indices[0]+1u)+" / "+std::to_string(witness.channel_indices[1]+1u));
+        for(std::size_t ring=0;ring<2;++ring) {
+            std::ostringstream path;
+            path<<orbital_tr(OrbitalText::RingPath,language)<<' '<<(ring+1u)<<": ";
+            const auto& atoms=witness.ring_union.cycles[ring];
+            for(std::size_t j=0;j<atoms.size();++j) {if(j)path<<" - ";path<<(atoms[j]+1u);}
+            const auto text=path.str();
+            cov::validation::field(orbital_tr(OrbitalText::RingPath,language),text);
+            ImGui::TextWrapped("%s",text.c_str());
+            cov::validation::item(base+".path"+std::to_string(ring));
+        }
+        labelled_value(orbital_tr(OrbitalText::AdditionalRingConnection,language),
+                       orbital_tr(witness.ring_union.additional_connection_without_hub?OrbitalText::Yes:OrbitalText::No,language),kPiColour);
+        cov::validation::item(base+".additional-connection");
+    }
+}
+
+const char* intermediate_toggle_tooltip(const Language language) {
+    return orbital_tr(OrbitalText::HideIntermediateFrameworkMOsTooltip, language);
+}
 
 const char* filter_name(const OrbitalFilterMode mode, const Language language) {
     switch (mode) {
@@ -39,13 +224,8 @@ const char* family_symbol_ui(const std::string& family) {
     return "N/A";
 }
 
-const char* bonding_ui(const BondingClass value) {
-    switch (value) {
-        case BondingClass::Bonding: return "bonding";
-        case BondingClass::Nonbonding: return "nonbonding";
-        case BondingClass::Antibonding: return "antibonding";
-        default: return "N/A";
-    }
+const char* bonding_ui(const BondingClass value, const Language language) {
+    return localised_bonding_class(value, language);
 }
 
 std::string lower_ascii(std::string value) {
@@ -59,7 +239,7 @@ bool search_matches(const OrbitalMetadata& item, const char* query) {
     if (!query || !*query) return true;
     std::ostringstream haystack;
     haystack << item.raw_mo_number << ' ' << item.display_label << ' '
-             << item.symmetry << ' '
+             << item.symmetry << ' ' << item.symmetry_view.label << ' '
              << (item.spin == Spin::Beta ? "beta" : "alpha") << ' ';
     switch (item.region) {
         case OrbitalRegion::Core: haystack << "core"; break;
@@ -118,10 +298,13 @@ void energy_unit_combo(OrbitalUIState& state) {
         EnergyUnit::CaloriePerMol,
         EnergyUnit::KilocaloriePerMol,
     };
-    if (ImGui::BeginCombo("##energy_unit", energy_unit_symbol(state.energy_unit))) {
+    const bool unit_open=ImGui::BeginCombo("##energy_unit", energy_unit_symbol(state.energy_unit));
+    cov::validation::item("browser.unit");
+    if (unit_open) {
         for (const EnergyUnit unit : units) {
             const bool selected = state.energy_unit == unit;
             if (ImGui::Selectable(energy_unit_symbol(unit), selected)) state.energy_unit = unit;
+            cov::validation::item("browser.unit."+std::to_string(static_cast<int>(unit)));
             if (selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
@@ -129,7 +312,9 @@ void energy_unit_combo(OrbitalUIState& state) {
 }
 
 void filter_combo(OrbitalUIState& state, const Language language) {
-    if (ImGui::BeginCombo("##orbital_filter", filter_name(state.filter.mode, language))) {
+    const bool filter_open=ImGui::BeginCombo("##orbital_filter", filter_name(state.filter.mode, language));
+    cov::validation::item("browser.filter");
+    if (filter_open) {
         constexpr OrbitalFilterMode modes[] = {
             OrbitalFilterMode::AutoReasonable, OrbitalFilterMode::All,
             OrbitalFilterMode::Occupied, OrbitalFilterMode::Virtual,
@@ -138,6 +323,7 @@ void filter_combo(OrbitalUIState& state, const Language language) {
         for (const auto mode : modes) {
             const bool selected = state.filter.mode == mode;
             if (ImGui::Selectable(filter_name(mode, language), selected)) state.filter.mode = mode;
+            cov::validation::item("browser.filter."+std::to_string(static_cast<int>(mode)));
             if (selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
@@ -156,7 +342,7 @@ void draw_rich_symmetry(const std::string& raw,
                         const ImU32 colour = IM_COL32(220, 228, 240, 255)) {
     const SymmetryNotation notation = parse_symmetry_notation(raw);
     if (notation.base.empty()) {
-        ImGui::TextUnformatted("N/A");
+        ImGui::TextColored(text_colour(kUnavailableColour), "N/A");
         return;
     }
     const ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -176,6 +362,119 @@ void draw_rich_symmetry(const std::string& raw,
     ImGui::Dummy(ImVec2(rich_symmetry_width(notation), size * 1.08f));
 }
 
+const char* symmetry_scope_tag(const OrbitalSymmetryExplanation& explanation,Language language) {
+    if (orbital_symmetry_is_candidate(explanation)) return orbital_tr(OrbitalText::SymmetryCandidateTag,language);
+    if (orbital_symmetry_is_local(explanation)) return orbital_tr(OrbitalText::SymmetryLocalTag,language);
+    if (explanation.origin==OrbitalSymmetryOrigin::Producer) return orbital_tr(OrbitalText::SymmetrySourceTag,language);
+    if (explanation.origin==OrbitalSymmetryOrigin::MolecularOperations) return orbital_tr(OrbitalText::SymmetryMolecularTag,language);
+    if (explanation.origin==OrbitalSymmetryOrigin::MixedMembers) return orbital_tr(OrbitalText::SymmetryMixedTag,language);
+    return "N/A";
+}
+
+const char* symmetry_scope_origin(const OrbitalSymmetryExplanation& e,Language language) {
+    switch(e.origin) {
+        case OrbitalSymmetryOrigin::LocalMetricProjection: return orbital_tr(OrbitalText::SymmetryProjectionOrigin,language);
+        case OrbitalSymmetryOrigin::LocalMetricDecomposition: return orbital_tr(OrbitalText::SymmetryProjectionOrigin,language);
+        case OrbitalSymmetryOrigin::LocalDimensionCandidate: return orbital_tr(OrbitalText::SymmetryDimensionOrigin,language);
+        case OrbitalSymmetryOrigin::PiPartnerCandidate: return orbital_tr(OrbitalText::SymmetryPiOrigin,language);
+        case OrbitalSymmetryOrigin::SpinCounterpartCandidate: return orbital_tr(OrbitalText::SymmetrySpinOrigin,language);
+        case OrbitalSymmetryOrigin::MolecularOperations: return orbital_tr(OrbitalText::SymmetryMolecularOrigin,language);
+        default: return symmetry_scope_tag(e,language);
+    }
+}
+
+std::string symmetry_members(const std::vector<std::size_t>& members,const Wavefunction& wf) {
+    std::ostringstream out;
+    for (const auto index:members) {
+        if (out.tellp()>0) out<<", ";
+        out<<(index+1u);
+        if (index<wf.orbitals.size()) out<<(wf.orbitals[index].spin==Spin::Alpha?" α":" β");
+    }
+    return out.str();
+}
+
+void draw_symmetry_scope_details(const OrbitalSymmetryExplanation& e,const Wavefunction& wf,
+                                Language language,const std::string& prefix) {
+    labelled_value(orbital_tr(OrbitalText::SymmetryExplanation,language),symmetry_scope_origin(e,language),kSymmetryColour);
+    cov::validation::item(prefix+".origin");
+    labelled_value(tr(Text::Symmetry,language),e.label.empty()?"N/A":e.label,kSymmetryColour);
+    cov::validation::item(prefix+".label");
+    labelled_value(orbital_tr(OrbitalText::SymmetryTargetMembers,language),symmetry_members(e.orbital_indices,wf),kNumericColour);
+    cov::validation::item(prefix+".members");
+    if (!e.point_group.empty()) {
+        labelled_value(orbital_tr(OrbitalText::PointGroup,language),e.point_group,kSymmetryColour);
+        cov::validation::item(prefix+".point-group");
+    } else if(e.origin==OrbitalSymmetryOrigin::Producer) {
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::SymmetryGroupUnresolved,language));
+        cov::validation::item(prefix+".unresolved-group");
+    }
+    if (!e.producer_detected_group.empty()) labelled_value("Gaussian: Full point group",e.producer_detected_group,kSymmetryColour);
+    if (!e.producer_abelian_group.empty()) labelled_value("Gaussian: Largest Abelian subgroup",e.producer_abelian_group,kSymmetryColour);
+    if(e.local_assignment) {
+        const auto& a=*e.local_assignment;
+        const auto fraction=[](double v){return std::isfinite(v)?fixed_number(v*100.0,3)+"%":std::string("N/A");};
+        labelled_number(orbital_tr(OrbitalText::SymmetryCentreCoverage,language),fraction(a.centre_mean_fraction));
+        cov::validation::item(prefix+".centre-coverage");
+        labelled_number(orbital_tr(OrbitalText::SymmetryShellPurity,language),fraction(a.confidence));
+        cov::validation::item(prefix+".shell-purity");
+        labelled_number(orbital_tr(OrbitalText::SymmetryTargetCoverage,language),fraction(a.labelled_fraction_of_target));
+        cov::validation::item(prefix+".target-coverage");
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::SymmetryProjectionMeaning,language));
+        cov::validation::item(prefix+".measure");
+    }
+    if(e.local_decomposition) {
+        const auto& projection=*e.local_decomposition;
+        const bool available=projection.status==MetricSubspaceStatus::Available;
+        labelled_number(orbital_tr(OrbitalText::SymmetryRepresentedRank,language),
+            available?std::to_string(projection.represented_spin_orbital_rank):"N/A");
+        cov::validation::item(prefix+".represented-rank");
+        if(!e.local_assignment) {
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::SymmetryNoSingleLabel,language));
+            cov::validation::item(prefix+".unassigned");
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::SymmetryDecomposition,language));
+            constexpr const char* shells[]={"s","p","d","f","g"};
+            for(std::size_t l=0;l<5;++l) {
+                double trace=0;
+                for(std::size_t component=0;component<2*l+1;++component)
+                    trace+=projection.component_projection_traces[l*l+component];
+                const bool resolved=available && projection.represented_spin_orbital_rank>0 && std::isfinite(trace);
+                labelled_number(shells[l],resolved?fixed_number(
+                    100.0*trace/static_cast<double>(projection.represented_spin_orbital_rank),3)+"%":"N/A");
+                cov::validation::item(prefix+".angular."+std::to_string(l));
+            }
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::SymmetryProjectionMeaning,language));
+        }
+        double residual=std::abs(projection.angular_partition_residual);
+        for(const auto& spin:projection.spins) {
+            residual=std::max(residual,spin.centre.metric_eigen_residual);
+            residual=std::max(residual,spin.centre.reference.orthonormality_residual);
+            residual=std::max(residual,spin.centre.orbitals.orthonormality_residual);
+        }
+        std::ostringstream residual_text;
+        if(available && std::isfinite(residual))residual_text<<std::scientific<<std::setprecision(3)<<residual;
+        else residual_text<<"N/A";
+        labelled_number(orbital_tr(OrbitalText::SymmetryNumericalResidual,language),residual_text.str());
+        cov::validation::item(prefix+".residual");
+    }
+    if (e.axes_available) {
+        std::ostringstream atoms;
+        for(auto atom:e.atom_indices) {if(atoms.tellp()>0)atoms<<", ";atoms<<(atom+1u);}
+        labelled_value(orbital_tr(OrbitalText::Atom,language),atoms.str(),kNumericColour);
+        cov::validation::item(prefix+".atoms");
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::SymmetryAxes,language));
+        for(int axis=0;axis<3;++axis) {
+            ImGui::Text("%c = (%.6f, %.6f, %.6f)",'x'+axis,e.rotation_reference_to_input[axis],
+                e.rotation_reference_to_input[3+axis],e.rotation_reference_to_input[6+axis]);
+            cov::validation::item(prefix+".axis."+std::to_string(axis));
+        }
+    }
+    if (e.candidate_source) {
+        labelled_value(orbital_tr(OrbitalText::SymmetrySourceMembers,language),
+            symmetry_members(e.candidate_source->orbital_indices,wf),kNumericColour);
+        cov::validation::item(prefix+".candidate-source-members");
+    }
+}
+
 int group_member_index(const std::string& label) {
     const auto dash = label.find('-');
     if (dash == std::string::npos || dash + 1 >= label.size()) return 0;
@@ -191,77 +490,320 @@ std::size_t group_base_raw(const OrbitalMetadata& item) {
 
 void tooltip_source_confidence(const AnnotationSource source,
                                const double confidence,
-                               const bool heuristic,
                                const Language language) {
-    ImGui::TextDisabled("%s: %s · %s %.0f%% · %s",
+    ImGui::TextDisabled("%s: %s · %s",
                         tr(Text::ClassificationSource, language),
-                        annotation_source_name(source),
-                        tr(Text::Confidence, language), confidence * 100.0,
-                        heuristic ? "heuristic" : "direct/parsed");
+                        localised_annotation_source(source, language),
+                        tr(Text::Confidence, language));
+    ImGui::SameLine();
+    ImGui::TextColored(text_colour(kNumericColour), "%.0f%%", confidence * 100.0);
+}
+
+std::string delocalised_member_list(const MODiagramData& data,
+                                    const DelocalisedPiDescriptor& descriptor) {
+    std::ostringstream result;
+    for (const auto orbital_index : descriptor.orbital_indices) {
+        if (result.tellp() > 0) result << ", ";
+        if (orbital_index < data.metadata.size()) {
+            result << "MO " << data.metadata[orbital_index].raw_mo_number;
+        } else {
+            result << "MO " << orbital_index + 1u;
+        }
+    }
+    return result.str();
+}
+
+std::string delocalised_atom_list(const DelocalisedPiDescriptor& descriptor) {
+    std::ostringstream result;
+    for (const auto atom_index : descriptor.atom_indices) {
+        if (result.tellp() > 0) result << ", ";
+        result << atom_index + 1u;
+    }
+    return result.str();
+}
+
+ImU32 pi_interaction_colour(PiInteractionKind kind);
+
+void draw_level_details(const MODiagramData& data,
+                        const MODiagramLevel& level,
+                        const Wavefunction& wavefunction,
+                        const OrbitalUIState& state,
+                        const Language language,
+                        const std::size_t orbital_index) {
+    const OrbitalMetadata& metadata=orbital_index<data.metadata.size()
+        ?data.metadata[orbital_index]:level.metadata;
+    const std::string displayed_symmetry=metadata.symmetry.empty()?"N/A":metadata.symmetry;
+    const auto* actual=orbital_index<wavefunction.orbitals.size()?&wavefunction.orbitals[orbital_index]:nullptr;
+    ImGui::Text("MO %s", metadata.display_label.c_str());
+    ImGui::Separator();
+    labelled_number(tr(Text::RawMO, language), std::to_string(metadata.raw_mo_number));
+    labelled_number(tr(Text::InternalIndex, language), std::to_string(metadata.orbital_index));
+    labelled_number(tr(Text::ExactEnergy, language),
+                    format_energy(metadata.energy_hartree, state.energy_unit, 6));
+    labelled_number("Ha", fixed_number(metadata.energy_hartree, 10));
+    labelled_number("eV", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::ElectronVolt), 8));
+    labelled_number("J/mol", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::JoulePerMol), 2));
+    labelled_number("kJ/mol", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::KilojoulePerMol), 5));
+    labelled_number("cal/mol", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::CaloriePerMol), 3));
+    labelled_number("kcal/mol", fixed_number(convert_hartree(metadata.energy_hartree, EnergyUnit::KilocaloriePerMol), 5));
+    labelled_number(tr(Text::Occupation, language),
+        actual && actual->occupation_provenance!=DataProvenance::Unavailable && std::isfinite(actual->occupation)
+            ?fixed_number(actual->occupation,6):"N/A");
+    ImGui::Text("%s: %s", tr(Text::Spin, language),
+        actual && actual->spin_provenance!=DataProvenance::Unavailable?spin_name_ui(actual->spin,language):"N/A");
+
+    ImGui::TextUnformatted(tr(Text::Symmetry, language));
+    ImGui::SameLine();
+    draw_rich_symmetry(displayed_symmetry, kSymmetryColour);
+    cov::validation::item("details.symmetry.original-label");
+    ImGui::TextDisabled("%s",orbital_tr(OrbitalText::SymmetryOriginalLabel,language));
+    draw_symmetry_scope_details(metadata.symmetry_view,wavefunction,language,"details.symmetry");
+    ImGui::Separator();
+    ImGui::TextWrapped(orbital_tr(OrbitalText::GroupRepresentativeData,language),
+        level.metadata.raw_mo_number);
+    if (!data.ligand_field_point_group.empty()) {
+        labelled_value(orbital_tr(OrbitalText::LocalLigandField, language),
+                       data.ligand_field_point_group+" · "+
+                           orbital_tr(OrbitalText::FirstShell, language),
+                       kSymmetryColour);
+        if (!data.ligand_field_geometry_name.empty()) {
+            labelled_value(orbital_tr(OrbitalText::CoordinationGeometry, language),
+                           localised_geometry_name(
+                               data.ligand_field_geometry_id,
+                               data.ligand_field_geometry_name,language)+
+                               " ("+data.ligand_field_geometry_id+")",
+                           kSymmetryColour);
+        }
+        labelled_number(orbital_tr(OrbitalText::CoordinationNumber, language),
+                        std::to_string(data.ligand_field_coordination_number));
+        labelled_number(orbital_tr(OrbitalText::GeometryConfidence, language),
+                        fixed_number(data.ligand_field_confidence,3));
+        labelled_number(orbital_tr(OrbitalText::AngularRMS, language),
+                        fixed_number(data.ligand_field_angular_rms,5));
+        labelled_number(orbital_tr(OrbitalText::DirectionalShapeScore, language),
+                        fixed_number(data.ligand_field_shape_measure,5));
+        labelled_number(orbital_tr(OrbitalText::RadialVariation, language),
+                        fixed_number(100.0*data.ligand_field_radial_cv,2)+"%");
+    }
+    if (!data.local_geometries.empty()) {
+        labelled_number(orbital_tr(OrbitalText::LocalMolecularGeometries, language),
+                        std::to_string(data.local_geometries.size()));
+        std::set<std::size_t> relevant_centres;
+        for (const auto& contribution:level.chemistry.ao_contributions) {
+            if (contribution.weight>=0.08) {
+                relevant_centres.insert(contribution.atom_index);
+            }
+        }
+        std::size_t relevant_geometry_count=0u;
+        for (const auto& geometry:data.local_geometries) {
+            if (relevant_centres.empty() ||
+                relevant_centres.contains(geometry.centre_atom)) {
+                ++relevant_geometry_count;
+            }
+        }
+        std::size_t shown=0u;
+        for (const auto& geometry:data.local_geometries) {
+            if (!relevant_centres.empty() &&
+                !relevant_centres.contains(geometry.centre_atom)) {
+                continue;
+            }
+            std::ostringstream value;
+            value << orbital_tr(OrbitalText::Atom, language) << ' '
+                  << (geometry.centre_atom+1u) << ": "
+                  << localised_geometry_name(geometry.geometry_id,
+                                             geometry.geometry_name,language)
+                  << " (" << geometry.geometry_id << ", "
+                  << geometry.point_group << ", CN"
+                  << geometry.neighbour_atoms.size() << ")";
+            labelled_value(orbital_tr(OrbitalText::LocalGeometry, language),
+                           value.str(),kSymmetryColour);
+            if (++shown==6u) break;
+        }
+        if (shown==0u) {
+            labelled_value(orbital_tr(OrbitalText::LocalGeometry, language),
+                           orbital_tr(OrbitalText::NotCentredOnThisMO, language),
+                           kUnavailableColour);
+        } else if (shown<relevant_geometry_count) {
+            ImGui::TextDisabled("…");
+        }
+    }
+
+    labelled_number(tr(Text::DegenerateSet, language), std::to_string(level.metadata.degeneracy_size));
+    if (level.metadata.degeneracy_size > 1) {
+        std::ostringstream members;
+        const std::size_t member_count=level.member_indices.empty()
+            ?level.metadata.degeneracy_size:level.member_indices.size();
+        const std::size_t fallback_base=group_base_raw(level.metadata);
+        for (std::size_t i = 0; i < member_count; ++i) {
+            if (i) members << ", ";
+            const std::size_t member_index=level.member_indices.empty()
+                ?fallback_base+i-1u:level.member_indices[i];
+            if (member_index<data.metadata.size()) {
+                members << data.metadata[member_index].display_label;
+            } else {
+                members << member_index+1u;
+            }
+        }
+        labelled_value(tr(Text::DegenerateMembers, language), members.str(), kNumericColour);
+    }
+
+    labelled_number(orbital_tr(OrbitalText::GroupOccupation, language),
+                    fixed_number(level.total_occupation,3));
+    const auto ml=metal_ligand_detail_availability(wavefunction,data,level);
+    ImGui::TextDisabled("%s",orbital_tr(OrbitalText::MetalLigandGroupAnalysis,language));
+    if (ml.scope==ChemistryStatus::NotApplicable || ml.scope==ChemistryStatus::Unavailable) {
+        ImGui::TextWrapped("%s",orbital_tr(ml.scope==ChemistryStatus::NotApplicable
+            ?OrbitalText::MetalLigandNotApplicable:OrbitalText::MetalLigandUnavailable,language));
+        cov::validation::item("details.metal-ligand.scope");
+    } else {
+        cov::validation::item("details.metal-ligand.scope");
+        const auto unavailable=orbital_tr(OrbitalText::Unavailable,language);
+        labelled_number(orbital_tr(OrbitalText::MetalSPD, language),ml.populations
+            ?fixed_number(100.0*level.metal_s_weight,1)+"% / "+
+             fixed_number(100.0*level.metal_p_weight,1)+"% / "+
+             fixed_number(100.0*level.metal_d_weight,1)+"%":unavailable);
+        cov::validation::item("details.metal-ligand.populations");
+        labelled_number(orbital_tr(OrbitalText::LigandP, language),ml.populations
+            ?fixed_number(100.0*level.ligand_p_weight,1)+"%":unavailable);
+        labelled_number(orbital_tr(OrbitalText::MetalLigandSigmaPiChannel, language),ml.channels
+            ?fixed_number(100.0*level.sigma_fraction,1)+"% / "+
+             fixed_number(100.0*level.pi_fraction,1)+"%":unavailable);
+        cov::validation::item("details.metal-ligand.channels");
+        labelled_number(orbital_tr(OrbitalText::MetalLigandOverlap, language),ml.overlap
+            ?fixed_number(level.metal_ligand_overlap,6):unavailable);
+        cov::validation::item("details.metal-ligand.overlap");
+    }
+    cov::validation::item("details.metal-ligand.end");
+    if (level.raw_data_fallback) {
+        labelled_value(orbital_tr(OrbitalText::Selection, language),
+                       orbital_tr(OrbitalText::RecoveredFromRawMOBlock, language),
+                       kNumericColour);
+    }
+    if (level.approximate_nonbonding) {
+        labelled_value(orbital_tr(OrbitalText::WeakFieldTreatment, language),
+                       orbital_tr(OrbitalText::ApproximatelyNonbonding, language),
+                       kUnavailableColour);
+    }
+
+    const auto level_index=static_cast<std::size_t>(&level-data.levels.data());
+    std::size_t gap_index=0;
+    for (const auto* gap:orbital_energy_gaps(data)) {
+        const auto& interaction=*gap;
+        const bool cf=interaction.gap_kind==OrbitalEnergyGapKind::CrystalField;
+        const auto prefix="details.energy-gap."+std::to_string(gap_index++);
+        if (interaction.lower_level!=level_index &&
+            interaction.upper_level!=level_index &&
+            interaction.retained_level!=level_index) continue;
+        labelled_value(orbital_tr(cf?OrbitalText::CrystalFieldGap:OrbitalText::PiInteraction, language),
+                       cf?interaction.symmetry:localised_pi_interaction_kind(interaction.kind,language),
+                       pi_interaction_colour(interaction.kind));
+        cov::validation::item(prefix+".kind");
+        labelled_number(orbital_tr(cf?OrbitalText::CrystalFieldGap:OrbitalText::PiSplitting, language),
+                        format_energy(interaction.splitting_hartree,
+                                      state.energy_unit,6));
+        cov::validation::item(prefix+".splitting");
+        labelled_number(orbital_tr(OrbitalText::GapHeuristicSupport, language),
+                         std::isfinite(interaction.confidence)?fixed_number(interaction.confidence,3):"N/A");
+        cov::validation::item(prefix+".support");
+        if(interaction.orbital_evidence && !cf) {
+            const auto& evidence=*interaction.orbital_evidence;
+            labelled_value(orbital_tr(OrbitalText::CataloguePrior,language),
+                           localised_catalogue_prior(evidence.prior,language),kUnavailableColour);
+            cov::validation::item(prefix+".prior");
+            const auto relation=evidence.prior_relation=="contradicted"?OrbitalText::CatalogueContradicted:
+                evidence.prior_relation=="consistent"?OrbitalText::CatalogueConsistent:OrbitalText::UnknownSource;
+            labelled_value(orbital_tr(OrbitalText::CatalogueEvidenceRelation,language),
+                           orbital_tr(relation,language),relation==OrbitalText::CatalogueContradicted?kPiColour:kNumericColour);
+            cov::validation::item(prefix+".prior-relation");
+        }
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::GapLocalScopeExplanation,language));
+        cov::validation::item(prefix+".scope");
+        cov::validation::record("details.energy-gap",orbital_energy_gap_json(interaction,state.energy_unit));
+    }
+
+    ImGui::Separator();
+    labelled_value(tr(Text::OrbitalFamily, language), family_symbol_ui(level.annotation.family),
+                   family_colour(level.annotation.family));
+    tooltip_source_confidence(level.annotation.family_source,
+                              level.annotation.family_confidence,language);
+    labelled_value(tr(Text::BondingClassLabel, language), bonding_ui(level.annotation.bonding_class,language),
+                   bonding_colour(level.annotation.bonding_class));
+    tooltip_source_confidence(level.annotation.bonding_source,
+                              level.annotation.bonding_confidence,language);
+
+    std::string multicentre_value = level.annotation.multicentre.available
+        ? level.annotation.multicentre.label : "N/A";
+    ImU32 multicentre_tone = level.annotation.multicentre.available
+        ? kMulticentreColour : kUnavailableColour;
+    if (level.annotation.delocalised_pi.available) {
+        multicentre_value = pi_descriptor_ui(level.annotation.delocalised_pi) + " · " + multicentre_value;
+        multicentre_tone = kPiColour;
+    }
+    labelled_value(tr(Text::MulticentreBond, language), multicentre_value, multicentre_tone);
+    if (level.annotation.multicentre.available) {
+        tooltip_source_confidence(level.annotation.multicentre.source,
+                                  level.annotation.multicentre.confidence,language);
+    }
+    if (level.annotation.delocalised_pi.available) {
+        const auto& descriptor = level.annotation.delocalised_pi;
+        labelled_value(tr(Text::DelocalisedPiSystem, language), pi_descriptor_ui(descriptor), kPiColour);
+        labelled_value(orbital_tr(OrbitalText::MemberMOs, language),
+                       delocalised_member_list(data, descriptor), kPiColour);
+        std::string atom_value = std::to_string(descriptor.participating_atoms);
+        if (!descriptor.atom_indices.empty()) atom_value += " · " + delocalised_atom_list(descriptor);
+        labelled_number(orbital_tr(OrbitalText::ParticipatingAtoms, language),atom_value);
+        labelled_number(orbital_tr(OrbitalText::ParticipatingElectrons, language),
+                        std::to_string(static_cast<int>(std::lround(descriptor.participating_electrons))));
+        labelled_number(orbital_tr(OrbitalText::OrientationChannels, language),
+                        descriptor.topology_available
+                            ?std::to_string(descriptor.orientation_channels):"N/A");
+        if (descriptor.topology_available &&
+            !descriptor.orientation_channel_details.empty()) {
+            ImGui::TextWrapped("%s",pi_channel_detail(descriptor,language).c_str());
+        }
+        labelled_value(orbital_tr(OrbitalText::Topology, language),
+                       pi_topology_value(descriptor,language),
+                       descriptor.topology_available?kPiColour:kUnavailableColour);
+        tooltip_source_confidence(level.annotation.delocalised_pi.source,
+                                   level.annotation.delocalised_pi.confidence,language);
+        draw_pi_ring_evidence(descriptor,language);
+    } else {
+        labelled_value(tr(Text::DelocalisedPiSystem, language), "N/A", kUnavailableColour);
+    }
 }
 
 void draw_level_tooltip(const MODiagramData& data,
                         const MODiagramLevel& level,
+                        const Wavefunction& wavefunction,
                         const OrbitalUIState& state,
-                        const Language language) {
+                        const Language language,
+                        const std::size_t orbital_index) {
+    if(orbital_index>=data.metadata.size() || orbital_index>=wavefunction.orbitals.size())return;
+    const auto& metadata=data.metadata[orbital_index];
+    const auto& actual=wavefunction.orbitals[orbital_index];
+    const ImVec2 work_size=ImGui::GetMainViewport()->WorkSize;
+    ImGui::SetNextWindowSizeConstraints(ImVec2(0,0),ImVec2(std::max(120.0f,work_size.x-24.0f),std::max(120.0f,work_size.y-24.0f)));
     ImGui::BeginTooltip();
-    ImGui::Text("MO %s", level.metadata.display_label.c_str());
+    ImGui::PushTextWrapPos(ImGui::GetFontSize()*24.0f);
+    ImGui::Text("MO %s",metadata.display_label.c_str());
+    labelled_number(tr(Text::ExactEnergy,language),format_energy(metadata.energy_hartree,state.energy_unit,8));
+    labelled_number(tr(Text::Occupation,language),
+        actual.occupation_provenance!=DataProvenance::Unavailable && std::isfinite(actual.occupation)?fixed_number(actual.occupation,6):"N/A");
+    ImGui::Text("%s: %s",tr(Text::Spin,language),
+        actual.spin_provenance!=DataProvenance::Unavailable?spin_name_ui(actual.spin,language):"N/A");
+    labelled_value(tr(Text::Symmetry,language),
+        (metadata.symmetry_view.label.empty()?"N/A":metadata.symmetry_view.label)+
+        std::string(" · ")+symmetry_scope_tag(metadata.symmetry_view,language),kSymmetryColour);
+    if(orbital_index<data.annotations.size()) {
+        const auto& annotation=data.annotations[orbital_index];
+        labelled_value(tr(Text::OrbitalFamily,language),family_symbol_ui(annotation.family),family_colour(annotation.family));
+        labelled_value(tr(Text::BondingClassLabel,language),bonding_ui(annotation.bonding_class,language),bonding_colour(annotation.bonding_class));
+    }
+    if(level.member_indices.size()>1)
+        ImGui::Text(orbital_tr(OrbitalText::LevelGroupContainsMOs,language),level.member_indices.size());
     ImGui::Separator();
-    ImGui::Text("%s: %zu", tr(Text::RawMO, language), level.metadata.raw_mo_number);
-    ImGui::Text("%s: %zu", tr(Text::InternalIndex, language), level.metadata.orbital_index);
-    ImGui::Text("%s: %s", tr(Text::ExactEnergy, language),
-                format_energy(level.metadata.energy_hartree, state.energy_unit, 6).c_str());
-    ImGui::Text("Ha: %.10f", level.metadata.energy_hartree);
-    ImGui::Text("eV: %.8f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::ElectronVolt));
-    ImGui::Text("J/mol: %.2f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::JoulePerMol));
-    ImGui::Text("kJ/mol: %.5f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilojoulePerMol));
-    ImGui::Text("cal/mol: %.3f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::CaloriePerMol));
-    ImGui::Text("kcal/mol: %.5f", convert_hartree(level.metadata.energy_hartree, EnergyUnit::KilocaloriePerMol));
-    ImGui::Text("%s: %.3f", tr(Text::Occupation, language), level.metadata.occupation);
-    ImGui::Text("%s: %s", tr(Text::Spin, language), spin_name_ui(level.metadata.spin, language));
-
-    ImGui::TextUnformatted(tr(Text::Symmetry, language));
-    ImGui::SameLine();
-    draw_rich_symmetry(level.metadata.symmetry);
-
-    ImGui::Text("%s: %zu", tr(Text::DegenerateSet, language), level.metadata.degeneracy_size);
-    if (level.metadata.degeneracy_size > 1) {
-        std::ostringstream members;
-        const std::size_t base = group_base_raw(level.metadata);
-        for (std::size_t i = 0; i < level.metadata.degeneracy_size; ++i) {
-            if (i) members << ", ";
-            const std::size_t raw = base + i;
-            if (raw > 0 && raw <= data.metadata.size()) members << data.metadata[raw - 1].display_label;
-            else members << raw;
-        }
-        ImGui::Text("%s: %s", tr(Text::DegenerateMembers, language), members.str().c_str());
-    }
-
-    ImGui::Separator();
-    ImGui::Text("%s: %s", tr(Text::OrbitalFamily, language), family_symbol_ui(level.annotation.family));
-    tooltip_source_confidence(level.annotation.family_source, level.annotation.family_confidence,
-                              level.annotation.family_source == AnnotationSource::Heuristic, language);
-    ImGui::Text("%s: %s", tr(Text::BondingClassLabel, language), bonding_ui(level.annotation.bonding_class));
-    tooltip_source_confidence(level.annotation.bonding_source, level.annotation.bonding_confidence,
-                              level.annotation.bonding_source == AnnotationSource::Heuristic, language);
-
-    ImGui::Text("%s: %s", tr(Text::MulticentreBond, language),
-                level.annotation.multicentre.available ? level.annotation.multicentre.label.c_str() : "N/A");
-    if (level.annotation.multicentre.available) {
-        tooltip_source_confidence(level.annotation.multicentre.source,
-                                  level.annotation.multicentre.confidence,
-                                  level.annotation.multicentre.heuristic, language);
-    }
-    if (level.annotation.delocalised_pi.available) {
-        ImGui::Text("%s: Π^%zu_%d", tr(Text::DelocalisedPiSystem, language),
-                    level.annotation.delocalised_pi.participating_atoms,
-                    static_cast<int>(std::lround(level.annotation.delocalised_pi.participating_electrons)));
-        tooltip_source_confidence(level.annotation.delocalised_pi.source,
-                                  level.annotation.delocalised_pi.confidence,
-                                  level.annotation.delocalised_pi.heuristic, language);
-    } else {
-        ImGui::Text("%s: N/A", tr(Text::DelocalisedPiSystem, language));
-    }
+    ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsHint,language));
+    ImGui::PopTextWrapPos();
     ImGui::EndTooltip();
 }
 
@@ -291,6 +833,192 @@ struct DiagramPoint {
     float y = 0.0f;
 };
 
+struct DiagramMemberPoint {
+    const MODiagramLevel* level = nullptr;
+    std::size_t orbital_index = 0;
+    ImVec2 left{};
+    ImVec2 right{};
+    float y = 0.0f;
+};
+
+struct PiDiagramGroup {
+    const DelocalisedPiDescriptor* descriptor = nullptr;
+    std::vector<const DiagramPoint*> points;
+};
+
+std::string pi_group_key(const DelocalisedPiDescriptor& descriptor) {
+    if (!descriptor.family_id.empty()) return descriptor.family_id;
+    std::ostringstream key;
+    key << descriptor.label << ':' << descriptor.participating_atoms << ':'
+        << std::lround(descriptor.participating_electrons);
+    for (const auto atom_index : descriptor.atom_indices) key << ":a" << atom_index;
+    for (const auto orbital_index : descriptor.orbital_indices) key << ':' << orbital_index;
+    return key.str();
+}
+
+void draw_pi_groups(ImDrawList* draw,
+                    const std::vector<DiagramPoint>& points,
+                    const ImVec2 canvas_max,
+                    const float ui_scale) {
+    std::map<std::string, PiDiagramGroup> groups;
+    for (const auto& point : points) {
+        if (!point.level || !point.level->annotation.delocalised_pi.available) continue;
+        const auto& descriptor = point.level->annotation.delocalised_pi;
+        if (descriptor.participating_atoms < 3u) continue;
+        auto& group = groups[pi_group_key(descriptor)];
+        if (!group.descriptor) group.descriptor = &descriptor;
+        group.points.push_back(&point);
+    }
+
+    float bracket_x = canvas_max.x - 13.0f * ui_scale;
+    for (const auto& [key, group] : groups) {
+        (void)key;
+        if (!group.descriptor || group.points.size() < 2u) continue;
+        if (!group.descriptor->orbital_indices.empty()) {
+            const bool complete=std::all_of(
+                group.descriptor->orbital_indices.begin(),
+                group.descriptor->orbital_indices.end(),
+                [&](const std::size_t orbital_index) {
+                    return std::any_of(
+                        group.points.begin(),group.points.end(),
+                        [&](const DiagramPoint* point) {
+                            return point && point->level &&
+                                mo_diagram_level_covers_orbital(
+                                    *point->level,orbital_index);
+                        });
+                });
+            if (!complete) continue;
+        }
+        float upper = group.points.front()->y;
+        float lower = group.points.front()->y;
+        for (const auto* point : group.points) {
+            upper = std::min(upper, point->y);
+            lower = std::max(lower, point->y);
+        }
+        upper -= 5.0f * ui_scale;
+        lower += 5.0f * ui_scale;
+        if (lower - upper < 14.0f * ui_scale) {
+            const float middle = 0.5f * (upper + lower);
+            upper = middle - 7.0f * ui_scale;
+            lower = middle + 7.0f * ui_scale;
+        }
+
+        const float cap = 7.0f * ui_scale;
+        draw->AddLine(ImVec2(bracket_x, upper), ImVec2(bracket_x, lower), kPiColour, 2.0f * ui_scale);
+        draw->AddLine(ImVec2(bracket_x - cap, upper), ImVec2(bracket_x, upper), kPiColour, 2.0f * ui_scale);
+        draw->AddLine(ImVec2(bracket_x - cap, lower), ImVec2(bracket_x, lower), kPiColour, 2.0f * ui_scale);
+
+        const std::string label = pi_descriptor_ui(*group.descriptor);
+        const ImVec2 label_size = ImGui::CalcTextSize(label.c_str());
+        draw->AddText(ImVec2(bracket_x - cap - label_size.x - 5.0f * ui_scale,
+                             0.5f * (upper + lower) - 0.5f * label_size.y),
+                      kPiColour, label.c_str());
+        bracket_x -= std::max(20.0f * ui_scale, label_size.x + 12.0f * ui_scale);
+    }
+}
+
+ImU32 pi_interaction_colour(const PiInteractionKind kind) {
+    switch (kind) {
+        case PiInteractionKind::Donor: return IM_COL32(242,163,64,255);
+        case PiInteractionKind::Acceptor: return IM_COL32(70,206,218,255);
+        case PiInteractionKind::WeakNearNonbonding:
+            return IM_COL32(174,154,190,255);
+        default: return kPiColour;
+    }
+}
+
+void draw_ligand_field_pi_interactions(
+    ImDrawList* draw,
+    const MODiagramData& data,
+    const std::vector<DiagramPoint>& points,
+    const ImVec2 canvas_max,
+    const EnergyUnit unit,
+    const Language language,
+    const float ui_scale) {
+    float bracket_x=canvas_max.x-13.0f*ui_scale;
+    std::size_t gap_index=0;
+    for (const auto* gap:orbital_energy_gaps(data)) {
+        const auto& interaction=*gap;
+        const bool cf=interaction.gap_kind==OrbitalEnergyGapKind::CrystalField;
+        if (interaction.retained_level>=points.size()) continue;
+        const ImU32 colour=pi_interaction_colour(interaction.kind);
+        const char* symbol=cf?"ΔCF":"Δπ";
+        const ImVec2 symbol_size=ImGui::CalcTextSize(symbol);
+        const float cap=7.0f*ui_scale;
+        float hit_top=0.0f;
+        float hit_bottom=0.0f;
+
+        if ((!cf && interaction.kind==PiInteractionKind::WeakNearNonbonding) ||
+            !interaction.lower_visible || !interaction.upper_visible ||
+            interaction.lower_level>=points.size() ||
+            interaction.upper_level>=points.size()) {
+            const float y=points[interaction.retained_level].y;
+            hit_top=y-7.0f*ui_scale;
+            hit_bottom=y+7.0f*ui_scale;
+            draw->AddLine(ImVec2(bracket_x,hit_top),
+                          ImVec2(bracket_x,hit_bottom),colour,2.0f*ui_scale);
+            draw->AddLine(ImVec2(bracket_x-cap,hit_top),
+                          ImVec2(bracket_x,hit_top),colour,2.0f*ui_scale);
+            draw->AddLine(ImVec2(bracket_x-cap,hit_bottom),
+                          ImVec2(bracket_x,hit_bottom),
+                          colour,2.0f*ui_scale);
+        } else {
+            float upper=std::min(points[interaction.lower_level].y,
+                                 points[interaction.upper_level].y)-5.0f*ui_scale;
+            float lower=std::max(points[interaction.lower_level].y,
+                                 points[interaction.upper_level].y)+5.0f*ui_scale;
+            if (lower-upper<14.0f*ui_scale) {
+                const float middle=0.5f*(upper+lower);
+                upper=middle-7.0f*ui_scale;
+                lower=middle+7.0f*ui_scale;
+            }
+            hit_top=upper;
+            hit_bottom=lower;
+            draw->AddLine(ImVec2(bracket_x,upper),ImVec2(bracket_x,lower),
+                          colour,2.0f*ui_scale);
+            draw->AddLine(ImVec2(bracket_x-cap,upper),ImVec2(bracket_x,upper),
+                          colour,2.0f*ui_scale);
+            draw->AddLine(ImVec2(bracket_x-cap,lower),ImVec2(bracket_x,lower),
+                          colour,2.0f*ui_scale);
+        }
+        const float symbol_x=bracket_x-cap-symbol_size.x-5.0f*ui_scale;
+        const float symbol_y=0.5f*(hit_top+hit_bottom)-0.5f*symbol_size.y;
+        draw->AddText(ImVec2(symbol_x,symbol_y),colour,symbol);
+        const auto gap_id="diagram.energy-gap."+std::to_string(gap_index++);
+        cov::validation::hit(gap_id,ImVec2(symbol_x,hit_top),ImVec2(bracket_x,hit_bottom));
+        std::ostringstream gap_draw;
+        gap_draw << "{\"gap\":" << orbital_energy_gap_json(interaction,unit)
+                 << ",\"symbol\":\"" << symbol << "\",\"symbol_x\":" << symbol_x
+                 << ",\"symbol_y\":" << symbol_y << ",\"bracket_x\":" << bracket_x
+                 << ",\"top\":" << hit_top << ",\"bottom\":" << hit_bottom << '}';
+        cov::validation::record("draw.energy-gap",gap_draw.str());
+
+        if (ImGui::IsItemHovered()) {
+            const ImVec2 mouse=ImGui::GetIO().MousePos;
+            const float pad=6.0f*ui_scale;
+            if (mouse.x>=symbol_x-pad && mouse.x<=bracket_x+pad &&
+                mouse.y>=hit_top-pad && mouse.y<=hit_bottom+pad) {
+                ImGui::BeginTooltip();
+                if (!interaction.symmetry.empty()) {
+                    labelled_value(tr(Text::Symmetry, language),
+                                   interaction.symmetry,kSymmetryColour);
+                }
+                 labelled_value(orbital_tr(OrbitalText::Interaction, language),
+                                cf?orbital_tr(OrbitalText::CrystalFieldGap,language):
+                                    localised_pi_interaction_kind(interaction.kind,language),colour);
+                labelled_number(orbital_tr(OrbitalText::Splitting, language),
+                    format_energy(interaction.splitting_hartree,unit,6));
+                labelled_number(orbital_tr(OrbitalText::SplittingHartree, language),
+                    fixed_number(interaction.splitting_hartree,10));
+                 labelled_number(orbital_tr(OrbitalText::GapHeuristicSupport, language),
+                                 std::isfinite(interaction.confidence)?fixed_number(interaction.confidence,3):"N/A");
+                ImGui::EndTooltip();
+            }
+        }
+        bracket_x-=32.0f*ui_scale;
+    }
+}
+
 void draw_arrow(ImDrawList* draw, const ImVec2 start, const bool up, const ImU32 colour) {
     const float dy = up ? -13.0f : 13.0f;
     const ImVec2 tip(start.x, start.y + dy);
@@ -307,8 +1035,87 @@ std::string compact_metadata(const OrbitalMetadata& item, const EnergyUnit unit)
         << "; energy_hartree=" << item.energy_hartree
         << "; energy_display=" << convert_hartree(item.energy_hartree, unit)
         << ' ' << energy_unit_symbol(unit)
-        << "; occupation=" << item.occupation << "; symmetry=" << item.symmetry;
+        << "; occupation=" << item.occupation << "; source symmetry=" << item.symmetry
+        << "; view symmetry=" << orbital_symmetry_compact_text(item.symmetry_view)
+        << "; symmetry evidence=" << orbital_symmetry_json(item.symmetry_view);
     return out.str();
+}
+
+bool same_degeneracy_settings(const DegeneracySettings& left,
+                              const DegeneracySettings& right) noexcept {
+    return left.tolerance_hartree==right.tolerance_hartree &&
+        left.require_same_spin==right.require_same_spin &&
+        left.require_compatible_symmetry==right.require_compatible_symmetry &&
+        left.maximum_group_size==right.maximum_group_size;
+}
+
+bool same_filter_settings(const OrbitalFilterSettings& left,
+                          const OrbitalFilterSettings& right) noexcept {
+    return left.mode==right.mode &&
+        left.occupation_threshold==right.occupation_threshold &&
+        left.virtual_window_hartree==right.virtual_window_hartree &&
+        left.core_energy_cutoff_hartree==right.core_energy_cutoff_hartree;
+}
+
+bool same_diagram_options(const MODiagramOptions& left,
+                          const MODiagramOptions& right) noexcept {
+    return left.mode==right.mode &&
+        left.energy_unit==right.energy_unit &&
+        left.energy_axis_mode==right.energy_axis_mode &&
+        same_degeneracy_settings(left.degeneracy,right.degeneracy) &&
+        same_filter_settings(left.filter,right.filter) &&
+        left.selected_index==right.selected_index &&
+        left.neighbourhood==right.neighbourhood &&
+        left.max_levels==right.max_levels &&
+        left.max_virtual_levels==right.max_virtual_levels &&
+        left.hide_ligand_centred_intermediates==
+            right.hide_ligand_centred_intermediates &&
+        left.nonlinear_minimum_gap_weight==
+            right.nonlinear_minimum_gap_weight &&
+        left.weak_pi_split_hartree==right.weak_pi_split_hartree &&
+        left.weak_crystal_field_split_hartree==right.weak_crystal_field_split_hartree &&
+        left.weak_crystal_field_overlap==right.weak_crystal_field_overlap &&
+        left.weak_metal_ligand_overlap==
+            right.weak_metal_ligand_overlap &&
+        left.width==right.width && left.height==right.height &&
+        left.include_hidden_in_metadata==
+            right.include_hidden_in_metadata;
+}
+
+bool diagram_cache_matches(const OrbitalUIDiagramCache& cache,
+                           const Wavefunction& wavefunction,
+                           const MODiagramOptions& options) noexcept {
+    return cache.data.has_value() && cache.options.has_value() &&
+        cache.wavefunction==&wavefunction &&
+        cache.orbital_data==wavefunction.orbitals.data() &&
+        cache.atom_count==wavefunction.atoms.size() &&
+        cache.orbital_count==wavefunction.orbitals.size() &&
+        same_diagram_options(*cache.options,options);
+}
+
+bool diagram_cache_wavefunction_matches(
+    const OrbitalUIDiagramCache& cache,
+    const Wavefunction& wavefunction) noexcept {
+    return cache.options.has_value() &&
+        cache.wavefunction==&wavefunction &&
+        cache.orbital_data==wavefunction.orbitals.data() &&
+        cache.atom_count==wavefunction.atoms.size() &&
+        cache.orbital_count==wavefunction.orbitals.size();
+}
+
+bool browser_cache_matches(const OrbitalUIBrowserCache& cache,
+                           const Wavefunction& wavefunction,
+                           const DegeneracySettings& degeneracy,
+                           const OrbitalFilterSettings& filter) noexcept {
+    return cache.frontier.has_value() &&
+        cache.wavefunction==&wavefunction &&
+        cache.orbital_data==wavefunction.orbitals.data() &&
+        cache.atom_count==wavefunction.atoms.size() &&
+        cache.orbital_count==wavefunction.orbitals.size() &&
+        cache.metadata.size()==wavefunction.orbitals.size() &&
+        cache.degeneracy.has_value() && cache.filter.has_value() &&
+        same_degeneracy_settings(*cache.degeneracy,degeneracy) &&
+        same_filter_settings(*cache.filter,filter);
 }
 
 } // namespace
@@ -326,8 +1133,26 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
 
     state.degeneracy.tolerance_hartree = std::clamp(state.degeneracy.tolerance_hartree, 1.0e-9, 1.0e-2);
     state.filter.virtual_window_hartree = std::clamp(state.filter.virtual_window_hartree, 0.01, 20.0);
-    const FrontierOrbitals frontier = find_frontier_orbitals(wavefunction.orbitals, state.filter.occupation_threshold);
-    const auto metadata = build_orbital_metadata(wavefunction, selected_index, state.degeneracy, state.filter);
+    if (!browser_cache_matches(state.browser_cache,wavefunction,
+                               state.degeneracy,state.filter)) {
+        state.browser_cache.wavefunction=&wavefunction;
+        state.browser_cache.orbital_data=wavefunction.orbitals.data();
+        state.browser_cache.atom_count=wavefunction.atoms.size();
+        state.browser_cache.orbital_count=wavefunction.orbitals.size();
+        state.browser_cache.degeneracy=state.degeneracy;
+        state.browser_cache.filter=state.filter;
+        state.browser_cache.frontier=find_frontier_orbitals(
+            wavefunction.orbitals,state.filter.occupation_threshold);
+        // Selection is a transient 3-D inspection state.  None of the table
+        // metadata used below depends on its selected flag, so a sentinel
+        // keeps the expensive ligand-field classification cacheable while
+        // row highlighting continues to use selected_index directly.
+        state.browser_cache.metadata=build_orbital_metadata(
+            wavefunction,wavefunction.orbitals.size(),
+            state.degeneracy,state.filter);
+    }
+    const FrontierOrbitals& frontier=*state.browser_cache.frontier;
+    const auto& metadata=state.browser_cache.metadata;
     const Spin selected_spin = selected_index < wavefunction.orbitals.size()
         ? wavefunction.orbitals[selected_index].spin : Spin::Alpha;
     const auto homo = frontier_for_selected_spin(frontier, selected_spin, false);
@@ -348,6 +1173,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     ImGui::SetNextItemWidth(-1.0f);
     ImGui::InputTextWithHint("##orbital_search", tr(Text::Search, language),
                              state.search.data(), state.search.size());
+    cov::validation::item("browser.search");
 
     if (ImGui::BeginTable("##filter_controls", 2, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_NoSavedSettings)) {
         ImGui::TableNextColumn(); ImGui::TextDisabled("%s", tr(Text::Filter, language));
@@ -381,6 +1207,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     ImGui::SameLine();
     ImGui::TextDisabled("%s: %zu / %zu", tr(Text::VisibleOrbitals, language), candidates.size(), metadata.size());
 
+    cov::validation::anchor("browser.table");
     if (ImGui::BeginTable("##orbital_table", 4,
                           ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerH |
                           ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchProp |
@@ -399,15 +1226,22 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                 const auto& item = metadata[index];
                 const std::string label = state.grouped_labels ? item.display_label : std::to_string(item.raw_mo_number);
                 ImGui::PushID(static_cast<int>(index));
-                ImGui::TableNextRow(); ImGui::TableNextColumn();
+                ImGui::TableNextRow(0,2.2f*ImGui::GetTextLineHeightWithSpacing()); ImGui::TableNextColumn();
                 if (ImGui::Selectable(label.c_str(), index == selected_index,
                                       ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap)) {
                     actions.select_orbital = index;
                 }
+                cov::validation::item("browser.mo."+std::to_string(index));
                 ImGui::TableNextColumn();
-                ImGui::TextUnformatted(format_energy(item.energy_hartree, state.energy_unit, 5).c_str());
-                ImGui::TableNextColumn(); ImGui::Text("%.2f", item.occupation);
-                ImGui::TableNextColumn(); draw_rich_symmetry(item.symmetry);
+                ImGui::TextColored(text_colour(kNumericColour), "%s",
+                                   format_energy(item.energy_hartree, state.energy_unit, 5).c_str());
+                ImGui::TableNextColumn();
+                ImGui::TextColored(text_colour(kNumericColour), "%.2f", item.occupation);
+                ImGui::TableNextColumn(); draw_rich_symmetry(
+                    item.symmetry_view.label.empty()?"N/A":item.symmetry_view.label,kSymmetryColour);
+                cov::validation::item("browser.symmetry."+std::to_string(index)+".label");
+                ImGui::TextDisabled("%s",symmetry_scope_tag(item.symmetry_view,language));
+                cov::validation::item("browser.symmetry."+std::to_string(index)+".scope");
                 ImGui::PopID();
             }
         }
@@ -426,58 +1260,136 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                          const Language language,
                          const float ui_scale,
                          OrbitalUIActions& actions) {
+    actions.drawn_diagram.reset();
     if (wavefunction.orbitals.empty()) {
         ImGui::TextDisabled("%s", tr(Text::NoOrbitals, language));
         return;
     }
 
-    MODiagramOptions options;
-    options.energy_unit = state.energy_unit;
-    options.energy_axis_mode = state.energy_axis_mode;
-    options.degeneracy = state.degeneracy;
-    options.filter = state.filter;
-    options.selected_index = selected_index;
-    options.neighbourhood = static_cast<std::size_t>(std::max(3, state.diagram_neighbourhood));
-    options.nonlinear_minimum_gap_weight = 0.055;
-    const MODiagramData data = build_mo_diagram_data(wavefunction, options);
-
-    ImGui::TextDisabled("%s", tr(Text::EnergyDiagram, language));
-    ImGui::TextDisabled("%s", data.selection.summary.c_str());
     ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
     ImGui::SameLine();
     if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language), state.energy_axis_mode == EnergyAxisMode::Linear)) {
         state.energy_axis_mode = EnergyAxisMode::Linear;
     }
+    cov::validation::item("diagram.linear");
     ImGui::SameLine();
     if (ImGui::RadioButton(tr(Text::NonlinearFocus, language), state.energy_axis_mode == EnergyAxisMode::NonlinearFocus)) {
         state.energy_axis_mode = EnergyAxisMode::NonlinearFocus;
     }
+    cov::validation::item("diagram.nonlinear");
     ImGui::SetNextItemWidth(155.0f * ui_scale);
     ImGui::SliderInt("##diagram_neighbourhood", &state.diagram_neighbourhood, 3, 32, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SameLine(); ImGui::TextDisabled("%s", tr(Text::AroundSelected, language));
+    if (ImGui::Checkbox(intermediate_toggle_label(language),
+                        &state.hide_ligand_centred_intermediates)) {
+        // The requested options are frozen below in this same frame.
+    }
+    cov::validation::item("diagram.compact");
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("%s",intermediate_toggle_tooltip(language));
+    }
 
+    MODiagramOptions options;
+    const bool compact=state.hide_ligand_centred_intermediates;
+    if (diagram_cache_wavefunction_matches(state.diagram_cache,wavefunction) &&
+        state.diagram_cache.options->hide_ligand_centred_intermediates==compact) {
+        options.mode=state.diagram_cache.options->mode;
+    } else {
+        options.mode=preferred_compact_mo_diagram_mode(wavefunction,compact);
+    }
+    options.energy_unit = state.energy_unit;
+    options.energy_axis_mode = state.energy_axis_mode;
+    options.degeneracy = state.degeneracy;
+    options.filter = state.filter;
+    // A compact ligand-field diagram is a canonical chemical summary.  The
+    // MO selected for 3-D inspection must not add, remove or reprioritise its
+    // rows.  The live selected_index is still used below for member
+    // highlighting and CUDA dispatch; an out-of-range sentinel keeps the
+    // expensive structural build independent of inspection state.
+    options.selected_index = compact
+        ?wavefunction.orbitals.size():selected_index;
+    options.neighbourhood = static_cast<std::size_t>(std::max(3, state.diagram_neighbourhood));
+    options.hide_ligand_centred_intermediates=compact;
+    options.nonlinear_minimum_gap_weight = 0.055;
+    if (!diagram_cache_matches(state.diagram_cache,wavefunction,options)) {
+        cov::validation::record("diagram.cache","{\"hit\":false,\"reason\":\"input-or-options-changed\"}");
+        state.diagram_cache.wavefunction=&wavefunction;
+        state.diagram_cache.orbital_data=wavefunction.orbitals.data();
+        state.diagram_cache.atom_count=wavefunction.atoms.size();
+        state.diagram_cache.orbital_count=wavefunction.orbitals.size();
+        state.diagram_cache.options=options;
+        state.diagram_cache.data=build_mo_diagram_data(wavefunction,options);
+        state.diagram_cache.snapshot.reset();
+    } else {
+        cov::validation::record("diagram.cache","{\"hit\":true}");
+    }
+    const std::optional<std::size_t> inspected=selected_index<wavefunction.orbitals.size()
+        ?std::optional<std::size_t>(selected_index):std::nullopt;
+    if (!state.diagram_cache.snapshot ||
+        state.diagram_cache.snapshot->data.view->inspected_orbital_index!=inspected) {
+        state.diagram_cache.snapshot=std::make_shared<const MODiagramViewSnapshot>(
+            make_mo_diagram_view_snapshot(*state.diagram_cache.data,options,
+                                         inspected,"interactive-canvas"));
+    }
+    actions.drawn_diagram=state.diagram_cache.snapshot;
+    const auto& snapshot=*actions.drawn_diagram;
+    const MODiagramData& data=snapshot.data;
+    const MODiagramOptions& drawn_options=snapshot.options;
+#ifdef COV_ENABLE_VALIDATION
+    cov::validation::record("diagram.snapshot","{\"id\":"+
+        cov::validation::quote(data.view->id)+",\"inspected_orbital_index\":"+
+        (inspected?std::to_string(*inspected):"null")+
+        ",\"selection_anchor\":"+std::to_string(data.view->selection_anchor)+
+        ",\"row_count\":"+std::to_string(data.levels.size())+"}");
+#endif
+
+    ImGui::TextDisabled("%s", tr(Text::EnergyDiagram, language));
+    const std::string selection_summary=
+        localised_diagram_selection_summary(data,language);
+    ImGui::TextDisabled("%s",selection_summary.c_str());
+    cov::validation::field("selection_summary",selection_summary);
     const float height = 430.0f * ui_scale;
-    ImGui::InvisibleButton("##energy_diagram_canvas", ImVec2(-1.0f, height), ImGuiButtonFlags_MouseButtonLeft);
+    const float left_padding=124.0f*ui_scale;
+    const float right_padding=46.0f*ui_scale;
+    const float available_width=std::max(1.0f,ImGui::GetContentRegionAvail().x);
+    std::vector<DiagramRowFootprint> footprints;
+    for (const auto& level:data.levels) {
+        const auto members=mo_diagram_member_views(data,level).size();
+        const double stroke_width=members==0?0.0:24.0+31.0*static_cast<double>(members-1);
+        footprints.push_back({map_energy_y(level.layout_energy_hartree,data.energy_transform,
+            34.0f*ui_scale,height-24.0f*ui_scale),14.0*ui_scale,14.0*ui_scale,
+            (stroke_width+24.0)*ui_scale});
+    }
+    const auto lanes=layout_diagram_lanes(footprints,
+        std::max(1.0f,available_width-left_padding-right_padding),8.0*ui_scale,2.0*ui_scale);
+    const float canvas_width=left_padding+static_cast<float>(lanes.width)+right_padding;
+    // Dense physical energies need horizontal space, not a different energy
+    // scale or smaller hit targets. Only the canvas scrolls horizontally.
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(0,0));
+    ImGui::BeginChild("##energy_diagram_scroll",
+        ImVec2(0,height+(canvas_width>available_width?ImGui::GetStyle().ScrollbarSize:0)),
+        ImGuiChildFlags_None,ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::PopStyleVar();
+    ImGui::InvisibleButton("##energy_diagram_canvas", ImVec2(canvas_width, height), ImGuiButtonFlags_MouseButtonLeft);
+    cov::validation::item("diagram.canvas");
     const ImVec2 p0 = ImGui::GetItemRectMin();
     const ImVec2 p1 = ImGui::GetItemRectMax();
     ImDrawList* draw = ImGui::GetWindowDrawList();
     draw->AddRectFilled(p0, p1, IM_COL32(12, 18, 27, 235), 7.0f * ui_scale);
     draw->AddRect(p0, p1, IM_COL32(43, 58, 77, 220), 7.0f * ui_scale);
-    if (data.levels.empty()) return;
+    if (data.levels.empty()) { ImGui::EndChild(); return; }
 
     const float top = p0.y + 34.0f * ui_scale;
     const float bottom = p1.y - 24.0f * ui_scale;
-    const float left = p0.x + 62.0f * ui_scale;
-    const float right = p1.x - 30.0f * ui_scale;
-    const float lane_span = right - left;
-    const float axis_x = left - 28.0f * ui_scale;
+    const float left = p0.x + left_padding;
+    const float axis_x = p0.x + 34.0f * ui_scale;
     draw->AddLine(ImVec2(axis_x, bottom), ImVec2(axis_x, top), IM_COL32(129,148,171,255), 1.4f * ui_scale);
     draw->AddTriangleFilled(ImVec2(axis_x, top - 5.0f * ui_scale),
                             ImVec2(axis_x - 4.0f * ui_scale, top + 3.0f * ui_scale),
                             ImVec2(axis_x + 4.0f * ui_scale, top + 3.0f * ui_scale), IM_COL32(129,148,171,255));
     draw->AddText(ImVec2(p0.x + 7.0f * ui_scale, p0.y + 7.0f * ui_scale),
                   IM_COL32(129,148,171,255),
-                  state.energy_axis_mode == EnergyAxisMode::Linear
+                  drawn_options.energy_axis_mode == EnergyAxisMode::Linear
                     ? tr(Text::LinearEnergyScale, language)
                     : tr(Text::NonlinearEnergyScale, language));
 
@@ -486,61 +1398,162 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         const float y = map_energy_y(energy, data.energy_transform, top, bottom);
         draw->AddLine(ImVec2(axis_x - 4.0f * ui_scale, y), ImVec2(axis_x + 4.0f * ui_scale, y),
                       IM_COL32(100,118,140,255), 1.0f);
-        const std::string tick = format_energy(energy, state.energy_unit, 3);
+        const std::string tick = format_energy(energy, drawn_options.energy_unit, 3);
         draw->AddText(ImVec2(axis_x + 6.0f * ui_scale, y - ImGui::GetTextLineHeight() * 0.5f),
-                      IM_COL32(100,118,140,255), tick.c_str());
+                      kNumericColour, tick.c_str());
     }
 
-    std::map<long long, std::vector<std::size_t>> coincident;
-    for (std::size_t i = 0; i < data.levels.size(); ++i) {
-        coincident[static_cast<long long>(std::llround(data.levels[i].layout_energy_hartree * 1.0e12))].push_back(i);
-    }
-    std::vector<float> x(data.levels.size(), left + 0.5f * lane_span);
-    for (const auto& [_, ids] : coincident) {
-        const float spacing = std::min(105.0f * ui_scale, lane_span / std::max(2.0f, static_cast<float>(ids.size())));
-        for (std::size_t j = 0; j < ids.size(); ++j) {
-            x[ids[j]] += (static_cast<float>(j) - (static_cast<float>(ids.size()) - 1.0f) * 0.5f) * spacing;
-        }
-    }
+    std::vector<float> x;
+    for (const double centre:lanes.centre_x) x.push_back(left+static_cast<float>(centre));
 
     std::vector<DiagramPoint> points;
     points.reserve(data.levels.size());
+    std::vector<DiagramMemberPoint> member_points;
+    member_points.reserve(data.metadata.size());
     for (std::size_t i = 0; i < data.levels.size(); ++i) {
         const auto& level = data.levels[i];
         const float y = map_energy_y(level.layout_energy_hartree, data.energy_transform, top, bottom);
-        const float half = std::min(35.0f * ui_scale, lane_span * 0.18f);
+        const auto member_views=mo_diagram_member_views(data,level);
+        const std::size_t members=member_views.size();
+        const float member_half=12.0f*ui_scale;
+        const float member_spacing=31.0f*ui_scale;
+        const float group_half=member_half+
+            0.5f*member_spacing*static_cast<float>(members-1u);
         ImU32 colour = IM_COL32(196,210,227,255);
         if (level.metadata.region == OrbitalRegion::Virtual) colour = IM_COL32(126,143,165,255);
         if (level.homo) colour = IM_COL32(79,210,157,255);
         if (level.lumo) colour = IM_COL32(228,176,82,255);
-        if (level.metadata.selected) colour = IM_COL32(92,151,255,255);
-        draw->AddLine(ImVec2(x[i] - half, y), ImVec2(x[i] + half, y), colour,
-                      level.metadata.selected ? 3.2f : 1.8f);
-        if (level.electrons.alpha > 0) draw_arrow(draw, ImVec2(x[i] - 7.0f * ui_scale, y - 2.0f), true, IM_COL32(234,242,252,255));
-        if (level.electrons.beta > 0) draw_arrow(draw, ImVec2(x[i] + 7.0f * ui_scale, y - 2.0f), false, IM_COL32(234,242,252,255));
-        if (level.metadata.selected) {
-            draw->AddText(ImVec2(x[i] + half + 4.0f * ui_scale, y - ImGui::GetTextLineHeight() * 0.5f),
-                          colour, level.metadata.display_label.c_str());
+        if (level.annotation.family != "unavailable") colour = family_colour(level.annotation.family);
+        for (std::size_t member=0;member<members;++member) {
+            const float member_x=x[i]+(static_cast<float>(member)-
+                0.5f*static_cast<float>(members-1u))*member_spacing;
+            const auto& member_view=member_views[member];
+            const std::size_t member_orbital=member_view.orbital_index;
+            const std::size_t spin_counterpart=member_view.spin_counterpart.value_or(
+                wavefunction.orbitals.size());
+            const bool counterpart_selected=member_view.selected &&
+                member_view.inspected_orbital_index==spin_counterpart;
+            const bool member_selected=member_view.selected;
+            if (member_selected) {
+                draw->AddLine(ImVec2(member_x-member_half-1.0f*ui_scale,y),
+                              ImVec2(member_x+member_half+1.0f*ui_scale,y),
+                              kNumericColour,5.0f*ui_scale);
+            }
+            draw->AddLine(ImVec2(member_x-member_half,y),
+                          ImVec2(member_x+member_half,y),colour,
+                          member_selected?2.8f:1.8f);
+            const ElectronGlyphs electrons=member_view.electrons;
+#ifdef COV_ENABLE_VALIDATION
+            const auto used_mo=counterpart_selected?spin_counterpart:member_orbital;
+            cov::validation::hit("diagram.mo."+std::to_string(used_mo),
+                ImVec2(member_x-member_half,y-4.0f*ui_scale),ImVec2(member_x+member_half,y+4.0f*ui_scale));
+            std::ostringstream traced;traced<<std::setprecision(17);
+            traced<<"{\"used_internal_mo\":"<<used_mo<<",\"used_source_mo\":"<<(used_mo+1)
+                <<",\"level_metadata_internal_mo\":"<<level.metadata.orbital_index
+                <<",\"y\":"<<y<<",\"layout_energy_hartree\":"<<level.layout_energy_hartree
+                <<",\"x\":"<<member_x<<",\"hit_half_width\":"<<(member_half+3.0f*ui_scale)
+                <<",\"hit_half_height\":"<<(8.0f*ui_scale)
+                <<",\"clip_y\":["<<draw->GetClipRectMin().y<<','<<draw->GetClipRectMax().y<<']'
+                <<",\"symmetry\":"<<cov::validation::quote(level.metadata.symmetry_view.label)
+                <<",\"symmetry_explanation\":"<<orbital_symmetry_json(level.metadata.symmetry_view)
+                <<",\"alpha_arrows\":"<<electrons.alpha<<",\"beta_arrows\":"<<electrons.beta<<"}";
+            cov::validation::record("draw.level",traced.str());
+#endif
+            if (electrons.alpha>0) {
+                draw_arrow(draw,ImVec2(member_x-5.0f*ui_scale,y-2.0f),
+                           true,IM_COL32(234,242,252,255));
+            }
+            if (electrons.beta>0) {
+                draw_arrow(draw,ImVec2(member_x+5.0f*ui_scale,y-2.0f),
+                           false,IM_COL32(234,242,252,255));
+            }
+            member_points.push_back({&level,
+                counterpart_selected?spin_counterpart:member_orbital,
+                ImVec2(member_x-member_half,y),
+                ImVec2(member_x+member_half,y),y});
         }
-        points.push_back({&level, ImVec2(x[i] - half, y), ImVec2(x[i] + half, y), y});
+        points.push_back({&level,ImVec2(x[i]-group_half,y),
+                          ImVec2(x[i]+group_half,y),y});
     }
+
+    draw_pi_groups(draw, points, p1, ui_scale);
+    draw_ligand_field_pi_interactions(
+        draw,data,points,p1,drawn_options.energy_unit,language,ui_scale);
 
     if (ImGui::IsItemHovered()) {
         const ImVec2 mouse = ImGui::GetIO().MousePos;
-        const DiagramPoint* nearest = nullptr;
+        const DiagramMemberPoint* nearest = nullptr;
         float best = 1.0e9f;
-        for (const auto& point : points) {
-            if (mouse.x < point.left.x - 10.0f * ui_scale || mouse.x > point.right.x + 10.0f * ui_scale) continue;
+        for (const auto& point : member_points) {
+            if (mouse.x < point.left.x - 3.0f * ui_scale || mouse.x > point.right.x + 3.0f * ui_scale) continue;
             const float distance = std::abs(mouse.y - point.y);
             if (distance < best && distance <= 8.0f * ui_scale) { best = distance; nearest = &point; }
         }
         if (nearest && nearest->level) {
-            draw_level_tooltip(data, *nearest->level, state, language);
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) actions.select_orbital = nearest->level->metadata.orbital_index;
+            draw_level_tooltip(data,*nearest->level,wavefunction,state,language,
+                               nearest->orbital_index);
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                actions.select_orbital=nearest->orbital_index;
+            }
         }
     }
 
+    ImGui::EndChild();
     if (ImGui::Button(tr(Text::ExportBundle, language), ImVec2(-1.0f, 0.0f))) actions.export_diagram = true;
+    cov::validation::item("diagram.export");
+    if(ImGui::Button(orbital_tr(OrbitalText::OrbitalDetails,language),ImVec2(-1.0f,0.0f)))
+        state.show_diagram_details=true;
+    cov::validation::item("diagram.details");
+    if(state.show_diagram_details) {
+        const auto* viewport=ImGui::GetMainViewport();
+        const ImVec2 work=viewport->WorkSize;
+        ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x+work.x*.5f,viewport->WorkPos.y+work.y*.5f),
+            ImGuiCond_Appearing,ImVec2(.5f,.5f));
+        ImGui::SetNextWindowSize(ImVec2(std::min(720.0f*ui_scale,work.x*.8f),work.y*.7f),ImGuiCond_FirstUseEver);
+        const ImVec2 margin(std::min(12.0f,work.x*.1f),std::min(12.0f,work.y*.1f));
+        const ImVec2 maximum(std::max(1.0f,work.x-2*margin.x),std::max(1.0f,work.y-2*margin.y));
+        const ImVec2 minimum(std::min(180.0f,maximum.x),std::min(120.0f,maximum.y));
+        ImGui::SetNextWindowSizeConstraints(minimum,maximum);
+        if(state.diagram_details_bounds) {
+            const auto& bounds=*state.diagram_details_bounds;
+            const ImVec2 size(std::clamp(bounds[2],minimum.x,maximum.x),
+                              std::clamp(bounds[3],minimum.y,maximum.y));
+            const ImVec2 lower(viewport->WorkPos.x+margin.x,viewport->WorkPos.y+margin.y);
+            const ImVec2 position(std::clamp(bounds[0],lower.x,lower.x+maximum.x-size.x),
+                                  std::clamp(bounds[1],lower.y,lower.y+maximum.y-size.y));
+            // Size constraints alone leave ImGui's title-grab sliver visible
+            // after a restore. Keep the whole window reachable, before Begin
+            // computes clipping, without resetting a valid user placement.
+            if(position.x!=bounds[0] || position.y!=bounds[1])
+                ImGui::SetNextWindowPos(position,ImGuiCond_Always);
+        }
+        const std::string details_title=std::string(orbital_tr(OrbitalText::OrbitalDetails,language))+"###cov.orbital.details";
+        const bool visible=ImGui::Begin(details_title.c_str(),
+            &state.show_diagram_details,ImGuiWindowFlags_HorizontalScrollbar);
+        const auto details_pos=ImGui::GetWindowPos(),details_size=ImGui::GetWindowSize();
+        state.diagram_details_bounds=std::array<float,4>{details_pos.x,details_pos.y,details_size.x,details_size.y};
+        if(visible) {
+            if(ImGui::Button(orbital_tr(OrbitalText::CloseOrbitalDetails,language)))state.show_diagram_details=false;
+            cov::validation::item("diagram.details.close");
+            ImGui::Separator();
+            ImGui::PushTextWrapPos(0.0f);
+            const auto row=mo_diagram_row_for_orbital(data,selected_index);
+            if(row && *row<data.levels.size()) {
+                draw_level_details(data,data.levels[*row],wavefunction,state,language,selected_index);
+            } else if(selected_index<wavefunction.orbitals.size()) {
+                ImGui::Text("MO %zu",selected_index+1);
+                ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsOutsideDiagram,language));
+            }
+            ImGui::Separator();
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsDataScope,language));
+            cov::validation::item("diagram.details.scope");
+            const std::string close_bottom=std::string(orbital_tr(OrbitalText::CloseOrbitalDetails,language))+"##bottom";
+            if(ImGui::Button(close_bottom.c_str()))state.show_diagram_details=false;
+            cov::validation::item("diagram.details.close.bottom");
+            ImGui::PopTextWrapPos();
+        }
+        ImGui::End();
+    }
 }
 
 } // namespace cov::ui

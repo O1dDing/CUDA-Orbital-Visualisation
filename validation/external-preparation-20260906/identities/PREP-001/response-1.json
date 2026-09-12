@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 23953,
+        "MolecularFormula": "H4Si",
+        "ConnectivitySMILES": "[SiH4]",
+        "InChIKey": "BLRPTPMANUNPDV-UHFFFAOYSA-N",
+        "IUPACName": "silane",
+        "Charge": 0
+      }
+    ]
+  }
+}

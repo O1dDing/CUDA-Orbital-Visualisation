@@ -1,0 +1,15 @@
+{
+  "candidate_id": "PREP-054",
+  "query": "carbonylchlorobis(trimethylphosphine)rhodium(I)",
+  "family": "混合配体金属",
+  "expected_formula": "C7H18ClOP2Rh",
+  "expected_charge": 0,
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "started_epoch": 1788843128.3187032,
+  "input_geometry_accepted": false,
+  "formal_case": false,
+  "gaussian_started": false,
+  "status": "identity-unresolved-retained",
+  "lookup_status": "lookup-failed-retained",
+  "finished_epoch": 1788843128.3187032
+}

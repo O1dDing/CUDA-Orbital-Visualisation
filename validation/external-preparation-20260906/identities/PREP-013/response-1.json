@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 10039,
+        "MolecularFormula": "COS",
+        "ConnectivitySMILES": "C(=O)=S",
+        "InChIKey": "JJWKPURADFRFRB-UHFFFAOYSA-N",
+        "IUPACName": "sulfanylidenemethanone",
+        "Charge": 0
+      }
+    ]
+  }
+}

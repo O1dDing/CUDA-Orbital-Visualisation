@@ -12,7 +12,7 @@
 
 namespace cov {
 
-FileDialogResult open_molden_file_dialog() {
+FileDialogResult open_wavefunction_file_dialog() {
     FileDialogResult result;
 
     std::array<wchar_t, 32768> buffer{};
@@ -22,12 +22,20 @@ FileDialogResult open_molden_file_dialog() {
     ofn.lpstrFile = buffer.data();
     ofn.nMaxFile = static_cast<DWORD>(buffer.size());
     ofn.lpstrFilter =
+        L"Gaussian wavefunction (*.fchk;*.fch;*.chk)\0"
+        L"*.fchk;*.fch;*.chk\0"
+        L"Gaussian formatted checkpoint (*.fchk;*.fch)\0"
+        L"*.fchk;*.fch\0"
+        L"Gaussian binary checkpoint via formchk (*.chk)\0"
+        L"*.chk\0"
         L"Molden wavefunction (*.molden;*.molden.input;*.molden.inp)\0"
         L"*.molden;*.molden.input;*.molden.inp\0"
+        L"Supported wavefunctions (*.fchk;*.fch;*.chk;*.molden;*.molden.input;*.molden.inp)\0"
+        L"*.fchk;*.fch;*.chk;*.molden;*.molden.input;*.molden.inp\0"
         L"All files (*.*)\0"
         L"*.*\0\0";
     ofn.nFilterIndex = 1;
-    ofn.lpstrTitle = L"Open Molden wavefunction";
+    ofn.lpstrTitle = L"Open wavefunction";
     ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST |
                 OFN_NOCHANGEDIR | OFN_DONTADDTORECENT;
 
@@ -54,7 +62,7 @@ FileDialogResult open_molden_file_dialog() {
 
 namespace cov {
 
-FileDialogResult open_molden_file_dialog() {
+FileDialogResult open_wavefunction_file_dialog() {
     FileDialogResult result;
     result.supported = false;
     result.error = "Native Open File dialog is currently implemented for Windows only";

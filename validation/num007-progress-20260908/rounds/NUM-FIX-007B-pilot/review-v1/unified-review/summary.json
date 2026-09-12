@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "round_identity": "8d8a5dbf5ad12c4eed4f923a30a29fe0445881dfd70f130265806166b5f47016",
+  "collection_sha256": "c0afebc79ca23c979bc32b1cc4cd93f5199a580823af03ddf26b189669cb4fb6",
+  "review_barrier_sha256": "b59ecce73bd70a064f348420d3555251e6fa36ede9700ca59dbcae9d097e7a17",
+  "summary_script_sha256": "98065496b5e55aba1ee07b27f30ac51c5d8399432d711a5fc8de952b618d3886",
+  "created_epoch": 1788856340.0029492,
+  "case_count": 1,
+  "collection_counts": {
+    "complete": 1,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 1
+  },
+  "check_counts": {
+    "BUILD-ON-OFF": {
+      "pass": 1
+    },
+    "ACTUAL-EXE-METRIC-DATA": {
+      "pass": 1
+    },
+    "ACTUAL-EXE-DENSITY-DATA": {
+      "pass": 1
+    },
+    "AO-INTEGRAL": {
+      "pass": 1
+    },
+    "MO-RAW-PRECISION": {
+      "pass": 1
+    },
+    "MO-AO-TRANSFORM": {
+      "pass": 1
+    },
+    "AO-TRANSFORM-PROVENANCE": {
+      "pass": 1
+    },
+    "DENSITY-EVIDENCE-CONTRACT": {
+      "pass": 1
+    },
+    "DENSITY-RECONSTRUCTION-MODEL-total": {
+      "pass": 1
+    },
+    "DENSITY-MO-SAME-INPUT-total": {
+      "pass": 1
+    },
+    "DENSITY-ACTUAL-AVAILABILITY-total": {
+      "pass": 1
+    },
+    "DENSITY-PRODUCER-AO-TRANSFORM-total": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-actual-total": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-actual-total": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-mo-total": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-mo-total": {
+      "pass": 1
+    },
+    "DENSITY-RECONSTRUCTION-MODEL-spin": {
+      "pass": 1
+    },
+    "DENSITY-MO-SAME-INPUT-spin": {
+      "pass": 1
+    },
+    "DENSITY-ACTUAL-AVAILABILITY-spin": {
+      "pass": 1
+    },
+    "DENSITY-ACTUAL-MO-FALLBACK-spin": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-actual-spin": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-actual-spin": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-mo-spin": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-mo-spin": {
+      "pass": 1
+    },
+    "MO-ENERGIES": {
+      "pass": 1
+    },
+    "MO-GRAM-0": {
+      "pass": 1
+    },
+    "MO-RECONSTRUCTED-ELECTRON-TRACE": {
+      "pass": 1
+    },
+    "DECOMPOSITION-CONSERVATION": {
+      "pass": 1
+    },
+    "ALL-MO-SAMPLED-TEXTURES": {
+      "pass": 1
+    },
+    "FRONTIER-COMPLETE-TEXTURES": {
+      "pass": 1
+    }
+  },
+  "sampled_mos": 15,
+  "complete_frontier_textures": 4,
+  "failed_check_count": 0,
+  "failed_texture_count": 0,
+  "failures": [],
+  "texture_failures": [],
+  "cases": [
+    {
+      "case_id": "OLD-001",
+      "input": "gaussian_validation_set\\01_H3plus_3c2e.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 18.08660000000964,
+      "numerical_review_seconds": 1.8845059000013862,
+      "failed_checks": []
+    }
+  ],
+  "timing": {
+    "collection_wall_seconds": 18.145545000006678,
+    "independent_review_wall_seconds": 4.315394200006267,
+    "collection_per_case": {
+      "n": 1,
+      "sum_seconds": 18.08660000000964,
+      "minimum_seconds": 18.08660000000964,
+      "median_seconds": 18.08660000000964,
+      "p95_seconds": 18.08660000000964,
+      "maximum_seconds": 18.08660000000964
+    },
+    "independent_review_per_case": {
+      "n": 1,
+      "sum_seconds": 1.8845059000013862,
+      "minimum_seconds": 1.8845059000013862,
+      "median_seconds": 1.8845059000013862,
+      "p95_seconds": 1.8845059000013862,
+      "maximum_seconds": 1.8845059000013862
+    }
+  },
+  "formal_case_passes": 0,
+  "remaining": [
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

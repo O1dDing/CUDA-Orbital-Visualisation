@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-006",
+  "query": "sulfur tetrafluoride",
+  "expected_formula": "SF4",
+  "expected_charge": 0,
+  "family": "超价主族",
+  "purpose": "畸变配位及多中心",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709625.9120014,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 24555,
+      "MolecularFormula": "F4S",
+      "ConnectivitySMILES": "FS(F)(F)F",
+      "InChIKey": "QHMQWEPBXSHHLH-UHFFFAOYSA-N",
+      "IUPACName": "tetrafluoro-lambda4-sulfane",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24555"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709625.9120014,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-006\\response-1.json",
+      "sha256": "1f2fc337b6eca10e258a24bc5275e7e32726ee3738855fc97371d8348c91931b",
+      "bytes": 294,
+      "elapsed_seconds": 1.7772901058197021
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/sulfur%20tetrafluoride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

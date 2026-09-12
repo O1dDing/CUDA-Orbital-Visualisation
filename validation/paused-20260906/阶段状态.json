@@ -1,0 +1,1964 @@
+{
+  "schema_version": 1,
+  "snapshot_epoch": 1788690281.9468126,
+  "case_set_identity": "5bf88e9f1735bf592c8deeb9a40399975eea926b6ec0ed0c5f80a42514a35d97",
+  "snapshot_only": true,
+  "authoritative_progress": [
+    "references/REF-001/progress.json",
+    "reproduction-comparison/CMP-001/progress.json",
+    "orbital-operation-reference/MO-001/progress.json",
+    "orbital-operation-reference/AN-001/progress.json",
+    "point-density-reference/PD-001/progress.json",
+    "stored-density-reference/SD-001/progress.json",
+    "input-structure-identity/GI-001/progress.json"
+  ],
+  "formal_cases": {
+    "original": 273,
+    "external": 0,
+    "external_minimum_required": 50,
+    "fully_passed": 0
+  },
+  "pilot_case_id": "OLD-001",
+  "resource_policy": {
+    "total_cores": 12,
+    "total_memory_gib": 128,
+    "gaussian_cores": 4,
+    "gaussian_memory_gib": 24,
+    "gaussian_tree_memory_limit_gib": 32,
+    "gaussian_concurrent_jobs": 2,
+    "reserved_other_cores": 4,
+    "reserved_other_memory_gib": 64
+  },
+  "stages": [
+    {
+      "id": "input_reliability",
+      "name": "输入可靠性",
+      "status": "in_progress",
+      "original_reproduction": {
+        "all_terminal": true,
+        "counts": {
+          "collected": 273
+        },
+        "evidence": "reproduction/batch.json"
+      },
+      "primary_quality_references": {
+        "counts": {
+          "candidate_collected": 13,
+          "paused_interrupted": 2,
+          "not_started": 258
+        },
+        "execution_status": "paused_by_user_for_incremental_work",
+        "all_terminal": false,
+        "evidence": "references/REF-001/progress.json"
+      },
+      "original_reproduction_comparison": {
+        "status": "comparison_collection_finished",
+        "terminal_cases": 273,
+        "scientific_passes": 0,
+        "updated_epoch": 1788641349.0200837,
+        "chemical_adjudication": "pending"
+      },
+      "post_comparison_adjudication": {
+        "cases_reviewed": 273,
+        "cov_issues_closed": [],
+        "quality_findings": [
+          {
+            "issue_id": "REFQ-001",
+            "case_id": "OLD-028",
+            "status": "final_state_geometry_and_frequency_evidence_pending"
+          }
+        ],
+        "evidence": "reproduction-comparison/CMP-001/adjudications-v2.json"
+      },
+      "stability_supplement": {
+        "all_terminal": true,
+        "selected_jobs": 1,
+        "evidence": "reproduction-stability-supplement/S-001"
+      },
+      "historical_source_audit": {
+        "all_terminal": true,
+        "cases_reviewed": 273,
+        "original_observation_counts": {
+          "SRC-OBS-STABILITY-PROVENANCE": 178,
+          "SRC-OBS-FREQUENCY-PROVENANCE": 173,
+          "REFQ-002": 1,
+          "REFQ-001": 1
+        },
+        "association_addenda": [
+          {
+            "case_id": "OLD-019",
+            "decision": "historical_log_association_recovered"
+          }
+        ],
+        "evidence": "original-source-audit/SRC-001"
+      },
+      "pending": [
+        "整批数值与物理裁决",
+        "适用的竞争电子态、环境和交叉方法"
+      ]
+    },
+    {
+      "id": "general_fixes",
+      "name": "通解修复",
+      "status": "in_progress",
+      "note": "按 2026-09-06 用户新指示，先推进全部不依赖 REF-001 的已确认通解修复和适用验证；几何、电子态、环境等参考结论保持待验证"
+    },
+    {
+      "id": "original_273_loop",
+      "name": "273 闭环",
+      "status": "pending"
+    },
+    {
+      "id": "external_set",
+      "name": "外部集合",
+      "status": "pending"
+    },
+    {
+      "id": "complete_loop",
+      "name": "完整至少 323 闭环",
+      "status": "pending"
+    },
+    {
+      "id": "delivery",
+      "name": "最终交付",
+      "status": "pending"
+    }
+  ],
+  "auxiliary_g_shell_collection": {
+    "counts_as_new_external_species": false,
+    "terminal_records": 500,
+    "expected_records": 500,
+    "all_terminal": true,
+    "comparison_worker_exit_code": 1,
+    "evidence": "regression-fixtures/g-shell-v1"
+  },
+  "auxiliary_independent_references": {
+    "multiwfn_extracted_mos": 500,
+    "formatted_gaussian_grid_checks": {
+      "counts": {
+        "pass": 220,
+        "unavailable": 280
+      },
+      "measured_mos": 220,
+      "scientific_case_pass": false,
+      "max_nrms": 2.213159187508556e-06,
+      "min_abs_cosine": 0.9999999999975697,
+      "max_relative_peak_error": 4.243396292308667e-06
+    },
+    "binary_gaussian_collection": {
+      "expected_jobs": 4,
+      "terminal_jobs": 4,
+      "all_terminal": true
+    },
+    "binary_gaussian_independent_comparison": {
+      "counts": {
+        "pass": 500
+      },
+      "measured_mos": 500,
+      "scientific_case_pass": false,
+      "max_nrms": 4.235796910579625e-14,
+      "min_abs_cosine": 0.9999999999999996,
+      "max_relative_peak_error": 6.061817714453399e-14,
+      "formatted_transport_mos": 220,
+      "formatted_transport_all_pass": true
+    },
+    "counts_as_formal_case_pass": false
+  },
+  "auxiliary_g_shell_cov_baseline": {
+    "all_terminal": true,
+    "summary": [
+      {
+        "fixture": "pure",
+        "spin": "alpha",
+        "measured": 110,
+        "passed": 0,
+        "failed": 110,
+        "nrms_min": 0.00331049522205491,
+        "nrms_max": 23.1780447849065,
+        "abs_cosine_min": 0.00208611415648674,
+        "relative_peak_error_max": 16.936698722736125,
+        "worst_nrms_source_mo_one_based": 60
+      },
+      {
+        "fixture": "pure",
+        "spin": "beta",
+        "measured": 110,
+        "passed": 0,
+        "failed": 110,
+        "nrms_min": 0.00973839896563092,
+        "nrms_max": 23.0542293017168,
+        "abs_cosine_min": 0.00350989136664684,
+        "relative_peak_error_max": 16.74892822842728,
+        "worst_nrms_source_mo_one_based": 60
+      },
+      {
+        "fixture": "cartesian",
+        "spin": "alpha",
+        "measured": 140,
+        "passed": 140,
+        "failed": 0,
+        "nrms_min": 2.24675384627478e-07,
+        "nrms_max": 1.57110974289735e-05,
+        "abs_cosine_min": 0.999999999878299,
+        "relative_peak_error_max": 2.5968967583051695e-05,
+        "worst_nrms_source_mo_one_based": 140
+      },
+      {
+        "fixture": "cartesian",
+        "spin": "beta",
+        "measured": 140,
+        "passed": 140,
+        "failed": 0,
+        "nrms_min": 2.42648719303105e-07,
+        "nrms_max": 1.59051603766489e-05,
+        "abs_cosine_min": 0.999999999874626,
+        "relative_peak_error_max": 2.485249793026508e-05,
+        "worst_nrms_source_mo_one_based": 139
+      }
+    ],
+    "baseline_executable_sha256": "aa286965a8a9f06b6578f2d20c618bfa33743faefc087f6fac8022db7b2ba731",
+    "reference_round_identity": "ea7f4f7c24554a72f62b524a348ae60510d9a505332fcf34b31d796e97012ac3",
+    "evidence": "regression-fixtures/g-shell-v2/post-batch-review-v1/review.json",
+    "counts_as_formal_case_pass": false,
+    "counts_as_new_external_species": false
+  },
+  "original_coefficient_precision_diagnostic": {
+    "all_terminal": true,
+    "summary": {
+      "case_count": 273,
+      "distinct_coefficient_columns": 31871,
+      "mo_kind_case_counts": {
+        "restricted": 241,
+        "unrestricted": 32
+      },
+      "relative_full_space_l2_error": {
+        "minimum": 0.0,
+        "median": 4.7008953284533014e-08,
+        "p90": 3.0213556813940436e-07,
+        "p95": 7.013324542951052e-07,
+        "maximum": 1.5970671037728416e-05
+      },
+      "process_wall_seconds": 6.0,
+      "process_cpu_seconds": 5.734375,
+      "collection_body_wall_seconds": 4.885577917098999,
+      "peak_tree_commit_bytes": 156532736,
+      "formal_case_passes": 0
+    },
+    "evidence": "precision-diagnostics/COEFF32-002/post-batch-review-v1/review.json",
+    "complete_cpu_cuda_verdict": false,
+    "counts_as_formal_case_pass": false
+  },
+  "original_composition_index": {
+    "summary": {
+      "original_cases": 273,
+      "composition_groups": 149,
+      "composition_charge_multiplicity_groups": 163,
+      "element_case_counts": {
+        "H": 174,
+        "He": 1,
+        "Li": 3,
+        "Be": 2,
+        "B": 12,
+        "C": 135,
+        "N": 56,
+        "O": 68,
+        "F": 45,
+        "Na": 1,
+        "Mg": 1,
+        "Al": 3,
+        "P": 10,
+        "S": 8,
+        "Cl": 28,
+        "K": 1,
+        "Ca": 1,
+        "Ti": 1,
+        "V": 1,
+        "Cr": 5,
+        "Fe": 8,
+        "Co": 3,
+        "Ni": 3,
+        "Cu": 5,
+        "Zn": 2,
+        "As": 1,
+        "Br": 1,
+        "Zr": 4,
+        "Mo": 3,
+        "Ag": 1,
+        "Sb": 8,
+        "I": 2,
+        "Xe": 3,
+        "Hf": 10,
+        "Re": 3,
+        "Au": 1
+      },
+      "charge_case_counts": {
+        "-4": 3,
+        "-3": 7,
+        "-2": 14,
+        "-1": 51,
+        "0": 158,
+        "1": 23,
+        "2": 3,
+        "3": 4,
+        "4": 10
+      },
+      "specified_multiplicity_case_counts": {
+        "1": 242,
+        "2": 16,
+        "3": 6,
+        "4": 5,
+        "6": 4
+      },
+      "reference_purpose_counts": {
+        "equilibrium_candidate": 163,
+        "specified_geometry": 8,
+        "isolated_atom_or_ion": 12,
+        "scan_frame": 56,
+        "coordination_geometry_candidate": 34
+      },
+      "cases_with_ecp": 35,
+      "formal_external_molecules": 0,
+      "formal_case_passes": 0,
+      "distinct_chemical_graph_count": null
+    },
+    "evidence": "input-composition-index-v1/index.json",
+    "chemical_graph_deduplication_complete": false
+  },
+  "independent_nuclear_symmetry_reference": {
+    "all_terminal": true,
+    "summary": {
+      "case_count": 273,
+      "collection_counts": {
+        "nuclear_operations_collected": 273
+      },
+      "spelling_alias_cases": 48,
+      "comparison_observation_counts": {
+        "label_agreement_at_smallest_tolerance": 250,
+        "label_not_reproduced_at_tested_tolerances": 10,
+        "no_closed_group_at_smallest_tolerance": 1,
+        "producer_finite_subgroup_vs_full_atomic_nuclear_symmetry": 12
+      },
+      "tolerance_summaries": [
+        {
+          "geometry_tolerance_bohr": 2e-06,
+          "cases_measured": 273,
+          "group_counts": {
+            "D3h": 22,
+            "Dinfh": 31,
+            "Oh": 9,
+            "Td": 12,
+            "D6h": 5,
+            "C2h": 2,
+            "D2h": 6,
+            "Cinfv": 17,
+            "D4h": 5,
+            "C2v": 41,
+            "C2": 12,
+            "S6": 1,
+            "D5h": 5,
+            "C1": 47,
+            "Cs": 12,
+            "C3v": 15,
+            "D7h": 1,
+            "D8h": 1,
+            "D2d": 2,
+            "unclosed_or_unresolved": 1,
+            "D5d": 3,
+            "Kh": 12,
+            "C5v": 1,
+            "D3": 3,
+            "D3d": 2,
+            "C4v": 2,
+            "D4d": 2,
+            "Ci": 1
+          },
+          "finite_candidate_operations": 1940,
+          "unclosed_finite_candidates": 1
+        },
+        {
+          "geometry_tolerance_bohr": 0.0001,
+          "cases_measured": 273,
+          "group_counts": {
+            "D3h": 23,
+            "Dinfh": 32,
+            "Oh": 9,
+            "Td": 12,
+            "D6h": 5,
+            "C2h": 2,
+            "D2h": 6,
+            "Cinfv": 17,
+            "D4h": 5,
+            "C2v": 43,
+            "C2": 9,
+            "S6": 1,
+            "D5h": 5,
+            "unclosed_or_unresolved": 25,
+            "Cs": 18,
+            "C1": 17,
+            "C3v": 14,
+            "D7h": 1,
+            "D8h": 1,
+            "D2d": 2,
+            "D5d": 3,
+            "Kh": 12,
+            "C5v": 1,
+            "D3": 3,
+            "D3d": 2,
+            "C4v": 2,
+            "D4d": 2,
+            "Ci": 1
+          },
+          "finite_candidate_operations": 2089,
+          "unclosed_finite_candidates": 25
+        },
+        {
+          "geometry_tolerance_bohr": 0.01,
+          "cases_measured": 273,
+          "group_counts": {
+            "D3h": 23,
+            "Dinfh": 32,
+            "Oh": 9,
+            "Td": 12,
+            "D6h": 5,
+            "C2h": 1,
+            "D2h": 7,
+            "Cinfv": 17,
+            "D4h": 5,
+            "C2v": 43,
+            "C2": 7,
+            "S6": 1,
+            "D5h": 5,
+            "unclosed_or_unresolved": 30,
+            "Cs": 20,
+            "C3v": 14,
+            "D7h": 1,
+            "D8h": 1,
+            "D2d": 2,
+            "D5d": 3,
+            "C1": 12,
+            "Kh": 12,
+            "C5v": 1,
+            "D3": 3,
+            "D3d": 2,
+            "C4v": 2,
+            "D4d": 2,
+            "Ci": 1
+          },
+          "finite_candidate_operations": 2130,
+          "unclosed_finite_candidates": 30
+        }
+      ],
+      "reference_unit_tests_passed": 9,
+      "collection_wall_seconds": 3.0,
+      "collection_cpu_seconds": 2.53125,
+      "collection_body_wall_seconds": 2.1909427642822266,
+      "formal_case_passes": 0,
+      "canonical_cov_issues_closed": []
+    },
+    "evidence": "nuclear-symmetry-reference/NS-002/post-batch-review-v2/review.json",
+    "complete_orbital_symmetry_verdict": false,
+    "counts_as_formal_case_pass": false
+  },
+  "new_crosscheck_issues": [
+    {
+      "issue_id": "SYM-006",
+      "status": "confirmed_unfixed",
+      "affected_case_ids": [
+        "OLD-070"
+      ],
+      "evidence": "crosscheck-additions/NS-002/SYM-006.json"
+    },
+    {
+      "issue_id": "NUM-003",
+      "status": "confirmed_unfixed",
+      "affected_original_case_ids": null,
+      "scope": "Actual unchanged enrich_fchk_overlap_from_file function, compiled with its original model and header, invoked on a controlled Wavefunction and optional FCHK overlap records.",
+      "evidence": "regression-fixtures/producer-overlap-v1/post-batch-review-v1/NUM-003.json"
+    }
+  ],
+  "independent_all_mo_operator_collection": {
+    "progress": {
+      "round_identity": "b1f54f70851a82603e59cf4122be274a1be5b77d360a66b3beb2866bf9ede16f",
+      "coordinator_pid": 39992,
+      "updated_epoch": 1788657059.7256536,
+      "counts": {
+        "all_mo_operators_collected": 273
+      },
+      "terminal_cases": 273,
+      "expected_cases": 273,
+      "all_terminal": true,
+      "formal_case_passes": 0,
+      "scientific_adjudication": "deferred_until_all_terminal"
+    },
+    "summary": {
+      "case_count": 273,
+      "distinct_source_mo_columns": 31871,
+      "operation_count": 2271,
+      "raw_mo_matrix_elements_across_operations": null,
+      "mo_kind_case_counts": {
+        "restricted": 241,
+        "unrestricted": 32
+      },
+      "artifact_count": 2544,
+      "artifact_bytes": 475251450,
+      "parallel_batch_wall_seconds": 1922.2600545883179,
+      "case_wall_seconds": {
+        "minimum": 0.5,
+        "median": 2.0,
+        "p90": 33.5277999999701,
+        "p95": 77.6529999999793,
+        "maximum": 332.5779999999795,
+        "sum": 3727.4979999995558
+      },
+      "case_cpu_seconds": {
+        "minimum": 0.296875,
+        "median": 1.53125,
+        "p90": 24.13125,
+        "p95": 72.40937499999998,
+        "maximum": 140.578125,
+        "sum": 3006.1875
+      },
+      "max_process_tree_commit_bytes": 143376384,
+      "formal_case_passes": 0,
+      "orbital_irrep_adjudication": "pending",
+      "continuous_group_fully_proved": false
+    },
+    "preflight_all_checks_pass": true,
+    "evidence": "orbital-operation-reference/MO-001",
+    "complete_orbital_symmetry_verdict": false,
+    "counts_as_formal_case_pass": false
+  },
+  "independent_all_mo_operator_analysis": {
+    "progress": {
+      "analysis_identity": "d50b6652ce939709a7272ca15db3b95ff4f93b91353084013617c3adc7da09ca",
+      "coordinator_pid": 47208,
+      "updated_epoch": 1788657302.2978804,
+      "terminal_cases": 273,
+      "expected_cases": 273,
+      "all_terminal": true,
+      "formal_case_passes": 0,
+      "counts": {
+        "operator_diagnostics_collected": 273
+      }
+    },
+    "summary": {
+      "case_count": 273,
+      "status_counts": {
+        "operator_diagnostics_collected": 273
+      },
+      "stored_source_mo_columns": 31871,
+      "operation_count": 2271,
+      "diagnostic_energy_groups": 25658,
+      "energy_group_operation_measurements": 196914,
+      "case_count_with_nonidentity_operations_or_probes": 226,
+      "case_count_with_exact_zero_spin_from_shared_occupations": 241,
+      "max_beta_relative_column_residual": 4.2687204663149946e-13,
+      "max_beta_density_projection_error_bound_hs": 8.834934125048812e-13,
+      "max_beta_raw_operator_reconstruction_relative_residual": 1.8331687920881672e-13,
+      "recomputed_alpha_gram_max_difference": 0.0,
+      "density_channels": {
+        "alpha": {
+          "case_maximum_relative_difference": {
+            "n": 273,
+            "minimum": 6.179108491150628e-16,
+            "median": 8.773762645809415e-10,
+            "p90": 1.5213568798193597e-06,
+            "p95": 7.852523366122979e-06,
+            "maximum": 0.8666292670386367,
+            "sum": 3.7045412406857006
+          },
+          "case_counts_above_display_bin_edges": {
+            "1e-12": 196,
+            "1e-08": 95,
+            "1e-06": 38,
+            "0.0001": 12,
+            "0.01": 12,
+            "0.1": 10
+          },
+          "top_ten_case_ids": [
+            "OLD-017",
+            "OLD-048",
+            "OLD-057",
+            "OLD-052",
+            "OLD-098",
+            "OLD-101",
+            "OLD-028",
+            "OLD-245",
+            "OLD-238",
+            "OLD-258"
+          ],
+          "maximum_identity_absolute_difference_hs": 3.0549577929661065e-12
+        },
+        "beta": {
+          "case_maximum_relative_difference": {
+            "n": 270,
+            "minimum": 9.731268741255081e-16,
+            "median": 8.862404298606874e-10,
+            "p90": 1.551286095620792e-06,
+            "p95": 7.374400326793212e-06,
+            "maximum": 0.43377205003776886,
+            "sum": 2.0977746792791083
+          },
+          "case_counts_above_display_bin_edges": {
+            "1e-12": 195,
+            "1e-08": 94,
+            "1e-06": 39,
+            "0.0001": 11,
+            "0.01": 11,
+            "0.1": 6
+          },
+          "top_ten_case_ids": [
+            "OLD-050",
+            "OLD-052",
+            "OLD-098",
+            "OLD-087",
+            "OLD-101",
+            "OLD-028",
+            "OLD-057",
+            "OLD-245",
+            "OLD-238",
+            "OLD-048"
+          ],
+          "maximum_identity_absolute_difference_hs": 3.0549577929661065e-12
+        },
+        "total": {
+          "case_maximum_relative_difference": {
+            "n": 273,
+            "minimum": 6.179108491150628e-16,
+            "median": 8.629308331985706e-10,
+            "p90": 1.3984714335174593e-06,
+            "p95": 5.554934575185267e-06,
+            "maximum": 0.8666292670386367,
+            "sum": 3.0480368416378494
+          },
+          "case_counts_above_display_bin_edges": {
+            "1e-12": 196,
+            "1e-08": 95,
+            "1e-06": 38,
+            "0.0001": 11,
+            "0.01": 11,
+            "0.1": 9
+          },
+          "top_ten_case_ids": [
+            "OLD-017",
+            "OLD-052",
+            "OLD-098",
+            "OLD-101",
+            "OLD-057",
+            "OLD-048",
+            "OLD-050",
+            "OLD-087",
+            "OLD-245",
+            "OLD-238"
+          ],
+          "maximum_identity_absolute_difference_hs": 6.109915585932213e-12
+        },
+        "spin": {
+          "case_maximum_relative_difference": {
+            "n": 32,
+            "minimum": 6.179108491150628e-16,
+            "median": 9.408585415026336e-07,
+            "p90": 1.222163609610534,
+            "p95": 1.2366814709859102,
+            "maximum": 1.999999999999984,
+            "sum": 10.707576752319088
+          },
+          "case_counts_above_display_bin_edges": {
+            "1e-12": 30,
+            "1e-08": 23,
+            "1e-06": 16,
+            "0.0001": 9,
+            "0.01": 9,
+            "0.1": 9
+          },
+          "top_ten_case_ids": [
+            "OLD-028",
+            "OLD-087",
+            "OLD-048",
+            "OLD-057",
+            "OLD-050",
+            "OLD-258",
+            "OLD-238",
+            "OLD-245",
+            "OLD-017",
+            "OLD-241"
+          ],
+          "maximum_identity_absolute_difference_hs": 1.3820474656463047e-14
+        }
+      },
+      "signed_diagnostic_observations": {
+        "negative_squared_values": 5069
+      },
+      "batch_wall_seconds": 111.16776466369629,
+      "case_wall_seconds": {
+        "n": 273,
+        "minimum": 0.5,
+        "median": 1.0,
+        "p90": 1.015999999945052,
+        "p95": 1.0160000000614673,
+        "maximum": 2.0160000000614673,
+        "sum": 219.32900000037625
+      },
+      "case_cpu_seconds": {
+        "n": 273,
+        "minimum": 0.328125,
+        "median": 0.453125,
+        "p90": 0.625,
+        "p95": 0.859375,
+        "maximum": 1.78125,
+        "sum": 138.390625
+      },
+      "formal_case_passes": 0,
+      "canonical_cov_issues_closed": []
+    },
+    "evidence": "orbital-operation-reference/AN-001/post-batch-review-v1/review.json",
+    "complete_orbital_symmetry_verdict": false,
+    "counts_as_formal_case_pass": false
+  },
+  "density_operator_scope_crosscheck": {
+    "cases_reviewed": 273,
+    "disposition_counts": {
+      "no_new_issue_decision_from_this_operator_scope_review": 239,
+      "clearly_resolved_one_particle_operator_change_under_collected_nuclear_operation_or_probe": 12,
+      "remaining_producer_nuclear_label_scope_or_tolerance_difference": 9,
+      "nuclear_candidate_operations_not_closed_under_declared_tolerance": 1,
+      "atomic_full_nuclear_group_and_producer_finite_subgroup_have_different_scopes": 12
+    },
+    "new_reference_findings": [
+      {
+        "issue_id": "REFQ-003",
+        "status": "confirmed_reference_review_coverage_gap_pending_post_batch",
+        "affected_case_ids": [
+          "OLD-052",
+          "OLD-098",
+          "OLD-101"
+        ]
+      }
+    ],
+    "evidence": "crosscheck-additions/AN-001/adjudication-v2.json",
+    "canonical_cov_issues_closed": [],
+    "counts_as_formal_case_pass": false
+  },
+  "independent_point_density_collection": {
+    "progress": {
+      "round_identity": "87a808a85032747e12fa19039251e7d83c0a8493091621b88aee8208ca764bf2",
+      "coordinator_pid": 7800,
+      "updated_epoch": 1788663922.0296636,
+      "terminal_cases": 273,
+      "expected_cases": 273,
+      "all_terminal": true,
+      "counts": {
+        "point_densities_collected": 273
+      },
+      "formal_case_passes": 0
+    },
+    "launch_record": {
+      "coordinator_pid": 7800,
+      "started_epoch": 1788663541.237317,
+      "round_identity": "87a808a85032747e12fa19039251e7d83c0a8493091621b88aee8208ca764bf2",
+      "source_commit": "d859be733f06d8eacbdb016e86ed31d8c84709ca",
+      "resource_policy": {
+        "workers": 2,
+        "cores_per_worker": 1,
+        "memory_gib_per_worker": 12,
+        "timeout_seconds_per_case": 3600,
+        "reserved_gaussian_cores": 8,
+        "reserved_gaussian_memory_gib": 64,
+        "other_cores_reserved": 2,
+        "overall_memory_limit_gib": 128
+      },
+      "formal_case_passes": 0
+    },
+    "summary": {
+      "case_count": 273,
+      "counts": {
+        "point_densities_collected": 273
+      },
+      "source_point_identities": 644317,
+      "operations_or_probes": 2271,
+      "point_density_evaluations_including_source_and_nonidentity_operations": 5356049,
+      "artifact_bytes": 30261652,
+      "density_channels": {
+        "alpha": {
+          "case_maximum_relative_sample_norm_difference": {
+            "n": 273,
+            "minimum": 0.0,
+            "median": 1.830816722224568e-10,
+            "p90": 1.0768983157481924e-06,
+            "p95": 5.280338666463576e-06,
+            "maximum": 0.4843884984175343,
+            "sum": 0.5057834421834588
+          },
+          "top_case_ids": [
+            "OLD-017",
+            "OLD-048",
+            "OLD-057",
+            "OLD-052",
+            "OLD-028",
+            "OLD-238",
+            "OLD-258",
+            "OLD-087",
+            "OLD-098",
+            "OLD-050",
+            "OLD-101",
+            "OLD-245"
+          ]
+        },
+        "beta": {
+          "case_maximum_relative_sample_norm_difference": {
+            "n": 270,
+            "minimum": 0.0,
+            "median": 2.0310332431983149e-10,
+            "p90": 9.795806811890027e-07,
+            "p95": 5.043690807552502e-06,
+            "maximum": 0.0036442794465188807,
+            "sum": 0.012581024954341206
+          },
+          "top_case_ids": [
+            "OLD-052",
+            "OLD-050",
+            "OLD-028",
+            "OLD-087",
+            "OLD-258",
+            "OLD-238",
+            "OLD-098",
+            "OLD-101",
+            "OLD-057",
+            "OLD-048",
+            "OLD-070",
+            "OLD-245"
+          ]
+        },
+        "total": {
+          "case_maximum_relative_sample_norm_difference": {
+            "n": 273,
+            "minimum": 0.0,
+            "median": 1.830816722224568e-10,
+            "p90": 9.016395938032731e-07,
+            "p95": 4.994455271104884e-06,
+            "maximum": 0.4843884984175343,
+            "sum": 0.4969457405609212
+          },
+          "top_case_ids": [
+            "OLD-017",
+            "OLD-052",
+            "OLD-048",
+            "OLD-057",
+            "OLD-050",
+            "OLD-087",
+            "OLD-238",
+            "OLD-258",
+            "OLD-098",
+            "OLD-101",
+            "OLD-245",
+            "OLD-070"
+          ]
+        },
+        "spin": {
+          "case_maximum_relative_sample_norm_difference": {
+            "n": 32,
+            "minimum": 2.588140025761167e-16,
+            "median": 1.8058692720571115e-06,
+            "p90": 1.376992587898128,
+            "p95": 1.608574022677883,
+            "maximum": 1.9999999999995783,
+            "sum": 10.770957264323224
+          },
+          "top_case_ids": [
+            "OLD-028",
+            "OLD-238",
+            "OLD-258",
+            "OLD-087",
+            "OLD-048",
+            "OLD-050",
+            "OLD-057",
+            "OLD-017",
+            "OLD-245",
+            "OLD-241",
+            "OLD-250",
+            "OLD-269"
+          ]
+        }
+      },
+      "cases_with_only_identity_reuse": 47,
+      "batch_wall_seconds": 379.2840440273285,
+      "case_wall_seconds": {
+        "n": 273,
+        "minimum": 0.5,
+        "median": 1.0,
+        "p90": 2.5,
+        "p95": 4.014999999999782,
+        "maximum": 90.63999999999942,
+        "sum": 753.4800000000023
+      },
+      "case_cpu_seconds": {
+        "n": 273,
+        "minimum": 0.296875,
+        "median": 0.484375,
+        "p90": 1.3718750000000002,
+        "p95": 2.0093749999999986,
+        "maximum": 3.875,
+        "sum": 194.328125
+      },
+      "formal_case_passes": 0,
+      "canonical_cov_issues_closed": []
+    },
+    "evidence": "point-density-reference/PD-001",
+    "continuous_space_integral_claimed": false,
+    "counts_as_formal_case_pass": false
+  },
+  "original_stored_scf_density_audit": {
+    "progress": {
+      "round_identity": "15048940ece8a5bd888b0ad470f715cc2d27edb588adc02b9f686a72549d409f",
+      "coordinator_pid": 35084,
+      "updated_epoch": 1788666286.294547,
+      "terminal_cases": 273,
+      "expected_cases": 273,
+      "all_terminal": true,
+      "counts": {
+        "stored_density_evidence_collected": 273
+      },
+      "formal_case_passes": 0
+    },
+    "launch_record": {
+      "launched_epoch": 1788665345.7837183,
+      "coordinator_pid": 35084,
+      "round_identity": "15048940ece8a5bd888b0ad470f715cc2d27edb588adc02b9f686a72549d409f",
+      "resource_policy": {
+        "workers": 2,
+        "cores_per_worker": 1,
+        "memory_gib_per_worker": 12,
+        "timeout_seconds_per_case": 3600,
+        "reserved_gaussian_cores": 8,
+        "reserved_gaussian_memory_gib": 64,
+        "other_cores_reserved": 2,
+        "overall_memory_limit_gib": 128
+      },
+      "reference_source_commit": "0717be1",
+      "formal_case_passes": 0
+    },
+    "summary": {
+      "case_count": 273,
+      "counts": {
+        "stored_density_evidence_collected": 273
+      },
+      "input_consistency_screening_case_counts": {
+        "no_flags": 273
+      },
+      "screening_flag_counts": {},
+      "flagged_case_ids": [],
+      "mo_kind_counts": {
+        "restricted": 241,
+        "unrestricted": 32
+      },
+      "missing_raw_total_density_case_ids": [],
+      "missing_raw_spin_density_case_ids": [
+        "OLD-001",
+        "OLD-002",
+        "OLD-003",
+        "OLD-004",
+        "OLD-005",
+        "OLD-006",
+        "OLD-007",
+        "OLD-008",
+        "OLD-009",
+        "OLD-010",
+        "OLD-011",
+        "OLD-012",
+        "OLD-013",
+        "OLD-015",
+        "OLD-016",
+        "OLD-019",
+        "OLD-020",
+        "OLD-021",
+        "OLD-023",
+        "OLD-024",
+        "OLD-025",
+        "OLD-026",
+        "OLD-027",
+        "OLD-030",
+        "OLD-032",
+        "OLD-033",
+        "OLD-034",
+        "OLD-035",
+        "OLD-036",
+        "OLD-037",
+        "OLD-038",
+        "OLD-040",
+        "OLD-041",
+        "OLD-042",
+        "OLD-043",
+        "OLD-044",
+        "OLD-046",
+        "OLD-047",
+        "OLD-051",
+        "OLD-052",
+        "OLD-053",
+        "OLD-054",
+        "OLD-055",
+        "OLD-056",
+        "OLD-058",
+        "OLD-059",
+        "OLD-060",
+        "OLD-061",
+        "OLD-062",
+        "OLD-063",
+        "OLD-064",
+        "OLD-065",
+        "OLD-066",
+        "OLD-067",
+        "OLD-068",
+        "OLD-069",
+        "OLD-070",
+        "OLD-071",
+        "OLD-072",
+        "OLD-073",
+        "OLD-074",
+        "OLD-075",
+        "OLD-076",
+        "OLD-077",
+        "OLD-078",
+        "OLD-079",
+        "OLD-081",
+        "OLD-082",
+        "OLD-084",
+        "OLD-085",
+        "OLD-086",
+        "OLD-088",
+        "OLD-089",
+        "OLD-090",
+        "OLD-092",
+        "OLD-093",
+        "OLD-094",
+        "OLD-095",
+        "OLD-096",
+        "OLD-097",
+        "OLD-098",
+        "OLD-099",
+        "OLD-100",
+        "OLD-101",
+        "OLD-102",
+        "OLD-103",
+        "OLD-104",
+        "OLD-105",
+        "OLD-106",
+        "OLD-107",
+        "OLD-108",
+        "OLD-109",
+        "OLD-110",
+        "OLD-111",
+        "OLD-112",
+        "OLD-113",
+        "OLD-114",
+        "OLD-115",
+        "OLD-116",
+        "OLD-117",
+        "OLD-118",
+        "OLD-119",
+        "OLD-120",
+        "OLD-121",
+        "OLD-122",
+        "OLD-123",
+        "OLD-124",
+        "OLD-125",
+        "OLD-126",
+        "OLD-127",
+        "OLD-128",
+        "OLD-129",
+        "OLD-130",
+        "OLD-131",
+        "OLD-132",
+        "OLD-133",
+        "OLD-134",
+        "OLD-135",
+        "OLD-136",
+        "OLD-137",
+        "OLD-139",
+        "OLD-140",
+        "OLD-141",
+        "OLD-142",
+        "OLD-143",
+        "OLD-144",
+        "OLD-145",
+        "OLD-146",
+        "OLD-147",
+        "OLD-148",
+        "OLD-149",
+        "OLD-150",
+        "OLD-151",
+        "OLD-152",
+        "OLD-153",
+        "OLD-154",
+        "OLD-155",
+        "OLD-156",
+        "OLD-157",
+        "OLD-158",
+        "OLD-159",
+        "OLD-160",
+        "OLD-161",
+        "OLD-162",
+        "OLD-163",
+        "OLD-164",
+        "OLD-165",
+        "OLD-166",
+        "OLD-167",
+        "OLD-168",
+        "OLD-169",
+        "OLD-170",
+        "OLD-171",
+        "OLD-172",
+        "OLD-173",
+        "OLD-174",
+        "OLD-175",
+        "OLD-176",
+        "OLD-177",
+        "OLD-178",
+        "OLD-179",
+        "OLD-180",
+        "OLD-181",
+        "OLD-182",
+        "OLD-183",
+        "OLD-184",
+        "OLD-185",
+        "OLD-186",
+        "OLD-187",
+        "OLD-188",
+        "OLD-189",
+        "OLD-190",
+        "OLD-191",
+        "OLD-192",
+        "OLD-193",
+        "OLD-194",
+        "OLD-195",
+        "OLD-196",
+        "OLD-197",
+        "OLD-198",
+        "OLD-199",
+        "OLD-200",
+        "OLD-201",
+        "OLD-202",
+        "OLD-203",
+        "OLD-204",
+        "OLD-205",
+        "OLD-206",
+        "OLD-207",
+        "OLD-208",
+        "OLD-209",
+        "OLD-210",
+        "OLD-211",
+        "OLD-212",
+        "OLD-213",
+        "OLD-214",
+        "OLD-215",
+        "OLD-216",
+        "OLD-217",
+        "OLD-218",
+        "OLD-219",
+        "OLD-220",
+        "OLD-221",
+        "OLD-222",
+        "OLD-223",
+        "OLD-224",
+        "OLD-225",
+        "OLD-226",
+        "OLD-227",
+        "OLD-228",
+        "OLD-229",
+        "OLD-230",
+        "OLD-231",
+        "OLD-232",
+        "OLD-233",
+        "OLD-234",
+        "OLD-236",
+        "OLD-237",
+        "OLD-239",
+        "OLD-240",
+        "OLD-242",
+        "OLD-243",
+        "OLD-246",
+        "OLD-248",
+        "OLD-251",
+        "OLD-254",
+        "OLD-255",
+        "OLD-256",
+        "OLD-257",
+        "OLD-259",
+        "OLD-260",
+        "OLD-261",
+        "OLD-262",
+        "OLD-263",
+        "OLD-264",
+        "OLD-265",
+        "OLD-266",
+        "OLD-267",
+        "OLD-270",
+        "OLD-271",
+        "OLD-272"
+      ],
+      "absent_spin_field_with_shared_equal_occupation_zero_provenance": 241,
+      "raw_density_hidden_by_iodata_case_ids": [],
+      "cases_with_separate_correlated_density_declarations": [],
+      "raw_coefficients_and_occupations_exactly_match_iodata_case_count": 273,
+      "density_channels": {
+        "alpha": {
+          "case_count": 32,
+          "relative_hs_difference": {
+            "n": 32,
+            "minimum": 1.0514641653581041e-09,
+            "median": 1.6641537935615786e-09,
+            "p95": 2.887566300020577e-09,
+            "maximum": 3.2777969366397e-09,
+            "sum": 5.991411898797071e-08
+          },
+          "hs_difference": {
+            "n": 32,
+            "minimum": 1.0698078839523655e-09,
+            "median": 7.125617700145479e-09,
+            "p95": 1.972498251302986e-08,
+            "maximum": 2.020569734758565e-08,
+            "sum": 3.189322778350483e-07
+          },
+          "absolute_stored_trace_error_electrons": {
+            "n": 32,
+            "minimum": 1.7313106503991094e-10,
+            "median": 3.4413063509930453e-09,
+            "p95": 2.5466355424441644e-08,
+            "maximum": 2.9318940164557716e-08,
+            "sum": 2.228781121882406e-07
+          },
+          "absolute_mo_trace_error_electrons": {
+            "n": 32,
+            "minimum": 3.9753444980306085e-10,
+            "median": 5.980389516935247e-09,
+            "p95": 2.739529847417543e-08,
+            "maximum": 3.446244534188736e-08,
+            "sum": 3.028847006536495e-07
+          },
+          "top_hs_difference_case_ids": [
+            "OLD-245",
+            "OLD-250",
+            "OLD-241",
+            "OLD-244",
+            "OLD-252",
+            "OLD-269",
+            "OLD-273",
+            "OLD-258",
+            "OLD-238",
+            "OLD-018"
+          ]
+        },
+        "beta": {
+          "case_count": 32,
+          "relative_hs_difference": {
+            "n": 29,
+            "minimum": 1.2033061190683332e-09,
+            "median": 1.9442385132488516e-09,
+            "p95": 2.7154586020868336e-09,
+            "maximum": 2.8698570180454014e-09,
+            "sum": 5.693899506726635e-08
+          },
+          "hs_difference": {
+            "n": 32,
+            "minimum": 0.0,
+            "median": 7.4159327921006825e-09,
+            "p95": 1.769574810564759e-08,
+            "maximum": 1.9795779324061984e-08,
+            "sum": 3.041423316584055e-07
+          },
+          "absolute_stored_trace_error_electrons": {
+            "n": 32,
+            "minimum": 0.0,
+            "median": 4.268405184859603e-09,
+            "p95": 2.3467852727776516e-08,
+            "maximum": 2.5419367943868565e-08,
+            "sum": 2.211781398031576e-07
+          },
+          "absolute_mo_trace_error_electrons": {
+            "n": 32,
+            "minimum": 0.0,
+            "median": 4.008680498657213e-09,
+            "p95": 2.2985478409509597e-08,
+            "maximum": 3.853452312796435e-08,
+            "sum": 2.4880207050159697e-07
+          },
+          "top_hs_difference_case_ids": [
+            "OLD-252",
+            "OLD-247",
+            "OLD-235",
+            "OLD-241",
+            "OLD-250",
+            "OLD-273",
+            "OLD-244",
+            "OLD-238",
+            "OLD-258",
+            "OLD-253"
+          ]
+        },
+        "total": {
+          "case_count": 273,
+          "relative_hs_difference": {
+            "n": 273,
+            "minimum": 5.647123479244012e-10,
+            "median": 1.709391609968651e-09,
+            "p95": 2.8758206747400563e-09,
+            "maximum": 6.894314184609206e-09,
+            "sum": 4.899659351435553e-07
+          },
+          "hs_difference": {
+            "n": 273,
+            "minimum": 1.0698078839523655e-09,
+            "median": 1.3822119577952955e-08,
+            "p95": 3.469988916180474e-08,
+            "maximum": 1.1900797199266194e-07,
+            "sum": 4.526225553465483e-06
+          },
+          "absolute_stored_trace_error_electrons": {
+            "n": 273,
+            "minimum": 1.5047518786559522e-11,
+            "median": 8.725329792014236e-09,
+            "p95": 4.2151869195095054e-08,
+            "maximum": 9.231405329046538e-08,
+            "sum": 3.4954446410662143e-06
+          },
+          "absolute_mo_trace_error_electrons": {
+            "n": 273,
+            "minimum": 1.0005507533605851e-10,
+            "median": 8.54535642247356e-09,
+            "p95": 3.5296459088840486e-08,
+            "maximum": 1.307536763306416e-07,
+            "sum": 3.414122348832649e-06
+          },
+          "top_hs_difference_case_ids": [
+            "OLD-170",
+            "OLD-171",
+            "OLD-002",
+            "OLD-127",
+            "OLD-003",
+            "OLD-236",
+            "OLD-004",
+            "OLD-130",
+            "OLD-013",
+            "OLD-077"
+          ]
+        },
+        "spin": {
+          "case_count": 32,
+          "relative_hs_difference": {
+            "n": 32,
+            "minimum": 1.0698078826937117e-09,
+            "median": 7.374346492276252e-09,
+            "p95": 2.2849733579238594e-08,
+            "maximum": 2.7877735150806267e-08,
+            "sum": 2.8230539997210766e-07
+          },
+          "hs_difference": {
+            "n": 32,
+            "minimum": 1.0698078839523655e-09,
+            "median": 8.455554229348019e-09,
+            "p95": 2.5089441674360995e-08,
+            "maximum": 2.7936292589695183e-08,
+            "sum": 3.8729609892994436e-07
+          },
+          "absolute_stored_trace_error_electrons": {
+            "n": 32,
+            "minimum": 2.8828939235836515e-11,
+            "median": 1.0558679486294409e-09,
+            "p95": 3.992264896446329e-09,
+            "maximum": 5.3593194326850835e-09,
+            "sum": 5.646724406498647e-08
+          },
+          "absolute_mo_trace_error_electrons": {
+            "n": 32,
+            "minimum": 2.3888402367333583e-10,
+            "median": 4.967067313010887e-09,
+            "p95": 2.9795767964024826e-08,
+            "maximum": 4.988387125592908e-08,
+            "sum": 2.7801885644698895e-07
+          },
+          "top_hs_difference_case_ids": [
+            "OLD-252",
+            "OLD-244",
+            "OLD-250",
+            "OLD-241",
+            "OLD-269",
+            "OLD-273",
+            "OLD-018",
+            "OLD-245",
+            "OLD-258",
+            "OLD-247"
+          ]
+        }
+      },
+      "artifact_bytes": 149807839,
+      "batch_wall_seconds": 939.9384706020355,
+      "case_wall_seconds": {
+        "n": 273,
+        "minimum": 0.5,
+        "median": 0.5159999999996217,
+        "p95": 4.3720000000000105,
+        "maximum": 500.21900000000005,
+        "sum": 1876.5899999999983
+      },
+      "case_cpu_seconds": {
+        "n": 273,
+        "minimum": 0.28125,
+        "median": 0.40625,
+        "p95": 0.5999999999999996,
+        "maximum": 2.171875,
+        "sum": 118.75
+      },
+      "formal_case_passes": 0,
+      "canonical_cov_issues_closed": []
+    },
+    "evidence": "stored-density-reference/SD-001",
+    "correlated_density_compared_to_scf_mo_sum": false,
+    "counts_as_formal_case_pass": false
+  },
+  "validation_runtime_findings": [
+    {
+      "issue_id": "EVID-RUN-001",
+      "status": "retained_delay_now_observed_around_CreateProcessW_phase_cause_unresolved",
+      "evidence": "runtime-incidents/launch-latency-SD-001/EVID-RUN-001.json",
+      "frozen_scientific_inputs_or_runner_changed": false,
+      "counts_as_molecular_scientific_error": false,
+      "latest_followup_evidence": "regression-fixtures/producer-overlap-v1/post-batch-review-v1/EVID-RUN-001-followup.json"
+    },
+    {
+      "issue_id": "EVID-RUN-002",
+      "status": "fixed_lifecycle_clock_verified_for_tested_windows_runtime",
+      "evidence": "runtime-incidents/launch-phase-controls/LP-002/EVID-RUN-002-adjudication.json",
+      "frozen_scientific_inputs_or_runner_changed": false,
+      "counts_as_molecular_scientific_error": false
+    },
+    {
+      "issue_id": "EVID-RUN-003",
+      "status": "fixed_for_explicit_finite_build_drivers",
+      "evidence": "regression-fixtures/producer-overlap-v1/post-batch-review-v1/EVID-RUN-003.json",
+      "frozen_scientific_inputs_or_runner_changed": false,
+      "counts_as_molecular_scientific_error": false,
+      "latest_followup_evidence": "regression-fixtures/producer-overlap-v3/post-batch-review-v1/EVID-RUN-003-adjudication.json"
+    }
+  ],
+  "latest_recorded_runtime_recovery": {
+    "verified_os_boot_time": "2026-09-06T09:23:51+08:00",
+    "resumed_coordinator_pid": 7320,
+    "retained_interrupted_stages": 2,
+    "scientific_inputs_or_policy_changed": false,
+    "evidence": "runtime-incidents\\reboot-20260906T093057\\recovery.json",
+    "process_liveness_is_not_inferred_from_this_snapshot": true
+  },
+  "completion_rule": "所有正式案例适用必检项均通过，所有所需证据齐全，并交付、启动同源码普通版和验证版后才能完成目标",
+  "high_resolution_lifecycle_validation": {
+    "source_commit": "d802885a15eda92b467dfda9fa03a6137a26f3b8",
+    "real_process_tests_passed": 3,
+    "summary": {
+      "trial_count": 12,
+      "counts": {
+        "protocol_and_lifecycle_collected": 12
+      },
+      "batch_wall_seconds": 6.523077487945557,
+      "coordinator_launch": {
+        "requested_epoch": 1788671482.6725287,
+        "requesting_pid": 39504,
+        "round_identity": "3803063947fb42a4f5cead93ef8206c16776731c5c369ae7dd70263b6daf87f6",
+        "resource_policy": {
+          "workers": 1,
+          "cores_per_worker": 1,
+          "memory_gib_per_worker": 4,
+          "timeout_seconds_per_trial": 1800,
+          "gaussian_reserved_cores": 8,
+          "gaussian_reserved_memory_gib": 64,
+          "coordinator_maximum_python_threads": 1,
+          "remaining_cores_for_other_orchestration": 2,
+          "overall_limit_cores": 12,
+          "overall_limit_memory_gib": 128
+        },
+        "coordinator_mode": "CREATE_NO_WINDOW",
+        "clock_info": {
+          "implementation": "QueryPerformanceCounter()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 1e-07
+        },
+        "coordinator_pid": 47164,
+        "process_creation_returned_epoch": 1788672381.335943,
+        "coordinator_popen_wall_nanoseconds": 898662420200,
+        "coordinator_popen_wall_seconds": 898.6624202
+      },
+      "groups": {
+        "new_console": {
+          "terminal_counts": {
+            "protocol_and_lifecycle_collected": 6
+          },
+          "supervisor_lifecycle_seconds": {
+            "n": 6,
+            "minimum": 0.5075242,
+            "median": 0.50823655,
+            "maximum": 0.6531317,
+            "sum": 3.1932465
+          },
+          "tree_cpu_seconds": {
+            "n": 6,
+            "minimum": 0.03125,
+            "median": 0.0625,
+            "maximum": 0.078125,
+            "sum": 0.359375
+          },
+          "observer_wall_seconds": {
+            "n": 6,
+            "minimum": 0.0004725,
+            "median": 0.0005383499999999999,
+            "maximum": 0.000761,
+            "sum": 0.0033818999999999998
+          },
+          "nominal_clock_resolution_seconds": {
+            "n": 6,
+            "minimum": 1e-07,
+            "median": 1e-07,
+            "maximum": 1e-07,
+            "sum": 6e-07
+          },
+          "phase_intervals_seconds": {
+            "job_creation": {
+              "n": 6,
+              "minimum": 1.29e-05,
+              "median": 1.6e-05,
+              "maximum": 3.01e-05,
+              "sum": 0.00011339999999999999
+            },
+            "standard_stream_open": {
+              "n": 6,
+              "minimum": 0.0005458,
+              "median": 0.00066595,
+              "maximum": 0.0067342,
+              "sum": 0.0103278
+            },
+            "resource_limits": {
+              "n": 6,
+              "minimum": 3.92e-05,
+              "median": 4.125e-05,
+              "maximum": 0.0001015,
+              "sum": 0.0003085
+            },
+            "process_creation": {
+              "n": 6,
+              "minimum": 0.004013,
+              "median": 0.0043622,
+              "maximum": 0.1421349,
+              "sum": 0.1637159
+            },
+            "job_assignment": {
+              "n": 6,
+              "minimum": 3.2e-05,
+              "median": 4.12e-05,
+              "maximum": 7.32e-05,
+              "sum": 0.0002854
+            },
+            "started_callback": {
+              "n": 6,
+              "minimum": 0.0007619,
+              "median": 0.00088485,
+              "maximum": 0.0015662,
+              "sum": 0.005936
+            },
+            "resume_thread": {
+              "n": 6,
+              "minimum": 9.1e-06,
+              "median": 1.1949999999999999e-05,
+              "maximum": 1.73e-05,
+              "sum": 7.42e-05
+            },
+            "tree_monitor": {
+              "n": 6,
+              "minimum": 0.50032,
+              "median": 0.5004094,
+              "maximum": 0.500577,
+              "sum": 3.0026314
+            },
+            "cleanup": {
+              "n": 6,
+              "minimum": 0.0001391,
+              "median": 0.00015405,
+              "maximum": 0.0001715,
+              "sum": 0.0009266
+            }
+          }
+        },
+        "no_window": {
+          "terminal_counts": {
+            "protocol_and_lifecycle_collected": 6
+          },
+          "supervisor_lifecycle_seconds": {
+            "n": 6,
+            "minimum": 0.5072337,
+            "median": 0.50799925,
+            "maximum": 0.5107613,
+            "sum": 3.0516364
+          },
+          "tree_cpu_seconds": {
+            "n": 6,
+            "minimum": 0.015625,
+            "median": 0.046875,
+            "maximum": 0.0625,
+            "sum": 0.265625
+          },
+          "observer_wall_seconds": {
+            "n": 6,
+            "minimum": 0.00041799999999999997,
+            "median": 0.0005001000000000001,
+            "maximum": 0.0007308,
+            "sum": 0.0031893
+          },
+          "nominal_clock_resolution_seconds": {
+            "n": 6,
+            "minimum": 1e-07,
+            "median": 1e-07,
+            "maximum": 1e-07,
+            "sum": 6e-07
+          },
+          "phase_intervals_seconds": {
+            "job_creation": {
+              "n": 6,
+              "minimum": 1.39e-05,
+              "median": 1.48e-05,
+              "maximum": 2.42e-05,
+              "sum": 9.960000000000001e-05
+            },
+            "standard_stream_open": {
+              "n": 6,
+              "minimum": 0.0005403,
+              "median": 0.0007573,
+              "maximum": 0.0010322,
+              "sum": 0.0046022
+            },
+            "resource_limits": {
+              "n": 6,
+              "minimum": 3.77e-05,
+              "median": 4.44e-05,
+              "maximum": 5.87e-05,
+              "sum": 0.0002812
+            },
+            "process_creation": {
+              "n": 6,
+              "minimum": 0.0036636,
+              "median": 0.0042761,
+              "maximum": 0.0062066,
+              "sum": 0.0278838
+            },
+            "job_assignment": {
+              "n": 6,
+              "minimum": 3.03e-05,
+              "median": 3.395e-05,
+              "maximum": 5.57e-05,
+              "sum": 0.0002308
+            },
+            "started_callback": {
+              "n": 6,
+              "minimum": 0.000638,
+              "median": 0.0007741499999999999,
+              "maximum": 0.0011832,
+              "sum": 0.0051794
+            },
+            "resume_thread": {
+              "n": 6,
+              "minimum": 9.8e-06,
+              "median": 1.29e-05,
+              "maximum": 1.77e-05,
+              "sum": 7.83e-05
+            },
+            "tree_monitor": {
+              "n": 6,
+              "minimum": 0.500395,
+              "median": 0.50051395,
+              "maximum": 0.5005803,
+              "sum": 3.0030699
+            },
+            "cleanup": {
+              "n": 6,
+              "minimum": 0.000134,
+              "median": 0.00016669999999999999,
+              "maximum": 0.0001929,
+              "sum": 0.0009906
+            }
+          }
+        }
+      },
+      "observer_error_count": 0,
+      "maximum_measured_process_creation_seconds": 0.1421349,
+      "all_mode_protocols_collected": true,
+      "all_phase_timers_have_qualified_high_resolution_metadata": true,
+      "startup_delay_cause_established": false,
+      "formal_case_passes": 0,
+      "external_molecules_added": 0
+    },
+    "launch_delay_followup": {
+      "issue_id": "EVID-RUN-001",
+      "recorded_at": "2026-09-06T13:32:34+08:00",
+      "status": "retained_runtime_timing_gap_cause_unresolved",
+      "new_observation": "A high-resolution interval around subprocess.Popen for the LP-002 coordinator measured a long pre-return wait; the launched coordinator and all children subsequently completed.",
+      "coordinator_launch": {
+        "requested_epoch": 1788671482.6725287,
+        "requesting_pid": 39504,
+        "round_identity": "3803063947fb42a4f5cead93ef8206c16776731c5c369ae7dd70263b6daf87f6",
+        "resource_policy": {
+          "workers": 1,
+          "cores_per_worker": 1,
+          "memory_gib_per_worker": 4,
+          "timeout_seconds_per_trial": 1800,
+          "gaussian_reserved_cores": 8,
+          "gaussian_reserved_memory_gib": 64,
+          "coordinator_maximum_python_threads": 1,
+          "remaining_cores_for_other_orchestration": 2,
+          "overall_limit_cores": 12,
+          "overall_limit_memory_gib": 128
+        },
+        "coordinator_mode": "CREATE_NO_WINDOW",
+        "clock_info": {
+          "implementation": "QueryPerformanceCounter()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 1e-07
+        },
+        "coordinator_pid": 47164,
+        "process_creation_returned_epoch": 1788672381.335943,
+        "coordinator_popen_wall_nanoseconds": 898662420200,
+        "coordinator_popen_wall_seconds": 898.6624202
+      },
+      "coordinator_exit_code": 0,
+      "all_12_control_trial_results": {
+        "protocol_and_lifecycle_collected": 12
+      },
+      "internal_max_process_creation_seconds": 0.1421349,
+      "internal_batch_wall_seconds": 6.523077487945557,
+      "limitation": "The interval brackets the Python Popen call, not individual Windows system calls. It does not identify operating-system, console, handle, protection-software, or I/O causation.",
+      "source_launch_sha256": "ce19a811a36d00b8831ab6d856562cb583063e3a09aff3a4326ab4b0357d2c24",
+      "evidence": "runtime-incidents\\launch-phase-controls\\LP-002\\post-batch-review-v1\\review.json",
+      "frozen_ref_001_changed": false,
+      "formal_case_passes": 0
+    },
+    "evidence": "runtime-incidents/launch-phase-controls/LP-002",
+    "counts_as_formal_case_pass": false
+  },
+  "producer_overlap_component_review": {
+    "all_controls_terminal": true,
+    "controlled_component_cases": 4,
+    "production_source_unchanged_verified": true,
+    "independent_closed_form_checks_passed": 3,
+    "timings": {
+      "build": {
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_seconds": 878.8280000000013,
+        "tree_cpu_seconds": 7.53125,
+        "tree_process_count": 55,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "phase_seconds_excluding_entry_observer": {
+          "process_creation": 0.0805659,
+          "assignment": 6.56e-05,
+          "started_callback": 0.000985,
+          "tree_monitor": 878.7347991
+        },
+        "process_evidence_sha256": "038790b46316092b8fbf5fd49f5223b1a0fe869d7a9d50a2201df55e89b3f5c5"
+      },
+      "execution": {
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_seconds": 46.20300000000134,
+        "tree_cpu_seconds": 0.03125,
+        "tree_process_count": 2,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "phase_seconds_excluding_entry_observer": {
+          "process_creation": 45.7067343,
+          "assignment": 5.83e-05,
+          "started_callback": 0.0018522,
+          "tree_monitor": 0.5001911
+        },
+        "process_evidence_sha256": "b80727559b6e262bd2ed50cd3cf577a8efd3ed8720ed8e1e82237d794876328a"
+      }
+    },
+    "manual_build_intervention_retained": true,
+    "evidence": "regression-fixtures/producer-overlap-v1/post-batch-review-v1/review.json",
+    "counts_as_formal_case_pass": false
+  },
+  "numeric_fix_preparation": {
+    "status": "prepared_not_applied",
+    "base_source_commit": "d802885a15eda92b467dfda9fa03a6137a26f3b8",
+    "inspected_source_files": 12,
+    "implementation_unit_ids": [
+      "AO_CONVENTION",
+      "CPU_PRECISION",
+      "ANALYTIC_OVERLAP",
+      "METRIC_PROVENANCE",
+      "DOWNSTREAM_INTEGRATION",
+      "ACTUAL_RENDER_VERIFICATION"
+    ],
+    "evidence": "general-fix-contracts/numeric-v1/implementation.json",
+    "validation_addendum": "general-fix-contracts/numeric-v1/validation-addendum.json",
+    "production_science_changed": false
+  },
+  "finite_build_supervision": {
+    "real_process_control_summary": {
+      "tests_run": 9,
+      "expected_tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0,
+      "wall_seconds": 105.721782,
+      "passed": true,
+      "formal_case_passes": 0,
+      "frozen_reference_runner_changed": false
+    },
+    "real_build_progress": {
+      "phase": "collection_complete",
+      "coordinator_pid": 38592,
+      "all_terminal": true,
+      "formal_case_passes": 0,
+      "terminal_controls": 4
+    },
+    "first_failed_preflight_retained": "runtime-incidents/finite-driver-preflight-v1/post-batch-review.json",
+    "preflight_evidence": "runtime-incidents/finite-driver-preflight-v2",
+    "actual_build_evidence": "regression-fixtures/producer-overlap-v3",
+    "frozen_ref_001_runner_changed": false,
+    "counts_as_formal_case_pass": false,
+    "applicable_source_commit": "fb3a24a6b6337093f20eb0f7d4bdec944a9ad372",
+    "status": "fixed_for_explicit_finite_build_drivers",
+    "real_msvc_helper_cleanup_observed": true,
+    "timings": {
+      "compile": {
+        "legacy_wall_seconds": 89.96800000000076,
+        "lifecycle_total_seconds": 89.9841784,
+        "tree_cpu_seconds": 6.921875,
+        "tree_process_count": 55,
+        "process_creation_call_seconds": 0.0117791,
+        "observed_root_exit_to_empty_seconds": 0.5008729,
+        "observed_root_exit_to_cleanup_request_seconds": 0.0005382
+      },
+      "controls": {
+        "legacy_wall_seconds": 0.5309999999990396,
+        "lifecycle_total_seconds": 0.533564,
+        "tree_cpu_seconds": 0.0,
+        "tree_process_count": 2,
+        "process_creation_call_seconds": 0.0280247,
+        "observed_root_exit_to_empty_seconds": 2.2e-06
+      }
+    },
+    "production_science_changed": false,
+    "unchanged_scientific_controls": 4
+  },
+  "decomposition_fix_preparation": {
+    "status": "prepared_not_applied",
+    "base_source_commit": "fb3a24a6b6337093f20eb0f7d4bdec944a9ad372",
+    "issue_ids": [
+      "CHEM-001",
+      "CHEM-002",
+      "UI-008"
+    ],
+    "evidence": "general-fix-contracts/decomposition-v1/implementation.json",
+    "production_science_changed": false
+  },
+  "original_nuclear_connectivity_evidence": {
+    "all_original_cases_terminal": true,
+    "summary": {
+      "original_cases": 273,
+      "collected_cases": 273,
+      "collection_errors": 0,
+      "same_composition_pairs": 379,
+      "pair_relation_counts": {
+        "per_scale_equivalent": 255,
+        "per_scale_different": 56,
+        "scale_sensitive_relation": 68
+      },
+      "sampled_rigid_transform_and_permutation_checks": 819,
+      "all_sampled_geometry_graph_invariants_passed": true,
+      "radius_scale_sensitive_cases": 25,
+      "cutoff_boundary_cases": 0,
+      "nuclear_proximity_graph_classes_by_scale": {
+        "1.15": 164,
+        "1.25": 166,
+        "1.35": 167
+      },
+      "pair_intent_controls": 14,
+      "pair_controls_consistent_at_all_scales": 13,
+      "cycle_block_intent_controls": 6,
+      "cycle_block_controls_consistent_at_all_scales": 6,
+      "scan_frames": 56,
+      "scan_families": 10,
+      "novelty_exclusion_records": 383,
+      "potential_component_scope_records": 110,
+      "distinct_chemical_molecules_confirmed": null,
+      "formal_external_molecules": 0,
+      "formal_case_passes": 0,
+      "collection_wall_seconds": 4.190881,
+      "review_wall_seconds": 0.2506381
+    },
+    "source_commit": "a94135734d29edb0e4b3d19e5cc1e7572755d7c2",
+    "evidence": "input-structure-identity/GI-001/post-batch-review-v1/review.json",
+    "exclusion_catalog": "input-structure-identity/GI-001/post-batch-review-v1/novelty-exclusion-registry.json",
+    "distance_control_followup": {
+      "status": "distance_rule_limit_explained_control_disagreement_retained",
+      "evidence": "input-structure-identity/GI-001/distance-control-followup-v1/review.json"
+    },
+    "chemical_scope_review_complete": false,
+    "proximity_graph_classes_are_molecule_counts": false,
+    "counts_as_formal_case_pass": false,
+    "frozen_ref_001_runner_changed": false
+  },
+  "topology_fix_preparation": {
+    "status": "prepared_not_applied",
+    "base_source_commit": "a94135734d29edb0e4b3d19e5cc1e7572755d7c2",
+    "issue_ids": [
+      "TOPO-001",
+      "TOPO-002",
+      "CHEM-002"
+    ],
+    "implementation_unit_ids": [
+      "TOPO-SCOPE-01",
+      "TOPO-SPIRO-02",
+      "TOPO-FREE-03",
+      "TOPO-CONTACT-04",
+      "TOPO-VIEW-05",
+      "TOPO-VERIFY-06"
+    ],
+    "evidence": "general-fix-contracts/topology-v1/implementation.json",
+    "production_science_changed": false
+  },
+  "execution_priority_change": {
+    "user_requested": true,
+    "reference_execution": "paused_by_user_for_incremental_work",
+    "reference_counts": {
+      "candidate_collected": 13,
+      "paused_interrupted": 2,
+      "not_started": 258
+    },
+    "reference_batch_is_not_complete_or_passed": true,
+    "no_new_gaussian_work_until_explicit_incremental_resume": true,
+    "general_fixes_depend_on_full_ref_001_completion": false,
+    "historical_contract_execution_gates_superseded": true,
+    "deferred": [
+      "REF-001 remaining quality references",
+      "applicable geometry, competing electronic states and environment conclusions"
+    ],
+    "current_work": [
+      "GitHub portable input/state/evidence handoff",
+      "all confirmed common-root COV fixes independent of REF-001",
+      "frozen full 273 collection and applicable validation"
+    ],
+    "evidence": "runtime-incidents/ref-user-pause-20260906/pause-summary.json"
+  }
+}

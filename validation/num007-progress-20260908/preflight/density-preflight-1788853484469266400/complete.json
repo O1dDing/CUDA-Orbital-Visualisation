@@ -1,0 +1,31 @@
+{
+  "commit": "e2e835a70229b94501127ad336e0ddbc3ea69df3",
+  "all_stages_passed": true,
+  "stages": [
+    {
+      "stage": "build-on",
+      "exit_code": 0,
+      "wall_seconds": 329.52693530000397,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400\\build-on.log"
+    },
+    {
+      "stage": "tests-on",
+      "exit_code": 0,
+      "wall_seconds": 4.620464000006905,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400\\tests-on.log"
+    },
+    {
+      "stage": "build-off",
+      "exit_code": 0,
+      "wall_seconds": 395.0142514000181,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400\\build-off.log"
+    },
+    {
+      "stage": "tests-off",
+      "exit_code": 0,
+      "wall_seconds": 4.073860600008629,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\density-preflight-1788853484469266400\\tests-off.log"
+    }
+  ],
+  "finished_epoch": 1788854218.131213
+}

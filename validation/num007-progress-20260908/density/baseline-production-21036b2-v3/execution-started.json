@@ -1,0 +1,43 @@
+{
+  "started_epoch": 1788853213.2652895,
+  "round_identity": "389d5ae5700ec4ab04b38b814b533b47b7cf1c646e0a0d09dd7829d2b4d7403b",
+  "preceding_pipeline": {
+    "round_identity": "389d5ae5700ec4ab04b38b814b533b47b7cf1c646e0a0d09dd7829d2b4d7403b",
+    "stage": "reviews-terminal-awaiting-root-cause-analysis",
+    "started_epoch": 1788841067.0647895,
+    "updated_epoch": 1788853211.706313,
+    "steps": [
+      {
+        "stage": "numerical-review",
+        "exit_code": 0,
+        "wall_seconds": 2389.909262418747,
+        "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\post-collection-pipeline-1788841067064789400\\numerical-review.log",
+        "log_sha256": "273c41750436f1300cada9f2592d216d41be2f07b14f94d78e0972be1f45e569"
+      },
+      {
+        "stage": "numerical-summary",
+        "exit_code": 0,
+        "wall_seconds": 0.359149694442749,
+        "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\post-collection-pipeline-1788841067064789400\\numerical-summary.log",
+        "log_sha256": "fcf47ff5efe0a42a06bf6d051c17098e5ed27295aca79c6145bdb7373e9ee704"
+      },
+      {
+        "stage": "numerical-extrema",
+        "exit_code": 0,
+        "wall_seconds": 0.23972415924072266,
+        "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\post-collection-pipeline-1788841067064789400\\numerical-extrema.log",
+        "log_sha256": "a61fdbaf7a1cffe417fdc0b6f97f039b0385593144be0f675e9e2fbed78cdff5"
+      },
+      {
+        "stage": "view-snapshot-review",
+        "exit_code": 0,
+        "wall_seconds": 33.09982371330261,
+        "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\post-collection-pipeline-1788841067064789400\\view-snapshot-review.log",
+        "log_sha256": "71706692e88ba45925dec606ab99c280ed8419737e7b8bf0bded1f6c0a4766d8"
+      }
+    ],
+    "formal_case_passes": 0,
+    "reference_workflow": "independently managed; physical acceptance pending; no Gaussian jobs controlled here"
+  },
+  "gaussian_controlled": false
+}

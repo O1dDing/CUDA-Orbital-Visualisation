@@ -1,0 +1,20 @@
+{
+  "candidate_id": "PREP-007",
+  "name": "chlorine trifluoride",
+  "elements": {
+    "Cl": 1,
+    "F": 3
+  },
+  "charge": 0,
+  "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+  "scope": "experimental-data index; initial state row D3h is nonminimum; explicit C2v minimum is another conformer; no Cartesian values observed in web extraction",
+  "started_epoch": 1788845889.0413566,
+  "http_status": 200,
+  "content_type": "text/html",
+  "charset": null,
+  "resolved_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+  "status": "html-retrieved-content-review-pending",
+  "bytes": 45250,
+  "sha256": "5ea277bf95f85ae71f12ce1e0fdc07a8eeb9f84a02ee0126e93f2d7e798763cc",
+  "finished_epoch": 1788845890.6765687
+}

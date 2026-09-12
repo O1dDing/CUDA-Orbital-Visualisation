@@ -1,0 +1,13 @@
+{
+  "file_count": 1142,
+  "scope_bytes": 3194451218,
+  "unique_new_files": 102,
+  "unique_new_bytes": 1157537557,
+  "groups": 3,
+  "excluded": [
+    {
+      "source_path": "F:\\CalChem\\COV\\Resume\\work\\jobs\\supervisor.lock",
+      "reason": "Python cache or ephemeral OS lock; lock state recorded, never restore live locks"
+    }
+  ]
+}

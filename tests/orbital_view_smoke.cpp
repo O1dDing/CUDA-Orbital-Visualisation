@@ -1,5 +1,6 @@
 #include "cov/orbital_view.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -87,6 +88,53 @@ int main() {
     }
     degeneracy.require_compatible_symmetry = true;
 
+    const std::vector<cov::MolecularOrbital> adjacent_doublets = {
+        mo(-1.0000000, 2.0f, cov::Spin::Alpha, ""),
+        mo(-0.9999999, 2.0f, cov::Spin::Alpha, ""),
+        mo(-0.9999992, 2.0f, cov::Spin::Alpha, ""),
+        mo(-0.9999991, 2.0f, cov::Spin::Alpha, ""),
+    };
+    degeneracy.maximum_group_size = 2u;
+    const auto capped_labels = cov::build_orbital_labels(
+        adjacent_doublets, degeneracy);
+    if (capped_labels[0].group_size != 2u ||
+        capped_labels[1].group_base_number != 1u ||
+        capped_labels[2].group_size != 2u ||
+        capped_labels[2].group_base_number != 3u) {
+        std::cerr << "point-group degeneracy ceiling failed\n";
+        return 18;
+    }
+    degeneracy.maximum_group_size = 0u;
+
+    cov::Wavefunction linear_wavefunction;
+    linear_wavefunction.point_group_detected="D*H";
+    if (cov::point_group_limited_degeneracy(
+            linear_wavefunction,degeneracy).maximum_group_size!=2u) {
+        std::cerr << "Gaussian D*H degeneracy ceiling failed\n";
+        return 19;
+    }
+    linear_wavefunction.point_group_detected="C*V";
+    if (cov::point_group_limited_degeneracy(
+            linear_wavefunction,degeneracy).maximum_group_size!=2u) {
+        std::cerr << "Gaussian C*V degeneracy ceiling failed\n";
+        return 20;
+    }
+    cov::Wavefunction octahedral_wavefunction;
+    octahedral_wavefunction.point_group_detected="Oh";
+    degeneracy.maximum_group_size=6u;
+    if (cov::point_group_limited_degeneracy(
+            octahedral_wavefunction,degeneracy).maximum_group_size!=3u) {
+        std::cerr<<"point-group ceiling did not constrain a looser user cap\n";
+        return 21;
+    }
+    degeneracy.maximum_group_size=2u;
+    if (cov::point_group_limited_degeneracy(
+            octahedral_wavefunction,degeneracy).maximum_group_size!=2u) {
+        std::cerr<<"point-group ceiling did not preserve a stricter user cap\n";
+        return 22;
+    }
+    degeneracy.maximum_group_size=0u;
+
     const auto frontier = cov::find_frontier_orbitals(orbitals);
     if (!frontier.homo || *frontier.homo != 3 || !frontier.lumo || *frontier.lumo != 4) {
         std::cerr << "frontier detection failed\n";
@@ -142,6 +190,42 @@ int main() {
     if (alpha.alpha != 1 || alpha.beta != 0 || beta.alpha != 0 || beta.beta != 1) {
         std::cerr << "spin-resolved electron glyph failed\n";
         return 16;
+    }
+
+    // Gaussian UHF data is stored as a complete alpha block followed by a
+    // complete beta block.  Global and spin-resolved frontier orbitals must
+    // be selected by energy, not by whichever occupied/virtual item happens
+    // to occur last/first in that storage order.
+    const std::vector<cov::MolecularOrbital> unrestricted = {
+        mo(-0.70, 1.0f, cov::Spin::Alpha),
+        mo(-0.20, 1.0f, cov::Spin::Alpha),
+        mo( 0.30, 0.0f, cov::Spin::Alpha),
+        mo(-0.80, 1.0f, cov::Spin::Beta),
+        mo(-0.35, 1.0f, cov::Spin::Beta),
+        mo( 0.10, 0.0f, cov::Spin::Beta),
+    };
+    const auto unrestricted_frontier=cov::find_frontier_orbitals(unrestricted);
+    if (!unrestricted_frontier.homo || *unrestricted_frontier.homo!=1u ||
+        !unrestricted_frontier.lumo || *unrestricted_frontier.lumo!=5u ||
+        !unrestricted_frontier.alpha_homo ||
+        *unrestricted_frontier.alpha_homo!=1u ||
+        !unrestricted_frontier.alpha_lumo ||
+        *unrestricted_frontier.alpha_lumo!=2u ||
+        !unrestricted_frontier.beta_homo ||
+        *unrestricted_frontier.beta_homo!=4u ||
+        !unrestricted_frontier.beta_lumo ||
+        *unrestricted_frontier.beta_lumo!=5u) {
+        std::cerr << "UHF frontier detection depended on block order\n";
+        return 17;
+    }
+    auto reordered=unrestricted;
+    std::rotate(reordered.begin(),reordered.begin()+3,reordered.end());
+    const auto reordered_frontier=cov::find_frontier_orbitals(reordered);
+    if (!reordered_frontier.homo || !reordered_frontier.lumo ||
+        !near(reordered[*reordered_frontier.homo].energy_hartree,-0.20,1.0e-12) ||
+        !near(reordered[*reordered_frontier.lumo].energy_hartree,0.10,1.0e-12)) {
+        std::cerr << "global UHF frontier changed after block reordering\n";
+        return 18;
     }
 
     std::cout << "orbital_view_smoke ok\n";

@@ -1,0 +1,57 @@
+name: Validation runtime v2
+on:
+  push:
+    branches: [test/fchk-validation-native]
+    paths:
+      - validation/runtime_v2/**
+      - validation/paused-20260906/**
+      - .github/workflows/validation-runtime-v2.yml
+  pull_request:
+    paths:
+      - validation/runtime_v2/**
+      - validation/paused-20260906/**
+      - .github/workflows/validation-runtime-v2.yml
+permissions:
+  contents: read
+jobs:
+  runtime-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Policy, mocked Gaussian, real frozen registry, and Windows Job tests
+        run: python -X utf8 validation/runtime_v2/test_runtime.py
+      - name: Fast RAM pause, cold snapshots and restart gates
+        run: python -X utf8 validation/runtime_v2/test_fast_pause.py
+      - name: Existing frozen recovery tests
+        env:
+          TEMP: ${{ runner.temp }}
+          TMP: ${{ runner.temp }}
+          TMPDIR: ${{ runner.temp }}
+        run: python -X utf8 validation/paused-20260906/test_resume_reference.py
+      - name: Package exact runtime source and frozen test fixtures
+        if: success() && matrix.os == 'ubuntu-latest'
+        run: >-
+          git archive --format=zip --output=validation-runtime-source.zip HEAD
+          .github/workflows/validation-runtime-v2.yml validation/README.md
+          validation/runtime_v2 validation/paused-20260906/runner-source
+          validation/paused-20260906/resume_reference.py
+          validation/paused-20260906/test_resume_reference.py
+          validation/paused-20260906/reference-inputs
+          validation/paused-20260906/reference-candidates.json
+          validation/paused-20260906/campaign.json
+      - name: Retain tested source for local Gaussian acceptance (not a release)
+        if: success() && matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-runtime-source-${{ github.sha }}
+          path: validation-runtime-source.zip
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,1607 @@
+{
+  "candidate_id": "PREP-045",
+  "cas_digits": "2143580",
+  "requests": [
+    {
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+      "resolved_url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 43337,
+      "sha256": "9d58793fa73cc66ac4a8141e56f390864380121471e39644bff3dd8e8168de80",
+      "started_epoch": 1788848316.6637652,
+      "finished_epoch": 1788848317.4921095,
+      "title": "CCCBDB listing of experimental data page 2",
+      "stage": "experimental-index"
+    },
+    {
+      "url": "https://cccbdb.nist.gov/geom2x.asp",
+      "resolved_url": "https://cccbdb.nist.gov/geom2x.asp",
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 71024,
+      "sha256": "6b38b2334a9f2b883d49a3a7d2f740f0dd06380bbfec61c86021d439223f7cfe",
+      "started_epoch": 1788848317.4997163,
+      "finished_epoch": 1788848319.443391,
+      "title": "CCCBDB Calculated geometries page 2",
+      "stage": "calculated-geometry-index"
+    }
+  ],
+  "followed_link": {
+    "href": "geom2x.asp",
+    "text": "Calculated geometries",
+    "preceding_text": "distances (r) in Å, angles (a) in degrees, dihedrals (d) in degrees Description Value unc. Connectivity Reference Comment Atom 1 Atom 2 Atom 3 Atom 4 Cartesians Atom x (Å) y (Å) z (Å) Atom - Atom Distances Distances in Å",
+    "url": "https://cccbdb.nist.gov/geom2x.asp"
+  },
+  "status": "public-geometry-index-retrieved",
+  "title": "CCCBDB Calculated geometries page 2",
+  "links": [
+    {
+      "href": "confmin1x.asp",
+      "text": "Minimum conformation",
+      "preceding_text": "on Energy Internal Rotation Electrostatics Dipole Quadrupole Polarizability Reference Data Reference states Spin Splittings Molecules with good enthalpy Enthalpy at 0 Kelvin Calculated Energy Optimized Energy Energy 298K",
+      "url": "https://cccbdb.nist.gov/confmin1x.asp"
+    },
+    {
+      "href": "confenergy1x.asp",
+      "text": "Conformation",
+      "preceding_text": "Triatomic Scale factors Energy Reaction Reaction Energy 0K Reaction Energy 298K Atomization 0K Atomization 298K Single point vs optimized DFT grid size on energy Semiempirical enthalpy Internal rotation Similar molecules",
+      "url": "https://cccbdb.nist.gov/confenergy1x.asp"
+    },
+    {
+      "href": "conformers1x.asp",
+      "text": "Multiple conformers, states",
+      "preceding_text": "rgy Koopman ionization energy Koopman IE for a few molecules Compare Electron affinity Compare Proton affinity Protonation Site Resources Info on Results Calculations Done Method and basis set List molecules One molecule",
+      "url": "https://cccbdb.nist.gov/conformers1x.asp"
+    },
+    {
+      "href": "conformerlistx.asp",
+      "text": "Multiple conformers, states",
+      "preceding_text": "y Koopman IE for a few molecules Compare Electron affinity Compare Proton affinity Protonation Site Resources Info on Results Calculations Done Method and basis set List molecules One molecule Multiple conformers, states",
+      "url": "https://cccbdb.nist.gov/conformerlistx.asp"
+    },
+    {
+      "href": "configx.asp",
+      "text": "Entropy and conformations",
+      "preceding_text": "enchmark Energy and Geometry Point Groups Thermochemistry Thermochemistry Molecules with good enthalpy A → B + C Reference states Tutorials Vibrations Why scale vibrations Zero-point energies Entropy Methyl rotor entropy",
+      "url": "https://cccbdb.nist.gov/configx.asp"
+    },
+    {
+      "href": "conformerlistx.asp",
+      "text": "Multiple conformers, states",
+      "preceding_text": "sis sets Method options List Recent molecules Choose a few Molecules Number of atoms By heavy atoms Diatomics InChI Deuterated Dimers Geometry Point group Point group count Bonds types Isodesmic reactions Bad point group",
+      "url": "https://cccbdb.nist.gov/conformerlistx.asp"
+    },
+    {
+      "href": "conformerlistx.asp",
+      "text": "Multiple conformers, states",
+      "preceding_text": "try Point group Point group count Bonds types Isodesmic reactions Bad point group Multiple conformers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers",
+      "url": "https://cccbdb.nist.gov/conformerlistx.asp"
+    },
+    {
+      "href": "geom3x.asp?method=17&basis=0",
+      "text": "geom",
+      "preceding_text": "SXYULBQCQV-UHFFFAOYSA-N Click on entry for more information. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=17&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=18&basis=0",
+      "text": "geom",
+      "preceding_text": "V-UHFFFAOYSA-N Click on entry for more information. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=18&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=48&basis=0",
+      "text": "geom",
+      "preceding_text": "YSA-N Click on entry for more information. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=48&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=7&basis=0",
+      "text": "geom",
+      "preceding_text": "ry for more information. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=7&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=21&basis=0",
+      "text": "geom",
+      "preceding_text": "ore information. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=21&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=64&basis=0",
+      "text": "geom",
+      "preceding_text": "ation. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3 geom G3B3",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=67&basis=0",
+      "text": "geom",
+      "preceding_text": "a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3 geom G3B3 geom G3MP2",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=67&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=74&basis=0",
+      "text": "geom",
+      "preceding_text": "ison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3 geom G3B3 geom G3MP2 geom G4",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=74&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=24&basis=0",
+      "text": "geom",
+      "preceding_text": "erimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3 geom G3B3 geom G3MP2 geom G4 geom CBS-Q",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=24&basis=0"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=20",
+      "text": "geom",
+      "preceding_text": "BS-Q geom Methods with standard basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=2",
+      "text": "geom",
+      "preceding_text": "geom Methods with standard basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=8",
+      "text": "geom",
+      "preceding_text": "Methods with standard basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=9",
+      "text": "geom",
+      "preceding_text": "ds with standard basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=1",
+      "text": "geom",
+      "preceding_text": "th standard basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=3",
+      "text": "geom",
+      "preceding_text": "andard basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=4",
+      "text": "geom",
+      "preceding_text": "d basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=7",
+      "text": "geom",
+      "preceding_text": "is sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=21",
+      "text": "geom",
+      "preceding_text": "ts STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=19",
+      "text": "geom",
+      "preceding_text": "O-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=10",
+      "text": "geom",
+      "preceding_text": "3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=10"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=32",
+      "text": "geom",
+      "preceding_text": " 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=32"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=5",
+      "text": "geom",
+      "preceding_text": "G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=6",
+      "text": "geom",
+      "preceding_text": "31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=25",
+      "text": "geom",
+      "preceding_text": "-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=25"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=17",
+      "text": "geom",
+      "preceding_text": " 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=17"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=18",
+      "text": "geom",
+      "preceding_text": "G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=35",
+      "text": "geom",
+      "preceding_text": "-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=35"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=20",
+      "text": "geom",
+      "preceding_text": "311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=2",
+      "text": "geom",
+      "preceding_text": " 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=8",
+      "text": "geom",
+      "preceding_text": "1G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=9",
+      "text": "geom",
+      "preceding_text": "6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=1",
+      "text": "geom",
+      "preceding_text": "(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=3",
+      "text": "geom",
+      "preceding_text": "p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=4",
+      "text": "geom",
+      "preceding_text": "311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=7",
+      "text": "geom",
+      "preceding_text": "(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=21",
+      "text": "geom",
+      "preceding_text": "2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=19",
+      "text": "geom",
+      "preceding_text": "ZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=5",
+      "text": "geom",
+      "preceding_text": "c-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=6",
+      "text": "geom",
+      "preceding_text": "Z cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=17",
+      "text": "geom",
+      "preceding_text": "pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=17"
+    },
+    {
+      "href": "geom3x.asp?method=9&basis=18",
+      "text": "geom",
+      "preceding_text": "cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=9&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=20",
+      "text": "geom",
+      "preceding_text": "TZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=2",
+      "text": "geom",
+      "preceding_text": "ug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=8",
+      "text": "geom",
+      "preceding_text": "-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=9",
+      "text": "geom",
+      "preceding_text": " hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=1",
+      "text": "geom",
+      "preceding_text": "ree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=3",
+      "text": "geom",
+      "preceding_text": "ock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=4",
+      "text": "geom",
+      "preceding_text": "F geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=7",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=21",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=19",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=5",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=6",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=51&basis=17",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=51&basis=17"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=20",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=2",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=8",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=9",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=1",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=3",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=4",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=7",
+      "text": "geom",
+      "preceding_text": "m geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=21",
+      "text": "geom",
+      "preceding_text": "m geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=19",
+      "text": "geom",
+      "preceding_text": "m geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=5",
+      "text": "geom",
+      "preceding_text": "m ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=13&basis=6",
+      "text": "geom",
+      "preceding_text": "F geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=13&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=55&basis=4",
+      "text": "geom",
+      "preceding_text": " geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=55&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=20",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=2",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=8",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=9",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=1",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=3",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=4",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=7",
+      "text": "geom",
+      "preceding_text": "geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=21",
+      "text": "geom",
+      "preceding_text": "geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=19",
+      "text": "geom",
+      "preceding_text": "geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=32",
+      "text": "geom",
+      "preceding_text": "density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=32"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=5",
+      "text": "geom",
+      "preceding_text": "ty functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=6",
+      "text": "geom",
+      "preceding_text": "nctional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=17",
+      "text": "geom",
+      "preceding_text": "nal LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=17"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=18",
+      "text": "geom",
+      "preceding_text": "SDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=68&basis=1",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=68&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=68&basis=4",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=68&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=68&basis=6",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=68&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=68&basis=18",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=68&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=20",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=2",
+      "text": "geom",
+      "preceding_text": "m geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=8",
+      "text": "geom",
+      "preceding_text": "m geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=9",
+      "text": "geom",
+      "preceding_text": "m geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=1",
+      "text": "geom",
+      "preceding_text": "m BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=3",
+      "text": "geom",
+      "preceding_text": "P geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=4",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=7",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=21",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=19",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=5",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=16&basis=6",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=16&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=20",
+      "text": "geom",
+      "preceding_text": "om geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=2",
+      "text": "geom",
+      "preceding_text": "om geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=8",
+      "text": "geom",
+      "preceding_text": "om geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=9",
+      "text": "geom",
+      "preceding_text": "om B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=1",
+      "text": "geom",
+      "preceding_text": "B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=3",
+      "text": "geom",
+      "preceding_text": "eom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=4",
+      "text": "geom",
+      "preceding_text": "3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=7",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=21",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=19",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=5",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=25&basis=6",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=25&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=58&basis=8",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=58&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=58&basis=1",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=58&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=58&basis=10",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=58&basis=10"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=20",
+      "text": "geom",
+      "preceding_text": " geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=2",
+      "text": "geom",
+      "preceding_text": " geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=8",
+      "text": "geom",
+      "preceding_text": " geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=9",
+      "text": "geom",
+      "preceding_text": " geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=1",
+      "text": "geom",
+      "preceding_text": " B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=3",
+      "text": "geom",
+      "preceding_text": "Pultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=4",
+      "text": "geom",
+      "preceding_text": "afine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=7",
+      "text": "geom",
+      "preceding_text": " geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=21",
+      "text": "geom",
+      "preceding_text": " geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=19",
+      "text": "geom",
+      "preceding_text": " geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=5",
+      "text": "geom",
+      "preceding_text": " geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=6",
+      "text": "geom",
+      "preceding_text": " B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=18",
+      "text": "geom",
+      "preceding_text": "91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=69&basis=1",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=69&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=54&basis=1",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=54&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=57&basis=2",
+      "text": "geom",
+      "preceding_text": "geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=57&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=57&basis=1",
+      "text": "geom",
+      "preceding_text": "geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=57&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=57&basis=4",
+      "text": "geom",
+      "preceding_text": "geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=57&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=57&basis=6",
+      "text": "geom",
+      "preceding_text": "mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=57&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=75&basis=1",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=75&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=75&basis=4",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=75&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=75&basis=19",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=75&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=75&basis=6",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=75&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=8",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=1",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=4",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=21",
+      "text": "geom",
+      "preceding_text": "geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=32",
+      "text": "geom",
+      "preceding_text": "geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=32"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=5",
+      "text": "geom",
+      "preceding_text": "geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=6",
+      "text": "geom",
+      "preceding_text": "M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=60&basis=18",
+      "text": "geom",
+      "preceding_text": "X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=60&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=2",
+      "text": "geom",
+      "preceding_text": " geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=1",
+      "text": "geom",
+      "preceding_text": " PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=4",
+      "text": "geom",
+      "preceding_text": "BE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=21",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=10",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=10"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=32",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=32"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=6",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=18",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=90&basis=35",
+      "text": "geom",
+      "preceding_text": "om geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=90&basis=35"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=20",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=2",
+      "text": "geom",
+      "preceding_text": "m geom geom geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=8",
+      "text": "geom",
+      "preceding_text": "m geom geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=9",
+      "text": "geom",
+      "preceding_text": "m geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=1",
+      "text": "geom",
+      "preceding_text": "m geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=3",
+      "text": "geom",
+      "preceding_text": "m STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=4",
+      "text": "geom",
+      "preceding_text": "-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=7",
+      "text": "geom",
+      "preceding_text": "-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=21",
+      "text": "geom",
+      "preceding_text": "3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=19",
+      "text": "geom",
+      "preceding_text": "* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=32",
+      "text": "geom",
+      "preceding_text": "1G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=32"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=5",
+      "text": "geom",
+      "preceding_text": "31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=6",
+      "text": "geom",
+      "preceding_text": "6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=17",
+      "text": "geom",
+      "preceding_text": "** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=17"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=20",
+      "text": "geom",
+      "preceding_text": "311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=20"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=2",
+      "text": "geom",
+      "preceding_text": " 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=8",
+      "text": "geom",
+      "preceding_text": "1G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=9",
+      "text": "geom",
+      "preceding_text": "6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=1",
+      "text": "geom",
+      "preceding_text": "(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=3",
+      "text": "geom",
+      "preceding_text": "p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=4",
+      "text": "geom",
+      "preceding_text": "311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=7",
+      "text": "geom",
+      "preceding_text": "(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=21",
+      "text": "geom",
+      "preceding_text": "2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=19",
+      "text": "geom",
+      "preceding_text": "ZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=5",
+      "text": "geom",
+      "preceding_text": "c-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=2&basis=6",
+      "text": "geom",
+      "preceding_text": "Z cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=2&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=62&basis=4",
+      "text": "geom",
+      "preceding_text": " cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=62&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=71&basis=1",
+      "text": "geom",
+      "preceding_text": "c-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=71&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=71&basis=4",
+      "text": "geom",
+      "preceding_text": "Z aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=71&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=4&basis=2",
+      "text": "geom",
+      "preceding_text": "pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=4&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=4&basis=1",
+      "text": "geom",
+      "preceding_text": "daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=4&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=4&basis=21",
+      "text": "geom",
+      "preceding_text": "cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=4&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=56&basis=1",
+      "text": "geom",
+      "preceding_text": "er Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=56&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=56&basis=4",
+      "text": "geom",
+      "preceding_text": "esset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=56&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=56&basis=21",
+      "text": "geom",
+      "preceding_text": " perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=56&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=56&basis=6",
+      "text": "geom",
+      "preceding_text": "urbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=56&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=59&basis=2",
+      "text": "geom",
+      "preceding_text": " geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=59&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=59&basis=1",
+      "text": "geom",
+      "preceding_text": " geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=59&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=59&basis=4",
+      "text": "geom",
+      "preceding_text": " geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=59&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=79&basis=1",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=79&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=79&basis=5",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=79&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=79&basis=6",
+      "text": "geom",
+      "preceding_text": "geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=79&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=79&basis=18",
+      "text": "geom",
+      "preceding_text": "geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=79&basis=18"
+    },
+    {
+      "href": "geom3x.asp?method=14&basis=2",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=14&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=14&basis=8",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=14&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=14&basis=9",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=14&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=14&basis=1",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=14&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=14&basis=7",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=14&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=15&basis=2",
+      "text": "geom",
+      "preceding_text": "eom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom geom geom CISD",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=15&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=15&basis=8",
+      "text": "geom",
+      "preceding_text": "eom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom geom geom CISD geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=15&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=15&basis=9",
+      "text": "geom",
+      "preceding_text": "eom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom geom geom CISD geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=15&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=15&basis=1",
+      "text": "geom",
+      "preceding_text": "eom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom geom geom CISD geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=15&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=15&basis=7",
+      "text": "geom",
+      "preceding_text": "P3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom geom geom CISD geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=15&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=2",
+      "text": "geom",
+      "preceding_text": "m geom geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=8",
+      "text": "geom",
+      "preceding_text": "m geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=9",
+      "text": "geom",
+      "preceding_text": "m geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=1",
+      "text": "geom",
+      "preceding_text": "m STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=3",
+      "text": "geom",
+      "preceding_text": "-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=4",
+      "text": "geom",
+      "preceding_text": "-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=7",
+      "text": "geom",
+      "preceding_text": "3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=21",
+      "text": "geom",
+      "preceding_text": "* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=19",
+      "text": "geom",
+      "preceding_text": "1G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=5&basis=5",
+      "text": "geom",
+      "preceding_text": "31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=5&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=10&basis=1",
+      "text": "geom",
+      "preceding_text": "-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T)",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=10&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=2",
+      "text": "geom",
+      "preceding_text": "6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=2"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=8",
+      "text": "geom",
+      "preceding_text": "(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=8"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=9",
+      "text": "geom",
+      "preceding_text": "p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=9"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=1",
+      "text": "geom",
+      "preceding_text": "311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=3",
+      "text": "geom",
+      "preceding_text": "(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=3"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=4",
+      "text": "geom",
+      "preceding_text": "2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=4"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=7",
+      "text": "geom",
+      "preceding_text": "ZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=7"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=21",
+      "text": "geom",
+      "preceding_text": "c-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=21"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=19",
+      "text": "geom",
+      "preceding_text": "Z cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=19"
+    },
+    {
+      "href": "geom3x.asp?method=6&basis=5",
+      "text": "geom",
+      "preceding_text": "pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=6&basis=5"
+    },
+    {
+      "href": "geom3x.asp?method=11&basis=1",
+      "text": "geom",
+      "preceding_text": "QZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom geom geom geom geom CCSD",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=11&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=12&basis=1",
+      "text": "geom",
+      "preceding_text": "Z aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom geom geom geom geom CCSD geom CCSD(T)",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=12&basis=1"
+    },
+    {
+      "href": "geom3x.asp?method=12&basis=6",
+      "text": "geom",
+      "preceding_text": "-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom geom geom geom geom CCSD geom CCSD(T) geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=12&basis=6"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=11",
+      "text": "geom",
+      "preceding_text": "c-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=11"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=12",
+      "text": "geom",
+      "preceding_text": "Z cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=12"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=13",
+      "text": "geom",
+      "preceding_text": "pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=13"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=14",
+      "text": "geom",
+      "preceding_text": "cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=14"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=15",
+      "text": "geom",
+      "preceding_text": "QZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=15"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=16",
+      "text": "geom",
+      "preceding_text": "g-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=16"
+    },
+    {
+      "href": "geom3x.asp?method=1&basis=38",
+      "text": "geom",
+      "preceding_text": "pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=1&basis=38"
+    },
+    {
+      "href": "geom3x.asp?method=55&basis=11",
+      "text": "geom",
+      "preceding_text": "Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=55&basis=11"
+    },
+    {
+      "href": "geom3x.asp?method=55&basis=12",
+      "text": "geom",
+      "preceding_text": "ds with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=55&basis=12"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=11",
+      "text": "geom",
+      "preceding_text": "ective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=11"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=12",
+      "text": "geom",
+      "preceding_text": "e core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=12"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=13",
+      "text": "geom",
+      "preceding_text": "e potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=13"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=14",
+      "text": "geom",
+      "preceding_text": "entials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=14"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=15",
+      "text": "geom",
+      "preceding_text": "ls ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=15"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=16",
+      "text": "geom",
+      "preceding_text": "select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=16"
+    },
+    {
+      "href": "geom3x.asp?method=8&basis=38",
+      "text": "geom",
+      "preceding_text": "t basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=8&basis=38"
+    },
+    {
+      "href": "geom3x.asp?method=61&basis=38",
+      "text": "geom",
+      "preceding_text": " ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=61&basis=38"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=11",
+      "text": "geom",
+      "preceding_text": "* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=11"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=12",
+      "text": "geom",
+      "preceding_text": "L2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2 geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=12"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=13",
+      "text": "geom",
+      "preceding_text": "SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2 geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=13"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=14",
+      "text": "geom",
+      "preceding_text": "c-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2 geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=14"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=15",
+      "text": "geom",
+      "preceding_text": "Z-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2 geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=15"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=16",
+      "text": "geom",
+      "preceding_text": "aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2 geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=16"
+    },
+    {
+      "href": "geom3x.asp?method=3&basis=38",
+      "text": "geom",
+      "preceding_text": "c-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2 geom geom geom geom geom geom",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=3&basis=38"
+    }
+  ],
+  "content_tail": "CCCBDB Calculated geometries page 2 body{display:none !important;} if (self === top) { var antiClickjack = document.getElementById(\"antiClickjack\"); antiClickjack.parentNode.removeChild(antiClickjack); } else { top.location = self.location; } C omputational C hemistry C omparison and B enchmark D ata B ase Release 22 (May 2022) Standard Reference Database 101 National Institute of Standards and Technology Home All data for one species Geometry Experimental Experimental Geometries Same bond/angle many molecules Internal Coordinates by type Bond angles Calculated Calculated geometry Rotational constant Moments of inertia Products of moments of inertia BSE Bond lengths Show me a calculated geometry Comparisons Bonds, angles Rotational Constants Products of moments of inertia Point group Bad Calculations Bad moment of inertia Tutorials and Explanations Angle formulas Vibrations Experimental Vibrational frequencies Calculated Frequencies Scale factors Reactions Entropies Ions List Ions Energy Calculated Ionization Energy Compare Ionzation energy Electron Affinity Calculated Electron affinity Compare Electron affinity Proton Affinity Calculated Proton affinity Compare Proton affinity Ionization changes point group Experimental One molecule all properties One property a few molecules Enthalpy of formation Entropy Integrated Heat Capacity Heat Capacity Rotational Constants Vibrational Frequencies Dipole moment Ionization Energy Polarizability Quadrupole Point Groups Geometry Experimental Geometries Internal Coordinates by type Bond angles Rotational Constants Point Groups Diatomic bond lengths Vibrations Vibrational frequencies Diatomic Triatomics Energy Atomization Energy Internal Rotation Electrostatics Dipole Quadrupole Polarizability Reference Data Reference states Spin Splittings Molecules with good enthalpy Enthalpy at 0 Kelvin Calculated Energy Optimized Energy Energy 298K Minimum conformation Hydrogen bonds H bond with counterpoise Reaction Reaction Energy 0K Reaction Energy 298K Internal Rotation Barriers to internal rotation Rotational barrier and dipole Rotational Barrier 2 molecules Orbital HOMO LUMO gap HOMO Orbital Energies Nuclear repulsion energy Correlation Full vs Frozen core energies Partial correlation energies Ion Calculated Ionization Energy Vertical ionization Energy Calculated Electron affinity Calculated Proton affinity Atom charge differences Excited State Singlet triplet gap Electronic state Transition state Basis Set Extrapolation BSE energy BSE Bond lengths Geometry Calculated geometry AIM bond orders One type of bond Rotation Rotational constant Products of moments of inertia Moments of inertia Inertial defects Second moments Point group State symmetry <r2> Sorted by r2 Z-matrix Bad Calculations Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Frequencies Animated vibrations Anharmonic Zero point energy (ZPE) Scale Factors Scale factors Scale factor uncertainty Calculate a scale factor Why scale vibrations Set scaling factors Bad Calculations Bad Vib. HF vs MP2 Bad vib. Calc. vs exp. Big anharmonicity Electrostatics Charges Mulliken CHELP Aim ESP Dipole Dipole Dipole angle Dipole calculation types Quadrupole Polarizability Spin Spin density Entropy and Heat Capacity Entropy Reaction entropy Heat Capacity Reaction Reaction Energy 0K Reaction Energy 298K Isodesmic reactions Transition State Transition state Transition state frequencies Transition state geometries IRC Lookup by property By frequency Comparisons Geometry Bonds, angles Bond, angle, or dihedral DFT grid size on point group DFT grid on bond length Core correlation - bond length Same bond/angle many molecules Isoelectronic diatomics Isoelectronic triatomic angles Average bond lengths Rotation Rotational Constants Products of moments of inertia Point group Vibrations Vibrations 2 calculations Frequency differences One frequency Zero point energy Intensity Intensity for one mode Vibrational intensities Reduced mass comparison Anharmonic Triatomic Scale factors Energy Reaction Reaction Energy 0K Reaction Energy 298K Atomization 0K Atomization 298K Single point vs optimized DFT grid size on energy Semiempirical enthalpy Internal rotation Similar molecules Conformation Sets of isomers Sets of tautomers Isomers Entropy Entropy Heat capacity Entropy of several molecules Integrated heat capacity Reaction entropy Electrostatics Dipole Polarizability Several molecules Quadrupole Ion Compare Ionzation energy Koopman ionization energy Koopman IE for a few molecules Compare Electron affinity Compare Proton affinity Protonation Site Resources Info on Results Calculations Done Method and basis set List molecules One molecule Multiple conformers, states Multiple conformers, states Basis functions used I/O files Input/output files MOL file Z-matrix wfn files Glossary Conversion Forms B to I, I to B Angle formulas Integrated heat Capacity Calculating Enthalpy Links NIST Links NIST webbook bibliographic data CCCBDB Experimental data External links Basis Set Exchange Computational Chemistry List Thermochemistry in Gaussian Minnesota Database Collection Benchmark Energy and Geometry Point Groups Thermochemistry Thermochemistry Molecules with good enthalpy A → B + C Reference states Tutorials Vibrations Why scale vibrations Zero-point energies Entropy Methyl rotor entropy Entropy and conformations Energy Getting enthalpy of formation Vertical vs adiabatic IE Thermo from calculations Electrostatics Dipole parts by point group Quadrupoles Geometry Angle formulas Cost Cost Comparison Timings Comparison Bad Calculations Geometry Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Bad vib. Calc. vs exp. Bad Vib. HF vs MP2 Bad scale factors Low excited states Oddities NaCN Is not linear FAQ Help Units Choose Units Energy Bond length Rotational Constant Moment of Inertia Dipole and Quadrupole Polarizability Explanations Hartree cm-1 Debye Credits Just show me Show me a calculated geometry Summary Using older interface Limit Basis sets Method options List Recent molecules Choose a few Molecules Number of atoms By heavy atoms Diatomics InChI Deuterated Dimers Geometry Point group Point group count Bonds types Isodesmic reactions Bad point group Multiple conformers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Home > Geometry > Calculated > Calculated geometry OR Calculated > Geometry > Calculated geometry Calculated Geometries available for (methylperoxy radical) 2 A \" C s 19 06 06 11 19 InChI=1S/CH3O2/c1-3-2/h1H3 INChIKey=WTFNSXYULBQCQV-UHFFFAOYSA-N Click on entry for more information. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3 geom G3B3 geom G3MP2 geom G4 geom CBS-Q geom Methods with standard basis sets STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ hartree fock HF geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom ROHF geom geom geom geom geom geom geom geom geom geom geom geom geom geom density functional LSDA geom geom geom geom geom geom geom geom geom geom geom geom geom BLYP geom geom geom geom geom geom geom geom geom geom geom geom B1B95 geom B3LYP geom geom geom geom geom geom geom geom geom geom geom geom geom geom geom B3LYPultrafine geom geom geom geom B3PW91 geom geom geom geom geom geom geom geom geom geom geom geom mPW1PW91 geom geom geom geom geom geom geom geom geom geom geom geom M06-2X geom geom geom PBEPBE geom geom geom geom geom geom geom geom geom geom geom geom geom PBEPBEultrafine geom PBE1PBE geom HSEh1PBE geom geom geom geom TPSSh geom geom geom geom wB97X-D geom geom geom geom geom geom geom geom B97D3 geom geom geom geom geom geom geom geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Moller Plesset perturbation MP2 geom geom geom geom geom geom geom geom geom geom geom geom geom geom MP2=FULL geom geom geom geom geom geom geom geom geom geom geom geom MP3 geom MP3=FULL geom geom MP4 geom geom geom B2PLYP geom geom geom geom B2PLYP=FULL geom geom geom B2PLYP=FULLultrafine geom geom geom geom Configuration interaction CID geom geom geom geom geom CISD geom geom geom geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Quadratic configuration interaction QCISD geom geom geom geom geom geom geom geom geom geom QCISD(T) geom Coupled Cluster CCD geom geom geom geom geom geom geom geom geom geom CCSD geom CCSD(T) geom geom STO-3G 3-21G 3-21G* 6-31G 6-31G* 6-31G** 6-31+G** 6-311G* 6-311G** 6-31G(2df,p) 6-311+G(3df,2p) TZVP cc-pVDZ cc-pVTZ cc-pVQZ aug-cc-pVDZ aug-cc-pVTZ daug-cc-pVTZ Methods with effective core potentials ( select basis sets ) CEP-31G CEP-31G* CEP-121G CEP-121G* LANL2DZ SDD cc-pVTZ-PP aug-cc-pVTZ-PP Def2TZVPP hartree fock HF geom geom geom geom geom geom geom density functional B1B95 geom geom B3LYP geom geom geom geom geom geom geom PBEPBE geom Moller Plesset perturbation MP2 geom geom geom geom geom geom geom For descriptions of the methods (AM1, HF, MP2, ...) and basis sets (3-21G, 3-21G*, 6-31G, ...) see the glossary in section I.C. Predefined means the basis set used is determined by the method. Browse Previous Next (function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML=\"window.__CF$cv$params={r:'a37bd640dc36ae24',t:'MTc4ODg0ODMxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);\";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();"
+}

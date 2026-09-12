@@ -1,0 +1,81 @@
+{
+  "created_epoch": 1788857133.4380672,
+  "program_commit": "aaabc3edb13c2768f6bc9063ee933a8881e7f57f",
+  "runner_commit": "93e294b0bca5d920494cfbb1ab76f4c218aaf898",
+  "current_round": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-original",
+  "current_round_identity": "475be3b2459c105da3686e3065205e4e7bcfde895cacdb6d0457f036f214b1e3",
+  "manifest_sha256": "babcd8c1c3a0b24607e9a38bdccf64038bc47dcb73f3613f58ffe2ffa267cebb",
+  "expected_original_cases": 273,
+  "round_status": "collection-running; unified comparison waits for all terminal states",
+  "preflight": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100",
+  "preflight_complete_sha256": "56233d2e5d16db798723d2e6dc24f1ca6b6f5f968cd7550e728be235ea7693fd",
+  "component_results": {
+    "on": {
+      "tests": 37,
+      "failures": 0,
+      "skipped": 0,
+      "junit": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\component-tests-on-1788856644287259300\\ctest.xml",
+      "junit_sha256": "7ab5af15efe966ee9884dce5ebadbdf8c72d4b131281d8b6e2a83b2049c72828"
+    },
+    "off": {
+      "tests": 37,
+      "failures": 0,
+      "skipped": 0,
+      "junit": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\component-tests-off-1788856653673072600\\ctest.xml",
+      "junit_sha256": "96fad91b0e08afae5a2aa0b03e8b20a1a3eb06a00d2448190b667de9f728fec5"
+    }
+  },
+  "pilots": [
+    {
+      "kind": "pilot",
+      "case_id": "OLD-001",
+      "round_identity": "53adf32d7df57ea99b211228bde70c5a8c802ff1f0ec3060020c00ae93c92ba6",
+      "collection_seconds": 26.637406199995894,
+      "numeric_case_seconds": 1.8320301999920048,
+      "view_review_seconds": 0.09422490000724792,
+      "sampled_mos": 15,
+      "full_frontier_grids": 4,
+      "export_bundles": 7,
+      "details_frames": 4,
+      "actual_images_visually_inspected": {
+        "orbital-details-bottom.png": "a7619f877f4261e999fecd79d8362e6d8eb668b58c3bb194ce7dd7c8ddc4fc72",
+        "orbital-details-reopened.png": "4baa9a9c13fcf9b1ab2b2be2ea3bb9b7fb1a90bd0ba7638679a236a6f8b88980"
+      },
+      "formal_case_pass": false
+    },
+    {
+      "kind": "diagnostic",
+      "case_id": "OLD-013",
+      "round_identity": "1cf61800e5179b615a861b9d000be5410bd7325791bee29eb7ce03ff1a8dea23",
+      "collection_seconds": 50.16233319998719,
+      "numeric_case_seconds": 30.169826800003648,
+      "view_review_seconds": 0.22173089999705553,
+      "sampled_mos": 216,
+      "full_frontier_grids": 4,
+      "export_bundles": 7,
+      "details_frames": 4,
+      "actual_images_visually_inspected": {
+        "member-0058-tooltip.png": "52e178d0ffd5b4005bbe23a6e614545b9db9847e381b0ff25def6f10371419a7"
+      },
+      "formal_case_pass": false
+    }
+  ],
+  "resource_budget": {
+    "workers": 2,
+    "threads_per_worker": 2,
+    "memory_gib_per_worker": 24,
+    "aggregate_cpu_cores": 4,
+    "aggregate_memory_gib": 64,
+    "core_slot_offset": 8,
+    "reserved_independent_reference_cpu_cores": 8,
+    "reserved_independent_reference_memory_gib": 64,
+    "independent_reference_gaussian_input_memory_gib": 48
+  },
+  "formal_case_passes": 0,
+  "gaussian_control_actions_performed": 0,
+  "previous_pilot_failures_retained": [
+    "NUM-FIX-007-pilot",
+    "NUM-FIX-007B-pilot"
+  ],
+  "next": "Collect all 273, run frozen numeric/density/view reviewers, then adjudicate every failure together."
+}

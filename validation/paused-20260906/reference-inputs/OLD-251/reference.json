@@ -1,0 +1,34 @@
+{
+  "case_id": "OLD-251",
+  "original_case_identity": "ab02ade19a632017cf464c756e9336b150b5afcecf32a64fe509597d9e614a04",
+  "purpose": {
+    "kind": "coordination_geometry_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Synthetic starting shell; target name is not a physical geometry verdict",
+    "additional_reference": "original fixed geometry diagnostic",
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPP",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Default quality reference",
+  "ecp_core_electrons_by_atomic_number": {
+    "6": 0,
+    "8": 0,
+    "26": 0
+  },
+  "explicit_electrons": 96,
+  "alpha_electrons": 48,
+  "beta_electrons": 48,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": true,
+  "is_verified_reference": false,
+  "basis_sha256": "163ccca45489e0f9f2c88a469d6beebf65e5440ebb06ec87975d8358a539531a",
+  "initial_input_sha256": "ef3879e020c3870ad99bae3d9b1257fa23258aff988b9dd007bd02b2ff88a0c4",
+  "identity": "e82627eb8043232f15daa1289b7a77c8dac9fb266e52367d7793cf6575275c3e"
+}

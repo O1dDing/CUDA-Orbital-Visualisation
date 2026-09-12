@@ -1,0 +1,13 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 2724126,
+        "MolecularFormula": "C9H18NO",
+        "ConnectivitySMILES": "CC1(CCCC(N1[O])(C)C)C",
+        "InChIKey": "QYTDEUPAUMOIOP-UHFFFAOYSA-N",
+        "Charge": 0
+      }
+    ]
+  }
+}

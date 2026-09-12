@@ -1,0 +1,20 @@
+{
+  "candidate_id": "PREP-008",
+  "name": "bromine pentafluoride",
+  "elements": {
+    "Br": 1,
+    "F": 5
+  },
+  "charge": 0,
+  "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+  "scope": "experimental-data index; coordinate payload and original references to be reviewed",
+  "started_epoch": 1788845891.3814478,
+  "http_status": 200,
+  "content_type": "text/html",
+  "charset": null,
+  "resolved_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+  "status": "html-retrieved-content-review-pending",
+  "bytes": 49740,
+  "sha256": "6d88c7ce5371f758a8d317923c742f9fee56e40bd11a0336ccd0e512002b5ecc",
+  "finished_epoch": 1788845892.9706721
+}

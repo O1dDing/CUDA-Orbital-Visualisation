@@ -1,0 +1,426 @@
+{
+  "candidate_id": "PREP-051",
+  "source_url": "https://journals.iucr.org/e/issues/2012/07/00/pk2417/index.html",
+  "doi": "10.1107/S1600536812024014",
+  "authors": "Dean H. Johnston, Nathanael A. Miller, Cory B. Tackett",
+  "source_kind": "Published fractional-coordinate table accessed by web research tool; not downloaded CIF",
+  "source_excerpt_file": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-primary-sources-v1\\cisplatin-pk2417-web-tables.txt",
+  "source_excerpt_sha256": "271699c7a3f2d282f4a71447b24045734c4d835b3ab232effc41d415f1c7bdca",
+  "cell_literals": {
+    "a": "6.2344 (9)",
+    "b": "6.8196 (11)",
+    "c": "11.5833 (18)",
+    "alpha": "105.285 (4)",
+    "beta": "96.061 (4)",
+    "gamma": "97.809 (4)"
+  },
+  "conversion_basis_angstrom": [
+    [
+      6.2344,
+      0.0,
+      0.0
+    ],
+    [
+      -0.9265872155126563,
+      6.756358508253429,
+      0.0
+    ],
+    [
+      -1.2230484732502107,
+      -3.2499106474693105,
+      11.050568858911559
+    ]
+  ],
+  "calculated_cell_volume_angstrom3": 465.47030978149905,
+  "original_table_atoms": [
+    {
+      "source_atom_id": "Pt1",
+      "element": "Pt",
+      "fractional_literals": [
+        "0.55286 (4)",
+        "0.74780 (4)",
+        "0.49265 (2)"
+      ],
+      "xyz_angstrom": [
+        2.1513136338929195,
+        3.4513364119961585,
+        5.4440627483427795
+      ]
+    },
+    {
+      "source_atom_id": "Cl1",
+      "element": "Cl",
+      "fractional_literals": [
+        "0.6813 (3)",
+        "0.6374 (3)",
+        "0.31075 (18)"
+      ],
+      "xyz_angstrom": [
+        3.27682771576973,
+        3.2965931794596472,
+        3.4339642729067674
+      ]
+    },
+    {
+      "source_atom_id": "Cl2",
+      "element": "Cl",
+      "fractional_literals": [
+        "0.8971 (3)",
+        "0.7991 (3)",
+        "0.60324 (18)"
+      ],
+      "xyz_angstrom": [
+        4.11465263508038,
+        3.4385299849659288,
+        6.666145158449809
+      ]
+    },
+    {
+      "source_atom_id": "N1",
+      "element": "N",
+      "fractional_literals": [
+        "0.4361 (11)",
+        "0.8403 (11)",
+        "0.6522 (6)"
+      ],
+      "xyz_angstrom": [
+        1.1425383885509275,
+        3.557776330205873,
+        7.2071810097821185
+      ]
+    },
+    {
+      "source_atom_id": "H1D",
+      "element": "H",
+      "fractional_literals": [
+        "0.5443",
+        "0.9266",
+        "0.7089"
+      ],
+      "xyz_angstrom": [
+        1.6677891434188985,
+        3.9565801357566337,
+        7.833748264082404
+      ]
+    },
+    {
+      "source_atom_id": "H1E",
+      "element": "H",
+      "fractional_literals": [
+        "0.3894",
+        "0.7281",
+        "0.6772"
+      ],
+      "xyz_angstrom": [
+        0.9247787823001926,
+        2.7184651393931043,
+        7.483445231254908
+      ]
+    },
+    {
+      "source_atom_id": "H1F",
+      "element": "H",
+      "fractional_literals": [
+        "0.3222",
+        "0.9076",
+        "0.6419"
+      ],
+      "xyz_angstrom": [
+        0.3826783082214025,
+        4.045953337480261,
+        7.09336015053533
+      ]
+    },
+    {
+      "source_atom_id": "N2",
+      "element": "N",
+      "fractional_literals": [
+        "0.2485 (11)",
+        "0.6999 (11)",
+        "0.3960 (6)"
+      ],
+      "xyz_angstrom": [
+        0.4164028124556084,
+        3.441810703528728,
+        4.376025268128978
+      ]
+    },
+    {
+      "source_atom_id": "H2D",
+      "element": "H",
+      "fractional_literals": [
+        "0.1706",
+        "0.7943",
+        "0.4345"
+      ],
+      "xyz_angstrom": [
+        -0.2038141469089194,
+        3.954489386780284,
+        4.801472169197073
+      ]
+    },
+    {
+      "source_atom_id": "H2E",
+      "element": "H",
+      "fractional_literals": [
+        "0.1786",
+        "0.5706",
+        "0.3897"
+      ],
+      "xyz_angstrom": [
+        0.10813118480287132,
+        2.5886879854906164,
+        4.306406684317834
+      ]
+    },
+    {
+      "source_atom_id": "H2F",
+      "element": "H",
+      "fractional_literals": [
+        "0.2604",
+        "0.7135",
+        "0.3208"
+      ],
+      "xyz_angstrom": [
+        0.5699638315130522,
+        3.778090459930667,
+        3.5450224899388276
+      ]
+    },
+    {
+      "source_atom_id": "O1",
+      "element": "O",
+      "fractional_literals": [
+        "1.2567 (10)",
+        "0.8302 (10)",
+        "1.1506 (5)"
+      ],
+      "xyz_angstrom": [
+        5.6582782003597,
+        1.8697816425738085,
+        12.71478452906364
+      ]
+    },
+    {
+      "source_atom_id": "N3",
+      "element": "N",
+      "fractional_literals": [
+        "0.9601 (11)",
+        "0.7534 (9)",
+        "1.0048 (6)"
+      ],
+      "xyz_angstrom": [
+        4.058637525910952,
+        1.8247302815409703,
+        11.103611589434333
+      ]
+    },
+    {
+      "source_atom_id": "C1",
+      "element": "C",
+      "fractional_literals": [
+        "0.7242 (15)",
+        "0.7227 (15)",
+        "0.9760 (9)"
+      ],
+      "xyz_angstrom": [
+        2.6516125894567972,
+        1.7109075019847064,
+        10.785355206297682
+      ]
+    },
+    {
+      "source_atom_id": "H1A",
+      "element": "H",
+      "fractional_literals": [
+        "0.6598",
+        "0.7511",
+        "1.0510"
+      ],
+      "xyz_angstrom": [
+        2.132073517042473,
+        1.6590447850589056,
+        11.614147870716048
+      ]
+    },
+    {
+      "source_atom_id": "H1B",
+      "element": "H",
+      "fractional_literals": [
+        "0.6694",
+        "0.5797",
+        "0.9279"
+      ],
+      "xyz_angstrom": [
+        2.5012980728384426,
+        0.9010689374477399,
+        10.253822844184034
+      ]
+    },
+    {
+      "source_atom_id": "H1C",
+      "element": "H",
+      "fractional_literals": [
+        "0.6836",
+        "0.8165",
+        "0.9294"
+      ],
+      "xyz_angstrom": [
+        2.36857612749517,
+        2.4960997662309476,
+        10.270398697472404
+      ]
+    },
+    {
+      "source_atom_id": "C2",
+      "element": "C",
+      "fractional_literals": [
+        "1.0852 (17)",
+        "0.7125 (15)",
+        "0.9063 (8)"
+      ],
+      "xyz_angstrom": [
+        4.996928657640566,
+        1.8685114173291324,
+        10.015130556831545
+      ]
+    },
+    {
+      "source_atom_id": "H2A",
+      "element": "H",
+      "fractional_literals": [
+        "1.2411",
+        "0.7612",
+        "0.9374"
+      ],
+      "xyz_angstrom": [
+        5.885710012727019,
+        2.0964738555447786,
+        10.358803248343696
+      ]
+    },
+    {
+      "source_atom_id": "H2B",
+      "element": "H",
+      "fractional_literals": [
+        "1.0389",
+        "0.7845",
+        "0.8476"
+      ],
+      "xyz_angstrom": [
+        4.713354603503442,
+        2.5457389849298275,
+        9.366462164813438
+      ]
+    },
+    {
+      "source_atom_id": "H2C",
+      "element": "H",
+      "fractional_literals": [
+        "1.0608",
+        "0.5637",
+        "0.8667"
+      ],
+      "xyz_angstrom": [
+        5.031118194849558,
+        0.9918617329408064,
+        9.577528030018648
+      ]
+    },
+    {
+      "source_atom_id": "C3",
+      "element": "C",
+      "fractional_literals": [
+        "1.0583 (16)",
+        "0.8090 (13)",
+        "1.1198 (7)"
+      ],
+      "xyz_angstrom": [
+        4.478686782304675,
+        1.8266440901408907,
+        12.374427008209162
+      ]
+    },
+    {
+      "source_atom_id": "H3",
+      "element": "H",
+      "fractional_literals": [
+        "0.9686",
+        "0.8339",
+        "1.1818"
+      ],
+      "xyz_angstrom": [
+        3.820560075296897,
+        1.793382956853304,
+        13.05956227746168
+      ]
+    }
+  ],
+  "independent_reported_bond_comparisons": [
+    {
+      "pair": [
+        "Pt1",
+        "N1"
+      ],
+      "converted_angstrom": 2.0340951196107238,
+      "reported_angstrom": 2.034,
+      "reported_standard_uncertainty": 0.006,
+      "delta_angstrom": 9.511961072394826e-05
+    },
+    {
+      "pair": [
+        "Pt1",
+        "N2"
+      ],
+      "converted_angstrom": 2.037329221457234,
+      "reported_angstrom": 2.037,
+      "reported_standard_uncertainty": 0.006,
+      "delta_angstrom": 0.0003292214572341301
+    },
+    {
+      "pair": [
+        "Pt1",
+        "Cl1"
+      ],
+      "converted_angstrom": 2.3089441953994965,
+      "reported_angstrom": 2.3088,
+      "reported_standard_uncertainty": 0.0019,
+      "delta_angstrom": 0.00014419539949628302
+    },
+    {
+      "pair": [
+        "Pt1",
+        "Cl2"
+      ],
+      "converted_angstrom": 2.3126498773593163,
+      "reported_angstrom": 2.313,
+      "reported_standard_uncertainty": 0.002,
+      "delta_angstrom": -0.0003501226406839031
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "PREP-051\\crystal-asymmetric-unit.xyz",
+      "sha256": "5eacb429a8b9e1c9d438040f090474eb759636ca58736fd09fee1984a3be316c",
+      "atom_count": 23
+    },
+    {
+      "file": "PREP-051\\starting.xyz",
+      "sha256": "b1d6d0ca37ce059e8f757568f7869023c6facbbbbc5bef50290783026e75fb8f",
+      "atom_count": 11
+    }
+  ],
+  "intended_charge": 0,
+  "proposed_multiplicity": 1,
+  "electronic_state_status": "requires-Gaussian-state-and-stability-checks",
+  "experimental_temperature_kelvin": 200,
+  "hydrogen_treatment": "positions inferred; H-atom parameters constrained",
+  "refinement_notes": "Split crystal, two domains, reported minor fraction 0.084(6); R(F^2>2sigma)=0.028.",
+  "environment": "DMF monosolvate crystal; isolated molecule and stored asymmetric unit do not reproduce the infinite crystal or complete hydrogen-bond environment.",
+  "state_and_geometry_not_accepted_reference": true,
+  "formal_case": false,
+  "gaussian_started": false,
+  "cov_executed": false,
+  "source_license": "CC-BY; credit original authors and DOI",
+  "status": "experimental-structure-starting-coordinates-prepared"
+}

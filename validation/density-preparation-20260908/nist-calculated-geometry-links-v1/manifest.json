@@ -1,0 +1,23 @@
+{
+  "sources": [
+    {
+      "candidate_id": "PREP-007",
+      "cas_digits": "7790912"
+    },
+    {
+      "candidate_id": "PREP-009",
+      "cas_digits": "16921963"
+    },
+    {
+      "candidate_id": "PREP-045",
+      "cas_digits": "2143580"
+    }
+  ],
+  "http_timeout_seconds": 20,
+  "max_bytes_per_response": 2097152,
+  "retries": 0,
+  "parallel_requests": 1,
+  "session": "Anonymous per-molecule CookieJar; cookies are not persisted or exported",
+  "formal_external_cases": 0,
+  "gaussian_started": false
+}

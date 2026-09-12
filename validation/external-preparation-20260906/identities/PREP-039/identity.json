@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-039",
+  "query": "acetic acid",
+  "expected_formula": "C2H4O2",
+  "expected_charge": 0,
+  "family": "羧酸",
+  "purpose": "单体及后续弱复合物对照",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709701.1038945,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 176,
+      "MolecularFormula": "C2H4O2",
+      "ConnectivitySMILES": "CC(=O)O",
+      "InChIKey": "QTBSBXVTEAMEQO-UHFFFAOYSA-N",
+      "IUPACName": "acetic acid",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/176"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709701.1038945,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-039\\response-1.json",
+      "sha256": "a2d9ee00c2933d27c654ec83fab8b74c0b5f6828fb4adadb0a6184f4b3a8500b",
+      "bytes": 277,
+      "elapsed_seconds": 1.3483877182006836
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/acetic%20acid/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}
