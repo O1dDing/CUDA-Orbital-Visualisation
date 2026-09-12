@@ -23,10 +23,14 @@ import threading
 import time
 import uuid
 
+from fast_checkpoint import (cold_snapshot, restore_snapshot, persistent_input,
+                             rwf_restart_input, cooperative_opt_stop)
+
 from policy import (METHODS, Stage, basis_count, core_budget, digest, followup,
                     grants, historical_reference_digest, initial_part, log_progress, next_stage, preferred_cores, route_signature)
 
 HERE = Path(__file__).resolve().parent
+RUNTIME_DIRECTORY = 'runtime-v2-fastpause'
 FROZEN = HERE.parent / 'paused-20260906' / 'runner-source'
 
 
@@ -150,6 +154,12 @@ class FrozenData:
                 self.originals[case_id]['fchk_identity']['Atomic numbers'], ref['shell_flags'] == '5D 7F')
         if self.rebuild.digest(row_ids) != self.manifest['reference_set_identity']:
             raise ValueError('Reference manifest digest mismatch')
+        # Fine-grained restart receipts must not survive changing a link binary
+        # while keeping the same g16 launcher. Hash the installed link executables
+        # and DLLs without including license files or uploading binary contents.
+        for binary in sorted(self.gaussian.iterdir()):
+            if binary.is_file() and (re.fullmatch(r'l\d+\.exe', binary.name, re.I) or binary.suffix.lower() == '.dll'):
+                self.binaries[binary.name.lower()] = sha(binary)
 
     def validate(self, case_id: str, fchk: Path) -> dict:
         fields = self.rebuild.read_fchk(fchk)
@@ -165,21 +175,21 @@ class Engine:
     def __init__(self, config: dict, data, backend):
         self.config, self.data, self.backend = config, data, backend
         self.work = Path(config['work_root']).resolve()
-        self.root = self.work / 'runtime-v2'
+        self.root = self.work / RUNTIME_DIRECTORY
         self.jobs = self.root / 'jobs'
         self.control = self.root / 'control.json'
         self.active: dict[str, dict] = {}
         self.mutex = threading.Lock()
         self._records_cache: dict[str, dict] = {}
-        self.identity = digest({'version': 2, 'parent': data.parent_identity,
-                                'files': {n: sha(HERE / n) for n in ('resume.py', 'policy.py', 'windows_job.py')},
+        self.identity = digest({'version': '2.1-fastpause', 'parent': data.parent_identity,
+                                'files': {n: sha(HERE / n) for n in ('resume.py', 'policy.py', 'windows_job.py', 'windows_pause.py', 'fast_checkpoint.py', 'native_acceptance.py')},
                                 'binaries': data.binaries})
 
     def bind(self):
         target = self.root / 'binding.json'
         current = {'runtime_identity': self.identity, 'parent_runner_identity': self.data.parent_identity,
                    'reference_set_identity': self.data.manifest['reference_set_identity'],
-                   'binaries': self.data.binaries, 'version': 2}
+                   'binaries': self.data.binaries, 'version': '2.1-fastpause'}
         if target.exists() and read(target) != current:
             raise ValueError('Runtime implementation/inputs changed. Review migration; do not overwrite v2 evidence')
         atomic(target, current)
@@ -188,12 +198,40 @@ class Engine:
         if not self.control.exists():
             return 'pause'
         value = read(self.control).get('mode')
-        if value not in ('run', 'pause', 'interrupt', 'shutdown'):
+        if value not in ('run', 'pause', 'hold', 'interrupt', 'shutdown'):
             raise ValueError('Invalid control state; refusing to continue')
         return value
 
     def set_mode(self, mode: str):
         set_control(self.root, mode)
+
+    def interrupt_requested(self, created_epoch: float) -> bool:
+        state = read(self.control) if self.control.exists() else {}
+        # A subsequent Resume must not erase a save-stop already requested for
+        # this active attempt. New attempts have a later creation timestamp.
+        return float(state.get('interrupt_epoch', 0)) >= created_epoch
+
+    def producer(self, case_id, phase):
+        return {'runtime_identity': self.identity, 'reference_identity': self.data.candidates[case_id]['identity'],
+                'binaries': self.data.binaries, 'case_id': case_id, 'stage': phase.name}
+
+    def require_capability(self, capability, method):
+        if getattr(self, '_native_probe', False):
+            return  # only the isolated native acceptance harness sets this attribute
+        path = self.root / 'native-capabilities.json'
+        if not path.exists():
+            raise NeedsReview(capability + ': run native-acceptance first; no unverified Gaussian restart')
+        receipt = read(path)
+        if receipt.get('runtime_identity') != self.identity or receipt.get('binaries') != self.data.binaries:
+            raise NeedsReview('Native capability belongs to another runtime/Gaussian installation')
+        proof = receipt.get('capabilities', {}).get(capability, {})
+        if not proof.get('passed') or method not in proof.get('methods', []):
+            raise NeedsReview('Native capability not accepted for ' + capability + '/' + method)
+        for record in receipt.get('evidence', []):
+            if sha(Path(record['path'])) != record['sha256']:
+                raise NeedsReview('Native acceptance evidence changed')
+        if not receipt.get('evidence'):
+            raise NeedsReview('Native acceptance evidence absent')
 
     def records(self, case_id: str) -> dict:
         if case_id in self._records_cache:
@@ -237,10 +275,10 @@ class Engine:
                 'fchk_sha256': sha(fchk), 'fields': fields, 'probe_process': process,
                 'validity': 'parse_and_identity_valid; restart_history_not_certified'}
 
-    def receipt(self, case_id: str, phase: Stage, directory: Path, provenance: dict, cores: int) -> dict:
+    def receipt(self, case_id: str, phase: Stage, directory: Path, provenance: dict, cores: int, *, cooperative=False) -> dict:
         log = directory / 'job.log'
         contents = text(log)
-        if 'Normal termination of Gaussian' not in contents or 'Error termination' in contents:
+        if (not cooperative and 'Normal termination of Gaussian' not in contents) or 'Error termination' in contents:
             raise NeedsReview('Gaussian did not terminate normally')
         diagnostics = self.data.runner.stage_diagnostics(log)
         if phase.part == 'opt' and not diagnostics['optimization_completed']:
@@ -270,18 +308,32 @@ class Engine:
                 raise NeedsReview('Interrupted attempt identity mismatch')
             if sha(path.parent / 'job.gjf') != attempt['input_sha256']:
                 raise NeedsReview('Interrupted attempt input changed; checkpoint science is not trusted')
-            if attempt['status'] in ('running', 'interrupted', 'timeout'):
+            if attempt['status'] in ('running', 'interrupted', 'timeout', 'checkpointed'):
                 # A running record with no OS-held coordinator lease is historical.
                 checkpoint = path.parent / 'job.chk'
                 if not checkpoint.exists():
                     checkpoint = path.parent / 'scratch/job.chk'
                 if checkpoint.exists():
+                    if attempt.get('checkpoint_snapshot'):
+                        snap = attempt['checkpoint_snapshot']
+                        manifest_path = Path(snap['directory']) / 'manifest.json'
+                        if sha(manifest_path) != snap['manifest_sha256']:
+                            raise NeedsReview('Saved snapshot manifest changed')
+                        saved = read(manifest_path)['files'].get('job.chk', {})
+                        if sha(checkpoint) != saved.get('sha256'):
+                            raise NeedsReview('Raw interrupted checkpoint changed after cold preservation')
                     return {'checkpoint': str(checkpoint), 'log': str(path.parent / 'job.log'),
-                            'origin': str(path), 'status': attempt['status']}
+                            'origin': str(path), 'status': attempt['status'],
+                            'snapshot': attempt.get('checkpoint_snapshot')}
                 # Frequency can restart its entire analytic Hessian from the
                 # completed opt checkpoint. Other missing checkpoints need review.
                 if phase.part != 'freq':
                     raise NeedsReview('Interrupted checkpoint missing; no silent restart from initial geometry')
+                # Keep the interruption visible. Auto/RWF mode must not silently
+                # become a complete frequency replay merely because CHK vanished.
+                return {'checkpoint': str(checkpoint), 'log': str(path.parent / 'job.log'),
+                        'origin': str(path), 'status': attempt['status'],
+                        'snapshot': attempt.get('checkpoint_snapshot')}
         imported = base / 'resume-source.json'
         return read(imported) if imported.exists() else None
 
@@ -306,7 +358,25 @@ class Engine:
                 self.receipt(case_id, phase, directory,
                     {'strategy': 'finished_gaussian_recovered_before_collection', 'source': source}, cores)
                 return 'collected'
+            rwf_restored = False
+            if source and phase.part == 'freq' and self.config.get('freq_recovery', 'replay') in ('rwf', 'auto'):
+                method = phase.source['fields']['method'] if phase.source else None
+                self.require_capability('analytic_rwf_restart', method)
+                snapshot = source.get('snapshot')
+                if not snapshot:
+                    raise NeedsReview('Interrupted Freq has no cold RWF snapshot; select reviewed replay explicitly')
+                restore_snapshot(snapshot, directory, self.producer(case_id, phase), require_rwf=True)
+                probe = self.probe(case_id, directory / 'job.chk', directory / 'recovery', cores)
+                if probe['fields']['method'] != method:
+                    raise NeedsReview('RWF restart checkpoint changed R/U method')
+                strategy = 'analytic_frequency_rwf_restart'
+                rwf_restored = True
             if source and phase.part != 'freq':
+                if source.get('snapshot'):
+                    isolated = directory / 'restored-source'
+                    isolated.mkdir()
+                    restore_snapshot(source['snapshot'], isolated, self.producer(case_id, phase))
+                    source = dict(source, checkpoint=str(isolated / 'job.chk'))
                 probe = self.probe(case_id, Path(source['checkpoint']), directory / 'recovery', cores)
                 donor = probe
                 strategy = 'opt_restart' if phase.part == 'opt' else 'checkpoint_guess_replay'
@@ -322,9 +392,11 @@ class Engine:
                     atomic(base / 'stage.json', row)
                     self._records_cache.pop(case_id, None)
                     return 'collected'
-            elif source and phase.part == 'freq':
+            elif source and phase.part == 'freq' and not rwf_restored:
                 strategy = 'analytic_frequency_replay_from_completed_opt'
-            if donor:
+            if rwf_restored:
+                input_text = rwf_restart_input(cores)
+            elif donor:
                 method = donor['fields']['method']
                 checkpoint = Path(donor['checkpoint'])
                 if sha(checkpoint) != donor['checkpoint_sha256']:
@@ -339,12 +411,27 @@ class Engine:
                     raise NeedsReview('Missing preceding stage')
                 input_text = initial_part(text(self.data.references / 'reference-inputs' / case_id / 'initial.gjf'),
                                           phase.part, cores, retry=retry)
+            preference = self.config.get('opt_step_checkpoints', False)
+            segmented = phase.part == 'opt' and preference is not False
+            if segmented:
+                effective_method = method or re.search(r'#p\s+(\w+)/', input_text)[1]
+                try:
+                    self.require_capability('opt_l103_segments', effective_method)
+                except NeedsReview:
+                    if preference == 'auto':
+                        segmented = False  # RAM pause still works; no untested KJob injection
+                    else:
+                        raise
+                if segmented and len(attempts) >= 1024:
+                    raise NeedsReview('Optimization segment budget exhausted; no unbounded restart loop')
+            if not rwf_restored:
+                input_text = persistent_input(input_text, opt_segments=segmented)
             (directory / 'job.gjf').write_text(input_text, encoding='ascii', newline='\n')
             attempt = {'status': 'running', 'runtime_identity': self.identity, 'reference_identity': reference['identity'],
                        'phase': phase.name, 'strategy': strategy, 'cores': cores, 'input_memory_gib': 24,
                        'tree_memory_gib': 32, 'input_sha256': sha(directory / 'job.gjf'),
                        'route_signature': route_signature(input_text), 'scf_retry': retry,
-                       'source': source, 'starting_checkpoint_sha256': sha(directory / 'job.chk') if donor else None,
+                       'source': source, 'starting_checkpoint_sha256': sha(directory / 'job.chk') if (donor or rwf_restored) else None,
                        'binaries': self.data.binaries, 'created_epoch': time.time()}
             atomic(directory / 'attempt.json', attempt)
             def started(value):
@@ -359,8 +446,25 @@ class Engine:
                 raise Paused('before_launch')
             process = self.backend.run_tree([self.data.gaussian / 'g16.exe', directory / 'job.gjf', directory / 'job.log'],
                 directory, cores, 32, float(self.config.get('timeout_hours', 72))*3600,
-                cancel=lambda: self.mode() == 'interrupt', on_started=started, on_tick=tick)
+                cancel=lambda: self.interrupt_requested(attempt['created_epoch']), on_started=started, on_tick=tick,
+                **({'hold': lambda: self.mode() == 'hold',
+                    'on_hold_error': lambda message: print('RAM PAUSE FAILED (rolled back): ' + message, flush=True),
+                    'on_timeout': lambda: self.set_mode('hold')}
+                   if getattr(self.backend, 'SUPPORTS_RAM_PAUSE', False) else {}))
             attempt['process'] = process
+            # All file capture happens AFTER run_tree reports its entire Job exited.
+            if process.get('interrupted'):
+                with self.mutex:
+                    self.active[case_id] = {'stage': phase.name, 'cores': cores,
+                        'execution_state': 'saving_cold_checkpoint', 'active_processes': 0,
+                        'log': str(directory / 'job.log'), 'pause_is_disk_checkpoint': False}
+                try:
+                    attempt['checkpoint_snapshot'] = cold_snapshot(directory, self.producer(case_id, phase),
+                        writers_exited=process.get('active_processes_at_return', 0) == 0,
+                        reserve_bytes=int(self.config.get('disk_reserve_gib', 20))*2**30, include_scratch=phase.part == 'freq')
+                except Exception as error:
+                    attempt['checkpoint_snapshot_error'] = str(error)
+                atomic(directory / 'attempt.json', attempt)
             if process.get('interrupted'):
                 attempt['status'] = 'timeout' if process['stop_reason'] == 'timeout' else 'interrupted'
                 try:
@@ -375,6 +479,26 @@ class Engine:
                     self.set_mode('pause')
                 raise Paused(process['stop_reason'])
             log = text(directory / 'job.log')
+            if segmented and cooperative_opt_stop(log, input_text):
+                # Expected producer-controlled exit, not a failed scientific calculation.
+                # An Opt checkpoint is a resume point, not a completed candidate.
+                if 'Optimization completed.' in log:
+                    row = self.receipt(case_id, phase, directory,
+                        {'strategy': 'cooperative_opt_complete', 'attempt': str(directory / 'attempt.json')},
+                        cores, cooperative=True)
+                    attempt.update(status='collected', checkpoint_sha256=row['checkpoint_sha256'])
+                    atomic(directory / 'attempt.json', attempt)
+                    return 'collected'
+                probe = self.probe(case_id, directory / 'job.chk', directory / 'saved', cores)
+                if donor and probe['checkpoint_sha256'] == donor['checkpoint_sha256']:
+                    raise NeedsReview('Cooperative segment made no checkpoint progress')
+                attempt['checkpoint_snapshot'] = cold_snapshot(directory, self.producer(case_id, phase),
+                    writers_exited=process.get('active_processes_at_return', 0) == 0,
+                    reserve_bytes=int(self.config.get('disk_reserve_gib', 20))*2**30, include_scratch=phase.part == 'freq')
+                attempt.update(status='checkpointed', recovery_probe=probe,
+                               note='Opt not converged; intentional L103 boundary, not a scientific pass')
+                atomic(directory / 'attempt.json', attempt)
+                return 'checkpointed'
             if process['exit_code'] or 'Normal termination of Gaussian' not in log or 'Error termination' in log:
                 attempt['status'] = 'failed'
                 atomic(directory / 'attempt.json', attempt)
@@ -491,10 +615,10 @@ class Engine:
                     if not future.done():
                         continue
                     try:
-                        future.result()
+                        outcome = future.result()
                         self._records_cache.pop(case_id, None)
-                        state['cases'][case_id] = 'stage_collected'
-                        print(f'{case_id} {phase.name}: collected', flush=True)
+                        state['cases'][case_id] = 'checkpointed' if outcome == 'checkpointed' else 'stage_collected'
+                        print(f'{case_id} {phase.name}: {outcome}', flush=True)
                     except Paused as error:
                         state['cases'][case_id] = 'paused_' + str(error)
                         print(f'{case_id} {phase.name}: paused ({error})', flush=True)
@@ -560,11 +684,14 @@ class Engine:
                 with self.mutex:
                     state['active'] = dict(self.active)
                 state.update(mode=self.mode(), heartbeat_epoch=time.time(), coordinator_pid=os.getpid(),
-                             counts=dict(Counter(state['cases'].values())))
+                             counts=dict(Counter(state['cases'].values())),
+                             no_active_writer_trees=not bool(running),
+                             can_close_coordinator_without_killing_jobs=not bool(running),
+                             ram_pause_warning='RAM pause is not a disk save; do not power off or close coordinator')
                 atomic(self.root / 'status.json', state)
                 if (mode == 'shutdown' and not running) or (not ready and not running):
                     break
-                time.sleep(getattr(self, 'poll_seconds', 1.0))
+                time.sleep(getattr(self, 'poll_seconds', .25))
         except BaseException:
             # Signal cancellation BEFORE executor.shutdown waits for its futures.
             self.set_mode('interrupt')
@@ -576,15 +703,28 @@ class Engine:
             atomic(self.root / 'status.json', state)
 
 def set_control(root: Path, mode: str):
-    if mode not in ('run', 'pause', 'interrupt', 'shutdown'):
+    if mode not in ('run', 'pause', 'hold', 'interrupt', 'shutdown'):
         raise ValueError('Unknown control command')
-    record = {'mode': mode, 'requested_epoch': time.time(), 'request_id': uuid.uuid4().hex}
-    atomic(root / 'commands' / (str(time.time_ns()) + '.json'), record)
-    atomic(root / 'control.json', record)
+    root.mkdir(parents=True, exist_ok=True)
+    deadline = time.monotonic() + 5
+    while True:
+        try:
+            with lease(root / 'control.lock'):
+                previous = read(root / 'control.json') if (root / 'control.json').exists() else {}
+                now = time.time()
+                record = {'mode': mode, 'requested_epoch': now, 'request_id': uuid.uuid4().hex,
+                          'interrupt_epoch': now if mode == 'interrupt' else previous.get('interrupt_epoch', 0)}
+                atomic(root / 'commands' / (str(time.time_ns()) + '.json'), record)
+                atomic(root / 'control.json', record)
+                return
+        except RuntimeError:
+            if time.monotonic() >= deadline:
+                raise
+            time.sleep(.02)
 
 
 def report(work: Path):
-    root = work / 'runtime-v2'
+    root = work / RUNTIME_DIRECTORY
     status = read(root / 'status.json') if (root / 'status.json').exists() else {}
     status['work_lease_held'] = occupied(work / 'jobs/supervisor.lock')
     status['control'] = read(root / 'control.json') if (root / 'control.json').exists() else None
@@ -601,15 +741,16 @@ def report(work: Path):
 def menu(config_path: Path, config: dict):
     work = Path(config['work_root'])
     while True:
-        print('\nCOV REF-001 续算器 v2（与旧版菜单不同，不会热更新旧进程）\n'
+        print('\nCOV REF-001 快速暂停版 2.1（不热更新旧进程）\n'
               '1 检查数据及物理核预算（不算）\n'
               '2 导入旧版结果和检查点（旧协调器必须已退出）\n'
               '3 开始队列（自动分配核心）\n'
-              '4 阶段边界暂停（Opt/Freq 已拆开；协调器不退出）\n'
+              '4 快速内存暂停（保留现场，不是落盘保存；不可关机/关闭计算窗口）\n'
               '5 查看状态、核心分配、最近三组几何收敛表\n'
               '6 撤销暂停，恢复全部可用计算槽位\n'
-              '8 立即中断本续算器拥有的作业，校验保存的检查点\n'
+              '8 停止并冷保存 CHK/RWF（会丢失未保存工作；等保存回执后才能关机）\n'
               '9 当前阶段收尾后退出协调器\n'
+              '10 优化检查点/子阶段边界暂停（比内存暂停慢，但可落盘）\n'
               '0 仅退出菜单')
         choice = input('> ').strip()
         try:
@@ -624,9 +765,11 @@ def menu(config_path: Path, config: dict):
                     subprocess.Popen(argv, creationflags=subprocess.CREATE_NEW_CONSOLE)
                 else:
                     subprocess.run(argv, check=True)
-            elif choice in ('4', '6', '8', '9'):
-                mode = {'4': 'pause', '6': 'run', '8': 'interrupt', '9': 'shutdown'}[choice]
-                set_control(work / 'runtime-v2', mode)
+            elif choice in ('4', '6', '8', '9', '10'):
+                mode = {'4': 'hold', '6': 'run', '8': 'interrupt', '9': 'shutdown', '10': 'pause'}[choice]
+                if choice == '8' and input('确认中断并尝试保存？输入 SAVE：').strip() != 'SAVE':
+                    continue
+                set_control(work / RUNTIME_DIRECTORY, mode)
                 print('v2 control written:', mode, '(no effect on an old v1 coordinator)')
                 if choice == '6' and not occupied(work / 'jobs/supervisor.lock'):
                     print('No coordinator owns this work directory. Use 3 to start it.')
@@ -639,12 +782,16 @@ def menu(config_path: Path, config: dict):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=HERE / 'config.json')
-    parser.add_argument('command', choices=('menu', 'check', 'import-legacy', 'run', 'pause', 'resume', 'interrupt', 'shutdown', 'status', 'retry-reviewed'))
+    parser.add_argument('command', choices=('menu', 'check', 'import-legacy', 'run', 'pause', 'hold', 'resume', 'interrupt', 'shutdown', 'status', 'retry-reviewed', 'native-acceptance'))
     parser.add_argument('--case', action='append')
     parser.add_argument('--limit', type=int, default=273)
     parser.add_argument('--reason')
     args = parser.parse_args()
     config = read(args.config)
+    if config.get('freq_recovery', 'replay') not in ('replay', 'rwf', 'auto'):
+        raise ValueError('freq_recovery must be replay, rwf or auto')
+    if config.get('opt_step_checkpoints', False) != 'auto' and not isinstance(config.get('opt_step_checkpoints', False), bool):
+        raise ValueError('opt_step_checkpoints must be boolean or auto')
     import math
     hours = float(config.get('timeout_hours', 72))
     if not math.isfinite(hours) or not 0 < hours <= 168:
@@ -654,8 +801,8 @@ def main():
     work = Path(config['work_root']).resolve()
     if args.command == 'menu':
         return menu(args.config.resolve(), config)
-    if args.command in ('pause', 'resume', 'interrupt', 'shutdown'):
-        set_control(work / 'runtime-v2', {'resume': 'run'}.get(args.command, args.command))
+    if args.command in ('pause', 'hold', 'resume', 'interrupt', 'shutdown'):
+        set_control(work / RUNTIME_DIRECTORY, {'resume': 'run'}.get(args.command, args.command))
         print('Command written; only a v2 coordinator reacts. Legacy v1 is not hot-patched.')
         return
     if args.command == 'status':
@@ -683,6 +830,9 @@ def main():
             raise RuntimeError('Foreign/legacy Gaussian still exists; refusing admission: ' + repr(foreign))
         backend.full_startup_affinity()
         engine.bind()
+        if args.command == 'native-acceptance':
+            from native_acceptance import run_acceptance
+            return run_acceptance(engine, host)
         if args.command == 'retry-reviewed':
             if not args.case or not args.reason or not args.reason.strip():
                 raise ValueError('retry-reviewed requires explicit --case and a nonempty --reason')
