@@ -522,4 +522,8 @@ if(COV_BUILD_TESTS)
     )
     add_test(NAME ui_orbital_localisation_smoke
         COMMAND cov_ui_orbital_localisation_smoke)
+
+    add_executable(cov_ui_details_resize_smoke tests/ui_details_resize_smoke.cpp)
+    target_link_libraries(cov_ui_details_resize_smoke PRIVATE cov_ui)
+    add_test(NAME ui_details_resize_smoke COMMAND cov_ui_details_resize_smoke)
 endif()

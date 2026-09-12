@@ -42,6 +42,8 @@ struct OrbitalUIState {
     bool grouped_labels = true;
     bool hide_ligand_centred_intermediates = true;
     bool show_diagram_details = false;
+    // Last drawn details rectangle (x, y, width, height), in ImGui coordinates.
+    std::optional<std::array<float, 4>> diagram_details_bounds;
     int diagram_neighbourhood = 12;
     std::array<char, 96> search{};
     OrbitalUIBrowserCache browser_cache{};

@@ -1510,10 +1510,28 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x+work.x*.5f,viewport->WorkPos.y+work.y*.5f),
             ImGuiCond_Appearing,ImVec2(.5f,.5f));
         ImGui::SetNextWindowSize(ImVec2(std::min(720.0f*ui_scale,work.x*.8f),work.y*.7f),ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSizeConstraints(ImVec2(180.0f,120.0f),ImVec2(std::max(180.0f,work.x-24.0f),std::max(120.0f,work.y-24.0f)));
+        const ImVec2 margin(std::min(12.0f,work.x*.1f),std::min(12.0f,work.y*.1f));
+        const ImVec2 maximum(std::max(1.0f,work.x-2*margin.x),std::max(1.0f,work.y-2*margin.y));
+        const ImVec2 minimum(std::min(180.0f,maximum.x),std::min(120.0f,maximum.y));
+        ImGui::SetNextWindowSizeConstraints(minimum,maximum);
+        if(state.diagram_details_bounds) {
+            const auto& bounds=*state.diagram_details_bounds;
+            const ImVec2 size(std::clamp(bounds[2],minimum.x,maximum.x),
+                              std::clamp(bounds[3],minimum.y,maximum.y));
+            const ImVec2 lower(viewport->WorkPos.x+margin.x,viewport->WorkPos.y+margin.y);
+            const ImVec2 position(std::clamp(bounds[0],lower.x,lower.x+maximum.x-size.x),
+                                  std::clamp(bounds[1],lower.y,lower.y+maximum.y-size.y));
+            // Size constraints alone leave ImGui's title-grab sliver visible
+            // after a restore. Keep the whole window reachable, before Begin
+            // computes clipping, without resetting a valid user placement.
+            if(position.x!=bounds[0] || position.y!=bounds[1])
+                ImGui::SetNextWindowPos(position,ImGuiCond_Always);
+        }
         const std::string details_title=std::string(orbital_tr(OrbitalText::OrbitalDetails,language))+"###cov.orbital.details";
         const bool visible=ImGui::Begin(details_title.c_str(),
             &state.show_diagram_details,ImGuiWindowFlags_HorizontalScrollbar);
+        const auto details_pos=ImGui::GetWindowPos(),details_size=ImGui::GetWindowSize();
+        state.diagram_details_bounds=std::array<float,4>{details_pos.x,details_pos.y,details_size.x,details_size.y};
         if(visible) {
             if(ImGui::Button(orbital_tr(OrbitalText::CloseOrbitalDetails,language)))state.show_diagram_details=false;
             cov::validation::item("diagram.details.close");
