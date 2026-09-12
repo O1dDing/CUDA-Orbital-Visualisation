@@ -1,55 +1,29 @@
-## 2026-09-10 计算快速暂停入口
+# Validation records
 
-[REF-001 快速暂停版 2.1](runtime_v2/FAST_PAUSE.md)：4/hold 保留内存现场快速暂停（不可关机），
-6/resume 原地继续，10/pause 在已验收的优化段或子阶段边界停止，8/interrupt 冷保存 CHK/RWF。
-新数据位于 work/runtime-v2-fastpause，不热覆盖旧作业；优化段/RWF 续算需本机 native-acceptance 能力回执。
-真实 Gaussian 原生验收仍不能由 CI 替代。以下保留既有科学验证和归档入口。
+## Current software validation
 
-# 验证项目入口
+[COMMON-ROOT-008E](common-root-008e-20260912/README.md) records the COV source revision `3752f8a`: independent numerical checks, scoped orbital and diagram checks, dedicated controls, the fixed 40-case precheck, the new 273-case software round and ordinary-viewer interaction. The two builds each passed 39 component tests. A single unexplained blank startup remains recorded separately from the successful interactions.
 
-## 2026-09-12 COMMON-ROOT-008E 当前软件验收
+The [pre.11 release notes](../docs/releases/v0.3.0-pre.11.md) describe the distributable programs, evidence and source identities. Software-regression passes apply to the declared checks; they do not establish physical electronic states or full scientific acceptance.
 
-[当前软件验收与交付记录](common-root-008e-20260912/README.md)保存源提交3752f8a的专项控制、固定40、新原273软件回归及普通版实际交互。
-UI-009/010已在记录范围修复；程序内构建提交已经实际核验。普通版空白启动的一次未复现观察继续保留。
-原273高质量物理参考和至少50个不同外部分子的正式计算/科学裁决仍待后续；本阶段完整科学通过0，未启动Gaussian。
+## REF-001 calculation data
 
-## 2026-09-09 COMMON-ROOT-008 历史轮次
+The [2026-09-12 reference snapshot](ref001-progress-20260912/README.md) contains 90 collected candidates, two partially collected cases, two cases needing review and 179 not-started cases. It verifies 294 main Runtime v2 stage records plus 10 native-capability probe stage records, with legacy imports identified separately. Complete scientific acceptance remains zero.
 
-[COMMON-ROOT-008 稳定候选检查点](common-root-008-20260909/README.md)已保存：
-历史源码8e206e1的完整专项控制、固定40和全273已完成冻结软件检查；其后发现的普通窗口问题由3752f8a修复，当前验收见上方E轮。
-原始轮次和复核队列保持冻结；中断后先核实实际终态，只接续缺失阶段。
-旧启动回执仍原样保留，不表示完整科学验收通过。全量终态见当前目录所保存的原C裁决。
+The detailed file manifest resolves new data, earlier archive members and identical-content aliases by SHA-256. Large calculation files are retained in the [REF-001 data archive](https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/cov-ref-paused-20260906); verified asset identities are published with the snapshot. Inputs, logs, checkpoints, timeout/failure records and recovery material remain available.
 
-## 2026-09-09 当前接续检查点
+The [2026-09-09 snapshot](ref001-progress-20260909/README.md) is a historical baseline with 17 collected candidates and 37 completed legacy stages. Its raw receipts and uploaded assets retain their original bytes. The later snapshot supersedes its aggregate status, not its evidence.
 
-[REF-001 增量归档与恢复记录](ref001-progress-20260909/README.md) 已保存并上传，
-[远端校验回执](ref001-progress-20260909/upload-verification.json) 确认 4 个新增资产，
-合计 959,732,968 bytes，大小及 SHA-256 全部一致；旧数据归档和本地原件保留。
-现有证据确认 17 个已收集候选、37 个已完成阶段、OLD-018 超时断点及 OLD-019 已完成 initial。
-原打包 manifest 的 pending 是保留的历史状态，以后续上传回执为完成依据。
+## Runtime and recovery
 
-最新用户顺序是归档和恢复标记完成后返回 COV COMMON-ROOT-008，
-不要求先立即重启 Gaussian 或完成 runtime v2 迁移。Runtime v2、物理核资源政策和科学精度要求仍有效，
-真实 Gaussian 原生重启验收仍待完成。详情及后续验证门槛见 [handoff.json](ref001-progress-20260909/handoff.json)。
+[Runtime 2.1](runtime_v2/README.md), its [pause/recovery controls](runtime_v2/FAST_PAUSE.md) and the [execution runbook](runtime_v2/WORK_PROMPT.md) describe the current execution layer. Runtime evidence is stored separately in `work/runtime-v2-fastpause`; old calculation directories are imported only after identity and lock checks.
 
+The current native-capability evidence accepts RAM pause for its recorded RPBE1PBE/UPBE1PBE runtime and Gaussian installation. Optimization link-103 segmentation and analytic RWF restart remain unaccepted. Simulation and CI results do not replace installation-specific native evidence.
 
-## Gaussian 续算执行层
+`paused-20260906/` remains an immutable legacy source/input snapshot. Runtime resource limits use detected physical cores, preserve aggregate CPU/memory/disk budgets and keep the established model, basis, state, convergence and grid requirements.
 
-新的执行入口是 [REF-001 Runtime v2](runtime_v2/README.md)，位于
-`validation/runtime_v2/START.cmd`。资源预算和中断恢复采用该目录的新规则：
-按实测物理核心分配，16 核及以上最多合计 14 核，8 核通常最多 6 核；
-Opt/Freq/Stable 分开，已校验检查点恢复、暂停后恢复空闲槽位。
-该执行层上线前仍须完成真实 Gaussian 16W 的原机中断/恢复验收，不能把模拟/CI 通过当成原生通过。
-给本地 Work 的完整交接指令见 [WORK_PROMPT.md](runtime_v2/WORK_PROMPT.md)。
+## Earlier software rounds and scientific scope
 
-`paused-20260906/` 是不可改写的旧版冻结快照。保留它的输入、源码、身份及证据；
-不要在原目录直接替换 runner 或删除锁文件。当前正在运行的旧版进程不会自动获得 v2 功能。
-新证据记录在本地 `work/runtime-v2`，旧 `work/jobs/REF-001` 只读导入。
+The [COMMON-ROOT-008C record](common-root-008-20260909/README.md) preserves an earlier completed software round. Later ordinary-viewer checks exposed the details-window defect corrected in the E revision. Other dated directories retain their original failures, contracts and results.
 
-## 科学规则与其他验证
-
-科学要求仍参考 `../docs/FCHK_VALIDATION_AGENT.md`、`../docs/native-validation.md`，
-以及各日期目录内的具体冻结契约、真实证据和待办。此次新用户资源授权取代旧固定 4 核、
-12 核门槛等执行限制，但不改变模型化学、基组、电子态、网格、收敛精度和科学验收标准。
-
-`candidate_collected`、程序正常退出、界面能够显示、自动测试通过，都不等于完整科学验收通过。
+Scientific requirements and implementation details are described in [the validation specification](../docs/FCHK_VALIDATION_AGENT.md) and [native validation](../docs/native-validation.md). The remaining physical work comprises the original 273-case reference/state/geometry adjudication and at least 50 distinct external molecules. Candidate collection, normal process termination, display success and automated software tests are separate evidence categories.

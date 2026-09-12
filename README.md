@@ -6,6 +6,10 @@ CUDA Orbital Visualisation is an experimental GPU-first molecular-orbital viewer
 
 The viewer parses Gaussian FCHK/FCH and Molden wavefunctions on the CPU, uploads basis data to CUDA, evaluates a selected molecular orbital on a 3D grid, writes the scalar field **directly into an OpenGL 3D texture through CUDA/OpenGL interop**, and ray-marches the positive and negative isosurfaces on the GPU.
 
+## Download
+
+The [v0.3.0-pre.11 prerelease](https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/v0.3.0-pre.11) includes ordinary and native-validation Windows programs, validation evidence and source archives. Read the [release notes](docs/releases/v0.3.0-pre.11.md) for tested scope, program identities and remaining scientific limits.
+
 ## Current scope
 
 - [x] C++20 core

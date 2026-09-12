@@ -1,0 +1,26 @@
+{
+  "runtime_identity": "ec08b266c6fd2afc0ea4c19bfbf44494f67db35d597b11fbc4272b1f36f55000",
+  "capabilities": {
+    "ram_pause": {
+      "passed": true,
+      "methods": [
+        "RPBE1PBE",
+        "UPBE1PBE"
+      ]
+    },
+    "opt_l103_segments": {
+      "passed": false,
+      "methods": []
+    },
+    "analytic_rwf_restart": {
+      "passed": false,
+      "methods": []
+    }
+  },
+  "evidence_files_verified": 21,
+  "receipt": {
+    "path": "work/runtime-v2-fastpause/native-capabilities.json",
+    "sha256": "20f17b7c1c55e820fe5de3a44995b6c8caa672fc1c79d9a9e0653d12f64d5e3a",
+    "bytes": 14052
+  }
+}

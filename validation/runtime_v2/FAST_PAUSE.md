@@ -2,7 +2,7 @@
 
 本文是当前快速暂停入口的操作说明；原 README 的 4 键和 work/runtime-v2 路径只适用于旧版。
 新代码仍位于 validation/runtime_v2，运行数据另写 **work/runtime-v2-fastpause**，不会冒充或覆盖旧 v1/v2 结果。
-只改验证分支；不热接管旧 Gaussian、不发布 COV release、不改冻结科学输入。
+新运行数据与旧 Gaussian 进程隔离，冻结科学输入保持原始身份。
 
 ## 核心区别：暂停不等于保存
 
@@ -15,7 +15,7 @@
 | **9 / shutdown** | 当前子阶段/检查点段收尾后关闭协调器；若在 RAM 暂停，先恢复计算去完成该边界 | 等协调器退出 |
 | **5 / status** | 看真实 execution_state、暂停时长、活动耗时、线程句柄、几何收敛表 | 以真实状态为准 |
 
-**RAM 暂停是本次解决“点暂停后等数小时”的默认快捷路径。**系统调用轮询周期为 0.1 秒，
+**RAM 暂停在保留进程和内存状态的同时暂时停止计算。**系统调用轮询周期为 0.1 秒，
 正常树的确认需要数次短扫描，但并不承诺任何主机固定 0.1 秒完成；具体延迟要看 Windows 原生测试。
 这不是程序内的事务式保存，内核 I/O 仍可能收尾。**绝不在 RAM 暂停时复制 CHK/RWF 或运行 formchk**。
 保留内存、已分配核数预算和 Job 句柄，不能用暂停期间的空闲 CPU 再超额启动一批任务。
@@ -70,8 +70,8 @@ RWF 被拒绝或没有验收证据时进入 needs_review；只有显式选择 `f
 首次在新目录部署完整源码与冻结依赖，保留现有 data/work；不要覆盖正在运行的任何入口。
 
 ```powershell
-F:\Dev\Python312\python.exe -X utf8 resume.py check
-F:\Dev\Python312\python.exe -X utf8 resume.py native-acceptance
+python -X utf8 resume.py check
+python -X utf8 resume.py native-acceptance
 ```
 
 `native-acceptance` 必须取得同机锁、旧目录锁，确认没有其他 Gaussian；只在
@@ -107,3 +107,8 @@ Gaussian 主站访问 502，以下 Gaussian 手册镜像用于核对相同关键
 
 恢复粒度不是统一的“每步绝对安全保证”。CHK 能被 formchk 读取，只证明可解析；
 优化历史、同一模型化学的重启有效性和科学收敛仍须各自验证。
+
+
+## 已归档的原机能力
+
+[2026-09-12能力核验](../ref001-progress-20260912/native-capabilities-verification.json)确认匹配身份的RPBE1PBE/UPBE1PBE内存暂停证据已通过。优化L103分段和解析频率RWF恢复尚未通过，相关门槛继续保留。完整计算状态见[参考资料索引](../ref001-progress-20260912/README.md)。

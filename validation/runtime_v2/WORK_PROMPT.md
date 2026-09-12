@@ -1,54 +1,38 @@
-# Work 持久交接：REF-001 快速暂停版 2.1
+# REF-001 execution and recovery runbook
 
-维护 O1dDing/CUDA-Orbital-Visualisation 的 test/fchk-validation-native。
-先检查远端最新 HEAD、本地未提交改动和实际运行进程，读取 validation/README.md、
-runtime_v2/README.md、FAST_PAUSE.md、resume.py、windows_job.py、windows_pause.py、
-fast_checkpoint.py、native_acceptance.py、policy.py 及两份测试。
-将本文件的规则写入 Work 的项目持久交接记录，不只在聊天中说“记住了”。
+Runtime 2.1 keeps its execution evidence in `work/runtime-v2-fastpause`. Before using an existing calculation tree, inspect its actual processes, control mode, file identities, current repository revision and recorded capabilities. The [reference archive](../ref001-progress-20260912/README.md) gives the latest independently verified inventory; historical summaries are not process-state authority.
 
-此次用户要求解决的是点安全暂停后等待数小时。新方案必须区分：
-1. 4/hold 快速内存暂停，6/resume原进程原地继续。不等待整个优化，内存仍占用，
-   不可关机、重启或关闭协调器，不能把该状态称为已落盘保存。
-2. 10/pause 等通过本机验收的优化检查点段或当前子阶段结束后停止派发。
-3. 8/interrupt需SAVE确认，只终止所属Windows Job树，等待全部后代退出后冷复制/刷盘/校验。
-   解析Freq保留命名RWF/INT/D2E/CHK；Opt优先保存较小CHK及输入日志，原RWF不删。
-   保存回执和formchk可读不是恢复历史有效性的绝对保证；未写入工作可能损失。
-4. 9/shutdown收尾后退出；如果当前RAM暂停，会先恢复去完成边界，不是立即关窗。
+## Pause, continue and save
 
-快速暂停只操纵明确属于本Job的线程真实句柄，恢复只撤销自身增加的suspend count，
-不得按进程名taskkill、根据陈旧PID误杀外部作业或使用未审查的Nt接口。
-保留完整启动affinity，避免已记录的Gaussian16W A.03 PGI初始化缺陷。
-72小时按active elapsed计时，暂停时间剔除；期限到达默认RAM hold，不再砍掉长任务。
+- `4/hold` pauses the owned process threads while retaining RAM, memory allocation and Job handles. `6/resume` continues the same processes and restores dispatch capacity. RAM pause is not a disk save; power loss or closing the coordinator can destroy that state.
+- `10/pause` stops dispatch after an accepted optimization segment or the current stage reaches its boundary.
+- `8/interrupt` requires `SAVE`, stops only the owned Windows Job tree, waits for all descendants, then performs cold copy, flush, hash and checkpoint probing. Frequency recovery preserves named RWF/INT/D2E/CHK files; optimization preserves CHK/input/log and retains the original RWF. Unwritten work may be lost.
+- `9/shutdown` exits after the current boundary. A RAM-paused stage is resumed to reach that boundary; shutdown is not an immediate close operation.
 
-Opt步级磁盘保存采用事先声明的%KJob L103 2，再冷校验与Opt=Restart，绝不能把
-检测日志行后抢时间强杀当成安全边界。KJob格式、实际优化进展和结果一致必须通过原机验收；
-只有native-capabilities.json中匹配当前runtime、Gaussian全套link/DLL指纹、方法和证据哈希的能力才能开启。
-解析频率从不可变冷快照复制到新attempt，使用#p Restart；不使用数值频率的Freq=Restart。
-RWF不可用/未通过验收时needs_review，不静默重算整个Freq。显式审查后选择replay才允许频率重放。
+Thread control uses owned handles and reverses only the supervisor's suspend increment. Process-name termination, stale-PID control and unreviewed native freeze interfaces are excluded. The full startup-affinity compatibility path is retained for Gaussian 16W A.03. The 72-hour limit counts active elapsed time and defaults to RAM hold on expiry.
 
-新入口仍在validation/runtime_v2/START.cmd；运行证据独立到work/runtime-v2-fastpause。
-旧v1/v2工作目录和冻结源码、输入、身份、归档全部保留，不热覆盖旧进程。
-OLD-018超时及OLD-019已完成initial等历史资料，以validation/ref001-progress-20260909为定位线索，
-但必须实读本机并核验。旧timeout的有效salvage仍需明确reviewed导入，不得仅删review后fresh start。
-尤其不得用OLD-018的唯一CHK做首个破坏性测试；原始SALVAGE保留只读。
+## Native capability gates
 
-资源：按物理拓扑，不按SMT。16+物理核总预算14；12核10；8核6；6核4；4核2；2/1核1。
-<16核按98x3小主机档位称呼，但以真实检测值分配。单任务1–14，最多两个并发，总和不超预算。
-真实本轮REF基组NBasis、开壳层和空闲资源决定分配，核数只在新attempt/段启动时改变。
-每任务%mem24GB、Job树32GiB，保留系统内存和磁盘余量，协调器全局锁与旧目录锁同时使用。
-模型、基组、电荷/自旋、VeryTight、SuperFineGrid、固定几何用途、两次稳定性修复上限不变。
-candidate_collected不是scientific_pass；SCF小误差、日志变大都不是完成百分比。
+Optimization segments use an input-declared `%KJob L103 2` boundary followed by cold verification and `Opt=Restart`. Log-line detection followed by a timed process kill is not a checkpoint boundary. Acceptance requires the expected KJob termination, actual optimization progress and agreement with a baseline calculation.
 
-执行：
-先只读检查、备份并运行test_runtime.py和test_fast_pause.py、原冻结恢复测试。
-再在本机、无其他Gaussian且取得相同OS锁后运行：
-F:\Dev\Python312\python.exe -X utf8 resume.py native-acceptance
-它在独立临时目录自动对水和NO的副本做baseline、RAM暂停继续、KJob优化分段/换核数、
-解析Freq中断/RWF Restart并对比能量、原子间距离和频率，产生真实日志及能力回执。
-某项未实际触发或失败不算通过；不能编辑capability=true绕过检测。
-CI的Windows Python父子进程测试和模拟测试不等于Gaussian原生通过。
+Analytic frequency recovery copies an immutable cold snapshot into a new attempt and uses `#p Restart`; `Freq=Restart` is the numerical-frequency route. Missing or unaccepted RWF recovery enters `needs_review`. A reviewed `replay` decision can rerun frequency while retaining the completed optimization.
 
-如果原机测试暴露问题，保留失败日志、修复并加回归后重新原生验收；不得放松科学阈值换通过。
-验收通过后再部署正式入口、做reviewed迁移；不擅自强杀正在跑的旧任务、不删除锁、
-不重新算已有效完成的阶段、不擅自发COV release或改main/feat分支。
-将最终commit、实际入口、配置/数据路径、能力回执、测试结果、迁移结果和剩余限制持久记录。
+Every capability must match the runtime source identity, Gaussian launcher/link/DLL fingerprints, R/U method and evidence hashes. CHK/FCHK parse success does not certify all optimization or RWF restart histories. The current archived receipt accepts RAM pause for RPBE1PBE and UPBE1PBE; link-103 segmentation and analytic RWF restart remain unaccepted.
+
+## Existing calculations
+
+Keep legacy sources, inputs, identities, archives and original calculation trees. Cold import requires exclusion locks and verified file identities. OLD-018's timeout checkpoint and OLD-051's failed stability attempt require explicit review; deleting a review marker must not convert a retained checkpoint into a fresh calculation. Unique checkpoints are never used for destructive capability experiments.
+
+Completed stages are reused by their recorded reference and binary identities. The current snapshot has 90 collected candidates, two partially collected cases, two cases needing review and 179 not-started cases. Collection does not establish scientific acceptance. All failed attempts and recovery evidence remain available.
+
+## Resource and scientific contract
+
+Use measured physical topology rather than SMT thread count: the aggregate budgets are 14 cores for at least 16 physical cores, 10 for 12, 6 for 8, 4 for 6, 2 for 4, and 1 for one or two. At most two jobs run concurrently. Actual REF basis size, open-shell status and free resources determine 1–14 cores per new attempt or segment; allocations are not changed inside an active stage.
+
+Each job uses 24 GB input memory and a 32 GiB Job-tree limit while retaining system memory and disk headroom. Global and legacy-directory locks enforce exclusion. Model, basis, charge/spin, VeryTight convergence, SuperFineGrid, fixed-geometry purpose and the two stability-repair limit remain unchanged. SCF fluctuations and log size are not completion percentages.
+
+## Validation and deployment
+
+Run `test_runtime.py`, `test_fast_pause.py` and the frozen recovery tests before adopting implementation changes. `python -X utf8 resume.py native-acceptance` performs real Gaussian tests in isolated water/NO copies while holding the same exclusion locks. It exercises baseline, RAM pause, segmented optimization and analytic-frequency restart, retaining logs and comparing energy, geometry and frequency. A path that did not actually interrupt or failed is not accepted.
+
+Simulation and Windows Python process-tree tests do not replace Gaussian native acceptance. Preserve failed evidence, correct the implementation and validate again without weakening scientific criteria. Migrate only from verified records, keep original directories, and record the resulting implementation/configuration identities, capability evidence and remaining limits.

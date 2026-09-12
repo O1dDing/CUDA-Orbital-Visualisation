@@ -2,7 +2,7 @@
 
 当前操作规范以 [FAST_PAUSE.md](FAST_PAUSE.md) 为准。旧版 README 中的 4 键和
 `work/runtime-v2` 路径属于历史 v2；本版运行证据独立写到 `work/runtime-v2-fastpause`。
-不热升级旧进程，不覆盖 `paused-20260906` 或旧计算结果，不发布 COV release。
+运行数据与旧进程隔离；`paused-20260906` 和已有计算结果保持原始身份。
 
 ## 快速开始
 
@@ -11,8 +11,8 @@
 双击 `START.cmd` 或用原机 Python：
 
 ```powershell
-F:\Dev\Python312\python.exe -X utf8 resume.py check
-F:\Dev\Python312\python.exe -X utf8 resume.py native-acceptance
+python -X utf8 resume.py check
+python -X utf8 resume.py native-acceptance
 ```
 
 第二条会启动独立临时小案例的真实 Gaussian 验收，不使用 OLD-018 抢救检查点做试验。
@@ -21,7 +21,7 @@ F:\Dev\Python312\python.exe -X utf8 resume.py native-acceptance
 CI 使用 Python 子进程及模拟数据，**不能替代这一步原生验收**。
 
 旧 v1 退出并通过同路径 OS 锁检查后可 `import-legacy` 冷导入有效完成阶段。
-已有旧 v2 运行结果或 OLD-018 的历史 timeout，需要 Work 做明确的只读核对、
+已有旧 v2 运行结果或 OLD-018 的历史 timeout，需要明确的只读核对和
 reviewed migration/salvage 导入；不得只解除 needs_review 就从初始几何重算。
 
 ## 按键
@@ -42,7 +42,7 @@ RAM 暂停不刷写应用缓存，不是磁盘保存。8 的复制、刷盘、�
 ## 资源与科学协议
 
 按 Windows 实际物理核心拓扑分配，不把 SMT 当额外物理核。16 核以上总预算最多14；
-12核为10，8核为6，6核为4，4核为2，2/1核为1。少于16核标为用户的98x3小主机档位，
+12核为10，8核为6，6核为4，4核为2，2/1核为1。少于16核使用既有98x3小主机档位名称，
 这只是档位名称，不伪称识别了实际 CPU 型号。多处理器组需要单独审查，当前明确拒绝。
 
 单任务 1–14 核，以本轮真实基组 NBasis、开闭壳层、空闲预算分配；最多两个并发。
@@ -55,12 +55,17 @@ Opt/Freq/Stable分开，必要时最多两次稳定性修复。基组、模型�
 Opt重启优先有效CHK；解析Freq细粒度恢复用同生产者整套命名RWF，不能用Freq=Restart替代。
 详见 FAST_PAUSE.md 的边界、实际验收门槛和技术来源。
 
-## 回归与交接
+## 回归测试与操作规范
 
 ```powershell
-F:\Dev\Python312\python.exe -X utf8 test_runtime.py
-F:\Dev\Python312\python.exe -X utf8 test_fast_pause.py
+python -X utf8 test_runtime.py
+python -X utf8 test_fast_pause.py
 ```
 
-给 Work 的持久接续指令见 [WORK_PROMPT.md](WORK_PROMPT.md)。所有 attempt 和失败证据保留，
+完整执行与恢复规范见 [操作手册](WORK_PROMPT.md)。所有 attempt 和失败证据保留，
 控制命令有单独日志，不删除锁绕过互斥，不按进程名批量杀 Gaussian，不静默降精度或无限重试。
+
+
+## 已归档的原机能力
+
+[2026-09-12能力核验](../ref001-progress-20260912/native-capabilities-verification.json)确认匹配身份的RPBE1PBE/UPBE1PBE内存暂停证据已通过。优化L103分段和解析频率RWF恢复尚未通过，相关门槛继续保留。完整计算状态见[参考资料索引](../ref001-progress-20260912/README.md)。
