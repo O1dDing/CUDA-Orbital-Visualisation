@@ -112,6 +112,48 @@ int main() {
     io.AddMouseButtonEvent(0,false); frame();
     require(!state.show_diagram_details, "visible close button did not close the details");
     state.show_diagram_details = true; frame(); frame(); inspect_bounds("reopened-small");
+
+    // Exercise the same wrapped card used by the ordinary sidebar. A colored
+    // pair description must occupy a few readable lines, not one glyph per line
+    // in the sliver remaining after an unconditional SameLine().
+    state.show_diagram_details = false;
+    io.DisplaySize = {2100,1250};
+    auto& chemistry = wf.orbitals[7].chemistry;
+    chemistry.available = true;
+    cov::OrbitalPairInteraction pair;
+    pair.atom_a_label = "Cl2"; pair.atom_b_label = "Cl5";
+    pair.channel = {.sigma=.64,.pi=.36,.delta=0,.phi=0,.undetermined=0,
+                    .dominant=cov::OrbitalAngularFamily::Sigma,
+                    .status=cov::ChemistryStatus::Percentages};
+    pair.bonding.dominant = cov::OrbitalBondingRole::Nonbonding;
+    pair.bonding.status = cov::ChemistryStatus::Determined;
+    pair.occupied_overlap_contribution = .0003; pair.total_mayer_index = .1247;
+    auto card_height = [&](float width, int pairs) {
+        chemistry.interactions.assign(pairs,pair);
+        ImGui::NewFrame();
+        ImGui::SetNextWindowPos({0,0},ImGuiCond_Always);
+        ImGui::SetNextWindowSize({width,1200},ImGuiCond_Always);
+        ImGui::Begin("chemistry wrap test",nullptr,ImGuiWindowFlags_NoSavedSettings);
+        ImGui::PushTextWrapPos(0);
+        cov::ui::draw_energy_diagram(wf,7,state,language,1,actions);
+        const float height = ImGui::GetCursorPosY();
+        ImGui::PopTextWrapPos(); ImGui::End(); ImGui::Render();
+        return height;
+    };
+    for (const auto next : {cov::ui::Language::English,cov::ui::Language::ChineseSimplified,
+                            cov::ui::Language::Japanese,cov::ui::Language::French}) {
+        language = next;
+        for (const float width : {500.0f,350.0f}) {
+            card_height(width,1); card_height(width,1);
+            const float one = card_height(width,1);
+            const float two = card_height(width,2);
+            const float extra_lines = (two-one)/ImGui::GetTextLineHeightWithSpacing();
+            std::cout << "pair wrapping: width=" << width << " language=" << int(language)
+                      << " extra lines=" << extra_lines << '\n';
+            require(extra_lines > 0 && extra_lines <= 8,
+                    "pair analysis collapses into a narrow vertical text column");
+        }
+    }
     ImGui::DestroyContext();
     std::cout << "ui_details_resize_smoke ok\n";
 }

@@ -46,13 +46,23 @@ ImVec4 text_colour(const ImU32 colour) {
     return ImGui::ColorConvertU32ToFloat4(colour);
 }
 
+void continue_text(const std::string& value, const float spacing = 0.0f) {
+    ImGui::SameLine(0.0f, spacing);
+    // Wrapped cards have no room for a new colored run at the right edge.
+    // Move the whole run to the next line before ImGui wraps its individual
+    // words into the remaining sliver. Longer runs can then use the full width.
+    if (ImGui::CalcTextSize(value.c_str()).x > ImGui::GetContentRegionAvail().x) {
+        ImGui::NewLine();
+    }
+}
+
 void inline_text(const std::string& value, const ImU32 colour, const bool first = false) {
-    if (!first) ImGui::SameLine(0.0f, 0.0f);
+    if (!first) continue_text(value);
     ImGui::TextColored(text_colour(colour), "%s", value.c_str());
 }
 
 void inline_plain(const std::string& value, const bool first = false) {
-    if (!first) ImGui::SameLine(0.0f, 0.0f);
+    if (!first) continue_text(value);
     ImGui::TextUnformatted(value.c_str());
 }
 
@@ -290,14 +300,14 @@ std::string bonding_text(const OrbitalBondingDistribution& value,
 
 void draw_label_value(const char* label, const std::string& value, const ImU32 colour) {
     ImGui::Text("%s:", label);
-    ImGui::SameLine();
+    continue_text(value,ImGui::GetStyle().ItemSpacing.x);
     ImGui::TextColored(text_colour(colour), "%s", value.c_str());
 }
 
 void draw_channel_value(const char* label, const OrbitalChannelDistribution& value,
                         const Language language) {
     ImGui::Text("%s:", label);
-    ImGui::SameLine();
+    continue_text(channel_text(value,language),ImGui::GetStyle().ItemSpacing.x);
     if (value.status == ChemistryStatus::NotApplicable) {
         ImGui::TextColored(text_colour(kUnavailableColour), "N/A");
         return;
@@ -333,7 +343,7 @@ void draw_channel_value(const char* label, const OrbitalChannelDistribution& val
 void draw_bonding_value(const char* label, const OrbitalBondingDistribution& value,
                         const Language language) {
     ImGui::Text("%s:", label);
-    ImGui::SameLine();
+    continue_text(bonding_text(value,language),ImGui::GetStyle().ItemSpacing.x);
     if (value.status == ChemistryStatus::NotApplicable) {
         ImGui::TextColored(text_colour(kUnavailableColour), "N/A");
         return;
@@ -534,7 +544,7 @@ void draw_selected_chemistry(const Wavefunction& wf,
             ImGui::Bullet();
             ImGui::SameLine();
             ImGui::Text("%s–%s ·", interaction.atom_a_label.c_str(), interaction.atom_b_label.c_str());
-            ImGui::SameLine();
+            continue_text(channel_text(interaction.channel,language),ImGui::GetStyle().ItemSpacing.x);
             ImGui::TextColored(text_colour(channel_colour(interaction.channel.dominant)), "%s",
                                channel_text(interaction.channel,language).c_str());
             inline_plain(" · ");
@@ -560,7 +570,7 @@ void draw_selected_chemistry(const Wavefunction& wf,
     const std::string method=localised_chemistry_method(chemistry.method,language);
     ImGui::TextDisabled("%s: %s · %s", text.method, method.c_str(),
                        tr(Text::Confidence,language));
-    ImGui::SameLine();
+    continue_text(percent_text(chemistry.confidence),ImGui::GetStyle().ItemSpacing.x);
     ImGui::TextColored(text_colour(kNumericColour), "%.0f%%", 100.0 * chemistry.confidence);
     if (!chemistry.note.empty()) {
         const std::string note=localised_chemistry_note(chemistry.note,language);
