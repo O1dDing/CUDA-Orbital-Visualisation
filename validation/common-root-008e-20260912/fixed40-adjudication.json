@@ -1,0 +1,1746 @@
+{
+  "schema": 1,
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "round_identity": "b70e1bd9e858178181dfec06bda74bec1efbcf83ec62ecf06c0097ce3ff43857",
+  "programs": {
+    "cov_validation.exe": "973dbb316753deb80202849b734411ea7debcd65afc59e90853667aa3dcf8c48",
+    "cov_scientific_audit_dump.exe": "dd09969b6195e8ec48e906122df8e44d110bbe6ee200cbdae4503a68035340ff",
+    "cov.exe": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6",
+    "cov_scientific_audit_dump_off.exe": "e41c45c69d3b5f63eab8b485e0e84ebdbcc72b0f15b3b6486a9633f2411e2eae"
+  },
+  "precheck_set_sha256": "d3343167a9066eac3029c504fd870fec8241bc9783170a98fe4f15204b989eb7",
+  "case_count": 40,
+  "cases": [
+    {
+      "case_id": "OLD-001",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-001\\terminal.json",
+          "sha256": "4e43ab2ecd1cc3bdde5fe4a684092e876dc3bb9545a529566d5c4646cfc2ed49"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-001\\attempt-001\\result\\review.json",
+          "sha256": "db7cdb1a2f4f0e6b7a208e05402af961a38707cf47b9e2ff47be62e7daae1036"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-001.json",
+          "sha256": "a1b9193646873e3e02e0f83bbeceb9a322cbcca7d156ff97c0a8890fe19f2719"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-001.json",
+          "sha256": "075687a07574db4007c23817be2228eac3c0cb2329a849e9883521fad7a21564"
+        }
+      ],
+      "native_commands": 278,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 10.577999999994063,
+      "total_seconds_with_ordinary_and_packaging": 14.40842210000119
+    },
+    {
+      "case_id": "OLD-002",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-002\\terminal.json",
+          "sha256": "a9c4386d10ce34fd0ae0bf6ed6ed726a7a29d4f6aa03e329e22531aed4ea274f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-002\\attempt-001\\result\\review.json",
+          "sha256": "23157f3d5fad18aa8bfb333dc2b762f2fa96183a89f1991ef3414a4ee7bc59a9"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-002.json",
+          "sha256": "3013ac9a72e764f12f454447dba974e64d4c8aa403710971645c862c988eb73b"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-002.json",
+          "sha256": "5b2129906dc701010bfeb1053f127eb124199fd297a2408993edffacdc35d7b4"
+        }
+      ],
+      "native_commands": 425,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 17.093999999997322,
+      "total_seconds_with_ordinary_and_packaging": 21.020045799996296
+    },
+    {
+      "case_id": "OLD-005",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-005\\terminal.json",
+          "sha256": "72c7be3a8852f42da237b55cc4133aff97b069d0e8ed8dd4e6c0065c4f563b57"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-005\\attempt-001\\result\\review.json",
+          "sha256": "577b6a8c8de4b31ce53bc52f72835cf4e0b28a977c726a9315ce2fd6ef0e4a9f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-005.json",
+          "sha256": "d0aef8c5916a89628e40a019985baaf7f16b3110b071cd354c06e83096e9a2dd"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-005.json",
+          "sha256": "3b5b49a8583d83cccb3032c1bca35e32a71fdec6c2172d4b991e65ae7b9989ca"
+        }
+      ],
+      "native_commands": 601,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 4,
+      "native_seconds": 25.014999999999418,
+      "total_seconds_with_ordinary_and_packaging": 29.300267200000235
+    },
+    {
+      "case_id": "OLD-006",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-006\\terminal.json",
+          "sha256": "153d613bfc6400e548084716feb16d736ff378a21c85493a9da4f2a472f95d0e"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-006\\attempt-001\\result\\review.json",
+          "sha256": "a1088ec2aa5846ce2fa2268e8b07c13f788523800ea3e8ab05c1ef2320f8c5b6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-006.json",
+          "sha256": "015d819b491c65d803b897974b7ee6ac1700d2d20337278c9398afb4cc9ffefd"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-006.json",
+          "sha256": "40e84b8b0b38a2dffb3670f05bf18f8b9d90e8dd3e4d9c1d3a8368ba4a187175"
+        }
+      ],
+      "native_commands": 601,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 4,
+      "native_seconds": 25.031000000002678,
+      "total_seconds_with_ordinary_and_packaging": 29.348357199996826
+    },
+    {
+      "case_id": "OLD-010",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-010\\terminal.json",
+          "sha256": "05a05fbf8eedc00bf863596fc7eb1a1d4df0fb7aecd0a0a9867cbc9253e56ec5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-010\\attempt-001\\result\\review.json",
+          "sha256": "12a0dab50ff394519e0444ecc16dafd0bdaf330869a30786b101f70c4c03c5a6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-010.json",
+          "sha256": "efe080062a1d0a500780fd23e97fe36c3d8d07294f3026e4d3822232458682cb"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-010.json",
+          "sha256": "d2f3a1e147412a42e4de75cca2da4520c50c98a2ba12d87ed6e5645201bbfa80"
+        }
+      ],
+      "native_commands": 399,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 16.015999999995984,
+      "total_seconds_with_ordinary_and_packaging": 19.369148799996765
+    },
+    {
+      "case_id": "OLD-012",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-012\\terminal.json",
+          "sha256": "875c0e6766c9ccdfdc60720d0ebebfc7304fe752d8fb64ca286c4d5e20be1701"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-012\\attempt-001\\result\\review.json",
+          "sha256": "fd0641c02f859a5d684f5ade783d9eb2e612607175a75e05b6ee1ffff5014a40"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-012.json",
+          "sha256": "ceec7d0bfb5aaac1f0f7dbe6048ef572790d1015a7021038ce985f898f393019"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-012.json",
+          "sha256": "55ae0ae75aa3da88c6bf36b41036963da639ed00c3e5be737b388b99dc01e84f"
+        }
+      ],
+      "native_commands": 1093,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 9,
+      "native_seconds": 158.10900000000402,
+      "total_seconds_with_ordinary_and_packaging": 167.00487879999855
+    },
+    {
+      "case_id": "OLD-013",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-013\\terminal.json",
+          "sha256": "5c9302396be56825b74caaaf4dea938201c2c9d7b359d97b52ac4f2aa92d274d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-013\\attempt-001\\result\\review.json",
+          "sha256": "146824a52db6806641cb0c97261f9b51260e25856b9b950aba468f2b5f8f413d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-013.json",
+          "sha256": "bd0f3fea414225abc310606a6f21f33cbc1efcb57c3ea18b30ab5d31b80299a2"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-013.json",
+          "sha256": "577e9b85325651ccbb1f5812a55a8d3655305606eb5ff3cc3f1172cb7f5a4d0d"
+        }
+      ],
+      "native_commands": 1144,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 9,
+      "native_seconds": 172.63999999999942,
+      "total_seconds_with_ordinary_and_packaging": 181.72823680000147
+    },
+    {
+      "case_id": "OLD-014",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-014\\terminal.json",
+          "sha256": "e8acd9287273b1fdaba66d5082730126d6428c2500b133ea1d7d71c6c8c57b15"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-014\\attempt-001\\result\\review.json",
+          "sha256": "2dac28d413b7bb44724533bf4719dd8507a9706933283209c15b5852c6962e74"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-014.json",
+          "sha256": "96c54b9cb634a42fa4ec7edb64f44e2e1137f30e315a5fac687ebde447136a27"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-014.json",
+          "sha256": "473d54dd321dc5a2809266577f21cc087b27f2c025e39c44610c54996ec37445"
+        }
+      ],
+      "native_commands": 704,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 4,
+      "native_seconds": 29.031999999999243,
+      "total_seconds_with_ordinary_and_packaging": 33.39922820000356
+    },
+    {
+      "case_id": "OLD-015",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-015\\terminal.json",
+          "sha256": "b423877eaabc8b76cda04a2ade9338a76df47946c3b8c168707cb80004ad9b1f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-015\\attempt-001\\result\\review.json",
+          "sha256": "143fc5227d71f1bfcb6863bdfafc857b45616dec10d8d27b47cac462b5450495"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-015.json",
+          "sha256": "ea8d8905f63eff0cd6c65b974fd14df3ace27f20cea383a05f880d5cd024642b"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-015.json",
+          "sha256": "0b93e025b09353b6ed7956f1e007bd22ca8ea16225781f26d36e8e37b95d3ab8"
+        }
+      ],
+      "native_commands": 831,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 4,
+      "native_seconds": 34.54699999999866,
+      "total_seconds_with_ordinary_and_packaging": 39.94572519999929
+    },
+    {
+      "case_id": "OLD-016",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-016\\terminal.json",
+          "sha256": "859dd9f94804b9743256132364d8f07ae61934af4d8aaa421b67e327e65ea192"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-016\\attempt-001\\result\\review.json",
+          "sha256": "d4191c195a75fa76d2efb75686e01345ff9662bd50f068f72910803da17c468d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-016.json",
+          "sha256": "f94cb36941043ed217bedf033d754ac15c5f309c659c5292a99ccbe02e8c68e0"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-016.json",
+          "sha256": "d0ff9054859e5011b90a257ff0433b6c48b04c339ed3fd46a6d68bf16c25027e"
+        }
+      ],
+      "native_commands": 627,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 24.031000000002678,
+      "total_seconds_with_ordinary_and_packaging": 30.889241100005165
+    },
+    {
+      "case_id": "OLD-017",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-017\\terminal.json",
+          "sha256": "a0b6b59ffe819947d03c7a3e9f557e50e350c118c3c358676388266d8acb1439"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-017\\attempt-001\\result\\review.json",
+          "sha256": "083e530ee092d9fca53b94f5255d35872530cf3bc9f08239678e1669a0cf57c6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-017.json",
+          "sha256": "ac7728907b34443f4a78f51bd1ec0697653e869c1db124890baafdeecec355a9"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-017.json",
+          "sha256": "e81f8642650ac5a6a8e413b8434e23f331cbfb630213eb0da3eaed00f43b0804"
+        }
+      ],
+      "native_commands": 405,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 6,
+      "native_seconds": 15.531000000002678,
+      "total_seconds_with_ordinary_and_packaging": 19.70397100000264
+    },
+    {
+      "case_id": "OLD-018",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-018\\terminal.json",
+          "sha256": "843f4529b74ab3ee0cf63d27447ce4a1bdd1b0ae0636310725c2f54aa1cc4e2c"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-018\\attempt-001\\result\\review.json",
+          "sha256": "491a7bf666e5ce128fa5be0fdd76a1d57743d701c3a29baf399ae64134c9ec7b"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-018.json",
+          "sha256": "2755313b153b39b5df1ad0b31cda9a0a12918b6418f994e2fec869d1c4ce3952"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-018.json",
+          "sha256": "2f4a190227c73a8524c6b9957e4819b2cf8fc8a47c2341d81c2075f53b1aa29d"
+        }
+      ],
+      "native_commands": 1834,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 5,
+      "native_seconds": 219.65699999999924,
+      "total_seconds_with_ordinary_and_packaging": 230.86576849999983
+    },
+    {
+      "case_id": "OLD-019",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-019\\terminal.json",
+          "sha256": "b1d7a9f81c6a90df84f0fe764e87df5238de5b64c5bc2174c2adb38bcbafe75d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-019\\attempt-001\\result\\review.json",
+          "sha256": "91d00b5ed079f9dcbd280f30b6fbfc0bea3c5917ce14a73431d6e5ced4a435d1"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-019.json",
+          "sha256": "8b3fe803599d7add3b742a1486061434f6fc2635f3d75d5552feaea0509ffbf4"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-019.json",
+          "sha256": "fc7481003f9bdadcf16fb09fbc59866f107cdda57b02cd028379a4e7e6d104fa"
+        }
+      ],
+      "native_commands": 1286,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 4,
+      "native_seconds": 56.54699999999866,
+      "total_seconds_with_ordinary_and_packaging": 63.579238300000725
+    },
+    {
+      "case_id": "OLD-020",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-020\\terminal.json",
+          "sha256": "68021def4d7aac94e6dd951e264a723080586049a79dba0fa3b4e148e540d149"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-020\\attempt-001\\result\\review.json",
+          "sha256": "8ee6f8a3b44d75eafbf00054730b93a42547e6cea30327e077fd291b48ad34ec"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-020.json",
+          "sha256": "607e7fc6b2fb4ccc69d022fd0e57bf37a232483df51f6b9b7ad0469476ee9d9b"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-020.json",
+          "sha256": "71fae78479867e851c344d3326b42903b394bc84fcb9e4fcb053ee32450e64fa"
+        }
+      ],
+      "native_commands": 1439,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 4,
+      "native_seconds": 74.06199999999808,
+      "total_seconds_with_ordinary_and_packaging": 83.32280069999979
+    },
+    {
+      "case_id": "OLD-038",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-038\\terminal.json",
+          "sha256": "58441d6c4f723aa54a41bde020923772d80e1ee1679e4403c8dc21c0a6def6d7"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-038\\attempt-001\\result\\review.json",
+          "sha256": "9b999bc3a1338540ff5df4c570203abcf0205d0d51507174d594ab6f0be2c49d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-038.json",
+          "sha256": "76b3b4571aa5ee572451495a10a893590e1dc1380c52f37783899b2fb39d1e63"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-038.json",
+          "sha256": "d681374475b67cec8a93b66e0b6fa534db852f166074dab08c05dd86bf1177d7"
+        }
+      ],
+      "native_commands": 1297,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 53.54699999999866,
+      "total_seconds_with_ordinary_and_packaging": 63.03188360000058
+    },
+    {
+      "case_id": "OLD-071",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-071\\terminal.json",
+          "sha256": "4a93eee787c160fa4b088e1e0885a6097497b74a5b8602635c7d7d2c47c38607"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-071\\attempt-001\\result\\review.json",
+          "sha256": "a2458e5583930f0989c0ff656360d14a8e5e0d03760a055bb9af45b843abca7e"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-071.json",
+          "sha256": "de6757b1ee4221b490ebc89fba2eb417a1cbf0e722e537ac82ecf8fc9ff44824"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-071.json",
+          "sha256": "ddd849bf9f72c477c20bbfbaf423e39dd36abbcc538b773460315be4e80ab7e0"
+        }
+      ],
+      "native_commands": 431,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 5,
+      "native_seconds": 17.514999999999418,
+      "total_seconds_with_ordinary_and_packaging": 21.446294299996225
+    },
+    {
+      "case_id": "OLD-078",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-078\\terminal.json",
+          "sha256": "4a5019a4c839f4e5e55a5ccac046da7f1b10f548658e963ddff1d3ad0868a20b"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-078\\attempt-001\\result\\review.json",
+          "sha256": "b5f020624bd9ce7cae50fd36facab11fab016fdfd640e5461d720805cbaef249"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-078.json",
+          "sha256": "06ebb2e4185bb5f6b5c05122bc83bc092db4b26796cfdeff80e1c5d59d0c38a6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-078.json",
+          "sha256": "daeb1502b139fc5ef707aaadce969f0b0bee6b361be2ff6dbcd468ee26498b30"
+        }
+      ],
+      "native_commands": 841,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 32.53199999999924,
+      "total_seconds_with_ordinary_and_packaging": 40.46204910000233
+    },
+    {
+      "case_id": "OLD-107",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-107\\terminal.json",
+          "sha256": "8f5038dcaad20be78b40144a2da994500d9504d62a17361bc26843ddb759b249"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-107\\attempt-001\\result\\review.json",
+          "sha256": "b5ae7b8c8813fdb7200abfc83ada1103542e5a38c6a443a23282fde482458a88"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-107.json",
+          "sha256": "a47d30d999c89e391b7a80de476635574c7981805ce016892cfe391cf7683687"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-107.json",
+          "sha256": "38e0c26723acd9c95f1b0f19d227dab5acec7a5441c973d32a9915005f514ed3"
+        }
+      ],
+      "native_commands": 519,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 7,
+      "native_seconds": 21.531999999999243,
+      "total_seconds_with_ordinary_and_packaging": 25.744131599996763
+    },
+    {
+      "case_id": "OLD-127",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-127\\terminal.json",
+          "sha256": "eceb17dda754ab7ce5186409f581d87868b74e426e40446f5c7e5415605519d2"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-127\\attempt-001\\result\\review.json",
+          "sha256": "3e6ad608830c06f553aa0ce816c253ff7ff2b55e474705fd134ae68bd89e81fb"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-127.json",
+          "sha256": "ad0373cd2cc3aeffe933e568dd3e484691417d32bef33aa61a265f2da4ee4d24"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-127.json",
+          "sha256": "fc20010d56042fcc597afc99339755adc06ea754b34bf6e9a83a27a6f4efd551"
+        }
+      ],
+      "native_commands": 1268,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 8,
+      "native_seconds": 192.51499999999942,
+      "total_seconds_with_ordinary_and_packaging": 203.78186700000515
+    },
+    {
+      "case_id": "OLD-152",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-152\\terminal.json",
+          "sha256": "78b125614e2359a46292a22f14ce9a5967221317b9ba018d10385e9aa5d9cc33"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-152\\attempt-001\\result\\review.json",
+          "sha256": "7d488f6a18baa04b1db7e13875eef6b7ed052bb9f827aa2b70cd2d44c9ecf179"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-152.json",
+          "sha256": "9b86e7e47f0e6bb680acab86dd9124d6cf571e4689bd1a87743e58e4c4592020"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-152.json",
+          "sha256": "e647a343d8a81d8ce5eac231f395ae04b9cbf284fc616da51bcb6f25c2f2b85e"
+        }
+      ],
+      "native_commands": 799,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 31.031000000002678,
+      "total_seconds_with_ordinary_and_packaging": 38.72168409999722
+    },
+    {
+      "case_id": "OLD-168",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-168\\terminal.json",
+          "sha256": "882e6e452e15bdee116a08b4e4a8a967198eb30ab1feeed4a4a8519897dba652"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-168\\attempt-001\\result\\review.json",
+          "sha256": "59226d097013b4a631e692ae751a30e354dce560f21cf7dade4e5328f5e5f09e"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-168.json",
+          "sha256": "80c30a48c8c63df8c61cf232e805f6c03f1cc224579ba8862315efd61c60bcbd"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-168.json",
+          "sha256": "a6a9dc63b9d6afae3bd364f8b15042f4e56dddfaf03f847a3d786ceb30f98aba"
+        }
+      ],
+      "native_commands": 964,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 38.03199999999924,
+      "total_seconds_with_ordinary_and_packaging": 45.67560579999554
+    },
+    {
+      "case_id": "OLD-170",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-170\\terminal.json",
+          "sha256": "e9de863915c0ddb7ed8121af7a33b51dff06733d674b9a4bbc90e5385ab65645"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-170\\attempt-001\\result\\review.json",
+          "sha256": "b9189c02326486cb404e23508c2d17e705df244d953c3f22e00fe0cf79a4b119"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-170.json",
+          "sha256": "f1688a5d507e3e4c418d24b5df5d07878598cc388e0686d2a32fb0bda191cc4f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-170.json",
+          "sha256": "4a62c87bcd58595d04fd6396e6e8f592d37d7f84fe8dfe52ab1dc3a50c37319e"
+        }
+      ],
+      "native_commands": 3285,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 5,
+      "native_seconds": 180.78100000000268,
+      "total_seconds_with_ordinary_and_packaging": 243.95185910000146
+    },
+    {
+      "case_id": "OLD-171",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-171\\terminal.json",
+          "sha256": "38ecb6b633e2f8805da5bea696bb84cfcc139e4e44276ec3a9423d4bca7020bb"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-171\\attempt-001\\result\\review.json",
+          "sha256": "6e5abd309a664d31bb7d49fc7e606e5abd3e52d7a9574288e0b8c24d305d877a"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-171.json",
+          "sha256": "d22b9e6a2f17d74ef82005cb3146c588720219a40b257a9317d9538659e30d4b"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-171.json",
+          "sha256": "806e2841acfaa77874f9331a571c608a0032a8335d47749677caf9891f26a61e"
+        }
+      ],
+      "native_commands": 1553,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 68.54699999999866,
+      "total_seconds_with_ordinary_and_packaging": 82.58453429999645
+    },
+    {
+      "case_id": "OLD-174",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-174\\terminal.json",
+          "sha256": "0f05efa5306ff0d12ca63b71463c4157478a44b076920bced43d6837fb188ac1"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-174\\attempt-001\\result\\review.json",
+          "sha256": "4b396a8a07638ded099c31f412ab58a42e93de7ca6a4ba0512a74d35c1fd0129"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-174.json",
+          "sha256": "e75b9c42042b56a993dea2568d5d82a9e67c1d3c72cba3b0492a8cee9c8780d6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-174.json",
+          "sha256": "6571d4ba2af8320231d856ceb8b68704c9d38cad7e3671498e14b18c6b1f12b0"
+        }
+      ],
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 46.25,
+      "total_seconds_with_ordinary_and_packaging": 53.80730670000048
+    },
+    {
+      "case_id": "OLD-175",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-175\\terminal.json",
+          "sha256": "f214b0c01c645880d0d6483f40a2c1d7c0e3c86bc5746b5aa3bfc570049681b8"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-175\\attempt-001\\result\\review.json",
+          "sha256": "52b864d3b4ca207b02a9ddbbe4ceeace00623ca8f941f4a0c44228bc855ed63d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-175.json",
+          "sha256": "398ec5af90b79f4e12ca0a943ddfd4155abd3661830a6e9ae54475e9b904c7af"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-175.json",
+          "sha256": "f0fc3bd3a840425cc96d2fe300ccdacb3dd5552fe54d1033f099f974edcff8ef"
+        }
+      ],
+      "native_commands": 817,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 31.54699999999866,
+      "total_seconds_with_ordinary_and_packaging": 38.63273219999974
+    },
+    {
+      "case_id": "OLD-176",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-176\\terminal.json",
+          "sha256": "e95efbe49eb7f8d24d5d6fb8a4b4509ef7d436da259a0b204a51e4335e118d34"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-176\\attempt-001\\result\\review.json",
+          "sha256": "83a54e8a695291ceebc2a55ee3c012f31e349ba52e594316d7d615ffdd939333"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-176.json",
+          "sha256": "84b0d2729aebd1d037c8c0ead00c08c887a64fd78309b55195a443871d4245f1"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-176.json",
+          "sha256": "1a635fb2506c6f6036551336a506d9a51c3c847262c3b9adf633b2b6623a1f76"
+        }
+      ],
+      "native_commands": 817,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 31.531000000002678,
+      "total_seconds_with_ordinary_and_packaging": 38.419463400001405
+    },
+    {
+      "case_id": "OLD-198",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-198\\terminal.json",
+          "sha256": "df941a31d8f3812d636715e7b048749f8e634b6f0a19a89c519b9b43bd19ee01"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-198\\attempt-001\\result\\review.json",
+          "sha256": "dd1a12d8bb582f82db9193c58408dcb6676240bf39f9062b893639f724858dcf"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-198.json",
+          "sha256": "1d13a416a4abd222e36bb59beb3261ccff1aadcd092067ea30cc9f7f0a14f154"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-198.json",
+          "sha256": "46bffbcd72be97706b02df1542f3758c29aaa23dd1cebc362893b18c5e657c08"
+        }
+      ],
+      "native_commands": 665,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 25.015999999995984,
+      "total_seconds_with_ordinary_and_packaging": 32.17197600000509
+    },
+    {
+      "case_id": "OLD-199",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-199\\terminal.json",
+          "sha256": "f06c28b479ba4224a527230ec901fe9aca9a6400be9d4516fab436794c00e37a"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-199\\attempt-001\\result\\review.json",
+          "sha256": "6052d31efb280a408094880d03e0f90a9cbe8bc8ec562b031ef9a5c13d7374f9"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-199.json",
+          "sha256": "3dd30bff9c5502d2559186e770120736a1e9b0ee031309c6ec5659dd3c5832ba"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-199.json",
+          "sha256": "e5bb39a4397e7afe4e010b7272b34739ff253dc6663d1e5cdfa75d7927a5391f"
+        }
+      ],
+      "native_commands": 665,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 25.014999999999418,
+      "total_seconds_with_ordinary_and_packaging": 32.24201009999524
+    },
+    {
+      "case_id": "OLD-200",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-200\\terminal.json",
+          "sha256": "06d61bbb735f509bfad21558a0d7d40a0f3affd2ed03f660d05ae19762f995f5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-200\\attempt-001\\result\\review.json",
+          "sha256": "054526b5d12b4e6ce2bd85911c697a33ab41c7a417028ad1eb877abddb917c87"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-200.json",
+          "sha256": "c2112df197c9223cc0553fcdd53f275ccfde4e94828c9978be912b5a19b2159a"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-200.json",
+          "sha256": "6c65705368774a5c00c0839b44cb90c7c0d1479cc50818d629cc5acdf38c5aa1"
+        }
+      ],
+      "native_commands": 665,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 25.01600000000326,
+      "total_seconds_with_ordinary_and_packaging": 32.02310150000267
+    },
+    {
+      "case_id": "OLD-220",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-220\\terminal.json",
+          "sha256": "bec5c80a30d35723616cf66cd302529e58d63a02dd211b4aaa3ad2e87e5f110c"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-220\\attempt-001\\result\\review.json",
+          "sha256": "2d2a28b737a8d1b066c61592489131a4a4e6ae0dc492e4031145fc5047966a2f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-220.json",
+          "sha256": "554d6ff3e4f021330a852749ef8350dc2429a03f0c28941e61051d804ea7040c"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-220.json",
+          "sha256": "1a53d1e2050961f3152c819cb43ed4b739eb69bdfa2693d3e5c7b174ba2e6dea"
+        }
+      ],
+      "native_commands": 828,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 4,
+      "native_seconds": 32.015999999995984,
+      "total_seconds_with_ordinary_and_packaging": 39.56166330000269
+    },
+    {
+      "case_id": "OLD-230",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-230\\terminal.json",
+          "sha256": "92c0b5860c5ec2801ad50bac9d04beeb4683d410db88c1e071a42aa9098d0d98"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-230\\attempt-001\\result\\review.json",
+          "sha256": "0d9f52d9c07909b333f96141e9ba8ed9c60f47fa5ef062e1b862cc110f119241"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-230.json",
+          "sha256": "6e9ac4c0e44669131d9abfa5e141ad3d56bd805bf3d81496e280a9e95944fc8e"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-230.json",
+          "sha256": "3efabdfba987308ff9004870ac0cbdb6f25dcccb417cfa28e76ad34fceee0c6c"
+        }
+      ],
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 46.04699999999866,
+      "total_seconds_with_ordinary_and_packaging": 53.7369555999976
+    },
+    {
+      "case_id": "OLD-231",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-231\\terminal.json",
+          "sha256": "98db32751108c1a6ef97a91c56c6da3cbad2f4e75758d6544554aa40261703c3"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-231\\attempt-001\\result\\review.json",
+          "sha256": "d26d9ecd838506c51f82a502f4b0a61a735cba3e07bceb7c143adbbc95c4757d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-231.json",
+          "sha256": "4aa3639950cd8645aba3b1795f2cb50e50b17d88fec240021d7d93f796487785"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-231.json",
+          "sha256": "efe76f15ee43b19ad4289802b2343f39f299cdb6831448d4fae7df72485c0528"
+        }
+      ],
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 46.04699999999866,
+      "total_seconds_with_ordinary_and_packaging": 53.64954399999988
+    },
+    {
+      "case_id": "OLD-232",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-232\\terminal.json",
+          "sha256": "345b088158c53b43c3dd1b82ea30fc7f9ef550372af46ca49a9b5cc533f78d74"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-232\\attempt-001\\result\\review.json",
+          "sha256": "a4c77b262c1061fcdf96334cc550f417b898e6745a348eea837e66d9a101fe4f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-232.json",
+          "sha256": "02d77fca192606690898a493bc268dd11bbd6b57e136e3695b45dc257e405233"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-232.json",
+          "sha256": "bf1b116dfe6ff46e7ac32f9df0af431be9bfe13fc8213f3c3207125d1d195ab9"
+        }
+      ],
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 3,
+      "native_seconds": 46.04699999999866,
+      "total_seconds_with_ordinary_and_packaging": 53.63327189999836
+    },
+    {
+      "case_id": "OLD-239",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-239\\terminal.json",
+          "sha256": "fe2569a97653006f0e486bd478ee1ba768cd83cdf438f00ffb126cb098e1512f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-239\\attempt-001\\result\\review.json",
+          "sha256": "f99abf5d8fcea9d53eac7f7a8e8b6110198073cccce8f5c7d3df76d37f488ff6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-239.json",
+          "sha256": "88902449b30db0bec0fcc7db59813e43ce499920a4dbd426ebbddaa611a9070a"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-239.json",
+          "sha256": "419dee6a0df2b32bdc29f470527d976697499af53c85be574deadc68d891c614"
+        }
+      ],
+      "native_commands": 593,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 8,
+      "native_seconds": 58.062000000005355,
+      "total_seconds_with_ordinary_and_packaging": 64.59944769999856
+    },
+    {
+      "case_id": "OLD-246",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-246\\terminal.json",
+          "sha256": "f171f57d614c480b8f243c1edf9dadaa949e82c998ba452adca1fdd200c542db"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-246\\attempt-001\\result\\review.json",
+          "sha256": "293e5504766f3ea4f6e061af7cbed19f26b7e504f9999bc1f62b8fee4fba5cbd"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-246.json",
+          "sha256": "a09b6876bace4989a4b42faa2a7bc3b2264bd0499f9ea92792941cf6a887a3be"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-246.json",
+          "sha256": "e4bd40d8a0040194d3a80e277e7d6800fe0d2bb23f2d2f2240e4e9a7b76ce080"
+        }
+      ],
+      "native_commands": 692,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 8,
+      "native_seconds": 90.06299999999464,
+      "total_seconds_with_ordinary_and_packaging": 96.57815339999797
+    },
+    {
+      "case_id": "OLD-248",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-248\\terminal.json",
+          "sha256": "97d277c589833633a28e453270f2537a12aa9a9b0fa1e5d8eb65d7c68526661f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-248\\attempt-001\\result\\review.json",
+          "sha256": "c658309e51efc14149eaa7df215b60907134ec473c8f8fcd681a2fe5f015f63d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-248.json",
+          "sha256": "94ae0dcf9780a9f9c8a1c68640ba5a27d3fc7204d51b33d69a11834b6bed9e12"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-248.json",
+          "sha256": "35551c0fdb0a3dbe617cf8da19d882e0b97d664e4f9c43b6d35aee2c98521ab6"
+        }
+      ],
+      "native_commands": 926,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 10,
+      "native_seconds": 142.5940000000046,
+      "total_seconds_with_ordinary_and_packaging": 151.08602119999705
+    },
+    {
+      "case_id": "OLD-249",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-249\\terminal.json",
+          "sha256": "dabfabaa00bcd2667e5883cf125be80c0998d4942fc2b87bf0602f458e87e3e2"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-249\\attempt-001\\result\\review.json",
+          "sha256": "f73ca36c060ac9012642c70bff6126441c06564beabba472dac6c53f8ce27303"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-249.json",
+          "sha256": "bd090cc863d268697d12ebcd9339fed2798c5cf9265e2a92a001b41ffb2940c0"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-249.json",
+          "sha256": "c829f4850ba70d9eb8cecc0e3bf5705f1145371523822df959145a6637abe4c6"
+        }
+      ],
+      "native_commands": 1230,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 10,
+      "native_seconds": 151.125,
+      "total_seconds_with_ordinary_and_packaging": 159.95170890000009
+    },
+    {
+      "case_id": "OLD-258",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-258\\terminal.json",
+          "sha256": "580eaf84d55f7da81ec33dcd89968da61dfe6e139fb2de905a5f76273c960f5f"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-258\\attempt-001\\result\\review.json",
+          "sha256": "32e9d0b6ba580fd61376c4af8bb37531770b1bc55489123ca1bc4449db768df7"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-258.json",
+          "sha256": "a26301c1cabdee1bec5b60e885264e20ebd1fdc742f0cfcd80eed9e695e29274"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-258.json",
+          "sha256": "678b0089ff239a8366f8ada475b4eb7b0cd6c474dbf3c0ab4090813d8b1c874b"
+        }
+      ],
+      "native_commands": 2378,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 6,
+      "native_seconds": 410.8130000000019,
+      "total_seconds_with_ordinary_and_packaging": 425.5739009999961
+    },
+    {
+      "case_id": "OLD-259",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-259\\terminal.json",
+          "sha256": "0dfffd20ec2de28431ac61ad7b25d50bd8e1bf688f7dfcfb92677fe073ae04e5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-259\\attempt-001\\result\\review.json",
+          "sha256": "dccd3e16a3b2e5d2bc572dd49358092d8dd96e39bc5175379ee6bf3165c3c3f8"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-259.json",
+          "sha256": "4bd6398e88626fc8b6e0534f00fac399c59a25fcba142f4f3560f58bac1543e0"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-259.json",
+          "sha256": "f3bef178db405fbe67cd642c6ac641930d876386329a414817294ed5bc523cb4"
+        }
+      ],
+      "native_commands": 901,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 9,
+      "native_seconds": 124.57800000000134,
+      "total_seconds_with_ordinary_and_packaging": 132.55047590000322
+    },
+    {
+      "case_id": "OLD-271",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-271\\terminal.json",
+          "sha256": "212c5fcbef152e2dc7da745109da31ba9a83571d57b436276c0c050a584cd185"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-271\\attempt-001\\result\\review.json",
+          "sha256": "05a889ff8626419d5ab2720eb233462b759d28c9e73f74b6ba993825d03cc26c"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-271.json",
+          "sha256": "69f50faf78d051082a6632c8d8349bfb809edcb5780113f7e2ddfd42a27e9965"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-271.json",
+          "sha256": "6c12d19abd8384c9ba06af64154f50da209d8bb1bc072eb948146b0829ac3ee5"
+        }
+      ],
+      "native_commands": 806,
+      "failed_native_commands": 0,
+      "common_scope_detail_captures": 5,
+      "native_seconds": 106.57800000000134,
+      "total_seconds_with_ordinary_and_packaging": 114.08508089999668
+    }
+  ],
+  "controls": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-complete-local-controls.json",
+    "sha256": "65e97f9467e0b9be6349a2126e902fc7339dd9988157cebb30b796e09ebb5de9"
+  },
+  "applicable_controls_passed": true,
+  "designated_pilot_timing_recorded": true,
+  "designated_pilot": {
+    "case_id": "OLD-001",
+    "status": "pass",
+    "component_statuses": [
+      "complete",
+      "numeric_subset_pass",
+      "view_subset_pass",
+      "scope_subset_pass"
+    ],
+    "evidence": [
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-001\\terminal.json",
+        "sha256": "4e43ab2ecd1cc3bdde5fe4a684092e876dc3bb9545a529566d5c4646cfc2ed49"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-001\\attempt-001\\result\\review.json",
+        "sha256": "db7cdb1a2f4f0e6b7a208e05402af961a38707cf47b9e2ff47be62e7daae1036"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-001.json",
+        "sha256": "a1b9193646873e3e02e0f83bbeceb9a322cbcca7d156ff97c0a8890fe19f2719"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-001.json",
+        "sha256": "075687a07574db4007c23817be2228eac3c0cb2329a849e9883521fad7a21564"
+      }
+    ],
+    "native_commands": 278,
+    "failed_native_commands": 0,
+    "common_scope_detail_captures": 3,
+    "native_seconds": 10.577999999994063,
+    "total_seconds_with_ordinary_and_packaging": 14.40842210000119
+  },
+  "named_timing_case": {
+    "case_id": "OLD-015",
+    "status": "pass",
+    "component_statuses": [
+      "complete",
+      "numeric_subset_pass",
+      "view_subset_pass",
+      "scope_subset_pass"
+    ],
+    "evidence": [
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\cases\\OLD-015\\terminal.json",
+        "sha256": "b423877eaabc8b76cda04a2ade9338a76df47946c3b8c168707cb80004ad9b1f"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-015\\attempt-001\\result\\review.json",
+        "sha256": "143fc5227d71f1bfcb6863bdfafc857b45616dec10d8d27b47cac462b5450495"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\OLD-015.json",
+        "sha256": "ea8d8905f63eff0cd6c65b974fd14df3ace27f20cea383a05f880d5cd024642b"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\OLD-015.json",
+        "sha256": "0b93e025b09353b6ed7956f1e007bd22ca8ea16225781f26d36e8e37b95d3ab8"
+      }
+    ],
+    "native_commands": 831,
+    "failed_native_commands": 0,
+    "common_scope_detail_captures": 4,
+    "native_seconds": 34.54699999999866,
+    "total_seconds_with_ordinary_and_packaging": 39.94572519999929
+  },
+  "overall_precheck_pass": true,
+  "collection_manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\manifest.json",
+    "sha256": "0e530269df115b809334264f51d8e48df31e73ac041e5a1f3ea31b454298632d"
+  },
+  "collection_barrier": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\collection-complete.json",
+    "sha256": "9cdbe39c56a965a7ce2858d7b5b6c8b934d3b763107e037cc45bec6724402a30"
+  },
+  "numeric_review": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\unified-review\\summary.json",
+    "sha256": "b958bbd5ba68930697cf9ff50068ee551c2ae242fc83fdf79c8436caf7d6d1f3"
+  },
+  "view_review": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\view-review-v1\\summary.json",
+    "sha256": "6ec415dac5cf2a9511d872fdad859f1beb13607f267e9176018b3a3411b9dd94"
+  },
+  "scope_review": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\scope-review-v1\\summary.json",
+    "sha256": "bb0759cad9605ff7c828a1fe26b0f54a0f542cc7cb44a8d0f363bb34a846522c"
+  },
+  "recorded_epoch": 1789214292.1787615,
+  "workflow_gate_revision": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\workflow-gate-visual-update-v2.json",
+    "sha256": "11f116fddb54549b68351788f23a851065d6959da80920c97549c5005c828c0d"
+  },
+  "representative_visual_review": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-visual-review\\review.json",
+    "sha256": "0d92513dd97a22028f74a61acd69aa83aca2d5e16016c61d8cbd8e32ed43a806"
+  },
+  "blocking_visual_finding": null,
+  "wall_seconds": {
+    "collection": 1701.635560900002,
+    "numeric": 53.85054400000081,
+    "view": 47.78554269999586,
+    "scope": 5.221640348434448
+  },
+  "native_commands": 39123,
+  "failed_native_commands": 0,
+  "common_scope_detail_captures": 192,
+  "median_case_seconds": 49.65443884999695,
+  "independent_reference_cache": {
+    "event_counts": {
+      "overlap/hit": 40,
+      "sampled_mo/hit": 80,
+      "full_mo/hit": 80
+    },
+    "cases_with_usage_records": 40,
+    "cached_verdicts": false,
+    "actual_evidence_recompared": true,
+    "usage_reports": [
+      {
+        "case_id": "OLD-001",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-001\\attempt-001\\result\\reference-cache.json",
+          "sha256": "f4c73fb8135cc056bb2cbc016bc0e640963caf11ca5f812d764b7af8a8e0fc7c"
+        }
+      },
+      {
+        "case_id": "OLD-002",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-002\\attempt-001\\result\\reference-cache.json",
+          "sha256": "53f50c4b546cc7eafbb2363e0a50a0c0d21ad82b7f0d39f7a376a3d4bbb50db4"
+        }
+      },
+      {
+        "case_id": "OLD-005",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-005\\attempt-001\\result\\reference-cache.json",
+          "sha256": "69a6e3e435b6d84f5895027811581c8b900d72df1d46939d8b4d87986eef72e9"
+        }
+      },
+      {
+        "case_id": "OLD-006",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-006\\attempt-001\\result\\reference-cache.json",
+          "sha256": "e7c2ce97edfef390aea01d1b9808661ab58ebacf5c3a6daae0c4954dd17e787e"
+        }
+      },
+      {
+        "case_id": "OLD-010",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-010\\attempt-001\\result\\reference-cache.json",
+          "sha256": "31101bc4b31be8bb1d242b39be71c1e0a1e7d699b4d1b6ff0aa556b34fc6008d"
+        }
+      },
+      {
+        "case_id": "OLD-012",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-012\\attempt-001\\result\\reference-cache.json",
+          "sha256": "a4df0abdf4aca815c82e6c7b8880e09393db15ce725c892133c77d4867411429"
+        }
+      },
+      {
+        "case_id": "OLD-013",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-013\\attempt-001\\result\\reference-cache.json",
+          "sha256": "b6576dc1455bb88adcac43d98b80a3fd056fdfb9af45b94e3cba5724d4102f38"
+        }
+      },
+      {
+        "case_id": "OLD-014",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-014\\attempt-001\\result\\reference-cache.json",
+          "sha256": "855ed382d20011fc1d175228328499278aa70aae5ff1821b60b374b42637f022"
+        }
+      },
+      {
+        "case_id": "OLD-015",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-015\\attempt-001\\result\\reference-cache.json",
+          "sha256": "1bbb614b990629ebd9005d4cf31aface04f5cd7201695ca407c495cdf74cbbf3"
+        }
+      },
+      {
+        "case_id": "OLD-016",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-016\\attempt-001\\result\\reference-cache.json",
+          "sha256": "85c840a3d3d1ce2c1c463bb56be1ddd4e6143f3340bab1b59e387afed5117195"
+        }
+      },
+      {
+        "case_id": "OLD-017",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-017\\attempt-001\\result\\reference-cache.json",
+          "sha256": "3fea7a8b1988d3e113c3fe436ea55c1da6699f69e314c13612f8f393a328b728"
+        }
+      },
+      {
+        "case_id": "OLD-018",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-018\\attempt-001\\result\\reference-cache.json",
+          "sha256": "d1f77669ebf04f69f54aff35fc85d13724e56dfc8d2fcf45e27f3d4932bac773"
+        }
+      },
+      {
+        "case_id": "OLD-019",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-019\\attempt-001\\result\\reference-cache.json",
+          "sha256": "eacf09a69ab3f002a6753bcbf5a275980c14f3376596bab2c2122c02fb0f18c0"
+        }
+      },
+      {
+        "case_id": "OLD-020",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-020\\attempt-001\\result\\reference-cache.json",
+          "sha256": "600ab61d68b31eabe72bd9a7e38f5c5c0c878f84138d802e00d24d10608e23e6"
+        }
+      },
+      {
+        "case_id": "OLD-038",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-038\\attempt-001\\result\\reference-cache.json",
+          "sha256": "c28dfd17641a882dbf61565eaeb565ae40007c3c4ebeaa334f328df9b6616e2d"
+        }
+      },
+      {
+        "case_id": "OLD-071",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-071\\attempt-001\\result\\reference-cache.json",
+          "sha256": "57d5df57f30d218962ad9e311ac3b8029fdeaa492bc266611235fa5747c1a145"
+        }
+      },
+      {
+        "case_id": "OLD-078",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-078\\attempt-001\\result\\reference-cache.json",
+          "sha256": "51cb02076193c34c8074a17c7ac76e048c148c0c48a647b94b77f92aed9892c3"
+        }
+      },
+      {
+        "case_id": "OLD-107",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-107\\attempt-001\\result\\reference-cache.json",
+          "sha256": "8b0687282bf6ff686ce9d6012516ce26b7d21e67943492d3a6d935cb2becef57"
+        }
+      },
+      {
+        "case_id": "OLD-127",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-127\\attempt-001\\result\\reference-cache.json",
+          "sha256": "8c162487b03bde4af5beebf38199bf5e41254c23a56d160340e9d9884dd40c43"
+        }
+      },
+      {
+        "case_id": "OLD-152",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-152\\attempt-001\\result\\reference-cache.json",
+          "sha256": "df143e6295ea591e5ff1ba2cae716becc72868e050ee23dc389f6035672c2ccb"
+        }
+      },
+      {
+        "case_id": "OLD-168",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-168\\attempt-001\\result\\reference-cache.json",
+          "sha256": "abadea3567132183d89ef7d12729a94395b40f0fcddac5b5540dd3413cfc12ed"
+        }
+      },
+      {
+        "case_id": "OLD-170",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-170\\attempt-001\\result\\reference-cache.json",
+          "sha256": "c5bb1774ff8e8ac5591cdb31f4d2829681edd8b02490519e9aef35d468dd8a9e"
+        }
+      },
+      {
+        "case_id": "OLD-171",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-171\\attempt-001\\result\\reference-cache.json",
+          "sha256": "c4cea4236dabd97a50014a3233657a2b7e0694fb6f42e053dee71d9409006015"
+        }
+      },
+      {
+        "case_id": "OLD-174",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-174\\attempt-001\\result\\reference-cache.json",
+          "sha256": "47b523f8055d85b0506134e8ed2e6da8d1c8df47b56c74bc9a191bad6efd3b9f"
+        }
+      },
+      {
+        "case_id": "OLD-175",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-175\\attempt-001\\result\\reference-cache.json",
+          "sha256": "4cf27e607abe56718b640aefe7f7a43643b3ee044effff231b79a3999f407f3f"
+        }
+      },
+      {
+        "case_id": "OLD-176",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-176\\attempt-001\\result\\reference-cache.json",
+          "sha256": "f815c9d5293a5d273f56a2e96e258d83fe7d5bcd0b538c14b54371bc20803661"
+        }
+      },
+      {
+        "case_id": "OLD-198",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-198\\attempt-001\\result\\reference-cache.json",
+          "sha256": "c9e1bdd9d1ae222e8c0c77bccb3b2ae0db5616d873dd1a8bd72ade459d5e5b7e"
+        }
+      },
+      {
+        "case_id": "OLD-199",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-199\\attempt-001\\result\\reference-cache.json",
+          "sha256": "1c203cac388f934b6111ca8b2a958d0cf0e71e806385202dc61095c941f36eab"
+        }
+      },
+      {
+        "case_id": "OLD-200",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-200\\attempt-001\\result\\reference-cache.json",
+          "sha256": "03048563df12ba415ced71d03298d9848cc4a8bd6a6ef51e27ea815d55ac7e53"
+        }
+      },
+      {
+        "case_id": "OLD-220",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-220\\attempt-001\\result\\reference-cache.json",
+          "sha256": "abb61efedf0d5889337b9c994cc87bbcbccf67af8257acb8a272c36ec2e2883f"
+        }
+      },
+      {
+        "case_id": "OLD-230",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-230\\attempt-001\\result\\reference-cache.json",
+          "sha256": "2a0aba1b84e47ab35a60588d7deaba340053668457bce157d4f5663e76a0d8af"
+        }
+      },
+      {
+        "case_id": "OLD-231",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-231\\attempt-001\\result\\reference-cache.json",
+          "sha256": "2286cb4cc4bb6a32ce9ecbd98411d8af6e18e0d9e69d9a0b7a5a4276c85272e0"
+        }
+      },
+      {
+        "case_id": "OLD-232",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-232\\attempt-001\\result\\reference-cache.json",
+          "sha256": "7bf4827228f780a578d0dd34d6a550e673763cb69aca8324730d000eee335445"
+        }
+      },
+      {
+        "case_id": "OLD-239",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-239\\attempt-001\\result\\reference-cache.json",
+          "sha256": "2fade67a55251dedb95109078f286154953926017def239a2307e4a9116a758d"
+        }
+      },
+      {
+        "case_id": "OLD-246",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-246\\attempt-001\\result\\reference-cache.json",
+          "sha256": "409881e0a72202ebd2c35848b0b944af974fab96ce1e2b3e4126de1775b268e7"
+        }
+      },
+      {
+        "case_id": "OLD-248",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-248\\attempt-001\\result\\reference-cache.json",
+          "sha256": "cfe5abb810b5dfc01c5482567894f0ac1588c40ed4ac757f8f91f9efa80bf689"
+        }
+      },
+      {
+        "case_id": "OLD-249",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-249\\attempt-001\\result\\reference-cache.json",
+          "sha256": "ecd0e86a9148eae79df16efec69804c8699b839a466682fcacf5af48edeeb00d"
+        }
+      },
+      {
+        "case_id": "OLD-258",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-258\\attempt-001\\result\\reference-cache.json",
+          "sha256": "de18164565cd76677863b45d75953f451c92231f89a0555108661664f29cf3ac"
+        }
+      },
+      {
+        "case_id": "OLD-259",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-259\\attempt-001\\result\\reference-cache.json",
+          "sha256": "9f678095767bd7d957517ba0aea39533dbfb7b167931e92d05b6ab3a4ffcbfa7"
+        }
+      },
+      {
+        "case_id": "OLD-271",
+        "evidence": {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\review-v1\\cases\\OLD-271\\attempt-001\\result\\reference-cache.json",
+          "sha256": "8f1b8c71f57e07fdf5b95aedd1725a6bc1c353d68f6ee16d86632e601e8c01cf"
+        }
+      }
+    ]
+  },
+  "formal_case_passes": 0,
+  "gaussian_started": false,
+  "limits": [
+    "Development precheck only; not formal273 or final acceptance.",
+    "Declared-model mathematics and visible UI do not certify electronic states, geometry or complete chemical interpretation."
+  ]
+}

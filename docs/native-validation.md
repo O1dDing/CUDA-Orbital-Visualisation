@@ -1,10 +1,13 @@
 # Native single-case validation
 
-The `test/fchk-validation-native` branch starts at PR #3 commit
-`bdc3ece61b3847a782873bfd2654521c9808efb5`. It adds observation and a local
-test driver. It does not fix the scientific failures retained in the original
-validation ledger. Normal builds use `COV_ENABLE_VALIDATION=OFF` and produce
-`cov.exe`; ON builds produce `cov_validation.exe`.
+The `test/fchk-validation-native` branch originally added observation and a local
+test driver at PR #3 commit `bdc3ece61b3847a782873bfd2654521c9808efb5`.
+It now also contains the subsequent parser, numerical, scope, navigation,
+diagram and UI fixes recorded in the [dated validation history](../validation/README.md).
+Each pass belongs to its recorded build and scope; it does not certify a physical
+electronic state or all product behavior. Normal builds use
+`COV_ENABLE_VALIDATION=OFF` and produce `cov.exe`; ON builds produce
+`cov_validation.exe`.
 
 ## Build and run
 
@@ -12,6 +15,15 @@ Use the existing CUDA 12.8 / Visual Studio 2022 / ImGui 1.90.9 / OpenGL 2.1
 configuration. Configure `COV_ENABLE_CUDA=ON`, `COV_BUILD_TESTS=ON`, and
 `COV_ENABLE_VALIDATION=ON`. An independent OFF build is used by the checker.
 No ImGui upgrade, server, or ImGui Test Engine dependency is introduced.
+
+Commit the intended source, then reconfigure and rebuild the validation target.
+CMake embeds the current Git commit and appends `-dirty` for modified tracked
+files. Committing after a build does not update that binary. Before freezing a
+round, run a short native plan and verify that its `identity.json.git_commit`
+matches the intended source commit and that the executable SHA-256 matches the
+program inventory. Preserve the source, inputs, plans, criteria and build receipt.
+A mismatch invalidates the round even if its actions succeed; rebuild and create
+a new round instead of editing the old manifest or identity output.
 
 ```
 cov_validation.exe input.fch --validation-plan case.plan --validation-output new-directory
@@ -83,11 +95,12 @@ No file in an existing output directory is overwritten.
 - ON/OFF science data and original regressions are compared. This first
   implementation is not a complete certification of non-interference across
   every UI timing, resolution, degenerate group and molecule.
-- Full tooltip clipping, all four-language terminology, complete general
-  active-space selection, all point groups and all proposed inspection APIs
-  still require additional coverage. Unsupported/insufficient checks stay
-  explicit. There is no automatic expansion to the 273-case queue or new
-  Gaussian calculations from this single-case command.
+- Tooltip and details-window defects are adjudicated individually in the dated
+  validation records, including actual resize, scroll, close and language checks.
+  Those checks do not cover every possible term, point group, active space or
+  display environment. Unsupported or insufficient checks remain explicit.
+  This single-case command does not automatically start the 273-case queue or
+  new Gaussian calculations.
 
 References: the installed Gaussian `doc/formchk.txt`,
 [GBasis evaluation documentation](https://gbasis.qcdevs.org/tutorial/Evaluations_basis_and_potential.html),
@@ -96,8 +109,11 @@ and the [D2h character table](https://www.staff.ncl.ac.uk/j.p.goss/symmetry/D2h.
 ## Corpus collection without scientific analysis
 
 `tests/native_collection_batch.py` recursively inventories `.fch` and `.fchk`,
-then uses a thread pool to launch up to four independent COV processes by
-default. Every case has an isolated current directory, input/log snapshot,
+then uses a thread pool to launch independent COV processes. Its raw default is
+four workers; a frozen campaign's resource policy overrides that default. The
+current COV campaign uses two workers, each limited to two physical cores and
+24 GiB, inside a four-core/64-GiB parent limit. Every case has an isolated
+current directory, input/log snapshot,
 production dump, native plan, exports, captures, action trace and process IDs.
 The new `--validation-background` flag creates a hidden window/context and
 still draws the real production scene and ImGui into the same back buffer.

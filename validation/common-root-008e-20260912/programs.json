@@ -1,0 +1,38 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "programs": [
+    {
+      "file": "ordinary/cov.exe",
+      "sha256": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6",
+      "size": 2930176,
+      "frozen_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\programs\\cov.exe"
+    },
+    {
+      "file": "validation/cov_validation.exe",
+      "sha256": "973dbb316753deb80202849b734411ea7debcd65afc59e90853667aa3dcf8c48",
+      "size": 3007488,
+      "frozen_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\programs\\cov_validation.exe"
+    },
+    {
+      "file": "validation/cov_scientific_audit_dump.exe",
+      "sha256": "dd09969b6195e8ec48e906122df8e44d110bbe6ee200cbdae4503a68035340ff",
+      "size": 1649152,
+      "frozen_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\programs\\cov_scientific_audit_dump.exe"
+    },
+    {
+      "file": "validation/cov_scientific_audit_dump_off.exe",
+      "sha256": "e41c45c69d3b5f63eab8b485e0e84ebdbcc72b0f15b3b6486a9633f2411e2eae",
+      "size": 1649152,
+      "frozen_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\programs\\cov_scientific_audit_dump_off.exe"
+    }
+  ],
+  "frozen_manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\manifest.json",
+    "sha256": "0e530269df115b809334264f51d8e48df31e73ac041e5a1f3ea31b454298632d"
+  },
+  "embedded_identity_preflight": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\build-identity-preflight.json",
+    "sha256": "55954eca4c4753b17e6bb120ff495553b0224f5d5fc53fbee68a0e64d16ca0b9"
+  },
+  "prepared_epoch": 1789211621.8961666
+}
