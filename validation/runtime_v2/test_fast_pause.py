@@ -321,7 +321,7 @@ class NativeWindowsPauseTests(unittest.TestCase):
             started = time.monotonic()
             try:
                 result = self.backend.run_tree([sys.executable, worker, path/'owned.txt', 'spawn'],
-                    path, 2, 1, 12, hold=want.is_set, on_tick=tick,
+                    path, 1, 1, 12, hold=want.is_set, on_tick=tick,
                     cancel=lambda: time.monotonic()-started > 15)
             finally:
                 want.clear(); thread.join(8)
