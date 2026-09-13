@@ -1,0 +1,58 @@
+
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... FAIL
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... FAIL
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... FAIL
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... FAIL
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate) ... ok
+
+======================================================================
+FAIL: test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\Dev\cov-native-validation-20260905\validation/runtime_v2\test_fast_pause.py", line 385, in test_active_timeout_can_park_instead_of_terminate
+    self.assertTrue(held.is_set(), json.dumps({'result': result, 'ticks': ticks}))
+AssertionError: False is not true : {"result": {"pid": 48468, "argv": ["F:\\Dev\\Python312\\python.exe", "-c", "import time;time.sleep(20)"], "started_epoch": 1789236325.2725837, "finished_epoch": 1789236377.9864745, "wall_seconds": 52.71800000000803, "active_wall_seconds": 52.71800000000803, "ram_paused_seconds": 0.0, "tree_cpu_seconds": 0.09375, "peak_tree_commit_bytes": 7581696, "cores": 1, "memory_limit_gib": 1, "cpu_rate_hard_cap": 312, "tree_process_count": 2, "active_processes_at_return": 0, "exit_code": 0, "interrupted": false, "stop_reason": null}, "ticks": [{"elapsed_seconds": 0.014999999999417923, "active_elapsed_seconds": 0.014999999999417923, "ram_paused_seconds": 0.0, "active_processes": 1, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": null, "tree_cpu_seconds": 0.0}, {"elapsed_seconds": 52.625, "active_elapsed_seconds": 52.625, "ram_paused_seconds": 0.0, "active_processes": 2, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": "Could not stabilize owned thread tree within pause deadline", "tree_cpu_seconds": 0.078125}]}
+
+======================================================================
+FAIL: test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\Dev\cov-native-validation-20260905\validation/runtime_v2\test_fast_pause.py", line 385, in test_active_timeout_can_park_instead_of_terminate
+    self.assertTrue(held.is_set(), json.dumps({'result': result, 'ticks': ticks}))
+AssertionError: False is not true : {"result": {"pid": 20964, "argv": ["F:\\Dev\\Python312\\python.exe", "-c", "import time;time.sleep(20)"], "started_epoch": 1789236379.4865916, "finished_epoch": 1789236420.220051, "wall_seconds": 40.75, "active_wall_seconds": 40.75, "ram_paused_seconds": 0.0, "tree_cpu_seconds": 0.03125, "peak_tree_commit_bytes": 7593984, "cores": 1, "memory_limit_gib": 1, "cpu_rate_hard_cap": 312, "tree_process_count": 2, "active_processes_at_return": 0, "exit_code": 0, "interrupted": false, "stop_reason": null}, "ticks": [{"elapsed_seconds": 0.01600000000325963, "active_elapsed_seconds": 0.01600000000325963, "ram_paused_seconds": 0.0, "active_processes": 1, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": null, "tree_cpu_seconds": 0.0}, {"elapsed_seconds": 40.64100000000326, "active_elapsed_seconds": 40.64100000000326, "ram_paused_seconds": 0.0, "active_processes": 2, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": "Could not stabilize owned thread tree within pause deadline", "tree_cpu_seconds": 0.03125}]}
+
+======================================================================
+FAIL: test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\Dev\cov-native-validation-20260905\validation/runtime_v2\test_fast_pause.py", line 385, in test_active_timeout_can_park_instead_of_terminate
+    self.assertTrue(held.is_set(), json.dumps({'result': result, 'ticks': ticks}))
+AssertionError: False is not true : {"result": {"pid": 42904, "argv": ["F:\\Dev\\Python312\\python.exe", "-c", "import time;time.sleep(20)"], "started_epoch": 1789236421.6967032, "finished_epoch": 1789236462.0753007, "wall_seconds": 40.375, "active_wall_seconds": 40.375, "ram_paused_seconds": 0.0, "tree_cpu_seconds": 0.0625, "peak_tree_commit_bytes": 7589888, "cores": 1, "memory_limit_gib": 1, "cpu_rate_hard_cap": 312, "tree_process_count": 2, "active_processes_at_return": 0, "exit_code": 0, "interrupted": false, "stop_reason": null}, "ticks": [{"elapsed_seconds": 0.0, "active_elapsed_seconds": 0.0, "ram_paused_seconds": 0.0, "active_processes": 1, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": null, "tree_cpu_seconds": 0.0}, {"elapsed_seconds": 40.28100000000268, "active_elapsed_seconds": 40.28100000000268, "ram_paused_seconds": 0.0, "active_processes": 2, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": "Could not stabilize owned thread tree within pause deadline", "tree_cpu_seconds": 0.046875}]}
+
+======================================================================
+FAIL: test_active_timeout_can_park_instead_of_terminate (test_fast_pause.NativeWindowsPauseTests.test_active_timeout_can_park_instead_of_terminate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\Dev\cov-native-validation-20260905\validation/runtime_v2\test_fast_pause.py", line 385, in test_active_timeout_can_park_instead_of_terminate
+    self.assertTrue(held.is_set(), json.dumps({'result': result, 'ticks': ticks}))
+AssertionError: False is not true : {"result": {"pid": 55588, "argv": ["F:\\Dev\\Python312\\python.exe", "-c", "import time;time.sleep(20)"], "started_epoch": 1789236463.550858, "finished_epoch": 1789236493.925365, "wall_seconds": 30.375, "active_wall_seconds": 30.375, "ram_paused_seconds": 0.0, "tree_cpu_seconds": 0.03125, "peak_tree_commit_bytes": 7589888, "cores": 1, "memory_limit_gib": 1, "cpu_rate_hard_cap": 312, "tree_process_count": 2, "active_processes_at_return": 0, "exit_code": 0, "interrupted": false, "stop_reason": null}, "ticks": [{"elapsed_seconds": 0.0, "active_elapsed_seconds": 0.0, "ram_paused_seconds": 0.0, "active_processes": 1, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": null, "tree_cpu_seconds": 0.0}, {"elapsed_seconds": 30.281000000002678, "active_elapsed_seconds": 30.281000000002678, "ram_paused_seconds": 0.0, "active_processes": 2, "execution_state": "running", "pause_is_disk_checkpoint": false, "suspended_thread_handles": 0, "pause_error": "Could not stabilize owned thread tree within pause deadline", "tree_cpu_seconds": 0.03125}]}
+
+----------------------------------------------------------------------
+Ran 20 tests in 176.086s
+
+FAILED (failures=4)

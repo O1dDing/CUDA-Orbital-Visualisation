@@ -1,0 +1,102 @@
+{
+  "runtime_identity": "84fe2a76288c49870928b3809af258a0535cf42ad693939b910e1deff5d90235",
+  "local_regression": {
+    "exit_code": 0,
+    "watchdog_timeout": false,
+    "wall_seconds": 30.953000000008615,
+    "tests_started": 102,
+    "remaining_owned_processes": 0,
+    "self_test": false,
+    "test_log": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-runtime-integration-20260913\\release-regression\\tests.log",
+    "passed": true
+  },
+  "frozen_recovery": {
+    "exit_code": 0,
+    "wall_seconds": 0.15600000000267755
+  },
+  "native_guard": {
+    "exit_code": 0,
+    "watchdog_timeout": false,
+    "wall_seconds": 287.32799999999406,
+    "tests_started": 1,
+    "remaining_owned_processes": 0,
+    "self_test": false,
+    "test_log": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-runtime-integration-20260913\\gaussian-ram-acceptance-v3\\tests.log",
+    "passed": true
+  },
+  "watchdog_self_test": {
+    "exit_code": 124,
+    "watchdog_timeout": true,
+    "wall_seconds": 1.0160000000032596,
+    "tests_started": null,
+    "remaining_owned_processes": 0,
+    "self_test": true,
+    "test_log": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-runtime-integration-20260913\\watchdog-self-test\\tests.log",
+    "passed": true
+  },
+  "migration": {
+    "runtime_identity": "84fe2a76288c49870928b3809af258a0535cf42ad693939b910e1deff5d90235",
+    "runtime_root": "F:\\CalChem\\COV\\Resume\\work\\runtime-v2-unified-84fe2a76288c",
+    "config": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-runtime-integration-20260913\\deployment-config.json",
+    "counts": {
+      "collected_parts": 337,
+      "recovery_sources": 0,
+      "review_holds": 2,
+      "candidate_collected": 103
+    },
+    "status_counts": {
+      "candidate_collected": 103,
+      "needs_review": 2,
+      "partial": 1,
+      "not_started": 167
+    },
+    "source_binding": {
+      "path": "F:\\CalChem\\COV\\Resume\\work\\runtime-v2-fastpause\\binding.json",
+      "sha256": "f0f226007e9bc91653c18649ab8c8936eecaeefda0f79415bc1a7b75f38874fa"
+    },
+    "source_evidence_files": 1351,
+    "old018_checkpoint_sha256": "12c50a01ca0d2b37b1f1234df94ea7d0b2c62553ef605a1108212238de08087e",
+    "formal_calculations_started": 0
+  },
+  "ref001_delta": {
+    "files": 4308,
+    "new_unique_files": 335,
+    "archives": 15,
+    "archive_bytes": 2039052218,
+    "manifest_sha256": "319866472093912791a89100bbfdec133b8b50d6eddda28e19f62e0e248eb540",
+    "scientific_passes": 0,
+    "calculations_started": 0,
+    "completed_epoch": 1789269620.341305
+  },
+  "capabilities": {
+    "ram_pause": {
+      "passed": true,
+      "methods": [
+        "RPBE1PBE",
+        "UPBE1PBE"
+      ]
+    },
+    "opt_l103_segments": {
+      "passed": false,
+      "methods": []
+    },
+    "analytic_rwf_restart": {
+      "passed": false,
+      "methods": []
+    }
+  },
+  "formal_calculations_started": 0,
+  "scientific_passes": 0,
+  "historical_long_delay_cause": "Specific blocked Windows API not reproduced; original failures retained",
+  "intermediate_native_receipts_accepted": false,
+  "files": {
+    "release-regression.log": "3a1c75397e36b10894a52639d9d95f20a9144df9fb5b08ef896eb35d0a031993",
+    "frozen-recovery-tests.log": "7f8baa5be8473ad1877a52b4a509a9cde59bf7d55f629a3f8976e11b48dfc3b6",
+    "current-ref001-stage-audit.json": "93025d607be873cb9c509d775a4f5e2e38de04e39f41caf3f0c56b903c3ad52d",
+    "migration-complete.json": "43df41441201a6c7c77138f6d7508ca932ff8956e56a1bbba36c39cde2723600",
+    "native-capabilities.json": "d60ff60e686f8f0f0e6e54b05bcf125896c8ee949192bb92928c2105b45ff0b1",
+    "native-report.json": "c39db53774f83789f48e00ee2999e7deb9441bcba0c285722319cd233cf07e1b",
+    "historical-early-pause-failures.log": "0f6de2ce94b1ec626316876713b7e81dc8c0fd4981f230c6f46c676a011b0571",
+    "ref001-delta-manifest.json": "319866472093912791a89100bbfdec133b8b50d6eddda28e19f62e0e248eb540"
+  }
+}

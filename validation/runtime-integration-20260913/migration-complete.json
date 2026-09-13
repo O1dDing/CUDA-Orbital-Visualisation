@@ -1,0 +1,24 @@
+{
+  "runtime_identity": "84fe2a76288c49870928b3809af258a0535cf42ad693939b910e1deff5d90235",
+  "runtime_root": "F:\\CalChem\\COV\\Resume\\work\\runtime-v2-unified-84fe2a76288c",
+  "config": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-runtime-integration-20260913\\deployment-config.json",
+  "counts": {
+    "collected_parts": 337,
+    "recovery_sources": 0,
+    "review_holds": 2,
+    "candidate_collected": 103
+  },
+  "status_counts": {
+    "candidate_collected": 103,
+    "needs_review": 2,
+    "partial": 1,
+    "not_started": 167
+  },
+  "source_binding": {
+    "path": "F:\\CalChem\\COV\\Resume\\work\\runtime-v2-fastpause\\binding.json",
+    "sha256": "f0f226007e9bc91653c18649ab8c8936eecaeefda0f79415bc1a7b75f38874fa"
+  },
+  "source_evidence_files": 1351,
+  "old018_checkpoint_sha256": "12c50a01ca0d2b37b1f1234df94ea7d0b2c62553ef605a1108212238de08087e",
+  "formal_calculations_started": 0
+}

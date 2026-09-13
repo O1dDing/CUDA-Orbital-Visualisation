@@ -44,6 +44,7 @@ class ObservingBackend:
         self.capture_started = None
         self.cpu_at_hold = None
         self.cpu_delta_while_held = None
+        self.attempts = []
 
     def host_info(self):
         return self.real.host_info()
@@ -51,7 +52,10 @@ class ObservingBackend:
     def run_tree(self, argv, cwd, cores, memory, timeout, **kw):
         if Path(argv[0]).name.lower() != 'g16.exe':
             return self.real.run_tree(argv, cwd, cores, memory, timeout, **kw)
+        self.held_at = self.hold_requested = self.hold_released = None
+        self.cpu_at_hold = self.cpu_delta_while_held = None
         from resume import text
+        first_event = len(self.events)
         t0 = time.monotonic()
         original_tick = kw.get('on_tick', lambda _: None)
         original_cancel = kw.get('cancel', lambda: False)
@@ -90,10 +94,19 @@ class ObservingBackend:
                     return True
             return False
         kw.update(on_tick=tick, hold=hold, cancel=cancel)
-        return self.real.run_tree(argv, cwd, cores, memory, timeout, **kw)
+        result = self.real.run_tree(argv, cwd, cores, memory, timeout, **kw)
+        if self.operation == 'ram_pause':
+            self.attempts.append({'directory': str(cwd), 'hold_acknowledged': self.held_at is not None,
+                'ack_latency_seconds': self.held_at-self.hold_requested if self.held_at is not None else None,
+                'cpu_delta_during_hold': self.cpu_delta_while_held,
+                'pause_diagnostics': [x['pause_diagnostic'] for x in self.events[first_event:]
+                                      if x.get('execution_state') == 'pausing'],
+                'pause_failures': result.get('pause_failures', []),
+                'active_processes_at_return': result.get('active_processes_at_return')})
+        return result
 
 
-def run_acceptance(parent, host):
+def run_acceptance(parent, host, capability='all'):
     from resume import Engine, Paused, atomic, read, sha, text
     from policy import next_stage, core_budget, digest
     from fast_checkpoint import persistent_input
@@ -153,9 +166,18 @@ def run_acceptance(parent, host):
             ram_cmp['ack_latency_seconds'] = (observer.held_at-observer.hold_requested
                                               if observer.held_at is not None else None)
             ram_cmp['cpu_delta_during_hold'] = observer.cpu_delta_while_held
+            ram_cmp['attempts'] = observer.attempts
             ram_cmp['passed'] = bool(ram_cmp['passed'] and observer.triggered and observer.held_at is not None
-                                    and observer.cpu_delta_while_held is not None and observer.cpu_delta_while_held < .1)
+                                    and len(observer.attempts) == 2 and all(
+                                        x['hold_acknowledged'] and not x['pause_failures'] and
+                                        x['cpu_delta_during_hold'] is not None and x['cpu_delta_during_hold'] < .1 and
+                                        x['active_processes_at_return'] == 0 for x in observer.attempts))
             trial['ram_pause'] = ram_cmp
+            if capability == 'ram_pause':
+                for path in (root / case_id).rglob('job.log'):
+                    evidence.append({'path': str(path.resolve()), 'sha256': sha(path)})
+                atomic(root / 'report.json', report)
+                continue
             try:
                 # Repeated producer-controlled l103 segments; refuse ambiguous KJob
                 # producer output rather than certify a hard-kill as a safe boundary.
@@ -213,5 +235,6 @@ def run_acceptance(parent, host):
     atomic(parent.root / 'native-capabilities.json', receipt)
     print('Native acceptance report:', root / 'report.json')
     print('Capabilities:', report['capabilities'])
-    if any(not report['capabilities'][c]['passed'] for c in report['capabilities']):
+    required = report['capabilities'] if capability == 'all' else ('ram_pause',)
+    if any(not report['capabilities'][c]['passed'] for c in required):
         raise RuntimeError('Some native capabilities are NOT accepted; see report, do not override gate')

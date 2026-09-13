@@ -1,0 +1,2705 @@
+{
+  "stages_verified": 337,
+  "stages": [
+    {
+      "case_id": "OLD-001",
+      "stage": "freq-00",
+      "metadata_sha256": "a470844fb94f199f55539c7daa2de1710a628feded7e26011be17e182d2ce465",
+      "method": "RPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-001",
+      "stage": "opt-00",
+      "metadata_sha256": "46f031920249aaaeda1ef5855c928a3465788ddb6383cdbb0f2274c7ac22f2fd",
+      "method": "RPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-001",
+      "stage": "stability-00",
+      "metadata_sha256": "dea46f84808b5e6b754bf4cb6e1c3c3fcec69ab631b9912c4dcb8de3278adee3",
+      "method": "RPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-002",
+      "stage": "freq-00",
+      "metadata_sha256": "264a095ca6678501c5c3866bce6863262fa8c6a6f6c6a9f9a71d76b28b5260ff",
+      "method": "RPBE1PBE",
+      "nbasis": 131,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-002",
+      "stage": "opt-00",
+      "metadata_sha256": "79adedf5a68f72d9eb5b57b82dd4de56452d63c1e430af8d15773b65ed13beb2",
+      "method": "RPBE1PBE",
+      "nbasis": 131,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-002",
+      "stage": "stability-00",
+      "metadata_sha256": "2b695a48fa7464efbc53fb922ad5c93d918ee1063caabb225556c678a89243e3",
+      "method": "RPBE1PBE",
+      "nbasis": 131,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-003",
+      "stage": "freq-00",
+      "metadata_sha256": "00b69b8069a0275ab969dbecce70800adc071f6d217c0dc4ff8af58cfca51585",
+      "method": "RPBE1PBE",
+      "nbasis": 307,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-003",
+      "stage": "opt-00",
+      "metadata_sha256": "e72df52b643509a18d859a2354a4a6b135f4bf0faf23f1b0a78201961a081c78",
+      "method": "RPBE1PBE",
+      "nbasis": 307,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-003",
+      "stage": "stability-00",
+      "metadata_sha256": "46efe29b3b2189d00d8039e84a90f391353cc9fd18566b4346ac9d38a7bc9742",
+      "method": "RPBE1PBE",
+      "nbasis": 307,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-004",
+      "stage": "freq-00",
+      "metadata_sha256": "a9f6bb33c94465403214e19ab38a680aa51bf4df8cc531e8e6de85bb1f79b5c8",
+      "method": "RPBE1PBE",
+      "nbasis": 271,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-004",
+      "stage": "opt-00",
+      "metadata_sha256": "aa1f648ed133ebcc2513d54fd7dec6c9badd6520fb58571d33912e20221fed8a",
+      "method": "RPBE1PBE",
+      "nbasis": 271,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-004",
+      "stage": "stability-00",
+      "metadata_sha256": "e17563a7633e1be25323508250055176876339b2fb7b81a025a2775137461afb",
+      "method": "RPBE1PBE",
+      "nbasis": 271,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-005",
+      "stage": "freq-00",
+      "metadata_sha256": "75a81f8ca39504421ad952dae404dd0b2e158267ecba13f07a198754bf1f2c92",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-005",
+      "stage": "opt-00",
+      "metadata_sha256": "e7c8611e3c5c345c35eccf894baf31c231c8d56e7e863a0c431fe8c6c9fad1fd",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-005",
+      "stage": "stability-00",
+      "metadata_sha256": "717d6d81763838eb469e58e0c37c2c595c94866d0ba37d004d0dfc8ff40e3299",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-006",
+      "stage": "freq-00",
+      "metadata_sha256": "25ea10f125922e1dafe022e4c1cded373b55e5b9c4f23a099cd48a5e4e70419f",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-006",
+      "stage": "opt-00",
+      "metadata_sha256": "b37960ab958622ef5d55271b542c96d91dbe179f96bdbace83d9960039f4bb4c",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-006",
+      "stage": "stability-00",
+      "metadata_sha256": "e41f50adce0d30372012a005f124425d9f5e8eac80d034c739545ae453507131",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-007",
+      "stage": "freq-00",
+      "metadata_sha256": "859c0268170cdec94cbb7f5ab57eb7dd7f1e40fefeacd6fafd1f70a715d0b8a0",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-007",
+      "stage": "opt-00",
+      "metadata_sha256": "86b86f32a5aa5619a551a049dfd68b1a9d6120491fb134538e8d94c644f78337",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-007",
+      "stage": "stability-00",
+      "metadata_sha256": "e847ddca1f3093bae960cc104153e9e529aba390156c47ab3b83aa24d0aa6408",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-008",
+      "stage": "freq-00",
+      "metadata_sha256": "32b3095cd93086913ad3ec2ffa2e02621fa23a5a34db7b28434cfa7844eb536a",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-008",
+      "stage": "opt-00",
+      "metadata_sha256": "779eec514244d5fa3705775df4fcc6a6eeeaf66be4c87d9c508f2e6f56ba2fa8",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-008",
+      "stage": "stability-00",
+      "metadata_sha256": "ce099ff967a3cca41053a8e2e39cb32d9654c4bc9a962759f80d534d63cfa41e",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-009",
+      "stage": "freq-00",
+      "metadata_sha256": "6c2006d98069d681f179d3cfcf3b1e78266c2fd42260c8e545f1798bf0535d87",
+      "method": "RPBE1PBE",
+      "nbasis": 118,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-009",
+      "stage": "opt-00",
+      "metadata_sha256": "f71b9d811a8b198af80d984055a83d2c868e02f15a0a57e330b126aacb94d2b7",
+      "method": "RPBE1PBE",
+      "nbasis": 118,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-009",
+      "stage": "stability-00",
+      "metadata_sha256": "8a4dea425d80a683fe925fa25f964c440d9a39ea0204b7cb2a6e5dc530d508e7",
+      "method": "RPBE1PBE",
+      "nbasis": 118,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-010",
+      "stage": "freq-00",
+      "metadata_sha256": "c2af59c181b24c69cfc9d0806cd20dea303e3e4247b127c52f13244e6c5fee98",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-010",
+      "stage": "opt-00",
+      "metadata_sha256": "38583cce61b5d2f97c3e8d1b69dd4183d2f60d8645ffbe6347ecc82609635605",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-010",
+      "stage": "stability-00",
+      "metadata_sha256": "8d96111477317859a1b0e4d0dfbf95d70589b4dc37c70d63e2f10882302f60ec",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-011",
+      "stage": "freq-00",
+      "metadata_sha256": "5640def4aaa8beb94a84dadfddae5c2c0dce37a6906c72a481a524946a71b1c4",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-011",
+      "stage": "opt-00",
+      "metadata_sha256": "c4622f80c0352ce388888144cc87c90c451bf56c8a29d8694cb1e3ea82456b72",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-011",
+      "stage": "stability-00",
+      "metadata_sha256": "ad7d4d00bf09471466c8313b945ddaf33295d765c599369ba3000b28024b827a",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-012",
+      "stage": "freq-00",
+      "metadata_sha256": "5a8c9fdfa76627f6e1543dd075fc2b14a8047ac82cb4524e441722c6d4faec56",
+      "method": "RPBE1PBE",
+      "nbasis": 436,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-012",
+      "stage": "opt-00",
+      "metadata_sha256": "fdcbf9a218499f1008123f0074cf317aea5f70975047c49cf401d0b8d7c1fde8",
+      "method": "RPBE1PBE",
+      "nbasis": 436,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-012",
+      "stage": "stability-00",
+      "metadata_sha256": "6f971e6b43d03e756969e2f1816d090480df072e6050513cdaf84ed86a45f6d3",
+      "method": "RPBE1PBE",
+      "nbasis": 436,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-013",
+      "stage": "freq-00",
+      "metadata_sha256": "9981448297fffc5b587fc91e5c547c15329c8f8770b40f08e5b1f742874f912d",
+      "method": "RPBE1PBE",
+      "nbasis": 526,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-013",
+      "stage": "freq-01",
+      "metadata_sha256": "cbf4e3411081b0c7180b2e3279d90607892b7701f7b92452812d457d8c5de14c",
+      "method": "UPBE1PBE",
+      "nbasis": 526,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-013",
+      "stage": "opt-00",
+      "metadata_sha256": "a90bb4c68e5175f59563a1069453e18513c9ff8d58022586a1220c86c9f48980",
+      "method": "RPBE1PBE",
+      "nbasis": 526,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-013",
+      "stage": "opt-01",
+      "metadata_sha256": "a8b305d0e4677c7ed9f2f26101456b6f6e3bfc9736a5e2a026b79cfbe015332e",
+      "method": "UPBE1PBE",
+      "nbasis": 526,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-013",
+      "stage": "stability-00",
+      "metadata_sha256": "de42f6267f3381cf8a7bf010f63434fc16a20a38e39de992f0fe788367116cac",
+      "method": "UPBE1PBE",
+      "nbasis": 526,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-013",
+      "stage": "stability-01",
+      "metadata_sha256": "249b98bdde36239e7c40105b0d53f7fd3f117f7b7837868844a1b8d4c3f4aa7b",
+      "method": "UPBE1PBE",
+      "nbasis": 526,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-014",
+      "stage": "freq-00",
+      "metadata_sha256": "c809159805675b4115c3eb47447eb2823d85b9b3f8ab545313aee8e5bf05377d",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-014",
+      "stage": "opt-00",
+      "metadata_sha256": "d9e2e31846a2d5b851130ba63b99b5fb92f18e7818c3b6c507c177fbeb6fc0e3",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-014",
+      "stage": "stability-00",
+      "metadata_sha256": "f142a5865bf1d5ced6ddf0636bc1433846f512a76ce677a08812befde76a4e3a",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-015",
+      "stage": "freq-00",
+      "metadata_sha256": "e497d94aaaf83429f266f166013bf7baebff461cf323870b4a315bb9dd3e05e2",
+      "method": "RPBE1PBE",
+      "nbasis": 422,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-015",
+      "stage": "opt-00",
+      "metadata_sha256": "8eb055fae43d72cae9fd29d77ecfde50f6250841640ce864a7cb9019df65600f",
+      "method": "RPBE1PBE",
+      "nbasis": 422,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-015",
+      "stage": "stability-00",
+      "metadata_sha256": "07fd23abc42778ca4d8daf1396cdfac60ad3d292f4888ac04755a7a8fef68bf9",
+      "method": "RPBE1PBE",
+      "nbasis": 422,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-016",
+      "stage": "force-00",
+      "metadata_sha256": "9f5ece26a1d2a4dfbf055b6bfda5cc28b4b94be355be0a25b23bb6b2a02a7184",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-016",
+      "stage": "stability-00",
+      "metadata_sha256": "82644ffbf7e8118c48b562941dd2eed326015ed504465b72b876125a0de2ea61",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-017",
+      "stage": "force-00",
+      "metadata_sha256": "31e7af997c6cd8d348837143d73236ccdaf65932c27a0d1b8f27e7216a2cfa47",
+      "method": "UPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-017",
+      "stage": "stability-00",
+      "metadata_sha256": "75ebf4c0838b23ca9526a167b889b4111f2631eb2c35ec1f117c768b8e66b8e0",
+      "method": "UPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-019",
+      "stage": "freq-00",
+      "metadata_sha256": "5c8c4829a952780061ab650f077447ab75db8da25f4f28c1012e39ca6a74e201",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-019",
+      "stage": "opt-00",
+      "metadata_sha256": "298d8b4905d8a2f523c8bb2a2c1f8f6fd9ec7d5cc22bd8d36f26d4e02078dce5",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-019",
+      "stage": "stability-00",
+      "metadata_sha256": "f639d113642faf15b1c06133c9432bfeffe579305d9509b3535eccf870f7e0e4",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-020",
+      "stage": "freq-00",
+      "metadata_sha256": "1231d5822658b18e046b10aa65be2090e904e177593e406295a4cafc85b3e9c1",
+      "method": "RPBE1PBE",
+      "nbasis": 305,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-020",
+      "stage": "opt-00",
+      "metadata_sha256": "eba5374766817194a50516cc830a9f9e1348aa89ccd1224a361dba8de4e73fe1",
+      "method": "RPBE1PBE",
+      "nbasis": 305,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-020",
+      "stage": "stability-00",
+      "metadata_sha256": "517819f611d70d6e46db5c098321bdf956e62a3a9d0d172ae5e9ae2d05ef6419",
+      "method": "RPBE1PBE",
+      "nbasis": 305,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-021",
+      "stage": "freq-00",
+      "metadata_sha256": "b8b1d9dc5734395d5dca721841376dc4e6559c4e4fc9af8d780c616734f5a245",
+      "method": "RPBE1PBE",
+      "nbasis": 104,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-021",
+      "stage": "opt-00",
+      "metadata_sha256": "6ceb477d184ed2e1bf1f160e4e5100298fded4da5e96538ca2153360973a1384",
+      "method": "RPBE1PBE",
+      "nbasis": 104,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-021",
+      "stage": "stability-00",
+      "metadata_sha256": "625628a7991a2d51e5126cecf0cb96244a95913a9b59db95852f49b4b2ff7a7d",
+      "method": "RPBE1PBE",
+      "nbasis": 104,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-022",
+      "stage": "freq-00",
+      "metadata_sha256": "220a0dd7e33102f090229cd3bb63a8cf56e927d8877bb93a57228b7b8d9f0bf6",
+      "method": "UPBE1PBE",
+      "nbasis": 104,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-022",
+      "stage": "opt-00",
+      "metadata_sha256": "c49adbac4bc8606f49917177c36c3796654db6e6212c7e607128f5a5ac5cc4f4",
+      "method": "UPBE1PBE",
+      "nbasis": 104,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-022",
+      "stage": "stability-00",
+      "metadata_sha256": "1142fd4b15e51dd5ff927f9021d6b87eced2f6748a3de0350067931bedb18959",
+      "method": "UPBE1PBE",
+      "nbasis": 104,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-023",
+      "stage": "freq-00",
+      "metadata_sha256": "8e2958032fbe1b8f33001ef8433cbeae1fd16d11e3b0a6beb54547619fe2121a",
+      "method": "RPBE1PBE",
+      "nbasis": 149,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-023",
+      "stage": "opt-00",
+      "metadata_sha256": "fcfa8dd056a86aa7605e729e43dbad98e524da3b657c2e7c2e933de5e17549c7",
+      "method": "RPBE1PBE",
+      "nbasis": 149,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-023",
+      "stage": "stability-00",
+      "metadata_sha256": "77db5ac51cab56c3187f5cadaf1a2a048a13f222f11d6df086ebe2260731edef",
+      "method": "RPBE1PBE",
+      "nbasis": 149,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-024",
+      "stage": "freq-00",
+      "metadata_sha256": "6e469cea2baca9437a0897d6e09c109fd342ba754833b0726fd0d40100d617c2",
+      "method": "RPBE1PBE",
+      "nbasis": 211,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-024",
+      "stage": "opt-00",
+      "metadata_sha256": "44f795013d157bc2ddd541b8c174749b267a738356dec41a0f601893d9bd4703",
+      "method": "RPBE1PBE",
+      "nbasis": 211,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-024",
+      "stage": "stability-00",
+      "metadata_sha256": "140d3bcf1dcb58b7b682e11b7e3c56a037154d14741145b0a8315f6dae2a0884",
+      "method": "RPBE1PBE",
+      "nbasis": 211,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-025",
+      "stage": "freq-00",
+      "metadata_sha256": "5ef221605321a84f33d506da04a824e1ba7a7f9215b2a13070439c9ba0c7e6b2",
+      "method": "RPBE1PBE",
+      "nbasis": 408,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-025",
+      "stage": "opt-00",
+      "metadata_sha256": "8dee63f2059152bd1ad44bf4d1fc24f3345a4181ae84fe6e15c9a849e3f1f3f9",
+      "method": "RPBE1PBE",
+      "nbasis": 408,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-025",
+      "stage": "stability-00",
+      "metadata_sha256": "67cd112f7cb8d723e683eeeb91c4b41d4203f35fda6d9221b24a626aa71098c4",
+      "method": "RPBE1PBE",
+      "nbasis": 408,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-026",
+      "stage": "freq-00",
+      "metadata_sha256": "073736a1e7d4e8d773b7597a6cbeac7f19dbcd8ca48518d940919107dac4165f",
+      "method": "RPBE1PBE",
+      "nbasis": 191,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-026",
+      "stage": "opt-00",
+      "metadata_sha256": "b70118968287daf7c07ebf8de7d69098e7ec6c303d8420e63c64c05fb1ec24ca",
+      "method": "RPBE1PBE",
+      "nbasis": 191,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-026",
+      "stage": "stability-00",
+      "metadata_sha256": "7fd2ae9016147ffd25ebdb5713b8036e0f1c22a6e82cdfdf20371b80b722390f",
+      "method": "RPBE1PBE",
+      "nbasis": 191,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-027",
+      "stage": "freq-00",
+      "metadata_sha256": "c14530d98cd7dc91b1bfd8330a2a1f72e094ea2d9a3f629bcb59a213bec229d1",
+      "method": "RPBE1PBE",
+      "nbasis": 153,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-027",
+      "stage": "opt-00",
+      "metadata_sha256": "05cc4326eab2f37b15db42ca3ba937a336226361b3a8b45794ab58f5e9c22428",
+      "method": "RPBE1PBE",
+      "nbasis": 153,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-027",
+      "stage": "stability-00",
+      "metadata_sha256": "1f23115c32815a7a327f5deba2cd552e67a413b90e7c09272bac678f355f53fb",
+      "method": "RPBE1PBE",
+      "nbasis": 153,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-028",
+      "stage": "freq-00",
+      "metadata_sha256": "72c44adcd99875120c4aff71c24f03c31ad734c3ac27247cd06aa8ba7cf58c59",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-028",
+      "stage": "freq-01",
+      "metadata_sha256": "0f3e096e80a03cf861952c75ed0d0d4ae9bdfdd6390ac9bc4c7134d4625207ce",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-028",
+      "stage": "opt-00",
+      "metadata_sha256": "26c510e2d1ace30933be2ff9eaf5f7354e58a4c27401ef45712dab77050176eb",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-028",
+      "stage": "opt-01",
+      "metadata_sha256": "ba0b9e78d4291bc4f772e88fee0f0a888dbcdd818f51bcb6267541e85bbdd4a3",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-028",
+      "stage": "stability-00",
+      "metadata_sha256": "f1a5ee8fe290bde265c9f48df746e02826bbaa5f9878c377c8038bcccfa0d187",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-028",
+      "stage": "stability-01",
+      "metadata_sha256": "2f142280fc4be3fe34d42d38707fb92f718506ba03db97bf0c0611dcf1bd771f",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-029",
+      "stage": "freq-00",
+      "metadata_sha256": "944cf5180370ed8748d2576ee289e9ba8b39d6c16798da112547c2e22f5ebc5c",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-029",
+      "stage": "opt-00",
+      "metadata_sha256": "67c83d93e9f1758cb95effecdc511b575fb9a1d8a18ee88af02390241480d1a2",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-029",
+      "stage": "stability-00",
+      "metadata_sha256": "dae3a42dfda75b92e3b9785471d5fb0d8535eab7bdbfed9b3db6500f8e703f54",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-030",
+      "stage": "freq-00",
+      "metadata_sha256": "4e5429889e1be4515436a7213c82281c7db242a6c42d913c1905ee1a5e5b84d5",
+      "method": "RPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-030",
+      "stage": "opt-00",
+      "metadata_sha256": "dad657da454dfd97a4e8a47edf8119cf53bf5238a9296b6d29828321fe756b2d",
+      "method": "RPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-030",
+      "stage": "stability-00",
+      "metadata_sha256": "d89d91c4db5510d3e6b7b98b0bbb92b0c0b17aea7b316e57f041e84421b8ff97",
+      "method": "RPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-031",
+      "stage": "freq-00",
+      "metadata_sha256": "fa67f49f6d8a072e4dd0ab44e712ee0bd225110fd72c2ab39f43f456a5fdbe8b",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-031",
+      "stage": "opt-00",
+      "metadata_sha256": "99330a1ab5826465806cae83c33cdfd4c23ce9d6130a21fcdb115a09b61057ae",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-031",
+      "stage": "stability-00",
+      "metadata_sha256": "6419979052bd98987d89909c0a0f0616968fc4ba7be0c102bdc7d4ec8cbec8a0",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-032",
+      "stage": "freq-00",
+      "metadata_sha256": "f253b3ff04261d73508da9236828c32f3f99602c258b130b4294762891fd8e8a",
+      "method": "RPBE1PBE",
+      "nbasis": 196,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-032",
+      "stage": "opt-00",
+      "metadata_sha256": "98b5ea7887c88db4afa01752dbcb17fcf0062b7935ea7b6dc81281cb666014f8",
+      "method": "RPBE1PBE",
+      "nbasis": 196,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-032",
+      "stage": "stability-00",
+      "metadata_sha256": "49b20760088f3513b622b727ef82606fc71e3be7ec8f0b9636fbafa45d0b5433",
+      "method": "RPBE1PBE",
+      "nbasis": 196,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-033",
+      "stage": "freq-00",
+      "metadata_sha256": "46d056fef6f0cf984078faf09346cce302d8f952498c081e569f798daa437b91",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-033",
+      "stage": "opt-00",
+      "metadata_sha256": "072b79a45011b94e904973852b6d45d3676e1a5244c1cdfa02bbf09c8644f379",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-033",
+      "stage": "stability-00",
+      "metadata_sha256": "de7675d7caf8c9108186dc5ccbfcd7daf4084e8884551599bf33e329eeb4a52e",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-034",
+      "stage": "freq-00",
+      "metadata_sha256": "bc6ed3ea28b066ce5331a6b0cc3ab1d4df81f2bb1d4321625b385c707f52fb25",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-034",
+      "stage": "opt-00",
+      "metadata_sha256": "65a6ebac4c677654e47659f1680e3de80b71fa1a8cbd0a0d04c065b28f53e50f",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-034",
+      "stage": "stability-00",
+      "metadata_sha256": "0af5c5155b3c78e0e65cf887e5512daa2f7e792a2e02ae873f6fddfbc1c8e6e1",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-035",
+      "stage": "freq-00",
+      "metadata_sha256": "8e8eebb7af12da1313693b0572b60eab01b2404cd62056c3f35852937406edd7",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-035",
+      "stage": "opt-00",
+      "metadata_sha256": "5f02e5a0119e94b6f0748e9120cfbf1fea4c8905658b205b3ae430198dae8441",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-035",
+      "stage": "stability-00",
+      "metadata_sha256": "e74dc92ddcc2c712237541330e4371920f1b14193e66c7dc8d809a11332d9d4d",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-036",
+      "stage": "freq-00",
+      "metadata_sha256": "f53b2528955ee4d26ca8d3958aadcab8a7701af4f53ad9c8a96d90e9d5653ad0",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-036",
+      "stage": "opt-00",
+      "metadata_sha256": "765dbb29f5236146582349f272981d8f299d901a56d41d49746927442d8745f3",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-036",
+      "stage": "stability-00",
+      "metadata_sha256": "c392206bb3d3016256639b6ac3107ea8351bbda4132fcb786bdbb5a5e191cb68",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-037",
+      "stage": "freq-00",
+      "metadata_sha256": "8e93701d68e6113d065c57e98380b2e77fee810b5a4c66ffbaa7a9707a3583ac",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-037",
+      "stage": "opt-00",
+      "metadata_sha256": "9df8f2d9bd7b4e9860258a41326a798b956561331818fa370778ddbb128731e3",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-037",
+      "stage": "stability-00",
+      "metadata_sha256": "8302bab7a7f9096650964e1bd3f5322d8cd2c158fea277593c3a3a2c6727050d",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-038",
+      "stage": "freq-00",
+      "metadata_sha256": "eb99108102c5af5586353564fbb3a35137379de76dadf4a2dde58941cede33cf",
+      "method": "RPBE1PBE",
+      "nbasis": 336,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-038",
+      "stage": "opt-00",
+      "metadata_sha256": "8390f643dd4d68cb2853d85d78ba7cd3949025a1a5b05b1a5fe6b37dfc98d9cd",
+      "method": "RPBE1PBE",
+      "nbasis": 336,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-038",
+      "stage": "stability-00",
+      "metadata_sha256": "040eff9a8335989d535282fc013664e06ec408661ad61faf1a53e56d350b67f9",
+      "method": "RPBE1PBE",
+      "nbasis": 336,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-039",
+      "stage": "freq-00",
+      "metadata_sha256": "c153a2a4e5125440610b060847e02cb9bde477957f68281b4031188132654ce5",
+      "method": "UPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-039",
+      "stage": "opt-00",
+      "metadata_sha256": "c72f8733b47f9d3fd07412bbee1833e393ec14d241dcd66f999006356b81b5b3",
+      "method": "UPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-039",
+      "stage": "stability-00",
+      "metadata_sha256": "591b36e31ce0e3627fb673803e00c1102cbf26a2941397a47b77b13158877d60",
+      "method": "UPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-040",
+      "stage": "freq-00",
+      "metadata_sha256": "a4745478f9873c227696e796914253902ccd91255355e4baf9fdf1cfc7085c69",
+      "method": "RPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-040",
+      "stage": "opt-00",
+      "metadata_sha256": "dd7c351cbb97138c8054824ecd82f48a0b6efa9ad951aa599a049dd653b9d4b5",
+      "method": "RPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-040",
+      "stage": "stability-00",
+      "metadata_sha256": "c11c2020b19032a768cf41cb76f065ebd7ec980929307379607893bd4116d333",
+      "method": "RPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-041",
+      "stage": "force-00",
+      "metadata_sha256": "9bdf71f400efc0bfbe09beffcc3e4e1b4b6d486a8bf4386400ecbeef62e7fae9",
+      "method": "RPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-041",
+      "stage": "force-01",
+      "metadata_sha256": "7b68fdd94639c93acdb670b83ba79322c7d928bf67c4ffaf6d8b743c049e1f37",
+      "method": "UPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-041",
+      "stage": "stability-00",
+      "metadata_sha256": "d5fcee2322d462c479229370d6cbb8cdaa406f75a554817a563a1420ca36b1a6",
+      "method": "UPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-041",
+      "stage": "stability-01",
+      "metadata_sha256": "801aca806f1b20faaab4be91c5ecf9afdadab0d0101713e1a711e2d2826844a5",
+      "method": "UPBE1PBE",
+      "nbasis": 28,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-042",
+      "stage": "freq-00",
+      "metadata_sha256": "901591c56a4c25c75dbd65ad332f056feb62243839cdcc5721960f9ae3818b9c",
+      "method": "RPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-042",
+      "stage": "opt-00",
+      "metadata_sha256": "d0ae635df40dd8327ffe968a27870e1c8ac2a66aa457d65f0b2db499dd6c1c52",
+      "method": "RPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-042",
+      "stage": "stability-00",
+      "metadata_sha256": "59a070f9008bebe90b18e572544f42dc97049df1e0651956f537e1e122260b4e",
+      "method": "RPBE1PBE",
+      "nbasis": 42,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-043",
+      "stage": "freq-00",
+      "metadata_sha256": "ecf38ad26a0a30693f2ba3855a815aa7e91b36cb5b70e817e1276c36b612bc9d",
+      "method": "RPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-043",
+      "stage": "opt-00",
+      "metadata_sha256": "32f2d58ffe59343c16c8cf7aeb5c28d20d8bd3287cfc2acaa949015e8d3e6fa9",
+      "method": "RPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-043",
+      "stage": "stability-00",
+      "metadata_sha256": "9b00c1bc04433cbe8f3dedd772b3144665da07fbe06240f2fd6c4f4c128e5e35",
+      "method": "RPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-044",
+      "stage": "freq-00",
+      "metadata_sha256": "eec5951b67aa8adcb7fdf6d0a0f4039b6228955c72c473e687c42034f3fa7e44",
+      "method": "RPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-044",
+      "stage": "freq-01",
+      "metadata_sha256": "825b2ca9b5f09a1f3c03eb1565f982e38c0af2091b768b8f51579dca4ac387a0",
+      "method": "UPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-044",
+      "stage": "opt-00",
+      "metadata_sha256": "83669c4595fe0fba75220e4f67d77ddb49a2c954695039affd99b96c04ac2dd9",
+      "method": "RPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-044",
+      "stage": "opt-01",
+      "metadata_sha256": "252f6e8f1c1e8975a1ebc1d95fd3978047086f53f4c7f5e16a7f198d3b5e7356",
+      "method": "UPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-044",
+      "stage": "stability-00",
+      "metadata_sha256": "d584af49379c44ca9027e6eb05382dfde1030b549a981ea1c4adfd4a1ff56fed",
+      "method": "UPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-044",
+      "stage": "stability-01",
+      "metadata_sha256": "dc444348d77922f4a76fd3a9489441bd286428c0d6cd1d22b6e6c2a2e7dbacbe",
+      "method": "UPBE1PBE",
+      "nbasis": 38,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-045",
+      "stage": "freq-00",
+      "metadata_sha256": "822c498c5bdd8b4cde62de2bcd6a0da8a178dcd7f23bd5592e411c5a9d6040b0",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-045",
+      "stage": "freq-01",
+      "metadata_sha256": "345c1c20cd54960669936b373f1e96fb2c78892b61a0fc7e3bb305b4991eb32f",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-045",
+      "stage": "opt-00",
+      "metadata_sha256": "3567d7f5a8471e5f7f7a69048dd48185654e237039805635842844479e391539",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-045",
+      "stage": "opt-01",
+      "metadata_sha256": "5d4daa89a84798cb45150decc5184ec6d78b4ea101e2ed1aadc1da7ff1769dce",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-045",
+      "stage": "stability-00",
+      "metadata_sha256": "6e6722ffb1651424c41fdaf0bce8b845115869c54fb15e3a8add426780ced1fb",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-045",
+      "stage": "stability-01",
+      "metadata_sha256": "20db404b90ddd39e51fe6430a7c9056c03ce262a186746a4e93b24518065f355",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-046",
+      "stage": "freq-00",
+      "metadata_sha256": "bc245c448e846078e59128a3f298afae353fa78a02890f9f270c73c41548d563",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-046",
+      "stage": "freq-01",
+      "metadata_sha256": "512a20d1387a8aee4dd1accf927f317b7f0d780a7e1611df5abcda38d42b0e12",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-046",
+      "stage": "opt-00",
+      "metadata_sha256": "715f554dabfc50d5296a197e3a65e2b7fe2cb0a03d3aae7ac708103f2942ca27",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-046",
+      "stage": "opt-01",
+      "metadata_sha256": "90759ec53a27f7560901c56295446d4a4ec71c1740db1b46e0c68386506ebf7f",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-046",
+      "stage": "stability-00",
+      "metadata_sha256": "db1df9e4001b3e8190478306f1f5672d884353b3f552cf21ab667367e46025b8",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-046",
+      "stage": "stability-01",
+      "metadata_sha256": "35b973d3548e44299d9a73c948793eb939fc71eb7e3edd089e79b368f4c485e8",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-047",
+      "stage": "freq-00",
+      "metadata_sha256": "2d07e1cc7a3e4f8eda95bfceaebe7626a3e1524aeeb9d217e0198d7736164ec0",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-047",
+      "stage": "opt-00",
+      "metadata_sha256": "d08e4c95534ca4054197655f81154eaadbf5ed2b3e1e0cec8c302e318c21ef37",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-047",
+      "stage": "stability-00",
+      "metadata_sha256": "3b98e11dd3171b1435d52928ee215da897dc5e5f0d51a76eeec4d8658f0d66a6",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-048",
+      "stage": "freq-00",
+      "metadata_sha256": "82e2f233f11a7557b9ffcb0c1f41a8787a854ac569fde682b99f759b8aa78010",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-048",
+      "stage": "opt-00",
+      "metadata_sha256": "c71aee64192b047f1526f5a796231aaf043cd708c7e3a6087f6753ee349ff871",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-048",
+      "stage": "stability-00",
+      "metadata_sha256": "edcd09dd5cb8aef622c9d5bae9eac0ee4d4f5e83a223cd7c2bfa9ff368fc0d5c",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-049",
+      "stage": "freq-00",
+      "metadata_sha256": "b4a478bfe0b5b2ad6485a87fe44222225cd459def457d9d8214358a00063e9af",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-049",
+      "stage": "opt-00",
+      "metadata_sha256": "9efa5b1758003eb974555da39de8e9d788ddaa3b6d1c56a459655615deb9112e",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-049",
+      "stage": "stability-00",
+      "metadata_sha256": "e29b59aeb06750c11afa38d7b72c2966bbf97e23e525d5465c4cf96fd9ba7362",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-050",
+      "stage": "freq-00",
+      "metadata_sha256": "4586a756b3da3fd8deb8a4df9f93fee3386a24cef09c63544c42b78cbba2a1ea",
+      "method": "UPBE1PBE",
+      "nbasis": 80,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-050",
+      "stage": "opt-00",
+      "metadata_sha256": "efcf32e03c5c04a33cc3a3a52d49a8f4de3ea849075a5dc2b4ecbda2b80e42e9",
+      "method": "UPBE1PBE",
+      "nbasis": 80,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-050",
+      "stage": "stability-00",
+      "metadata_sha256": "843a6e30859b705faa15cdd86a0f7b88dec123554e08d6f828338a9443b329bb",
+      "method": "UPBE1PBE",
+      "nbasis": 80,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-051",
+      "stage": "freq-00",
+      "metadata_sha256": "d6ee5ad1842fb9f1756849748210ccc50fab5a291e53fa218ab992d796aaeb28",
+      "method": "RPBE1PBE",
+      "nbasis": 80,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-051",
+      "stage": "opt-00",
+      "metadata_sha256": "798e7e59b9998223746763d58c4d2b6ad66f450a3c19b473ce5063bf2ec188f7",
+      "method": "RPBE1PBE",
+      "nbasis": 80,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-052",
+      "stage": "freq-00",
+      "metadata_sha256": "5beebf36514e176270f27fd2c85e74ed1cb3c9e21c9071bdfb8a1657a2cf1710",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-052",
+      "stage": "freq-01",
+      "metadata_sha256": "f4c5f802fc6ee1effcc696aad144454a868f43765ffd1fba5b5c70ebed3836a9",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-052",
+      "stage": "opt-00",
+      "metadata_sha256": "aaac4b1e74119116c63db4ea1284f39f36df8b1ce02f359603f95a3442f38126",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-052",
+      "stage": "opt-01",
+      "metadata_sha256": "01d4d11a476ebcab9ec7be8db217603ab6d7cca260f50226c774c5ad18412ecc",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-052",
+      "stage": "stability-00",
+      "metadata_sha256": "1719c5c164c492d1c682af728b6366b8c0eeb89d61e7e8eb9d9a80fbc69cd263",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-052",
+      "stage": "stability-01",
+      "metadata_sha256": "2b95109813d28dc7453c23253dc8355db984543daec121d3f81c524b4e856e51",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-053",
+      "stage": "freq-00",
+      "metadata_sha256": "80097fba1a92c5d129ea0c007d61ea5875faf6edf356412f7523f33f5d5d9f04",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-053",
+      "stage": "opt-00",
+      "metadata_sha256": "6fa647d8f7a2e6ef1a5587a36c23f8673d8f93ba34b6e1a76cd5b84cacf3b1cc",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-053",
+      "stage": "stability-00",
+      "metadata_sha256": "140b1221b2d83c2813ca736265deedddb6030f37bc5ba5616ab8a35c6c7ba91f",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-054",
+      "stage": "freq-00",
+      "metadata_sha256": "6f98195529ad6eb5cff5202d74d57d4db25712c436b8da334af24956bd70b7be",
+      "method": "RPBE1PBE",
+      "nbasis": 33,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-054",
+      "stage": "opt-00",
+      "metadata_sha256": "1406f8d154a8a15a362b20187b791f41ab2844670020ffeafdf80069666d0994",
+      "method": "RPBE1PBE",
+      "nbasis": 33,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-054",
+      "stage": "stability-00",
+      "metadata_sha256": "2ce4621bf1b0bddeed68402186ecfd86b4bfd2516f20845cb17f1b178510b7d8",
+      "method": "RPBE1PBE",
+      "nbasis": 33,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-055",
+      "stage": "freq-00",
+      "metadata_sha256": "05affe07038f72109e5b99f04bf918aff93840d3ae0405919438cd7488689784",
+      "method": "RPBE1PBE",
+      "nbasis": 45,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-055",
+      "stage": "opt-00",
+      "metadata_sha256": "06de6961ec882d3a7fbb90e428f2f461c8ff80dd664dfadce2436b67622277b8",
+      "method": "RPBE1PBE",
+      "nbasis": 45,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-055",
+      "stage": "stability-00",
+      "metadata_sha256": "7ea1ba4e2288e7f7279b941f91ed0885e2b5187e538eac4abc6b73ebdb90041e",
+      "method": "RPBE1PBE",
+      "nbasis": 45,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-056",
+      "stage": "freq-00",
+      "metadata_sha256": "004d89dcdb8320ded69e0ed3e81c3d545185a9286113b93babcdd49f39bf8624",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-056",
+      "stage": "opt-00",
+      "metadata_sha256": "c548417b08aac9e0902b3033e81d2ac35837978d11cc46f43f2a7d99c550f718",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-056",
+      "stage": "stability-00",
+      "metadata_sha256": "5eccb7544b1743ac2200ac6ca5b1629b704e4ba4958045dae8612df46d21ae04",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-057",
+      "stage": "freq-00",
+      "metadata_sha256": "229b9d101d7e8e4fb203448ce6653d52c5f77713d47c290375896ef1bf20c3bc",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-057",
+      "stage": "opt-00",
+      "metadata_sha256": "e07f5b1aa27be0797d7a54c9ee647536333101bbdb9b5d8101b1150d779c6a13",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-057",
+      "stage": "stability-00",
+      "metadata_sha256": "afee064f9f197926e7f5a848f4b03989a6ae76f951a4b629d198266292b9af56",
+      "method": "UPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-058",
+      "stage": "freq-00",
+      "metadata_sha256": "ceadce9c20b27dbfbb86a39a552d62f3c1178dfd7c75dc12287ed0890a96641d",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-058",
+      "stage": "opt-00",
+      "metadata_sha256": "52e1ccc3246dfe5bceb3225cb2a4b1a34680d90cebad688ef8eca4f8f79c73e5",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-058",
+      "stage": "stability-00",
+      "metadata_sha256": "80a5d595165b4a36b59eb52c0770ea505158db99d28e720b7cfc7efb1a2a0bc4",
+      "method": "RPBE1PBE",
+      "nbasis": 62,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-059",
+      "stage": "freq-00",
+      "metadata_sha256": "1c1fac758a550be6bc16fbc48237db228199de91518776985ef0e7a8faecedfe",
+      "method": "RPBE1PBE",
+      "nbasis": 74,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-059",
+      "stage": "opt-00",
+      "metadata_sha256": "cc630e67f3a8ae4e3065b18b1009098b4790281d5795aea17245fa39cfb5d409",
+      "method": "RPBE1PBE",
+      "nbasis": 74,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-059",
+      "stage": "stability-00",
+      "metadata_sha256": "5d78f26705458e105be41feeaae96b45cba5c169e8d312ecbcbbe42048ee65ec",
+      "method": "RPBE1PBE",
+      "nbasis": 74,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-060",
+      "stage": "freq-00",
+      "metadata_sha256": "c889987e871721e880abb94c9acd803cf4c251bbffe203ff83a3dc76f27d93e8",
+      "method": "RPBE1PBE",
+      "nbasis": 47,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-060",
+      "stage": "opt-00",
+      "metadata_sha256": "fe90e5d1645087f1b120165342c4eb735436c6284bdb8d28496b344b57b378f4",
+      "method": "RPBE1PBE",
+      "nbasis": 47,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-060",
+      "stage": "stability-00",
+      "metadata_sha256": "7c565b017f19bf4d546b07b91d5ad39738fb7a89ac0112ceb85e9225cb40b184",
+      "method": "RPBE1PBE",
+      "nbasis": 47,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-061",
+      "stage": "freq-00",
+      "metadata_sha256": "4a3f86ff5bce4cf57383afc70dffba8d16f463bd584462c07d24513ec4c2faed",
+      "method": "RPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-061",
+      "stage": "opt-00",
+      "metadata_sha256": "7ec257294647435d84c6252129df678484b6d1054d3c27df7330924cf0ef5a39",
+      "method": "RPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-061",
+      "stage": "stability-00",
+      "metadata_sha256": "ef6503dd3bf5d7a0896f033f58740999301ab6f9dcd9ef5eeb7a804151687772",
+      "method": "RPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-062",
+      "stage": "freq-00",
+      "metadata_sha256": "9d63660a38f4689d362c9159fbf0b8b1645250332126d4654e982640fd955f3c",
+      "method": "RPBE1PBE",
+      "nbasis": 76,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-062",
+      "stage": "opt-00",
+      "metadata_sha256": "5166f57956ca1f5747c9c258b20447515a1616b547159ab8e6b3941c6afbe1e5",
+      "method": "RPBE1PBE",
+      "nbasis": 76,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-062",
+      "stage": "stability-00",
+      "metadata_sha256": "efafcb22460c1421d88af80dd33b6ff9cf54ebe2f90b1444b5c17efbcd2ca7b1",
+      "method": "RPBE1PBE",
+      "nbasis": 76,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-063",
+      "stage": "freq-00",
+      "metadata_sha256": "fb96f6ee42107b0f61ae1a9e5b94a14b89bb7bdc202429039dd121b69cacc3be",
+      "method": "RPBE1PBE",
+      "nbasis": 59,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-063",
+      "stage": "opt-00",
+      "metadata_sha256": "09ba0dbd086dc868ede7407d3f0940d7ebd8821ff16317db684d5933df3cb3bd",
+      "method": "RPBE1PBE",
+      "nbasis": 59,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-063",
+      "stage": "stability-00",
+      "metadata_sha256": "76069793dec0481e11eb2ac4a8c14abe9b4dfcbc018474d186a9e7c0f83a1d47",
+      "method": "RPBE1PBE",
+      "nbasis": 59,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-064",
+      "stage": "freq-00",
+      "metadata_sha256": "10df7914bd7ffef6becdbcdee58b0209f355a891a12f8c8a6d6ce6dc19e4d884",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-064",
+      "stage": "opt-00",
+      "metadata_sha256": "f4661b1c0bf90b9fba7b57919ee233348c367421bc07519a4df711dd9c4519c7",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-064",
+      "stage": "stability-00",
+      "metadata_sha256": "3e39c774f8d861e6fdb4bba7eedcaf8d90fe79463034b82797378c1a1ee6ea83",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-065",
+      "stage": "freq-00",
+      "metadata_sha256": "92c336f31404a8e13f6939d01e326f12c319b1f9ca0d390896c1664b2f8b8e9b",
+      "method": "RPBE1PBE",
+      "nbasis": 87,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-065",
+      "stage": "opt-00",
+      "metadata_sha256": "0676dc4bd09fde4be2b48bcff746a6a0df91b140cf21e716a45fd5262e90a1ce",
+      "method": "RPBE1PBE",
+      "nbasis": 87,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-065",
+      "stage": "stability-00",
+      "metadata_sha256": "2c0a3fa029b3c49d5fa9a6a6ea64b42cd526183e809d6ca00fa8db054a935844",
+      "method": "RPBE1PBE",
+      "nbasis": 87,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-066",
+      "stage": "freq-00",
+      "metadata_sha256": "ddfc5455ea5c344d3820c8109f85ab7348b12bd0f7fab4fdd49e284bf1c29db0",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-066",
+      "stage": "opt-00",
+      "metadata_sha256": "165e70d0fc1595c483aab0ff93dc1e1564b43f7f5130a0c239b4e762fe92e911",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-066",
+      "stage": "stability-00",
+      "metadata_sha256": "d8c4e54c7db6d448711a13e4cba66d0d9aa125691276a35e5b8217efc68211e8",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-067",
+      "stage": "freq-00",
+      "metadata_sha256": "4f673bdde07cbf30bcf3daf0c4f6efaa41dc15b961b726dd3ac4233130ec737b",
+      "method": "RPBE1PBE",
+      "nbasis": 124,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-067",
+      "stage": "opt-00",
+      "metadata_sha256": "2c0d607fb7b63f46b76dd45719fea377cbf54d1bc723f5e25eccf8228f6811aa",
+      "method": "RPBE1PBE",
+      "nbasis": 124,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-067",
+      "stage": "stability-00",
+      "metadata_sha256": "5ba2fd68a9f221ce061cdc64d7c677fafe58101f9358f249d63c6953d7b344ce",
+      "method": "RPBE1PBE",
+      "nbasis": 124,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-068",
+      "stage": "freq-00",
+      "metadata_sha256": "681b4dd8726bad7374d940173024372ae7d6f54b12da3cdd5722f95c05253685",
+      "method": "RPBE1PBE",
+      "nbasis": 90,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-068",
+      "stage": "opt-00",
+      "metadata_sha256": "11d04250c6aa16638311280626acfdab71bc517d9de4c4a22ec73d3f9cdbdcca",
+      "method": "RPBE1PBE",
+      "nbasis": 90,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-068",
+      "stage": "stability-00",
+      "metadata_sha256": "3ccba3b34449eccb2b6647de4e7d44ff0251247feb46e59a97daef3e3069c1ed",
+      "method": "RPBE1PBE",
+      "nbasis": 90,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-069",
+      "stage": "freq-00",
+      "metadata_sha256": "1d15006962e0bec8c384223c616f18faafd89d028d5b4a0edff46bce2c32b3c7",
+      "method": "RPBE1PBE",
+      "nbasis": 118,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-069",
+      "stage": "opt-00",
+      "metadata_sha256": "29064e30600cdaf12a5d4d741dde4aef7d794635b19027597894d0aa60d6c6f4",
+      "method": "RPBE1PBE",
+      "nbasis": 118,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-069",
+      "stage": "stability-00",
+      "metadata_sha256": "39e08fe291eb02de1b53406a4f4070991e614afebd4733256d4c27d2ac28273a",
+      "method": "RPBE1PBE",
+      "nbasis": 118,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-070",
+      "stage": "freq-00",
+      "metadata_sha256": "a8b9152531f21d4d3cd82df5e9d859105d2b69f4a0284786817a6a3b7e446a25",
+      "method": "RPBE1PBE",
+      "nbasis": 90,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-070",
+      "stage": "opt-00",
+      "metadata_sha256": "7d77e313a0e6deb73f948ce8ffc605052b95892faf994f35d0c88fb669c250a5",
+      "method": "RPBE1PBE",
+      "nbasis": 90,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-070",
+      "stage": "stability-00",
+      "metadata_sha256": "aceee05859067e16b31dcce1870156d87a76eb784b15b300576b77144e51448d",
+      "method": "RPBE1PBE",
+      "nbasis": 90,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-071",
+      "stage": "freq-00",
+      "metadata_sha256": "574d7db49a69d27d0e8f599702b197d6df8fc451919d9a3346bd372ceed4c302",
+      "method": "RPBE1PBE",
+      "nbasis": 149,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-071",
+      "stage": "opt-00",
+      "metadata_sha256": "fcf5af84453bb580d001dd8a7b6b95d1367971e4374baedf5ad759da00b0bd32",
+      "method": "RPBE1PBE",
+      "nbasis": 149,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-071",
+      "stage": "stability-00",
+      "metadata_sha256": "ac00a49bd672739714962b1f719ef4109db657da8992cc3ec347dc6bc4b676ae",
+      "method": "RPBE1PBE",
+      "nbasis": 149,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-072",
+      "stage": "freq-00",
+      "metadata_sha256": "6e59d8eb710d2f452a3c691b47cd19a472053e7a083ded41dff17e4fb4bae49d",
+      "method": "RPBE1PBE",
+      "nbasis": 112,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-072",
+      "stage": "opt-00",
+      "metadata_sha256": "9381eca647909f6bef4cb8c20efc963bcdf8fbd5f0ee75f471e2544d8ade5004",
+      "method": "RPBE1PBE",
+      "nbasis": 112,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-072",
+      "stage": "stability-00",
+      "metadata_sha256": "7a3fdce6de4fe6d77af259bd2e3f1f1813596f2f91fd620454f93d97d86c399e",
+      "method": "RPBE1PBE",
+      "nbasis": 112,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-073",
+      "stage": "freq-00",
+      "metadata_sha256": "4c0b9ac238b072f1b643cace79fc4cdf3e92f0b320ba47bfad869dfa9274baa7",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-073",
+      "stage": "opt-00",
+      "metadata_sha256": "f0a50c2b12ba59d86bf7e71d0c16a1600948c24e855a36e2ce71742dc9878efc",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-073",
+      "stage": "stability-00",
+      "metadata_sha256": "2e695c28b56f0cef290fb907b9098725a28b42f3504b0e3fbcb2bd66d63c63ad",
+      "method": "RPBE1PBE",
+      "nbasis": 146,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-074",
+      "stage": "freq-00",
+      "metadata_sha256": "a1ea861c8e78c62aa2b474938cfa3b9fe8382aadedfab65aac3835e9648f3a29",
+      "method": "RPBE1PBE",
+      "nbasis": 177,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-074",
+      "stage": "opt-00",
+      "metadata_sha256": "210360d67938770800ae2b117f2f629c5d1c687f4f3d5f72db3e9c57f47b92b9",
+      "method": "RPBE1PBE",
+      "nbasis": 177,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-074",
+      "stage": "stability-00",
+      "metadata_sha256": "d229b982a3b846455a77401e426ac59e870b088678f2471b4a91dd59cc0da7cb",
+      "method": "RPBE1PBE",
+      "nbasis": 177,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-075",
+      "stage": "freq-00",
+      "metadata_sha256": "ace664c791b16d87ceae861549fea242b7f3271e40e11d3af77d360633298d98",
+      "method": "RPBE1PBE",
+      "nbasis": 197,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-075",
+      "stage": "opt-00",
+      "metadata_sha256": "ebde94624b867b82a857076f07cf483ef95283b2d85606366efeed172127bcb6",
+      "method": "RPBE1PBE",
+      "nbasis": 197,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-075",
+      "stage": "stability-00",
+      "metadata_sha256": "a5b02910bd6c32ace76c7b3b874e58e34bf6071a5dc5999c63b5b4e669e8db53",
+      "method": "RPBE1PBE",
+      "nbasis": 197,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-076",
+      "stage": "freq-00",
+      "metadata_sha256": "3a91a82e6f839d231ff71bc66d3c12b39da7b0b4c02f4d82277e7da5c7b6989b",
+      "method": "RPBE1PBE",
+      "nbasis": 228,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-076",
+      "stage": "opt-00",
+      "metadata_sha256": "dd7fa5f5ac1219593257e656fb83b1189be0e259739f80b77a24c1d63994675c",
+      "method": "RPBE1PBE",
+      "nbasis": 228,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-076",
+      "stage": "stability-00",
+      "metadata_sha256": "f622e0ca9a0ef1b9cc8f5f4dab7026ae00030a94f88d4b08f1caa7d838f9842e",
+      "method": "RPBE1PBE",
+      "nbasis": 228,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-077",
+      "stage": "freq-00",
+      "metadata_sha256": "1c4108e53034fea8eb680d2fbb51aea3253db694480377d1d6269bae97f7030f",
+      "method": "RPBE1PBE",
+      "nbasis": 174,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-077",
+      "stage": "opt-00",
+      "metadata_sha256": "8e99a1143d77baa4389eaff24d40410ec04a60365ec5294c24aba6aa5fb9b951",
+      "method": "RPBE1PBE",
+      "nbasis": 174,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-077",
+      "stage": "stability-00",
+      "metadata_sha256": "c733cb23d28f5210e939aa94e506563d7d3b01b16f87f7ede945b07b820fc8d9",
+      "method": "RPBE1PBE",
+      "nbasis": 174,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-078",
+      "stage": "freq-00",
+      "metadata_sha256": "a333fe65f527352e48b23d4e3383628feb52883b991edfb60ccdc7b6ad174782",
+      "method": "RPBE1PBE",
+      "nbasis": 336,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-078",
+      "stage": "opt-00",
+      "metadata_sha256": "2d587dd1466a860d9ad74c97b4c2a154bdb4c29f57cc287f8ba372f4e773dfe6",
+      "method": "RPBE1PBE",
+      "nbasis": 336,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-078",
+      "stage": "stability-00",
+      "metadata_sha256": "b52b8fb36256b3b3a6e126b0324550c98f8ab977687bec898de21d64b875bce8",
+      "method": "RPBE1PBE",
+      "nbasis": 336,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-079",
+      "stage": "freq-00",
+      "metadata_sha256": "7dd6693a51847f0326771b9c67b4b033b160b43e61629b6d87336dbba416491c",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-079",
+      "stage": "opt-00",
+      "metadata_sha256": "c6f8fcefac640a530a52a8aedc6358919a1ef54ce592a36f0bbf85c693d3d09e",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-079",
+      "stage": "stability-00",
+      "metadata_sha256": "ca617759b3283f8c5c653db6640e7ad73adb5dce8ba0d3fde4f21937d2f9d131",
+      "method": "RPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-080",
+      "stage": "freq-00",
+      "metadata_sha256": "301830075ccd368ce801ef02a6e2bb7869cafbddf426333faf0307ee535b681c",
+      "method": "UPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-080",
+      "stage": "opt-00",
+      "metadata_sha256": "0e6d789ae4bf8664ad2fba116fd8b3ad3925f21e14cf7d8b804d839f3ccb8ab7",
+      "method": "UPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-080",
+      "stage": "stability-00",
+      "metadata_sha256": "6c1e588f425647c8feded2273958f2986d346f6ba70df9e8be031f20125aaf41",
+      "method": "UPBE1PBE",
+      "nbasis": 73,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-081",
+      "stage": "freq-00",
+      "metadata_sha256": "74bf3c6d8302635b62bb62a85ddecacf11d7004349ab818ed1ecf803869eb509",
+      "method": "RPBE1PBE",
+      "nbasis": 88,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-081",
+      "stage": "opt-00",
+      "metadata_sha256": "dccad22c6ad2f2baaef414892058d25ffd8dc4ac853c78eb3aa9de03d83abb63",
+      "method": "RPBE1PBE",
+      "nbasis": 88,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-081",
+      "stage": "stability-00",
+      "metadata_sha256": "43556164261f91c9fa37126d1a8671ef6ba09d2c909f04872fbec6aab30386de",
+      "method": "RPBE1PBE",
+      "nbasis": 88,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-082",
+      "stage": "freq-00",
+      "metadata_sha256": "ea4df054eddf215cae6eeaf48a86e16473430190150c25dd38c7fb7a5bb6613c",
+      "method": "RPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-082",
+      "stage": "freq-01",
+      "metadata_sha256": "954ceb1ab2d24791120d61e5ab67f9deadd9b47654ccb22e609f323e543f07e1",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-082",
+      "stage": "opt-00",
+      "metadata_sha256": "dd1d344cf713175766713624d8b9357da9014211d9b97320c8184427ff0bf557",
+      "method": "RPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-082",
+      "stage": "opt-01",
+      "metadata_sha256": "6eadc34a7156f1092ca5bb4eb147b16d1f8543f322d54623ffcf0a7d29efa447",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-082",
+      "stage": "stability-00",
+      "metadata_sha256": "717b099a03f14fc1eaff729278fb45113617914e60143325d7de0c60e87f8d63",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-082",
+      "stage": "stability-01",
+      "metadata_sha256": "937d9485af2f32b623980dbb99596348cfa8aceb3c39d75aae746bff904f186d",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-083",
+      "stage": "freq-00",
+      "metadata_sha256": "295cd0bfa8ab363a4633aa487d4592d299e19d8bedf09e0b505f725f33eb792b",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-083",
+      "stage": "opt-00",
+      "metadata_sha256": "1995e35d9222e4703fbc466ad41d0bb3a130ae6caa419fd33d1d7e7d747e173b",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-083",
+      "stage": "stability-00",
+      "metadata_sha256": "3e6c4abe556035216109c814b7ca583b6829bf556ea7682ecbf16c2711a6feb1",
+      "method": "UPBE1PBE",
+      "nbasis": 93,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-084",
+      "stage": "freq-00",
+      "metadata_sha256": "c6c3977c8513a3a20346a23bd8430bdfd526877c964d468b14134c82603d49d4",
+      "method": "RPBE1PBE",
+      "nbasis": 177,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-084",
+      "stage": "opt-00",
+      "metadata_sha256": "5a87ef0ea501543fa6cb711422c2d7d8460052edfa47e4754f4b40c11ba72bb9",
+      "method": "RPBE1PBE",
+      "nbasis": 177,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-084",
+      "stage": "stability-00",
+      "metadata_sha256": "4e992900a8e18e6ff4111870df3f8e58d5853a476d48625ecfc57f238a32c0ed",
+      "method": "RPBE1PBE",
+      "nbasis": 177,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-085",
+      "stage": "freq-00",
+      "metadata_sha256": "8917e862b83554f3b23fa679e2401c2b5e6c38a481df05d48eb3c8220023981d",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-085",
+      "stage": "opt-00",
+      "metadata_sha256": "1d410a5a9bece2bb4021c886cbfa42d20f1cfc2c081caf5b08cbaeb1f060f4df",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-085",
+      "stage": "stability-00",
+      "metadata_sha256": "52ca0f70035537a4a918dced01043d75fc68326cf36a0c339ad5ec9405cf4c68",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-086",
+      "stage": "freq-00",
+      "metadata_sha256": "fc4e4b84d12ab119650af23b16d767a750327724503d5a3a413c2d1bd3eab5c8",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-086",
+      "stage": "opt-00",
+      "metadata_sha256": "15d4f6358f42d58d495164cc0625b7763c11a30bf1ff62869d7ec9d6eeec5446",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-086",
+      "stage": "stability-00",
+      "metadata_sha256": "a38f722ee079d94c1142bbd6614b212be660e82517ab28ebda1acd12f7d9f117",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-087",
+      "stage": "freq-00",
+      "metadata_sha256": "ee5bf944989c688e234816ce81549cb18709c5ac26ba1179777d95b8078e9c84",
+      "method": "UPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-087",
+      "stage": "opt-00",
+      "metadata_sha256": "7602d676d22ae48af1b10ec1dce6bf51a49ddc659b45b36b511f2ed2a97d9e6c",
+      "method": "UPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-087",
+      "stage": "stability-00",
+      "metadata_sha256": "20a823f01c27b4790140a92c1db0c83f4c682e6a1f6f68f09d63049b124f48c8",
+      "method": "UPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-088",
+      "stage": "freq-00",
+      "metadata_sha256": "c2a724a8c31c7dc36435d9ca9cbf8db336468c090eb3787d74f1aaa7a7405230",
+      "method": "RPBE1PBE",
+      "nbasis": 422,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-088",
+      "stage": "opt-00",
+      "metadata_sha256": "a141dcb8c287958daa16ad0088935c9cedc186767d9a252841e62f110b90fa57",
+      "method": "RPBE1PBE",
+      "nbasis": 422,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-088",
+      "stage": "stability-00",
+      "metadata_sha256": "2082c33f69479366708f881a20272c0621293253bf3b36760c4b4bada1ba1d31",
+      "method": "RPBE1PBE",
+      "nbasis": 422,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-089",
+      "stage": "freq-00",
+      "metadata_sha256": "e3266272941630b49c4e6767611296dfbb514c6c2cb57c36c4031e9bc5833290",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-089",
+      "stage": "opt-00",
+      "metadata_sha256": "4a0f2d74e21abd62d331e7524c01ea49783117909894db766ceae655fbaa0f1d",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-089",
+      "stage": "stability-00",
+      "metadata_sha256": "9dc0929bbc3ca5675e22eeb4878d4cb5c548b14c816293549110390a94a2a5e6",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-090",
+      "stage": "freq-00",
+      "metadata_sha256": "9d9c233021b9db3bc5a7e6395af77ac3ba4520bc85680d82f7c5150c47e58be0",
+      "method": "RPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-090",
+      "stage": "opt-00",
+      "metadata_sha256": "14ed56d48d5b08a6c5ae142aaabf2d8425c867685fdba21a916b1fc0683b491b",
+      "method": "RPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-090",
+      "stage": "stability-00",
+      "metadata_sha256": "32804e2c227a99e102018e2129a620449dcf83c26c65c3c3fbf42e8142abbef1",
+      "method": "RPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-091",
+      "stage": "freq-00",
+      "metadata_sha256": "103708d07419a7c76b28651506849ea4af7944bffebd21c6097f2ff9247a963a",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-091",
+      "stage": "opt-00",
+      "metadata_sha256": "05ef611d2edef88981645cc82d548161b16d229d65cc678ce74f7f11da7a1e09",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-091",
+      "stage": "stability-00",
+      "metadata_sha256": "c9eb4ca543291f605931027f408dd4de1e2cadf39b5da73284fa01f134cbe11f",
+      "method": "UPBE1PBE",
+      "nbasis": 163,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-092",
+      "stage": "freq-00",
+      "metadata_sha256": "9f141032a7136085115c316a6766f94b10d2b02d7b8f4267336b9f30363f1bf8",
+      "method": "RPBE1PBE",
+      "nbasis": 196,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-092",
+      "stage": "opt-00",
+      "metadata_sha256": "7f0aab0c004e184a8a6715208615a9d3881828d8c281570daf38f141745607ce",
+      "method": "RPBE1PBE",
+      "nbasis": 196,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-092",
+      "stage": "stability-00",
+      "metadata_sha256": "fd6e0bd0338841feabd5f6157d006660c9f8d92fee753387825ac07b621fe8dc",
+      "method": "RPBE1PBE",
+      "nbasis": 196,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-093",
+      "stage": "freq-00",
+      "metadata_sha256": "4950aabb2420af96adbe01e02480ecea2816ca4bf1b8ffc004d9883733311ff1",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-093",
+      "stage": "opt-00",
+      "metadata_sha256": "c4448427a31bcfd22aa9bce6130fc7451d01819b775a6f4b2bd0d05cb5400456",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-093",
+      "stage": "stability-00",
+      "metadata_sha256": "2ab148dde7e7ae4957b06d183d49eb0e3a8867ba09c4e33bcc1fc2f1b552c5b7",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-094",
+      "stage": "freq-00",
+      "metadata_sha256": "968ecfcef02a4504329ca4684466528ceb5c986673d1caef7c68470463551742",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-094",
+      "stage": "opt-00",
+      "metadata_sha256": "bdb5264bb1d96ae42600fc1e6b801644801dd82cc17b388f98829918d8d6e35e",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-094",
+      "stage": "stability-00",
+      "metadata_sha256": "28504d77f1bba8614d8cfe9d8cd3ff3de34020d98aae94d7cd82a149b20a289b",
+      "method": "RPBE1PBE",
+      "nbasis": 208,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-095",
+      "stage": "freq-00",
+      "metadata_sha256": "56d269e7d103f44bddb6914267871bfbc59f106e51c41052897303e78bc4fd5c",
+      "method": "RPBE1PBE",
+      "nbasis": 298,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-095",
+      "stage": "opt-00",
+      "metadata_sha256": "467f83d53adc97f441a581d4b7b6027ef1538ccf1ee94e0355a2f1c502ba15d3",
+      "method": "RPBE1PBE",
+      "nbasis": 298,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-095",
+      "stage": "stability-00",
+      "metadata_sha256": "666b309b15ab46937fd408536010afe57051a3938956219edc867b7b125ea0c7",
+      "method": "RPBE1PBE",
+      "nbasis": 298,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-096",
+      "stage": "freq-00",
+      "metadata_sha256": "50c2ed79abab2835062e459e9e31d387e25e71003183771f7cc1697298126d8b",
+      "method": "RPBE1PBE",
+      "nbasis": 135,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-096",
+      "stage": "opt-00",
+      "metadata_sha256": "ff404bf5cf020ceb92854c82d4a8ce637a9f2998cf94bbd799488af0d560281f",
+      "method": "RPBE1PBE",
+      "nbasis": 135,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-096",
+      "stage": "stability-00",
+      "metadata_sha256": "2634fb1f574514cf9ad7b0a1ada1a6683bb8c8181084c85a8cf76841f6a9d96a",
+      "method": "RPBE1PBE",
+      "nbasis": 135,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-097",
+      "stage": "freq-00",
+      "metadata_sha256": "139a43dffd0a3011decc63e8771bcd0c81423a05ee02ff76f63938fa7ab64c9b",
+      "method": "RPBE1PBE",
+      "nbasis": 315,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-097",
+      "stage": "opt-00",
+      "metadata_sha256": "59fefda34f380c15f6d254cfb5ad579d58469a81dbefe3654fa9b1c43cf0f800",
+      "method": "RPBE1PBE",
+      "nbasis": 315,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-097",
+      "stage": "stability-00",
+      "metadata_sha256": "08eeb6de8758638911b98e617e7aa46561280f1e289465d10ed0a0295f9aab3b",
+      "method": "RPBE1PBE",
+      "nbasis": 315,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-098",
+      "stage": "force-00",
+      "metadata_sha256": "7d1aef929eb283028894dad035920e9e3dc99d94c2297f5167072edd44229369",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-098",
+      "stage": "force-01",
+      "metadata_sha256": "0b65e79342be84a06db75e37adb298603e471187c82f0ed04e9761315695307e",
+      "method": "UPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-098",
+      "stage": "stability-00",
+      "metadata_sha256": "ed0d22085d12a6ef35e569f08bc538ac43db2377473705082332cc5f9dbe1b70",
+      "method": "UPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-098",
+      "stage": "stability-01",
+      "metadata_sha256": "9a687a34e07583145d8a32382e4fc4b36e022104ccbfeb0e8424904f3cf65888",
+      "method": "UPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-099",
+      "stage": "freq-00",
+      "metadata_sha256": "1ac9c98c4a5db489e8ae0e2d8579e00c4c439998ce699607904d4829fc72ce61",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-099",
+      "stage": "freq-01",
+      "metadata_sha256": "c201eaddcfd854dd1c7a838c5da52fa952e22dd9d749a88690efad1d533a0144",
+      "method": "UPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-099",
+      "stage": "opt-00",
+      "metadata_sha256": "793ed685b28ceed9f2b60e596ab90df3b6fc8e3b617af40e0d2a2809f242c435",
+      "method": "RPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-099",
+      "stage": "opt-01",
+      "metadata_sha256": "58a074b6c66cfc99191f547df3bda15f41c7e79c87d99925f5909a81e2bf1855",
+      "method": "UPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-099",
+      "stage": "stability-00",
+      "metadata_sha256": "5870bc364c108c38680a1d5e8243efb576981fbaf9a459e333b2bbaf67c48ca2",
+      "method": "UPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-099",
+      "stage": "stability-01",
+      "metadata_sha256": "88b8bf1963323e8a452492b30c4c7049a3b0827c65197380196ea95d6df9ffa2",
+      "method": "UPBE1PBE",
+      "nbasis": 180,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-100",
+      "stage": "freq-00",
+      "metadata_sha256": "7f26a6859b2bae78df8466b0078b5e6d4b83afd309abdf78f890adde9d1c940d",
+      "method": "RPBE1PBE",
+      "nbasis": 360,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-100",
+      "stage": "opt-00",
+      "metadata_sha256": "fc0691126a4396a839fa944f7a2b77ca5d5dee9e6911503fc60836ef9d931cd9",
+      "method": "RPBE1PBE",
+      "nbasis": 360,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-100",
+      "stage": "stability-00",
+      "metadata_sha256": "11fc7087f5188f21ef733552916e29f44a9d0860831fe9849eaab00e335c9347",
+      "method": "RPBE1PBE",
+      "nbasis": 360,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-101",
+      "stage": "force-00",
+      "metadata_sha256": "c88145684adaed2d65ab85f36fcba0f95b3992a7ff61a1195679252a5c792b0f",
+      "method": "RPBE1PBE",
+      "nbasis": 360,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-101",
+      "stage": "force-01",
+      "metadata_sha256": "5c4b4fdbba964beb9dbeb4b1665a0b8134ad4d06703012267c2801b9fc6b32d1",
+      "method": "UPBE1PBE",
+      "nbasis": 360,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-101",
+      "stage": "stability-00",
+      "metadata_sha256": "cfb14e5cb024f90e81c2c2db2150e6f634f896c44afab67419bfcb88a71421bf",
+      "method": "UPBE1PBE",
+      "nbasis": 360,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-101",
+      "stage": "stability-01",
+      "metadata_sha256": "e109b0fe09b19829c7a93cbcc524837404c3929c4fd56bf5f99d26602a803117",
+      "method": "UPBE1PBE",
+      "nbasis": 360,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-102",
+      "stage": "freq-00",
+      "metadata_sha256": "86be5251ec1f1c2185be72303ead523612ddcebf703a87a9b7d32d259d50b012",
+      "method": "RPBE1PBE",
+      "nbasis": 256,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-102",
+      "stage": "opt-00",
+      "metadata_sha256": "d37b9772838111a93743eb7beae8bf67c8e6aa444d28fa056388f7d0a0273a9a",
+      "method": "RPBE1PBE",
+      "nbasis": 256,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-102",
+      "stage": "stability-00",
+      "metadata_sha256": "95dfd47af10a14dc609fe9bf79c14a897f95e0a6394a5d7135ed3c97b5879f3f",
+      "method": "RPBE1PBE",
+      "nbasis": 256,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-103",
+      "stage": "freq-00",
+      "metadata_sha256": "87f53059e7e30994bdb2ad5e7b83ebbc6b4efb71f2fcec4928ec8c23eece8b28",
+      "method": "RPBE1PBE",
+      "nbasis": 225,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-103",
+      "stage": "opt-00",
+      "metadata_sha256": "cea1c6c7651febaabf06655d95f89ed7035f953976dd23097b4a0da00baa0b5e",
+      "method": "RPBE1PBE",
+      "nbasis": 225,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-103",
+      "stage": "stability-00",
+      "metadata_sha256": "6a0e1d8db95cff90d32959b534de20b698ef43581a9936a725a0c1409c94c5b0",
+      "method": "RPBE1PBE",
+      "nbasis": 225,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-104",
+      "stage": "freq-00",
+      "metadata_sha256": "ad71c3f1d418add830287e25c043db5a1bb34b23a904016e141a5ad68e6f8f05",
+      "method": "RPBE1PBE",
+      "nbasis": 211,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-104",
+      "stage": "opt-00",
+      "metadata_sha256": "3b656bd70219b4a8ffe7eb66bfff22959c232bddf43f0e534b0a688482b56557",
+      "method": "RPBE1PBE",
+      "nbasis": 211,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-104",
+      "stage": "stability-00",
+      "metadata_sha256": "5ab17dd1fc3d483c8786b3bce5e951b8c987b2ff8acb17c8679667b6b42884fd",
+      "method": "RPBE1PBE",
+      "nbasis": 211,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-105",
+      "stage": "freq-00",
+      "metadata_sha256": "678d0e5692fee6b89c56bc91494b0f035c5ae238bf6a55d4da55587727ad1e1c",
+      "method": "RPBE1PBE",
+      "nbasis": 222,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-105",
+      "stage": "opt-00",
+      "metadata_sha256": "f222900b69ac9f50f751ecd655eec14e2670059e75f053026e4d937bb7e6d29b",
+      "method": "RPBE1PBE",
+      "nbasis": 222,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-105",
+      "stage": "stability-00",
+      "metadata_sha256": "42587b382fa37eaec39522de4c6d166c5c41ab187f298009b0fba6003a1dddf1",
+      "method": "RPBE1PBE",
+      "nbasis": 222,
+      "scientific_pass": false
+    },
+    {
+      "case_id": "OLD-106",
+      "stage": "opt-00",
+      "metadata_sha256": "e22251c352b92c25135d9d3ed90034f1cb7413e80efed13b065e34a5637c7bbe",
+      "method": "RPBE1PBE",
+      "nbasis": 270,
+      "scientific_pass": false
+    }
+  ],
+  "frozen_inputs_verified": 273,
+  "reference_set_identity": "4e02d026b6a7ea819aa037a12811c29360fa58334e59db6952c925af90f10139",
+  "scientific_passes": 0,
+  "calculations_started": 0
+}

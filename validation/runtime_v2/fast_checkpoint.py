@@ -13,6 +13,7 @@ import re
 import shutil
 import time
 import uuid
+from state_store import atomic_json as write_atomic, read_json
 
 
 def file_hash(path):
@@ -39,18 +40,6 @@ def rwf_restart_input(cores, memory=24):
         raise ValueError('Invalid resources for RWF restart')
     return (f'%RWF=job.rwf\n%Int=job.int\n%D2E=job.d2e\n%Save\n%Chk=job.chk\n'
             f'%Mem={memory}GB\n%NProcShared={cores}\n#p Restart\n\n')
-
-
-def write_atomic(path, value):
-    path = Path(path)
-    temp = path.with_name(path.name + '.' + uuid.uuid4().hex + '.tmp')
-    try:
-        with temp.open('w', encoding='utf-8', newline='\n') as f:
-            json.dump(value, f, indent=2, ensure_ascii=False, allow_nan=False)
-            f.write('\n'); f.flush(); os.fsync(f.fileno())
-        os.replace(temp, path)
-    finally:
-        temp.unlink(missing_ok=True)
 
 
 def cold_snapshot(directory, producer, *, writers_exited, reserve_bytes=0, include_scratch=True):
@@ -94,7 +83,7 @@ def restore_snapshot(snapshot, destination, producer, *, require_rwf=False):
     folder = Path(snapshot['directory']).resolve()
     if folder.name.endswith('.partial') or file_hash(folder / 'manifest.json') != snapshot['manifest_sha256']:
         raise ValueError('Incomplete or modified checkpoint snapshot')
-    receipt = json.loads((folder / 'manifest.json').read_text(encoding='utf-8'))
+    receipt = read_json(folder / 'manifest.json')
     if receipt['producer'] != producer or not receipt.get('writers_exited'):
         raise ValueError('Snapshot producer/runtime/scientific identity mismatch')
     if require_rwf and not receipt['files'].get('job.rwf', {}).get('bytes'):

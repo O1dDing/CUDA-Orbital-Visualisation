@@ -10,6 +10,7 @@ from __future__ import annotations
 import ctypes as ct
 from ctypes import wintypes as wt
 import os
+import json
 from pathlib import Path
 import subprocess
 import threading
@@ -36,6 +37,7 @@ def api():
         'GetExitCodeProcess': ([wt.HANDLE, ct.POINTER(wt.DWORD)], wt.BOOL),
         'CloseHandle': ([wt.HANDLE], wt.BOOL),
         'ResumeThread': ([wt.HANDLE], wt.DWORD),
+        'WaitForSingleObject': ([wt.HANDLE, wt.DWORD], wt.DWORD),
         'GetCurrentProcess': ([], wt.HANDLE),
         'GetProcessAffinityMask': ([wt.HANDLE, ct.POINTER(ct.c_size_t), ct.POINTER(ct.c_size_t)], wt.BOOL),
         'SetProcessAffinityMask': ([wt.HANDLE, ct.c_size_t], wt.BOOL),
@@ -82,18 +84,52 @@ def full_startup_affinity() -> None:
 
 def existing_gaussian(gaussian: Path) -> list[dict]:
     """Read-only admission check. Do not kill a foreign Gaussian/legacy runner."""
-    script = ("$ErrorActionPreference='Stop'; Get-CimInstance Win32_Process | "
-              "Where-Object { $_.Name -match '^(g16|l[0-9]+)\\.exe$' } | "
-              "Select-Object ProcessId,Name,ExecutablePath | ConvertTo-Json -Compress")
-    import json
-    result = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
-                            capture_output=True, text=True, timeout=30, check=True)
-    data = json.loads(result.stdout) if result.stdout.strip() else []
-    # Conservatively reject even a process whose executable path cannot be read.
-    return data if isinstance(data, list) else [data]
+    import re
+    class Process(ct.Structure):
+        _fields_ = [('size', wt.DWORD), ('usage', wt.DWORD), ('pid', wt.DWORD), ('heap', ct.c_size_t),
+            ('module', wt.DWORD), ('threads', wt.DWORD), ('parent', wt.DWORD), ('priority', wt.LONG),
+            ('flags', wt.DWORD), ('name', wt.WCHAR * 260)]
+    k, _ = api()
+    k.CreateToolhelp32Snapshot.argtypes = [wt.DWORD, wt.DWORD]
+    k.CreateToolhelp32Snapshot.restype = wt.HANDLE
+    for name in ('Process32FirstW', 'Process32NextW'):
+        getattr(k, name).argtypes = [wt.HANDLE, ct.POINTER(Process)]
+        getattr(k, name).restype = wt.BOOL
+    snapshot = k.CreateToolhelp32Snapshot(2, 0)
+    if snapshot == ct.c_void_p(-1).value:
+        raise ct.WinError(ct.get_last_error())
+    records = []
+    deadline = time.monotonic() + 10
+    try:
+        process = Process(); process.size = ct.sizeof(process)
+        present = k.Process32FirstW(snapshot, ct.byref(process))
+        while present:
+            if time.monotonic() >= deadline:
+                raise TimeoutError('Process admission snapshot exceeded its deadline')
+            if re.fullmatch(r'(g16|l[0-9]+)\.exe', process.name, re.I):
+                records.append({'ProcessId': process.pid, 'Name': process.name})
+            present = k.Process32NextW(snapshot, ct.byref(process))
+        if ct.get_last_error() != 18:  # ERROR_NO_MORE_FILES
+            raise ct.WinError(ct.get_last_error())
+    finally:
+        k.CloseHandle(snapshot)
+    return records
 
 
 _LAUNCH_LOCK = threading.Lock()
+
+
+def _drain_owned_tree(k, v, job, timeout=5.0):
+    accounting = v.ACCOUNTING()
+    v.require(k.QueryInformationJobObject(job, 1, ct.byref(accounting), ct.sizeof(accounting), None))
+    if accounting.ActiveProcesses:
+        v.require(k.TerminateJobObject(job, 125))
+    deadline = time.monotonic() + timeout
+    while accounting.ActiveProcesses:
+        if time.monotonic() >= deadline:
+            raise RuntimeError('Owned Job cleanup did not confirm zero processes before its deadline')
+        time.sleep(.05)
+        v.require(k.QueryInformationJobObject(job, 1, ct.byref(accounting), ct.sizeof(accounting), None))
 
 
 def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
@@ -110,17 +146,24 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
     proc = v.PROCESSINFO()
     attributes = None
     initialized = False
-    stdin = open(os.devnull, 'rb')
-    console = (cwd / 'launcher.log').open('ab')
+    stdin = console = None
     begin, started = time.monotonic(), time.time()
     reason = None
-    pause = JobPause(k, job)
+    pause = None
     clock = ActiveClock(begin)
     timeout_notified = False
+    timeout_count = 0
+    next_timeout = timeout
+    previous_wanted = False
+    termination_started = None
     hold_failed = False
     pause_error = None
+    pause_failures = []
     last_pause_scan = 0.0
     try:
+        pause = JobPause(k, job)
+        stdin = open(os.devnull, 'rb')
+        console = (cwd / 'launcher.log').open('ab')
         limits = v.EXTENDEDLIMIT()
         limits.BasicLimitInformation.LimitFlags = 0x200 | 0x2000  # JOB_MEMORY | KILL_ON_JOB_CLOSE
         limits.JobMemoryLimit = memory_gib * 2**30
@@ -157,20 +200,34 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
             try:
                 v.require(k.UpdateProcThreadAttribute(attributes, 0, 0x20002, handles, ct.sizeof(handles), None, None))
                 v.require(k.CreateProcessW(str(argv[0]), command, None, None, True,
-                          0x4 | 0x400 | 0x10 | 0x80000, env, str(cwd), ct.byref(info), ct.byref(proc)))
+                          0x4 | 0x400 | 0x8 | 0x80000, env, str(cwd), ct.byref(info), ct.byref(proc)))
             finally:
                 for handle in handles:
                     os.set_handle_inheritable(handle, False)
         try:
             v.require(k.AssignProcessToJobObject(job, proc.hProcess))
         except BaseException:
-            k.TerminateProcess(proc.hProcess, 125)
+            v.require(k.TerminateProcess(proc.hProcess, 125))
+            if k.WaitForSingleObject(proc.hProcess, 5000) != 0:
+                raise RuntimeError('Unassigned owned process did not confirm exit')
             raise
         on_started({'pid': proc.dwProcessId, 'started_epoch': started, 'cores': cores,
-                    'cpu_rate_hard_cap': rate_value, 'memory_limit_gib': memory_gib})
+                    'cpu_rate_hard_cap': rate_value, 'memory_limit_gib': memory_gib,
+                    'console_policy': 'detached; system console infrastructure remains responsive'})
         if k.ResumeThread(proc.hThread) == 0xFFFFFFFF:
             raise ct.WinError(ct.get_last_error())
         accounting, last_tick = v.ACCOUNTING(), 0.0
+        def emit(state=None, diagnostic=None):
+            current = time.monotonic()
+            v.require(k.QueryInformationJobObject(job, 1, ct.byref(accounting), ct.sizeof(accounting), None))
+            on_tick({'elapsed_seconds': current - begin,
+                'active_elapsed_seconds': clock.active(current), 'ram_paused_seconds': clock.paused(current),
+                'active_processes': accounting.ActiveProcesses,
+                'execution_state': state or ('ram_paused' if pause.held else pause.state if pause.state == 'pause_failed' else 'running'),
+                'pause_is_disk_checkpoint': False, 'suspended_thread_handles': len(pause.handles),
+                'pause_error': pause_error, 'pause_diagnostic': diagnostic or pause.last_diagnostic,
+                'active_timeout_count': timeout_count,
+                'tree_cpu_seconds': (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7})
         while True:
             v.require(k.QueryInformationJobObject(job, 1, ct.byref(accounting), ct.sizeof(accounting), None))
             if not accounting.ActiveProcesses:
@@ -178,8 +235,9 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
             now = time.monotonic()
             # Exhausted active time parks the computation when the caller can
             # persist a hold command. Utilities retain their bounded timeout.
-            if reason is None and clock.active(now) >= timeout and not timeout_notified:
+            if reason is None and clock.active(now) >= next_timeout and not timeout_notified:
                 timeout_notified = True
+                timeout_count += 1
                 if on_timeout is not None:
                     on_timeout()
                 else:
@@ -187,16 +245,27 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
             if reason is None and cancel():
                 reason = 'operator_interrupt'
             if reason is not None:
-                v.require(k.TerminateJobObject(job, 123 if reason == 'operator_interrupt' else 124))
+                if termination_started is None:
+                    v.require(k.TerminateJobObject(job, 123 if reason == 'operator_interrupt' else 124))
+                    termination_started = now
+                    emit('terminating')
+                elif now - termination_started >= 5:
+                    raise RuntimeError('Owned Job termination did not complete before its deadline')
             else:
                 wanted = bool(hold())
                 if not wanted:
                     hold_failed = False
+                    if previous_wanted and timeout_notified:
+                        # An explicit release grants another bounded active interval.
+                        next_timeout = clock.active(now) + timeout
+                        timeout_notified = False
                 previous_hold = pause.held
                 if wanted and not hold_failed and (not pause.held or now - last_pause_scan > 1):
                     try:
-                        pause.hold(refresh=pause.held)
+                        pause.hold(refresh=pause.held, cancel=lambda: cancel() or not hold(),
+                                   on_progress=lambda detail: emit('pausing', detail))
                         last_pause_scan = time.monotonic()
+                        pause_error = None
                     except Exception as error:
                         # hold() rolls back partial suspensions. Never silently
                         # turn a failed RAM pause into a kill of the calculation.
@@ -204,23 +273,21 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
                             raise
                         hold_failed = True
                         pause_error = str(error)
+                        pause_failures.append(dict(pause.last_diagnostic, epoch=time.time()))
+                        with (cwd / 'pause-failures.jsonl').open('a', encoding='utf-8') as log:
+                            log.write(json.dumps(pause_failures[-1]) + '\n')
                         on_hold_error(pause_error)
                 elif not wanted and pause.held:
                     pause.resume()
+                elif not wanted:
+                    pause.state = 'running'
                 clock.set_held(pause.held, time.monotonic())
+                previous_wanted = wanted
                 if previous_hold != pause.held:
                     last_tick = 0.0
             now = time.monotonic()
             if now - last_tick >= .5:
-                on_tick({'elapsed_seconds': now - begin,
-                         'active_elapsed_seconds': clock.active(now),
-                         'ram_paused_seconds': clock.paused(now),
-                         'active_processes': accounting.ActiveProcesses,
-                         'execution_state': 'ram_paused' if pause.held else 'running',
-                         'pause_is_disk_checkpoint': False,
-                         'suspended_thread_handles': len(pause.handles),
-                         'pause_error': pause_error,
-                         'tree_cpu_seconds': (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7})
+                emit('terminating' if reason else None)
                 last_tick = now
             time.sleep(0.1)
         exit_code = wt.DWORD()
@@ -233,21 +300,27 @@ def run_tree(argv: list, cwd: Path, cores: int, memory_gib: int, timeout: float,
                 'tree_cpu_seconds': (accounting.TotalUserTime + accounting.TotalKernelTime) / 1e7,
                 'peak_tree_commit_bytes': limits.PeakJobMemoryUsed, 'cores': cores,
                 'memory_limit_gib': memory_gib, 'cpu_rate_hard_cap': rate_value,
-                'tree_process_count': accounting.TotalProcesses, 'active_processes_at_return': accounting.ActiveProcesses,
+                 'tree_process_count': accounting.TotalProcesses, 'active_processes_at_return': accounting.ActiveProcesses,
+                 'active_timeout_count': timeout_count, 'pause_failures': pause_failures,
+                  'console_policy': 'detached; System32 conhost excluded from compute suspension',
                 'exit_code': exit_code.value, 'interrupted': reason is not None, 'stop_reason': reason}
     finally:
-        remaining = v.ACCOUNTING()
-        if k.QueryInformationJobObject(job, 1, ct.byref(remaining), ct.sizeof(remaining), None) and remaining.ActiveProcesses:
-            k.TerminateJobObject(job, 125)
-            while k.QueryInformationJobObject(job, 1, ct.byref(remaining), ct.sizeof(remaining), None) and remaining.ActiveProcesses:
-                time.sleep(0.05)
-        pause.close_after_exit()
-        k.CloseHandle(job)
-        if proc.hThread:
-            k.CloseHandle(proc.hThread)
-        if proc.hProcess:
-            k.CloseHandle(proc.hProcess)
-        if initialized:
-            k.DeleteProcThreadAttributeList(attributes)
-        stdin.close()
-        console.close()
+        try:
+            _drain_owned_tree(k, v, job)
+        finally:
+            # KILL_ON_JOB_CLOSE remains the final ownership backstop on any error.
+            k.CloseHandle(job)
+            if pause is not None:
+                for handle in pause.handles.values():
+                    k.CloseHandle(handle)
+                pause.handles.clear()
+            if proc.hThread:
+                k.CloseHandle(proc.hThread)
+            if proc.hProcess:
+                k.CloseHandle(proc.hProcess)
+            if initialized:
+                k.DeleteProcThreadAttributeList(attributes)
+            if stdin is not None:
+                stdin.close()
+            if console is not None:
+                console.close()

@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import ExitStack, contextmanager
+from contextlib import ExitStack
 import hashlib
 import importlib
 import json
@@ -25,17 +25,21 @@ import uuid
 
 from fast_checkpoint import (cold_snapshot, restore_snapshot, persistent_input,
                              rwf_restart_input, cooperative_opt_stop)
+from state_store import ControlStore, atomic_json as atomic, read_json as read, lease, occupied
 
 from policy import (METHODS, Stage, basis_count, core_budget, digest, followup,
                     grants, historical_reference_digest, initial_part, log_progress, next_stage, preferred_cores, route_signature)
 
 HERE = Path(__file__).resolve().parent
-RUNTIME_DIRECTORY = 'runtime-v2-fastpause'
+RUNTIME_DIRECTORY = 'runtime-v2-unified'
 FROZEN = HERE.parent / 'paused-20260906' / 'runner-source'
 
 
-def read(path: Path) -> dict:
-    return json.loads(path.read_text(encoding='utf-8-sig'))
+def runtime_directory(config):
+    value = config.get('runtime_directory', RUNTIME_DIRECTORY)
+    if not isinstance(value, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', value):
+        raise ValueError('runtime_directory must be one directory name')
+    return value
 
 
 def sha(path: Path) -> str:
@@ -46,55 +50,8 @@ def sha(path: Path) -> str:
     return h.hexdigest()
 
 
-def atomic(path: Path, value: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_name(path.name + '.' + uuid.uuid4().hex + '.tmp')
-    try:
-        with temp.open('w', encoding='utf-8', newline='\n') as stream:
-            json.dump(value, stream, indent=2, ensure_ascii=False, allow_nan=False)
-            stream.write('\n')
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(temp, path)
-    finally:
-        if temp.exists():
-            temp.unlink()
-
-
 def text(path: Path) -> str:
     return path.read_text(encoding='ascii', errors='replace') if path.is_file() else ''
-
-
-@contextmanager
-def lease(path: Path):
-    """OS-held lock, not a deletable stale PID file. Shared path with legacy v1."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    stream = path.open('a+b')
-    try:
-        if stream.tell() == 0:
-            stream.write(b'0')
-            stream.flush()
-        stream.seek(0)
-        try:
-            if os.name == 'nt':
-                import msvcrt
-                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
-            else:
-                import fcntl
-                fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError as error:
-            raise RuntimeError(f'Coordinator still owns {path}; do not delete locks or start a second runner') from error
-        yield
-    finally:
-        stream.close()
-
-
-def occupied(path: Path) -> bool:
-    try:
-        with lease(path):
-            return False
-    except RuntimeError:
-        return True
 
 
 class Paused(Exception):
@@ -175,38 +132,35 @@ class Engine:
     def __init__(self, config: dict, data, backend):
         self.config, self.data, self.backend = config, data, backend
         self.work = Path(config['work_root']).resolve()
-        self.root = self.work / RUNTIME_DIRECTORY
+        self.root = self.work / runtime_directory(config)
         self.jobs = self.root / 'jobs'
         self.control = self.root / 'control.json'
         self.active: dict[str, dict] = {}
         self.mutex = threading.Lock()
         self._records_cache: dict[str, dict] = {}
-        self.identity = digest({'version': '2.1-fastpause', 'parent': data.parent_identity,
-                                'files': {n: sha(HERE / n) for n in ('resume.py', 'policy.py', 'windows_job.py', 'windows_pause.py', 'fast_checkpoint.py', 'native_acceptance.py')},
+        self.identity = digest({'version': '2.2-unified', 'parent': data.parent_identity,
+                                'files': {n: sha(HERE / n) for n in ('resume.py', 'policy.py', 'windows_job.py', 'windows_pause.py', 'fast_checkpoint.py', 'native_acceptance.py', 'state_store.py', 'process_control.py', 'migration.py')},
                                 'binaries': data.binaries})
 
     def bind(self):
         target = self.root / 'binding.json'
         current = {'runtime_identity': self.identity, 'parent_runner_identity': self.data.parent_identity,
                    'reference_set_identity': self.data.manifest['reference_set_identity'],
-                   'binaries': self.data.binaries, 'version': '2.1-fastpause'}
+                   'binaries': self.data.binaries, 'version': '2.2-unified'}
         if target.exists() and read(target) != current:
             raise ValueError('Runtime implementation/inputs changed. Review migration; do not overwrite v2 evidence')
         atomic(target, current)
 
     def mode(self) -> str:
-        if not self.control.exists():
-            return 'pause'
-        value = read(self.control).get('mode')
-        if value not in ('run', 'pause', 'hold', 'interrupt', 'shutdown'):
-            raise ValueError('Invalid control state; refusing to continue')
-        return value
+        return ControlStore(self.root).read()['mode']
 
     def set_mode(self, mode: str):
         set_control(self.root, mode)
 
-    def interrupt_requested(self, created_epoch: float) -> bool:
-        state = read(self.control) if self.control.exists() else {}
+    def interrupt_requested(self, created_epoch: float, control_sequence=None) -> bool:
+        state = read(self.control, {})
+        if control_sequence is not None:
+            return int(state.get('interrupt_sequence', 0)) > control_sequence
         # A subsequent Resume must not erase a save-stop already requested for
         # this active attempt. New attempts have a later creation timestamp.
         return float(state.get('interrupt_epoch', 0)) >= created_epoch
@@ -347,6 +301,8 @@ class Engine:
             attempts = sorted(base.glob('attempt-*'))
             directory = base / f'attempt-{len(attempts)+1:04d}'
             source = self.interrupted_source(case_id, phase)
+            from migration import validate_source
+            source_producer = validate_source(source, self, case_id, phase) if source else self.producer(case_id, phase)
             directory.mkdir(exist_ok=False)
             (directory / 'scratch').mkdir()
             strategy = 'fresh_reference_input'
@@ -365,7 +321,7 @@ class Engine:
                 snapshot = source.get('snapshot')
                 if not snapshot:
                     raise NeedsReview('Interrupted Freq has no cold RWF snapshot; select reviewed replay explicitly')
-                restore_snapshot(snapshot, directory, self.producer(case_id, phase), require_rwf=True)
+                restore_snapshot(snapshot, directory, source_producer, require_rwf=True)
                 probe = self.probe(case_id, directory / 'job.chk', directory / 'recovery', cores)
                 if probe['fields']['method'] != method:
                     raise NeedsReview('RWF restart checkpoint changed R/U method')
@@ -375,7 +331,7 @@ class Engine:
                 if source.get('snapshot'):
                     isolated = directory / 'restored-source'
                     isolated.mkdir()
-                    restore_snapshot(source['snapshot'], isolated, self.producer(case_id, phase))
+                    restore_snapshot(source['snapshot'], isolated, source_producer)
                     source = dict(source, checkpoint=str(isolated / 'job.chk'))
                 probe = self.probe(case_id, Path(source['checkpoint']), directory / 'recovery', cores)
                 donor = probe
@@ -432,7 +388,8 @@ class Engine:
                        'tree_memory_gib': 32, 'input_sha256': sha(directory / 'job.gjf'),
                        'route_signature': route_signature(input_text), 'scf_retry': retry,
                        'source': source, 'starting_checkpoint_sha256': sha(directory / 'job.chk') if (donor or rwf_restored) else None,
-                       'binaries': self.data.binaries, 'created_epoch': time.time()}
+                        'binaries': self.data.binaries, 'created_epoch': time.time(),
+                        'control_sequence': int(ControlStore(self.root).read().get('sequence', 0))}
             atomic(directory / 'attempt.json', attempt)
             def started(value):
                 attempt['process_started'] = value
@@ -446,7 +403,7 @@ class Engine:
                 raise Paused('before_launch')
             process = self.backend.run_tree([self.data.gaussian / 'g16.exe', directory / 'job.gjf', directory / 'job.log'],
                 directory, cores, 32, float(self.config.get('timeout_hours', 72))*3600,
-                cancel=lambda: self.interrupt_requested(attempt['created_epoch']), on_started=started, on_tick=tick,
+                cancel=lambda: self.interrupt_requested(attempt['created_epoch'], attempt['control_sequence']), on_started=started, on_tick=tick,
                 **({'hold': lambda: self.mode() == 'hold',
                     'on_hold_error': lambda message: print('RAM PAUSE FAILED (rolled back): ' + message, flush=True),
                     'on_timeout': lambda: self.set_mode('hold')}
@@ -597,7 +554,7 @@ class Engine:
         memory_budget = min(128, int(host['total_gib']) - 16)
         if memory_budget < 32:
             raise ValueError('At least 48 GiB visible system memory is required for the retained 24/32 GiB job envelope')
-        slots = min(2, budget, memory_budget // 32)
+        slots = min(int(self.config.get('workers', 2)), 2, budget, memory_budget // 32)
         self.set_mode('run')
         state = {'runtime_identity': self.identity, 'selected_cases': selected,
                  'physical_core_budget': budget, 'host': host, 'max_parallel_jobs': slots,
@@ -703,31 +660,14 @@ class Engine:
             atomic(self.root / 'status.json', state)
 
 def set_control(root: Path, mode: str):
-    if mode not in ('run', 'pause', 'hold', 'interrupt', 'shutdown'):
-        raise ValueError('Unknown control command')
-    root.mkdir(parents=True, exist_ok=True)
-    deadline = time.monotonic() + 5
-    while True:
-        try:
-            with lease(root / 'control.lock'):
-                previous = read(root / 'control.json') if (root / 'control.json').exists() else {}
-                now = time.time()
-                record = {'mode': mode, 'requested_epoch': now, 'request_id': uuid.uuid4().hex,
-                          'interrupt_epoch': now if mode == 'interrupt' else previous.get('interrupt_epoch', 0)}
-                atomic(root / 'commands' / (str(time.time_ns()) + '.json'), record)
-                atomic(root / 'control.json', record)
-                return
-        except RuntimeError:
-            if time.monotonic() >= deadline:
-                raise
-            time.sleep(.02)
+    return ControlStore(root).set(mode)
 
 
-def report(work: Path):
-    root = work / RUNTIME_DIRECTORY
-    status = read(root / 'status.json') if (root / 'status.json').exists() else {}
+def report(work: Path, directory=RUNTIME_DIRECTORY):
+    root = work / directory
+    status = read(root / 'status.json', {})
     status['work_lease_held'] = occupied(work / 'jobs/supervisor.lock')
-    status['control'] = read(root / 'control.json') if (root / 'control.json').exists() else None
+    status['control'] = read(root / 'control.json', None)
     if status.get('heartbeat_epoch'):
         status['heartbeat_age_seconds'] = time.time() - status['heartbeat_epoch']
     status['live_note'] = 'History is not live process state. Check OS lease, heartbeat age and owned Job accounting together.'
@@ -741,9 +681,9 @@ def report(work: Path):
 def menu(config_path: Path, config: dict):
     work = Path(config['work_root'])
     while True:
-        print('\nCOV REF-001 快速暂停版 2.1（不热更新旧进程）\n'
+        print('\nCOV REF-001 统一运行时 2.2\n'
               '1 检查数据及物理核预算（不算）\n'
-              '2 导入旧版结果和检查点（旧协调器必须已退出）\n'
+              '2 导入 2.1 结果和检查点（旧协调器必须已退出）\n'
               '3 开始队列（自动分配核心）\n'
               '4 快速内存暂停（保留现场，不是落盘保存；不可关机/关闭计算窗口）\n'
               '5 查看状态、核心分配、最近三组几何收敛表\n'
@@ -757,7 +697,7 @@ def menu(config_path: Path, config: dict):
             if choice == '0':
                 return
             if choice in ('1', '2', '3'):
-                action = {'1': 'check', '2': 'import-legacy', '3': 'run'}[choice]
+                action = {'1': 'check', '2': 'import-runtime', '3': 'run'}[choice]
                 argv = [sys.executable, '-X', 'utf8', str(HERE / 'resume.py'), '--config', str(config_path), action]
                 if choice == '3':
                     limit = int(input('最多选取多少个未完成案例 [273]：').strip() or '273')
@@ -769,12 +709,12 @@ def menu(config_path: Path, config: dict):
                 mode = {'4': 'hold', '6': 'run', '8': 'interrupt', '9': 'shutdown', '10': 'pause'}[choice]
                 if choice == '8' and input('确认中断并尝试保存？输入 SAVE：').strip() != 'SAVE':
                     continue
-                set_control(work / RUNTIME_DIRECTORY, mode)
+                set_control(work / runtime_directory(config), mode)
                 print('v2 control written:', mode, '(no effect on an old v1 coordinator)')
                 if choice == '6' and not occupied(work / 'jobs/supervisor.lock'):
                     print('No coordinator owns this work directory. Use 3 to start it.')
             elif choice == '5':
-                report(work)
+                report(work, runtime_directory(config))
         except (Exception, KeyboardInterrupt) as error:
             print('ERROR:', error)
 
@@ -782,12 +722,19 @@ def menu(config_path: Path, config: dict):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=HERE / 'config.json')
-    parser.add_argument('command', choices=('menu', 'check', 'import-legacy', 'run', 'pause', 'hold', 'resume', 'interrupt', 'shutdown', 'status', 'retry-reviewed', 'native-acceptance'))
+    parser.add_argument('command', choices=('menu', 'check', 'import-legacy', 'import-runtime', 'run', 'pause', 'hold', 'resume', 'interrupt', 'shutdown', 'status', 'retry-reviewed', 'native-acceptance'))
+    parser.add_argument('--source', type=Path)
+    parser.add_argument('--capability', choices=('all', 'ram_pause'), default='all')
     parser.add_argument('--case', action='append')
     parser.add_argument('--limit', type=int, default=273)
     parser.add_argument('--reason')
+    parser.add_argument('--workers', type=int, choices=(1, 2))
     args = parser.parse_args()
     config = read(args.config)
+    if args.workers is not None:
+        config['workers'] = args.workers
+    if config.get('workers', 2) not in (1, 2):
+        raise ValueError('workers must be 1 or 2')
     if config.get('freq_recovery', 'replay') not in ('replay', 'rwf', 'auto'):
         raise ValueError('freq_recovery must be replay, rwf or auto')
     if config.get('opt_step_checkpoints', False) != 'auto' and not isinstance(config.get('opt_step_checkpoints', False), bool):
@@ -802,11 +749,11 @@ def main():
     if args.command == 'menu':
         return menu(args.config.resolve(), config)
     if args.command in ('pause', 'hold', 'resume', 'interrupt', 'shutdown'):
-        set_control(work / RUNTIME_DIRECTORY, {'resume': 'run'}.get(args.command, args.command))
+        set_control(work / runtime_directory(config), {'resume': 'run'}.get(args.command, args.command))
         print('Command written; only a v2 coordinator reacts. Legacy v1 is not hot-patched.')
         return
     if args.command == 'status':
-        return report(work)
+        return report(work, runtime_directory(config))
     data = FrozenData(config)
     import windows_job as backend
     host = backend.host_info()
@@ -832,7 +779,7 @@ def main():
         engine.bind()
         if args.command == 'native-acceptance':
             from native_acceptance import run_acceptance
-            return run_acceptance(engine, host)
+            return run_acceptance(engine, host, capability=args.capability)
         if args.command == 'retry-reviewed':
             if not args.case or not args.reason or not args.reason.strip():
                 raise ValueError('retry-reviewed requires explicit --case and a nonempty --reason')
@@ -849,8 +796,13 @@ def main():
         if args.command == 'import-legacy':
             print(json.dumps(engine.import_legacy(), indent=2))
             return
+        if args.command == 'import-runtime':
+            from migration import import_runtime
+            result = import_runtime(engine, args.source or work / 'runtime-v2-fastpause')
+            print(json.dumps({k: v for k, v in result.items() if k != 'source_evidence'}, indent=2))
+            return
         if not (engine.root / 'import-summary.json').exists():
-            raise RuntimeError('Run import-legacy under an idle v1 lock before v2 execution')
+            raise RuntimeError('Import idle runtime evidence with import-runtime (or import-legacy for v1) first')
         selected = [c for c in selected if next_stage(data.candidates[c], engine.records(c)) != 'candidate_collected'][:args.limit]
         if not selected:
             print('No uncollected cases in selection; no calculation started.')
