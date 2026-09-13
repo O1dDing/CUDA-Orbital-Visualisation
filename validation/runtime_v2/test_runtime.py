@@ -48,13 +48,13 @@ def record(unstable=False, energy=-1., method='UPBE1PBE'):
 
 class PolicyTests(unittest.TestCase):
     def test_physical_budgets(self):
-        for physical, expected in ((1, 1), (2, 1), (3, 2), (4, 2), (6, 4), (8, 6), (12, 10), (16, 14), (32, 14)):
+        for physical, expected in ((1, 1), (2, 1), (3, 2), (4, 3), (6, 5), (8, 7), (12, 10), (16, 14), (32, 14)):
             with self.subTest(physical=physical):
                 self.assertEqual(p.core_budget(physical), expected)
         for invalid in (0, -1, True, 8.5):
             with self.assertRaises(ValueError):
                 p.core_budget(invalid)
-        for invalid in (0, 7, 14, True, 3.5):
+        for invalid in (0, 8, 14, True, 3.5):
             with self.assertRaises(ValueError):
                 p.core_budget(8, invalid)
         self.assertEqual(p.core_budget(16, 1), 1)
@@ -66,13 +66,13 @@ class PolicyTests(unittest.TestCase):
                     out = p.grants([a, b], budget)
                     self.assertLessEqual(sum(out), budget)
                     self.assertTrue(0 <= out[0] <= a and 0 <= out[1] <= b)
-        self.assertEqual(p.grants([10, 10], 14), [7, 7])
+        self.assertEqual(p.grants([10, 10], 14), [10, 0])
         self.assertEqual(p.grants([10, 2], 14), [10, 2])
-        self.assertEqual(p.grants([10, 10], 6), [3, 3])
+        self.assertEqual(p.grants([10, 10], 6), [0, 0])
 
     def test_workload_classes(self):
-        for n, shell, expected in ((30, False, 1), (100, False, 2), (250, False, 4),
-                                   (502, True, 10), (526, False, 8), (2000, True, 14)):
+        for n, shell, expected in ((30, False, 4), (100, False, 4), (250, False, 4),
+                                   (502, True, 7), (526, False, 7), (2000, True, 7)):
             self.assertEqual(p.preferred_cores(n, shell), expected)
         with self.assertRaises(ValueError):
             p.preferred_cores(0, False)
@@ -363,12 +363,26 @@ class EngineTests(unittest.TestCase):
             self.engine.calculate('OLD-001', self.phase(), 7)
         self.assertEqual(len(self.backend.calls), 1)
 
-    def test_schedule_small_host_respects_six_core_budget(self):
+    def test_schedule_small_host_respects_seven_core_budget(self):
         with patch('resume.shutil.disk_usage', return_value=SimpleNamespace(free=100*2**30)):
             self.engine.run(['OLD-001', 'OLD-002'], {'physical_cores': 8, 'total_gib': 96})
-        self.assertEqual(r.read(self.engine.root / 'status.json')['physical_core_budget'], 6)
-        self.assertTrue(all(1 <= x['cores'] <= 6 for x in self.backend.calls))
+        self.assertEqual(r.read(self.engine.root / 'status.json')['physical_core_budget'], 7)
+        self.assertTrue(all(x['cores'] == 4 for x in self.backend.calls))
         self.assertEqual(r.read(self.engine.jobs / 'OLD-001/result.json')['status'], 'candidate_collected')
+
+    def test_waiting_case_precedes_completed_cases_next_phase(self):
+        third = 'OLD-003'
+        self.data.candidates[third] = dict(REFERENCE, case_id=third)
+        self.data.originals[third] = self.data.originals['OLD-001']
+        self.data.sizes[third] = 502
+        folder = self.data.references / 'reference-inputs' / third
+        folder.mkdir(); (folder / 'initial.gjf').write_text(INPUT)
+        self.engine.config['workers'] = 1
+        with patch('resume.shutil.disk_usage', return_value=SimpleNamespace(free=100*2**30)):
+            self.engine.run(['OLD-001','OLD-002',third], {'physical_cores':16,'total_gib':192})
+        starts = [(next(x for x in c['cwd'].parts if x.startswith('OLD-')), c['cwd'].parent.name) for c in self.backend.calls]
+        self.assertEqual(starts[:3], [('OLD-001','opt-00'),('OLD-002','opt-00'),('OLD-003','opt-00')])
+        self.assertTrue(all(c['cores']==7 for c in self.backend.calls))
 
     def test_cancel_pause_refills_idle_worker_while_other_job_still_runs(self):
         self.backend.hold_case = 'OLD-001'

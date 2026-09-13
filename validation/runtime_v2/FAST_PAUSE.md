@@ -1,14 +1,14 @@
-# REF-001 快速暂停版 2.1 — 2026-09-10
+# REF-001 统一运行时 2.2 — 2026-09-13
 
 本文是当前快速暂停入口的操作说明；原 README 的 4 键和 work/runtime-v2 路径只适用于旧版。
-新代码仍位于 validation/runtime_v2，运行数据另写 **work/runtime-v2-fastpause**，不会冒充或覆盖旧 v1/v2 结果。
+新代码仍位于 validation/runtime_v2，运行数据另写 **work/<runtime_directory>**，不会冒充或覆盖旧 v1/v2 结果。
 新运行数据与旧 Gaussian 进程隔离，冻结科学输入保持原始身份。
 
 ## 核心区别：暂停不等于保存
 
 | 按键 / 命令 | 行为 | 是否能关闭计算窗口/关机 |
 |---|---|---|
-| **4 / hold** | 快速暂停所属 Job 内所有线程，保留 RAM 中的计算现场；不等待整段 Opt/Freq | **不能**。不是磁盘检查点；内存仍占用 |
+| **4 / hold** | 快速暂停所属 Job 内全部计算线程，保留 RAM 中的计算现场；不等待整段 Opt/Freq | **不能**。不是磁盘检查点；内存仍占用 |
 | **6 / resume** | 原进程原地恢复，继续同一 attempt；填回空闲计算槽位 | 仍在计算 |
 | **10 / pause** | 在已启用的优化检查点段或当前子阶段结束后暂停派发 | 等状态确认没有活动树、文件校验完成 |
 | **8 / interrupt** | 明确确认 SAVE 后结束本协调器拥有的树，再冷复制/校验 CHK；Freq 同时保存 RWF/INT/D2E | 等冷保存和 probe 回执完成；恢复仍有明确边界 |
@@ -19,7 +19,7 @@
 正常树的确认需要数次短扫描，但并不承诺任何主机固定 0.1 秒完成；具体延迟要看 Windows 原生测试。
 这不是程序内的事务式保存，内核 I/O 仍可能收尾。**绝不在 RAM 暂停时复制 CHK/RWF 或运行 formchk**。
 保留内存、已分配核数预算和 Job 句柄，不能用暂停期间的空闲 CPU 再超额启动一批任务。
-暂停/恢复只作用于持有的 Windows Job 及其后代；不依据进程名、陈旧 PID 或全局 taskkill。
+暂停/恢复只作用于持有的 Windows Job 及其计算后代；System32/conhost.exe 按完整路径识别并保持运行，未知控制台宿主使暂停回滚。不依据进程名、陈旧 PID 或全局 taskkill。
 不使用未经文档化的 NtSuspendProcess/Job freeze API。
 
 微软明确提醒 SuspendThread 不是线程同步工具。这里是独立外部监督器的 debugger-style 控制，
@@ -40,7 +40,7 @@ RAM hold 仍须保持计算窗口、系统电源和足够内存。断电不能�
 其路径属于每个独立 attempt，不复用上一 attempt 的可写文件。原件不自动清除；磁盘空间须留余量。
 
 8 键的顺序是：停止所属进程树 → 等全部后代退出 → 冷复制 → fsync/哈希 → 原子提交 manifest → CHK probe。
-CTRL+C 仍按显式中断处理，不等同于 RAM hold。命令保留 interrupt_epoch：紧接着按 6 不能让旧 attempt 漏掉已请求的中断。
+CTRL+C 仍按显式中断处理，不等同于 RAM hold。命令按序列号保留中断请求，并保留兼容的 interrupt_epoch：紧接着按 6 不能让旧 attempt 漏掉已请求的中断。
 
 优化通常只复制 CHK、输入和日志以降低保存时间，原 attempt 的 RWF 保留；频率则保存命名的 RWF/INT/D2E/CHK 整套。
 快照标记 `restart_validated=false`：**文件保存正确不等于 Gaussian 已证明能重启**。
@@ -75,7 +75,7 @@ python -X utf8 resume.py native-acceptance
 ```
 
 `native-acceptance` 必须取得同机锁、旧目录锁，确认没有其他 Gaussian；只在
-`work/runtime-v2-fastpause/native-acceptance/<唯一目录>` 跑小案例水和 NO 的独立试验副本。
+`work/<runtime_directory>/native-acceptance/<唯一目录>` 跑小案例水和 NO 的独立试验副本。
 初始几何在副本中拉伸12%，保留本轮基组和数值精度，显式标为验收试验，**不算正式候选结果**。
 测试完整 baseline、RAM 暂停继续、KJob 分段 Opt=Restart/换核数、解析频率中断/RWF Restart，
 比较能量、原子间距离和频率。某项太快而未触发中断不算通过。
@@ -88,7 +88,7 @@ python -X utf8 resume.py native-acceptance
 有 RWF 却无对应恢复回执时不静默丢弃计算转为全频率重算。强制 `true` 或 `rwf` 也不能绕过门槛。
 
 旧 v1 通过 `import-legacy` 冷导入已完成阶段；新版独立目录不覆盖旧 runtime-v2。
-旧 v2 已有运行成果或 OLD-018 这种旧 timeout/failed 的恢复，仍需 reviewed migration，
+旧 2.1 结果和恢复来源通过 import-runtime 校验导入；OLD-018 的 review 标记继续保留，
 不能只删 review.json 再运行，避免把未导入的断点变成 fresh input。原 OLD-018-SALVAGE 不动。
 
 新菜单 4 与旧菜单 4 不同，显示明确的“内存暂停，不可关机”。日常临时腾出算力用 **4 → 6**；
@@ -109,6 +109,8 @@ Gaussian 主站访问 502，以下 Gaussian 手册镜像用于核对相同关键
 优化历史、同一模型化学的重启有效性和科学收敛仍须各自验证。
 
 
-## 已归档的原机能力
+## 身份与历史证据
 
-[2026-09-12能力核验](../ref001-progress-20260912/native-capabilities-verification.json)确认匹配身份的RPBE1PBE/UPBE1PBE内存暂停证据已通过。优化L103分段和解析频率RWF恢复尚未通过，相关门槛继续保留。完整计算状态见[参考资料索引](../ref001-progress-20260912/README.md)。
+2.1 的原机回执只对其原始身份有效，不能视为 2.2 验收。2.2 的测试、失败记录和实际能力见 [修复证据](../runtime-integration-20260913/README.md)。
+
+内层扫描在枚举和 API 边界检查期限与取消，失败撤销自身的 suspend 增量。5 秒是合作式扫描期限，无法抢占一个阻塞中的 Windows 内核调用。历史 4/20 次长延迟尚未复现到具体内核调用；这一点不能由后续通过次数消除。独立测试守护为测试进程提供另一道期限。

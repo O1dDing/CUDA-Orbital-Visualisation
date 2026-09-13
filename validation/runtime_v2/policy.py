@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import re
 
-VERSION = 2
+VERSION = '3.0-adaptive-physical'
 METHODS = ('RPBE1PBE', 'UPBE1PBE', 'ROPBE1PBE')
 TASK = 'Opt=(VeryTight,CalcFC,MaxCycles=512)'
 ELEMENTS = ('X H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn '
@@ -39,31 +39,40 @@ def historical_reference_digest(reference: dict) -> str:
 def core_budget(physical: int, requested: int | None = None) -> int:
     if isinstance(physical, bool) or not isinstance(physical, int) or physical < 1:
         raise ValueError('Physical core count must be a positive integer, not logical threads')
-    reserve = 2 if physical >= 4 else (1 if physical >= 2 else 0)
+    # 16 and 8 are reviewed host profiles. Other hosts retain at least one
+    # physical core (two for >= 9); never infer capacity from SMT threads.
+    reserve = 2 if physical >= 9 else (1 if physical >= 2 else 0)
     ceiling = min(14, max(1, physical - reserve))
     if requested is not None and (isinstance(requested, bool) or not isinstance(requested, int) or not 1 <= requested <= ceiling):
         raise ValueError(f'CPU budget must be between 1 and {ceiling} on this host')
     return ceiling if requested is None else requested
 
 
-def preferred_cores(nbasis: int, open_shell: bool) -> int:
-    if nbasis < 1:
+def preferred_cores(nbasis: int, open_shell: bool = False, physical: int = 16) -> int:
+    if isinstance(nbasis, bool) or not isinstance(nbasis, int) or nbasis < 1:
         raise ValueError('Basis-function count unavailable; do not guess from old small-basis FCHK')
-    count = next(n for limit, n in ((64, 1), (160, 2), (320, 4), (480, 6),
-                                  (640, 8), (900, 10), (1200, 12), (math.inf, 14)) if nbasis <= limit)
-    return min(14, count + (2 if open_shell and nbasis > 160 else 0))
+    base = 4 if nbasis < 300 else 5 if nbasis < 450 else 7
+    budget = core_budget(physical)
+    # All REF cases already use hybrid exchange and strict numerical settings.
+    # Open-shell/convergence flags remain scientific provenance, not arbitrary
+    # overrides to the common dimension tiers or a measured speedup claim.
+    return min(budget, max(1, math.ceil(base * budget / 14)))
 
 
 def grants(requests: list[int], available: int) -> list[int]:
-    """Fair integer water-filling. Nothing runs with zero cores; sum <= budget."""
+    """FIFO whole-request admission. An unfittable head blocks later requests.
+
+    Never downgrade a heavy request. The coordinator rotates a finished phase
+    behind waiting cases, preventing short stages from repeatedly cutting in.
+    """
     if available < 0 or any(n < 1 or n > 14 for n in requests):
         raise ValueError('Invalid resource request')
     result = [0] * len(requests)
-    while available and any(result[i] < n for i, n in enumerate(requests)):
-        for i, n in enumerate(requests):
-            if available and result[i] < n:
-                result[i] += 1
-                available -= 1
+    for i, n in enumerate(requests):
+        if n > available:
+            break
+        result[i] = n
+        available -= n
     return result
 
 

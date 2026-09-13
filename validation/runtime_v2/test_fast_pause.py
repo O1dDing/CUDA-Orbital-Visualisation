@@ -326,7 +326,7 @@ class NativeWindowsPauseTests(unittest.TestCase):
             finally:
                 want.clear(); thread.join(8)
                 foreign.wait(timeout=10)
-            self.assertFalse(errors, repr(errors))
+            self.assertFalse(errors, repr(errors) + ' process=' + json.dumps(result))
             self.assertEqual(result['exit_code'], 0)
             self.assertEqual(result['active_processes_at_return'], 0)
             self.assertGreater(result['ram_paused_seconds'], .5)
@@ -380,6 +380,62 @@ class NativeWindowsPauseTests(unittest.TestCase):
             self.assertTrue(held.is_set())
             self.assertEqual(result['stop_reason'], 'operator_interrupt')
 
+    def check_early_deadline(self, timeout):
+        with self.subTest(timeout=timeout), tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp); (path / 'scratch').mkdir()
+            want = threading.Event(); held = threading.Event()
+            start = time.monotonic()
+            result = self.backend.run_tree([sys.executable, '-c', 'import time; time.sleep(20)'],
+                path, 1, 1, timeout, hold=want.is_set, on_timeout=want.set,
+                on_tick=lambda v: held.set() if v['execution_state'] == 'ram_paused' else None,
+                cancel=lambda: held.is_set() or time.monotonic()-start > 8)
+            self.assertTrue(held.is_set(), result)
+            self.assertEqual(result['pause_failures'], [])
+            self.assertEqual(result['active_processes_at_return'], 0)
+            self.assertLess(result['wall_seconds'], 8)
+            print('Early pause trial:', json.dumps(result))
+
+    def test_explicit_resume_grants_another_bounded_active_interval(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp); (path / 'scratch').mkdir()
+            want = threading.Event(); acknowledgements = []
+            def tick(value):
+                if value['execution_state'] == 'ram_paused':
+                    acknowledgements.append(value['active_timeout_count'])
+                    if len(acknowledgements) == 1:
+                        want.clear()
+            start = time.monotonic()
+            result = self.backend.run_tree([sys.executable, '-c', 'import time; time.sleep(30)'],
+                path, 1, 1, .25, hold=want.is_set, on_timeout=want.set, on_tick=tick,
+                cancel=lambda: len(acknowledgements) >= 2 or time.monotonic()-start > 8)
+            self.assertEqual(acknowledgements[:2], [1, 2])
+            self.assertEqual(result['active_processes_at_return'], 0)
+
+    def test_started_callback_failure_cleans_suspended_owned_process(self):
+        import ctypes as ct
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp); (path / 'scratch').mkdir()
+            kernel, _ = self.backend.api()
+            handles = []
+            def started(value):
+                handle = kernel.OpenProcess(0x100000, False, value['pid'])
+                self.assertTrue(handle)
+                handles.append(handle)
+                raise RuntimeError('Injected callback failure')
+            try:
+                with self.assertRaisesRegex(RuntimeError, 'Injected callback failure'):
+                    self.backend.run_tree([sys.executable, '-c', 'import time; time.sleep(30)'],
+                        path, 1, 1, 10, on_started=started)
+                self.assertEqual(kernel.WaitForSingleObject(handles[0], 1000), 0)
+            finally:
+                for handle in handles:
+                    kernel.CloseHandle(handle)
+
+
+for _index, _timeout in enumerate((.005, .025, .05, .10, .25) * 4):
+    def _trial(self, timeout=_timeout):
+        self.check_early_deadline(timeout)
+    setattr(NativeWindowsPauseTests, f'test_early_deadline_{_index:02d}', _trial)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -1,0 +1,9 @@
+%RWF=job.rwf
+%Int=job.int
+%D2E=job.d2e
+%Save
+%chk=job.chk
+%mem=24GB
+%nprocshared=4
+#p UPBE1PBE/ChkBasis Freq Geom=AllCheck Guess=Read 5D 7F EmpiricalDispersion=GD3BJ SCF=(VeryTight,XQC,MaxCycle=1024) Integral=SuperFineGrid NoSymm
+

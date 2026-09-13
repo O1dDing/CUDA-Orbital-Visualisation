@@ -1,7 +1,7 @@
 name: Validation runtime v2
 on:
   push:
-    branches: [test/fchk-validation-native]
+    branches: [test/fchk-validation-native, feat/fchk-primary-interface]
     paths:
       - validation/runtime_v2/**
       - validation/paused-20260906/**
@@ -26,22 +26,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Policy, mocked Gaussian, real frozen registry, and Windows Job tests
-        run: python -X utf8 validation/runtime_v2/test_runtime.py
-      - name: Fast RAM pause, cold snapshots and restart gates
-        run: python -X utf8 validation/runtime_v2/test_fast_pause.py
+      - name: Bounded owned-process tests, state, migration and frozen science fixtures
+        run: python -B -X utf8 validation/runtime_v2/owned_test_runner.py --output runtime-test-results
       - name: Existing frozen recovery tests
         env:
           TEMP: ${{ runner.temp }}
           TMP: ${{ runner.temp }}
           TMPDIR: ${{ runner.temp }}
         run: python -X utf8 validation/paused-20260906/test_resume_reference.py
+      - name: Retain Windows guard diagnostics
+        if: always() && matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-test-results-${{ matrix.os }}-${{ github.sha }}
+          path: runtime-test-results
       - name: Package exact runtime source and frozen test fixtures
         if: success() && matrix.os == 'ubuntu-latest'
         run: >-
           git archive --format=zip --output=validation-runtime-source.zip HEAD
-          .github/workflows/validation-runtime-v2.yml validation/README.md
-          validation/runtime_v2 validation/paused-20260906/runner-source
+          .github/workflows/validation-runtime-v2.yml
+          validation/runtime_v2 validation/adaptive-scheduling-20260913
+          validation/paused-20260906/runner-source
           validation/paused-20260906/resume_reference.py
           validation/paused-20260906/test_resume_reference.py
           validation/paused-20260906/reference-inputs
