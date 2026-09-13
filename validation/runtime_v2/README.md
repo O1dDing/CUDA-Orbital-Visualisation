@@ -1,14 +1,16 @@
 # REF-001 统一运行时 2.2
 
-两个本地入口共用一套运行代码、配置、控制状态和协调器锁。正式程序 PRE11 与本验证运行时分别发布。
+本地 COV Helper 2.2.1 使用一套运行代码、配置、控制状态和协调器锁。正式程序 PRE11 与本验证运行时分别发布。
 
 ## 本地入口与目录
 
-- Resume/START.cmd 保留原入口；cov_resume_menu.py 兼容旧 --execute、--limit、--workers、--case 参数。
-- FastPause-2.1/validation/runtime_v2/START.cmd 和 resume.py 转到同一版本。
+- Resume 是唯一部署目录；START.cmd 打开 COV-Helper.pyw 的桌面窗口。
+- 每次打开只读取状态，手动计算控制默认关闭；刷新、部署检查及关闭窗口均不启动或恢复计算。
+- 原独立部署的冻结计算材料迁入 Resume/recovery/frozen-reference-20260910，逐文件核验后旧目录移入回收站。
 - Resume/runtime/active.json 指定当前不可变代码包；runtime/config.json 是共享配置。
 - 新状态使用独立目录；实际目录由配置 runtime_directory 指定。旧 work/runtime-v2-fastpause、work/jobs/REF-001、原始归档、OLD-018-SALVAGE 保持原位。
-- 被替换的入口和代码保存在 runtime/backups，每份替换回执记录原件、备份及新文件的 SHA-256。
+- 新版部署和清理回执保存在 runtime/deployments；记录迁移材料、替换文件及回收站位置。
+- 桌面操作、配置和目录说明见 [Helper 使用说明](HELPER.md)。下表仍列出源码命令行控制接口。
 
 ## 操作
 
@@ -42,10 +44,10 @@ python -B -X utf8 resume.py --config config.json check
 python -B -X utf8 resume.py --config config.json import-runtime
 python -B -X utf8 resume.py --config config.json native-acceptance --capability ram_pause
 python -B -X utf8 install_runtime.py prepare --home <Resume> --config <配置>
-python -B -X utf8 install_runtime.py activate --home <Resume> --fast <FastPause-2.1> --config <配置>
-python -B -X utf8 install_runtime.py rollback --home <Resume> --config <配置> --receipt <替换回执>
+python -B -X utf8 helper_deployment.py plan --home <Resume> --fast <待退役目录> --plan <计划文件>
+python -B -X utf8 helper_deployment.py apply --home <Resume> --fast <待退役目录> --plan <计划文件> --receipt <部署回执>
 ```
 
-激活要求新运行时已导入数据、RPBE1PBE 和 UPBE1PBE 的 RAM 验收均通过，且当前没有 Gaussian/协调器。回滚同样要求闲置；若入口在激活后被修改则拒绝覆盖。所有计算记录和快照保留。
+Helper 部署要求运行时身份与已验收身份一致、RPBE1PBE 和 UPBE1PBE 的 RAM 验收均有效，且没有 Gaussian、协调器或已打开的 Helper。清理计划先固定文件身份，迁移并核验冻结材料，再退役旧目录。恢复旧文件前同样应关闭 Helper 并确认计算闲置；不要覆盖后续修改。所有计算记录和快照保留。
 
 资源与科学协议保持原值：物理核总预算最多 14，单任务输入 24GB、Job 树 32GiB，Opt/Freq/Stable 分开，既有基组、模型、电子态、VeryTight 和 SuperFineGrid 不变。candidate_collected 仍不等于科学验收通过。细节见 [暂停和恢复说明](FAST_PAUSE.md)、[日常操作](WORK_PROMPT.md) 和 [修复证据](../runtime-integration-20260913/README.md)。

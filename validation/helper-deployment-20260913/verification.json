@@ -1,0 +1,43 @@
+{
+  "helper_version": "2.2.1",
+  "runtime_identity": "84fe2a76288c49870928b3809af258a0535cf42ad693939b910e1deff5d90235",
+  "sole_deployment": "F:\\CalChem\\COV\\Resume",
+  "retired_directory_absent": true,
+  "protected_files_verified": 85384,
+  "protected_bytes": 55316691518,
+  "content_hashes_verified": 57287,
+  "migrated_files": 832,
+  "migration_destination": "F:\\CalChem\\COV\\Resume\\recovery\\frozen-reference-20260910",
+  "retired_targets": 11,
+  "retired_files": 2665,
+  "bundle_files_verified": 895,
+  "runtime_mode": "pause",
+  "coordinator_running": false,
+  "gaussian_processes": [],
+  "calculation_started": false,
+  "entry_check": {
+    "helper_version": "2.2.1",
+    "manual_controls_enabled": false,
+    "verified_inputs": 273,
+    "calculation_started": false,
+    "control": "pause",
+    "work_lease_held": false,
+    "counts": {
+      "candidate_collected": 103,
+      "needs_review": 2,
+      "partial": 1,
+      "not_started": 167
+    }
+  },
+  "wall_seconds": 11.389999999999418,
+  "local_regression": {
+    "exit_code": 0,
+    "watchdog_timeout": false,
+    "wall_seconds": 31.60899999999674,
+    "tests_started": 120,
+    "remaining_owned_processes": 0,
+    "self_test": false,
+    "passed": true
+  },
+  "focused_tests": 21
+}

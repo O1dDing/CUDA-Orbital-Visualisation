@@ -99,7 +99,7 @@ def main():
     parser.add_argument('--deadline', type=float, default=20)
     parser.add_argument('tests', nargs='*', default=[])
     args = parser.parse_args()
-    names = args.tests or ['test_runtime', 'test_fast_pause', 'test_process_control', 'test_migration', 'test_entry']
+    names = args.tests or ['test_runtime', 'test_fast_pause', 'test_process_control', 'test_migration', 'test_entry', 'test_helper']
     if args.worker:
         return worker(args.output, names, args.self_test)
     if os.name != 'nt':

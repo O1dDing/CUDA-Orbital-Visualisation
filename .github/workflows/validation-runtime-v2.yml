@@ -45,7 +45,8 @@ jobs:
         run: >-
           git archive --format=zip --output=validation-runtime-source.zip HEAD
           .github/workflows/validation-runtime-v2.yml validation/README.md
-          validation/runtime_v2 validation/runtime-integration-20260913 validation/paused-20260906/runner-source
+          validation/runtime_v2 validation/runtime-integration-20260913 validation/helper-deployment-20260913
+          validation/paused-20260906/runner-source
           validation/paused-20260906/resume_reference.py
           validation/paused-20260906/test_resume_reference.py
           validation/paused-20260906/reference-inputs

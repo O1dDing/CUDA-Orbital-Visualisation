@@ -1,0 +1,26 @@
+test_calculation_directories_cannot_be_cleanup_targets (test_helper.DeploymentBoundaryTests.test_calculation_directories_cannot_be_cleanup_targets) ... ok
+test_migration_never_overwrites_different_existing_material (test_helper.DeploymentBoundaryTests.test_migration_never_overwrites_different_existing_material) ... ok
+test_migration_preserves_source_and_destination_bytes (test_helper.DeploymentBoundaryTests.test_migration_preserves_source_and_destination_bytes) ... ok
+test_migration_refuses_source_mutation_or_changed_destination (test_helper.DeploymentBoundaryTests.test_migration_refuses_source_mutation_or_changed_destination) ... ok
+test_only_named_retired_root_can_be_removed (test_helper.DeploymentBoundaryTests.test_only_named_retired_root_can_be_removed) ... ok
+test_unclassified_old_result_blocks_cleanup_plan (test_helper.DeploymentBoundaryTests.test_unclassified_old_result_blocks_cleanup_plan) ... ok
+test_all_mutating_actions_require_in_memory_enable (test_helper.HelperTests.test_all_mutating_actions_require_in_memory_enable) ... ok
+test_bundle_cannot_escape_deployment (test_helper.HelperTests.test_bundle_cannot_escape_deployment) ... ok
+test_check_requires_explicit_non_computing_receipt (test_helper.HelperTests.test_check_requires_explicit_non_computing_receipt) ... ok
+test_construction_never_starts_or_controls_work (test_helper.HelperTests.test_construction_never_starts_or_controls_work) ... ok
+test_control_with_no_coordinator_writes_nothing (test_helper.HelperTests.test_control_with_no_coordinator_writes_nothing) ... ok
+test_existing_coordinator_prevents_second_start (test_helper.HelperTests.test_existing_coordinator_prevents_second_start) ... ok
+test_explicit_start_passes_selected_cases_without_shell (test_helper.HelperTests.test_explicit_start_passes_selected_cases_without_shell) ... ok
+test_hidden_window_startup_and_close_are_read_only (test_helper.HelperTests.test_hidden_window_startup_and_close_are_read_only) ... ok
+test_invalid_selection_cannot_dispatch (test_helper.HelperTests.test_invalid_selection_cannot_dispatch) ... ok
+test_new_window_does_not_inherit_manual_enable (test_helper.HelperTests.test_new_window_does_not_inherit_manual_enable) ... ok
+test_startup_status_uses_only_status_and_pinned_config (test_helper.HelperTests.test_startup_status_uses_only_status_and_pinned_config) ... ok
+test_status_retains_progress_after_json_document (test_helper.HelperTests.test_status_retains_progress_after_json_document) ... ok
+test_activation_and_rollback_preserve_original_entries_and_results (test_entry.EntryTests.test_activation_and_rollback_preserve_original_entries_and_results) ... ok
+test_legacy_flags_preserve_selection_limit_and_worker_count (test_entry.EntryTests.test_legacy_flags_preserve_selection_limit_and_worker_count) ... ok
+test_modern_and_legacy_stubs_parse_with_space_and_unicode_paths (test_entry.EntryTests.test_modern_and_legacy_stubs_parse_with_space_and_unicode_paths) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.548s
+
+OK

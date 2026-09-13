@@ -1,0 +1,98 @@
+{
+  "retired_directory_absent": true,
+  "protected_roots": [
+    "F:\\CalChem\\COV\\Resume\\assets",
+    "F:\\CalChem\\COV\\Resume\\data",
+    "F:\\CalChem\\COV\\Resume\\work",
+    "F:\\CalChem\\COV\\Resume\\OLD-018-SALVAGE",
+    "F:\\CalChem\\COV\\Resume\\tools",
+    "F:\\CalChem\\COV\\Resume\\recovery"
+  ],
+  "migration": {
+    "source": "F:\\CalChem\\COV\\FastPause-2.1\\validation\\paused-20260906",
+    "destination": "F:\\CalChem\\COV\\Resume\\recovery\\frozen-reference-20260910",
+    "files": 832,
+    "bytes": 4885042,
+    "all_content_hashes_verified": true
+  },
+  "retired": [
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\COV-REF001-Resume-Helper.zip",
+      "reason": "Replaced by the shared desktop Helper and configuration",
+      "files": 1,
+      "bytes": 14424,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\cov_resume_menu.py",
+      "reason": "Replaced by the shared desktop Helper and configuration",
+      "files": 1,
+      "bytes": 582,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\START.cmd",
+      "reason": "Replaced by the shared desktop Helper and configuration",
+      "files": 1,
+      "bytes": 673,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\README-先读我.md",
+      "reason": "Replaced by the shared desktop Helper and configuration",
+      "files": 1,
+      "bytes": 282,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\local-settings.json",
+      "reason": "Replaced by the shared desktop Helper and configuration",
+      "files": 1,
+      "bytes": 120,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\TEST-STATUS.txt",
+      "reason": "Replaced by the shared desktop Helper and configuration",
+      "files": 1,
+      "bytes": 253,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\helper-setup-verified.json",
+      "reason": "Replaced by the shared desktop Helper and configuration",
+      "files": 1,
+      "bytes": 107,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\runtime\\backups",
+      "reason": "Superseded program backups; originals remain recoverable in Recycle Bin",
+      "files": 15,
+      "bytes": 202517,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\FastPause-2.1",
+      "reason": "Retired deployment; frozen calculation material is migrated and verified before retirement",
+      "files": 856,
+      "bytes": 5047146,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\runtime\\releases\\000fadd98c53f7ae8f23c1dcdee905a0ae185ea8c53d8450a722d0e60a29bc24",
+      "reason": "Superseded or inactive source bundle; frozen dependencies verified in the replacement",
+      "files": 896,
+      "bytes": 27024053,
+      "recycle_content_verified": true
+    },
+    {
+      "path": "F:\\CalChem\\COV\\Resume\\runtime\\releases\\5638d8a541ee6213dc897af7adb678221e5f246bd74e64af238b71191d4ed6b9",
+      "reason": "Superseded or inactive source bundle; frozen dependencies verified in the replacement",
+      "files": 891,
+      "bytes": 26976636,
+      "recycle_content_verified": true
+    }
+  ],
+  "local_recovery_receipt": "Resume/runtime/deployments/helper-2.2.1-20260913.json"
+}
