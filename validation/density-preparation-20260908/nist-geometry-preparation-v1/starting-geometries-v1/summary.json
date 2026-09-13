@@ -1,0 +1,166 @@
+{
+  "created_epoch": 1788847493.9872973,
+  "sources_examined": 5,
+  "starting_geometries_prepared": 3,
+  "no_cartesian_payload": 2,
+  "records": [
+    {
+      "candidate_id": "PREP-002",
+      "source_url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+      "raw_source_sha256": "991075aea39fae6a09b7c2d81b13595756ef37f04a213c68238aeb66d963534c",
+      "literal_table_sha256": "bb6dc8f21202f681dc9e894bab700264e0e6861fd5a974f0999540b91b81d9a7",
+      "formal_case": false,
+      "accepted_quality_reference": false,
+      "gaussian_started": false,
+      "cov_executed": false,
+      "status": "literal-starting-geometry-prepared",
+      "charge": 0,
+      "interpretation": {
+        "name": "germane",
+        "multiplicity": 1,
+        "state": "1A1",
+        "point_group": "Td",
+        "coordinate_method": "HSEh1PBE/6-311G**",
+        "source_type": "NIST archived computed geometry",
+        "state_table_index": 1,
+        "expected_state_row": [
+          "1",
+          "1",
+          "yes",
+          "Td",
+          "1A1"
+        ],
+        "limitations": [
+          "Coordinates have three decimal places in angstrom.",
+          "The more precise printed bond length and rounded Cartesians need not coincide exactly."
+        ]
+      },
+      "source_table_index": 5,
+      "atom_count": 5,
+      "element_counts": {
+        "Ge": 1,
+        "H": 4
+      },
+      "units": "angstrom",
+      "xyz_file": "PREP-002\\starting.xyz",
+      "xyz_sha256": "bee5a447254fdf5cd76ea7155ce657de84600c3d35521c794d3406f640f16670",
+      "transformations": "None; source element order and literal coordinate tokens retained.",
+      "geometry_quality": "Starting coordinates only; future optimization, frequency, stability, environment and identity checks remain required."
+    },
+    {
+      "candidate_id": "PREP-007",
+      "source_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+      "raw_source_sha256": "5ea277bf95f85ae71f12ce1e0fdc07a8eeb9f84a02ee0126e93f2d7e798763cc",
+      "literal_table_sha256": "e37ed8df9a2495c233a2b2029145ab094a1a3d3bd94e9aeb2e21224ec7c389b7",
+      "formal_case": false,
+      "accepted_quality_reference": false,
+      "gaussian_started": false,
+      "cov_executed": false,
+      "status": "no-cartesian-coordinate-payload-in-this-source",
+      "notes": "experimental-data index; initial state row D3h is nonminimum; explicit C2v minimum is another conformer; no Cartesian values observed in web extraction"
+    },
+    {
+      "candidate_id": "PREP-008",
+      "source_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+      "raw_source_sha256": "6d88c7ce5371f758a8d317923c742f9fee56e40bd11a0336ccd0e512002b5ecc",
+      "literal_table_sha256": "821cd28e1818ad340ac465c56339bcece6ace3723d17ac9407bda0f34370aba2",
+      "formal_case": false,
+      "accepted_quality_reference": false,
+      "gaussian_started": false,
+      "cov_executed": false,
+      "status": "literal-starting-geometry-prepared",
+      "charge": 0,
+      "interpretation": {
+        "name": "bromine pentafluoride",
+        "multiplicity": 1,
+        "state": "1A1",
+        "point_group": "C4v",
+        "coordinate_method": null,
+        "source_type": "NIST curated experimental-geometry compilation",
+        "state_table_index": 3,
+        "expected_state_row": [
+          "1A1",
+          "C4V"
+        ],
+        "geometry_reference": "Gurvich, Veyts, Alcock, Thermodynamic Properties of Individual Substances, fourth edition, Hemisphere, New York, 1989",
+        "limitations": [
+          "The original experimental coordinate derivation has not been obtained.",
+          "The Cartesian table has four decimal places; this is not the experimental uncertainty.",
+          "The 1965 vibrational-spectrum paper listed on the same page is not automatically the geometry source."
+        ]
+      },
+      "source_table_index": 9,
+      "atom_count": 6,
+      "element_counts": {
+        "Br": 1,
+        "F": 5
+      },
+      "units": "angstrom",
+      "xyz_file": "PREP-008\\starting.xyz",
+      "xyz_sha256": "83bcd92743020c960df9bc0bb35a1e5fcd4f81bd3d9c2f7366a5bf1de9e513b6",
+      "transformations": "None; source element order and literal coordinate tokens retained.",
+      "geometry_quality": "Starting coordinates only; future optimization, frequency, stability, environment and identity checks remain required."
+    },
+    {
+      "candidate_id": "PREP-009",
+      "source_url": "https://cccbdb.nist.gov/alldata2x.asp?casno=16921963&charge=0",
+      "raw_source_sha256": "bf154f493fd2e68bc6374c50e2c1986fa84a50a0d2626467fd27a6984d351aec",
+      "literal_table_sha256": "e535774a45c45d0d28fed74b21305f6cf9deb6f4a498df139006066183e6bbdc",
+      "formal_case": false,
+      "accepted_quality_reference": false,
+      "gaussian_started": false,
+      "cov_executed": false,
+      "status": "no-cartesian-coordinate-payload-in-this-source",
+      "notes": "species index; follow actual geometry links after source retrieval"
+    },
+    {
+      "candidate_id": "PREP-042",
+      "source_url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+      "raw_source_sha256": "53a69483ad2957bf1494da9e0a06311dc6259bbba5ab0eabb397404507fe57e5",
+      "literal_table_sha256": "cb226f8dffdc2471d1e40e5f9325ce4dfbe3fd121b686edade8b751e7748a994",
+      "formal_case": false,
+      "accepted_quality_reference": false,
+      "gaussian_started": false,
+      "cov_executed": false,
+      "status": "literal-starting-geometry-prepared",
+      "charge": 0,
+      "interpretation": {
+        "name": "phenoxy radical",
+        "multiplicity": 2,
+        "state": "2B1",
+        "point_group": "C2v",
+        "coordinate_method": "B3LYP/6-31G*",
+        "source_type": "NIST archived computed geometry",
+        "energy_page_method": "G3B3",
+        "state_table_index": 1,
+        "expected_state_row": [
+          "1",
+          "1",
+          "yes",
+          "C2V",
+          "2B1"
+        ],
+        "limitations": [
+          "Coordinates have three decimal places in angstrom.",
+          "The G3B3 energy-page label does not identify the geometry optimization method."
+        ]
+      },
+      "source_table_index": 5,
+      "atom_count": 12,
+      "element_counts": {
+        "C": 6,
+        "O": 1,
+        "H": 5
+      },
+      "units": "angstrom",
+      "xyz_file": "PREP-042\\starting.xyz",
+      "xyz_sha256": "bf14f5b9b2892b8c31493757212bc5a34899f5965a606c40a58773a8b1159f4c",
+      "transformations": "None; source element order and literal coordinate tokens retained.",
+      "geometry_quality": "Starting coordinates only; future optimization, frequency, stability, environment and identity checks remain required."
+    }
+  ],
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "gaussian_started": false,
+  "cov_executed": false
+}

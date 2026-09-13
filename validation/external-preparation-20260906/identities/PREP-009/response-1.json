@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 85645,
+        "MolecularFormula": "F7I",
+        "ConnectivitySMILES": "FI(F)(F)(F)(F)(F)F",
+        "InChIKey": "XRURPHMPXJDCOO-UHFFFAOYSA-N",
+        "IUPACName": "heptafluoro-lambda7-iodane",
+        "Charge": 0
+      }
+    ]
+  }
+}

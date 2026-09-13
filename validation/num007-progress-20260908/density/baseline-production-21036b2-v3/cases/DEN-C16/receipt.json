@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C16",
+  "input_sha256": "63919046594e976d86f802120f57e046717bf45c39b9dba0db6298e0dadfd081",
+  "exe_sha256": "0794aa923582c07c7ee7ac1d2a3828086e5ba374aeab8f0bf4aaa03839cf88d4",
+  "started_epoch": 1788853251.1845899,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5,
+  "log_sha256": "60136f13a2333f3bc20b4e51cfc5163a21b661116643192f0b0a8c0eaf4d8823",
+  "observed_sha256": "d9594f4748ca4a01f99277b0c839b49deea21ed0ff9bccf8be25dcbd1dc7a16f",
+  "finished_epoch": 1788853251.702203
+}

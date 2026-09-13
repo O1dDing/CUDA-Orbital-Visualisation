@@ -1,0 +1,10 @@
+{
+  "terminal_candidates": 47,
+  "expected_candidates": 67,
+  "counts": {
+    "computed-starting-conformer-retrieved": 35,
+    "conformer-unavailable-or-rejected-retained": 12
+  },
+  "formal_external_cases": 0,
+  "gaussian_started": false
+}

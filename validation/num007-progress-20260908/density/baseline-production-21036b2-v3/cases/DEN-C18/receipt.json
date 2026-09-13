@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C18",
+  "input_sha256": "35929bdf341ba72ec0c24af6007fb2081f9172fee11ae2f9c44d70f69a4ba0dd",
+  "exe_sha256": "0794aa923582c07c7ee7ac1d2a3828086e5ba374aeab8f0bf4aaa03839cf88d4",
+  "started_epoch": 1788853252.2243183,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5160000000032596,
+  "log_sha256": "b85dd91433cc4cfc10baf013c6fb6d1d552bcb782f49fbdfd35e89dd66d9c108",
+  "observed_sha256": "198d368d49d77fa6a3d4dd3379acf52f8a7f5adcafe881cea70ad17775b1c8bb",
+  "finished_epoch": 1788853252.7440307
+}

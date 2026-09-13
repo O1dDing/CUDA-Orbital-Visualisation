@@ -1,0 +1,8 @@
+{
+  "recorded_epoch": 1788683281.2070794,
+  "marker": "## 2026-09-06 拓扑通解实施前约束补充",
+  "implementation_sha256": "e2ba3a7dc1eef02c0a00f023f4e6fdccae8ac81f6bb678ad9f9ac9db30138adc",
+  "source_commit": "a94135734d29edb0e4b3d19e5cc1e7572755d7c2",
+  "scientific_issues_closed": [],
+  "formal_case_passes": 0
+}

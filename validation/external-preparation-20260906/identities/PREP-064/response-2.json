@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 142049,
+        "MolecularFormula": "C6H18W-6",
+        "ConnectivitySMILES": "[CH3-].[CH3-].[CH3-].[CH3-].[CH3-].[CH3-].[W]",
+        "InChIKey": "SNXBWRKAOJSNLL-UHFFFAOYSA-N",
+        "IUPACName": "carbanide;tungsten",
+        "Charge": -6
+      }
+    ]
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "requested_epoch": 1788690073.258,
+  "authorization": "User delegated sidebar instruction 2026-09-06: pause REF-001 now, preserve actual files and upload resumable state, advance independent fixes",
+  "progress": {
+    "schema_version": 1,
+    "runner_identity": "3cb21e1d93233d07685f64feb1c3da31f40ad1befa3b211fc394b4de545189ca",
+    "reference_set_identity": "4e02d026b6a7ea819aa037a12811c29360fa58334e59db6952c925af90f10139",
+    "updated_epoch": 1788684409.345644,
+    "coordinator_pid": 7320,
+    "stage": "primary_references_running",
+    "counts": {
+      "candidate_collected": 13,
+      "not_terminal": 260
+    },
+    "collection_barrier_reached": false,
+    "scientifically_passed": 0,
+    "all_required_evidence_complete": false,
+    "cases": {
+      "OLD-001": "candidate_collected",
+      "OLD-002": "candidate_collected",
+      "OLD-003": "candidate_collected",
+      "OLD-004": "candidate_collected",
+      "OLD-005": "candidate_collected",
+      "OLD-006": "candidate_collected",
+      "OLD-007": "candidate_collected",
+      "OLD-008": "candidate_collected",
+      "OLD-009": "candidate_collected",
+      "OLD-010": "candidate_collected",
+      "OLD-011": "candidate_collected",
+      "OLD-012": "candidate_collected",
+      "OLD-014": "candidate_collected"
+    },
+    "remaining_requirements": [
+      "post-batch input and physical adjudication",
+      "applicable competing electronic states and environments",
+      "COV general fixes and complete native/independent validation"
+    ]
+  },
+  "running_stages": [
+    {
+      "path": "F:/Dev/cov-cycle-20260906/jobs/REF-001/OLD-013/relax-after-stability-01/stage.json",
+      "state": {
+        "name": "relax-after-stability-01",
+        "status": "running",
+        "runner_identity": "3cb21e1d93233d07685f64feb1c3da31f40ad1befa3b211fc394b4de545189ca",
+        "reference_identity": "9f2e8a9190594a5f2a610afe572cbb50baf7d735a5b035f6032c8bf820c228b7",
+        "attempts": [
+          {
+            "number": 1,
+            "status": "running",
+            "directory": "F:\\Dev\\cov-cycle-20260906\\jobs\\REF-001\\OLD-013\\relax-after-stability-01\\attempt-01",
+            "input_sha256": "432495a1713ca82e6cbefa8777613283913be9eb053b11177b58fccb2ac01340",
+            "predeclared_scf_retry": false,
+            "starting_checkpoint": "F:\\Dev\\cov-cycle-20260906\\jobs\\REF-001\\OLD-013\\stability-00\\attempt-01\\job.chk",
+            "starting_checkpoint_sha256": "d76f8b774e05e18eb0241d70a0e6623cbe3d2c911d446b58f091f1b4e39684c2",
+            "pid": 11100,
+            "started_epoch": 1788684289.1837358,
+            "cpu_mask": null,
+            "cpu_rate_hard_cap": 1250,
+            "memory_limit_gib": 32
+          }
+        ]
+      }
+    },
+    {
+      "path": "F:/Dev/cov-cycle-20260906/jobs/REF-001/OLD-015/initial/stage.json",
+      "state": {
+        "name": "initial",
+        "status": "running",
+        "runner_identity": "3cb21e1d93233d07685f64feb1c3da31f40ad1befa3b211fc394b4de545189ca",
+        "reference_identity": "78c2966324da01384815ef288494b5c5e2733872321960244125b33f02aeda66",
+        "attempts": [
+          {
+            "number": 1,
+            "status": "running",
+            "directory": "F:\\Dev\\cov-cycle-20260906\\jobs\\REF-001\\OLD-015\\initial\\attempt-01",
+            "input_sha256": "b6b9815bebdeff5a4fe832a7c48465de69a2bae83a25ea503ac9fd468c3e3af7",
+            "predeclared_scf_retry": false,
+            "starting_checkpoint": null,
+            "starting_checkpoint_sha256": null,
+            "pid": 52068,
+            "started_epoch": 1788684409.3536415,
+            "cpu_mask": null,
+            "cpu_rate_hard_cap": 1250,
+            "memory_limit_gib": 32
+          }
+        ]
+      }
+    }
+  ],
+  "scientific_passes": 0
+}

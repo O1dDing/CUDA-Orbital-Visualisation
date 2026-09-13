@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/model.hpp"
+#include "cov/orbital_symmetry_scope.hpp"
 
 #include <cstddef>
 #include <optional>
@@ -65,6 +66,13 @@ enum class OrbitalRegion {
     const MolecularOrbital& orbital,
     const OrbitalFilterSettings& settings) noexcept;
 
+// True only when both the S-metric chemical reference and the orbital energy
+// support a deep-core assignment.  Occupation by itself, or a weak projection
+// onto the selected minimal valence manifold, is never enough to hide an MO.
+[[nodiscard]] bool confidently_deep_core_orbital(
+    const MolecularOrbital& orbital,
+    const OrbitalFilterSettings& settings) noexcept;
+
 [[nodiscard]] bool orbital_visible(
     const std::vector<MolecularOrbital>& orbitals,
     std::size_t index,
@@ -83,6 +91,11 @@ struct DegeneracySettings {
     // not automatically collapsed into one set merely because the printed
     // energies happen to coincide.
     bool require_compatible_symmetry = true;
+    // Zero leaves the generic energy-label helper unrestricted.  Callers that
+    // know the molecular point group set this to the largest allowed irrep
+    // dimension, so two nearby E/Pi copies cannot be merged into an
+    // unphysical fourfold set merely because producer labels are absent.
+    std::size_t maximum_group_size = 0;
 };
 
 struct OrbitalLabel {
@@ -97,6 +110,13 @@ struct OrbitalLabel {
 [[nodiscard]] std::vector<OrbitalLabel> build_orbital_labels(
     const std::vector<MolecularOrbital>& orbitals,
     const DegeneracySettings& settings = {});
+
+// Apply the exact representation-dimension ceiling of the detected molecular
+// point group while preserving an explicit user ceiling.  Unknown groups keep
+// the caller's setting unchanged.
+[[nodiscard]] DegeneracySettings point_group_limited_degeneracy(
+    const Wavefunction& wavefunction,
+    DegeneracySettings settings = {});
 
 [[nodiscard]] std::string degeneracy_suffix(std::size_t member_index);
 
@@ -148,6 +168,10 @@ struct OrbitalMetadata {
     OrbitalRegion region = OrbitalRegion::Virtual;
     bool visible = true;
     bool selected = false;
+    // Full-orbital label above remains tied to orbital_index. Display grouping
+    // and local explanations below have their own explicit member/scope record.
+    OrbitalSymmetryExplanation symmetry_view;
+    std::vector<OrbitalSymmetryExplanation> molecular_member_symmetries;
 };
 
 [[nodiscard]] std::vector<OrbitalMetadata> build_orbital_metadata(

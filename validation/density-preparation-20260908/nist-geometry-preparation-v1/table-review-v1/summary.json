@@ -1,0 +1,125 @@
+{
+  "all_5_sources_terminal_and_examined": true,
+  "records": [
+    {
+      "candidate_id": "PREP-002",
+      "status": "literal-tables-extracted-awaiting-state-and-source-review",
+      "source_url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+      "source_scope": "computed HSEh1PBE/6-311G** geometry; singlet minimum in source; starting input only",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "coordinate_table_count": 1,
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "All results from a given calculation for GeH4 (Germane)"
+        },
+        {
+          "tag": "h2",
+          "text": "using model chemistry: HSEh1PBE/6-311G**"
+        },
+        {
+          "tag": "h3",
+          "text": "States and conformations"
+        }
+      ],
+      "coordinate_element_counts": [
+        {
+          "Ge": 1,
+          "H": 4
+        }
+      ],
+      "normalized_sha256": "bb6dc8f21202f681dc9e894bab700264e0e6861fd5a974f0999540b91b81d9a7"
+    },
+    {
+      "candidate_id": "PREP-007",
+      "status": "literal-tables-extracted-awaiting-state-and-source-review",
+      "source_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+      "source_scope": "experimental-data index; initial state row D3h is nonminimum; explicit C2v minimum is another conformer; no Cartesian values observed in web extraction",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "coordinate_table_count": 0,
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Experimental data for ClF3 (Chlorine trifluoride)"
+        }
+      ],
+      "coordinate_element_counts": [],
+      "normalized_sha256": "e37ed8df9a2495c233a2b2029145ab094a1a3d3bd94e9aeb2e21224ec7c389b7"
+    },
+    {
+      "candidate_id": "PREP-008",
+      "status": "literal-tables-extracted-awaiting-state-and-source-review",
+      "source_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+      "source_scope": "experimental-data index; coordinate payload and original references to be reviewed",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "coordinate_table_count": 1,
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Experimental data for BrF5 (bromine pentafluoride)"
+        }
+      ],
+      "coordinate_element_counts": [
+        {
+          "Br": 1,
+          "F": 5
+        }
+      ],
+      "normalized_sha256": "821cd28e1818ad340ac465c56339bcece6ace3723d17ac9407bda0f34370aba2"
+    },
+    {
+      "candidate_id": "PREP-009",
+      "status": "literal-tables-extracted-awaiting-state-and-source-review",
+      "source_url": "https://cccbdb.nist.gov/alldata2x.asp?casno=16921963&charge=0",
+      "source_scope": "species index; follow actual geometry links after source retrieval",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "coordinate_table_count": 0,
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "All data (experiment and calculated) in the CCCBDB for one species"
+        }
+      ],
+      "coordinate_element_counts": [],
+      "normalized_sha256": "e535774a45c45d0d28fed74b21305f6cf9deb6f4a498df139006066183e6bbdc"
+    },
+    {
+      "candidate_id": "PREP-042",
+      "status": "literal-tables-extracted-awaiting-state-and-source-review",
+      "source_url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+      "source_scope": "G3B3 result page whose geometry is explicitly B3LYP/6-31G*; doublet minimum; starting input only",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "coordinate_table_count": 1,
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "All results from a given calculation for C6H5O (phenoxy radical)"
+        },
+        {
+          "tag": "h2",
+          "text": "using model chemistry: G3B3"
+        },
+        {
+          "tag": "h3",
+          "text": "States and conformations"
+        }
+      ],
+      "coordinate_element_counts": [
+        {
+          "C": 6,
+          "O": 1,
+          "H": 5
+        }
+      ],
+      "normalized_sha256": "cb226f8dffdc2471d1e40e5f9325ce4dfbe3fd121b686edade8b751e7748a994"
+    }
+  ],
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "gaussian_started": false
+}

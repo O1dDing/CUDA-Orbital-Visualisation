@@ -1,0 +1,13 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 123147,
+        "MolecularFormula": "C7H7",
+        "ConnectivitySMILES": "[CH2]C1=CC=CC=C1",
+        "InChIKey": "SLRMQYXOBQWXCR-UHFFFAOYSA-N",
+        "Charge": 0
+      }
+    ]
+  }
+}

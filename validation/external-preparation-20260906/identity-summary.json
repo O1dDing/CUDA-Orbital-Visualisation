@@ -1,0 +1,2739 @@
+{
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "all_metadata_lookups_terminal": true,
+  "candidate_count": 67,
+  "counts": {
+    "unique-metadata-match": 47,
+    "lookup-failed-retained": 16,
+    "ambiguous-or-mismatched-metadata": 1,
+    "source-coordinate-work-pending": 3
+  },
+  "same_connectivity_key_candidates": [],
+  "formula_disjoint_from_original_count": 64,
+  "formal_external_cases": 0,
+  "gaussian_started": false,
+  "REF-001": "paused-by-user",
+  "limitations": [
+    "Metadata is not validated geometry, electronic state, stability, or COV evidence.",
+    "Formula screening cannot distinguish isomers; identical formula does not establish duplication.",
+    "Disconnected or standardized metal SMILES cannot establish a coordination shell.",
+    "All failed and ambiguous identities remain in this preparation; no member has entered the formal set."
+  ],
+  "records": [
+    {
+      "candidate_id": "PREP-001",
+      "query": "silane",
+      "expected_formula": "SiH4",
+      "expected_charge": 0,
+      "family": "主族氢化物",
+      "purpose": "四面体及 Si 价层",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709613.341578,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 23953,
+          "MolecularFormula": "H4Si",
+          "ConnectivitySMILES": "[SiH4]",
+          "InChIKey": "BLRPTPMANUNPDV-UHFFFAOYSA-N",
+          "IUPACName": "silane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/23953"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709613.341578,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-001\\response-1.json",
+          "sha256": "b30ddb0b525f9fcf783b7a1cf97951edb96e325563abf9425dd940f6d692b37d",
+          "bytes": 271,
+          "elapsed_seconds": 2.1135449409484863
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/silane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-002",
+      "query": "germane",
+      "expected_formula": "GeH4",
+      "expected_charge": 0,
+      "family": "主族氢化物",
+      "purpose": "重主族及 ECP 对照",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709615.4556437,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 23984,
+          "MolecularFormula": "GeH4",
+          "ConnectivitySMILES": "[GeH4]",
+          "InChIKey": "QUZPNFFHZPRKJD-UHFFFAOYSA-N",
+          "IUPACName": "germane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/23984"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709615.4556437,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-002\\response-1.json",
+          "sha256": "bd125542dfebcc09f1796b012f750079aa0827e85083bc7d476a9b24de93fcee",
+          "bytes": 272,
+          "elapsed_seconds": 2.4184834957122803
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/germane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-003",
+      "query": "phosphine",
+      "expected_formula": "PH3",
+      "expected_charge": 0,
+      "family": "磷配体",
+      "purpose": "P 孤对与后续配位对照",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709617.8747747,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24404,
+          "MolecularFormula": "H3P",
+          "ConnectivitySMILES": "P",
+          "InChIKey": "XYFCBTPGUUZFHI-UHFFFAOYSA-N",
+          "IUPACName": "phosphane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24404"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709617.8747747,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-003\\response-1.json",
+          "sha256": "ccb7dd578c1efd6ba716589adbab00a228ad7948374c2c82e33941d6f3d7f06a",
+          "bytes": 268,
+          "elapsed_seconds": 1.527369499206543
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/phosphine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-004",
+      "query": "phosphorus trifluoride",
+      "expected_formula": "PF3",
+      "expected_charge": 0,
+      "family": "磷配体",
+      "purpose": "P 配体先验与轨道证据",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709619.4026792,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 62665,
+          "MolecularFormula": "F3P",
+          "ConnectivitySMILES": "FP(F)F",
+          "InChIKey": "WKFBZNUBXWCCHG-UHFFFAOYSA-N",
+          "IUPACName": "trifluorophosphane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/62665"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709619.4036834,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-004\\response-1.json",
+          "sha256": "a1d16264eab460d37ec0453d8ecd672b2e91d31c514980ac8d848c2bb4d3ab38",
+          "bytes": 282,
+          "elapsed_seconds": 3.6272945404052734
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/phosphorus%20trifluoride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-005",
+      "query": "phosphorus trichloride",
+      "expected_formula": "PCl3",
+      "expected_charge": 0,
+      "family": "磷配体",
+      "purpose": "不同卤素与 P 价层",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709623.0315242,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24387,
+          "MolecularFormula": "Cl3P",
+          "ConnectivitySMILES": "P(Cl)(Cl)Cl",
+          "InChIKey": "FAIAAWCVCHQXDN-UHFFFAOYSA-N",
+          "IUPACName": "trichlorophosphane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24387"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709623.0315242,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-005\\response-1.json",
+          "sha256": "81d59139933db5ec401701b5f8f6da993f016e0891010c65fb3c6218e2ba3d37",
+          "bytes": 288,
+          "elapsed_seconds": 2.8794727325439453
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/phosphorus%20trichloride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-006",
+      "query": "sulfur tetrafluoride",
+      "expected_formula": "SF4",
+      "expected_charge": 0,
+      "family": "超价主族",
+      "purpose": "畸变配位及多中心",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709625.9120014,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24555,
+          "MolecularFormula": "F4S",
+          "ConnectivitySMILES": "FS(F)(F)F",
+          "InChIKey": "QHMQWEPBXSHHLH-UHFFFAOYSA-N",
+          "IUPACName": "tetrafluoro-lambda4-sulfane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24555"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709625.9120014,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-006\\response-1.json",
+          "sha256": "1f2fc337b6eca10e258a24bc5275e7e32726ee3738855fc97371d8348c91931b",
+          "bytes": 294,
+          "elapsed_seconds": 1.7772901058197021
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/sulfur%20tetrafluoride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-007",
+      "query": "chlorine trifluoride",
+      "expected_formula": "ClF3",
+      "expected_charge": 0,
+      "family": "超价主族",
+      "purpose": "T 形与孤对",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709627.690837,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24637,
+          "MolecularFormula": "ClF3",
+          "ConnectivitySMILES": "FCl(F)F",
+          "InChIKey": "JOHWNGGYGAVMGU-UHFFFAOYSA-N",
+          "IUPACName": "trifluoro-lambda3-chlorane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24637"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709627.690837,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-007\\response-1.json",
+          "sha256": "42b78fb541420ec412e91dc62f08dbfcc27c1502adea97f3cc829efa54821ffa",
+          "bytes": 292,
+          "elapsed_seconds": 1.3178932666778564
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/chlorine%20trifluoride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-008",
+      "query": "bromine pentafluoride",
+      "expected_formula": "BrF5",
+      "expected_charge": 0,
+      "family": "超价主族",
+      "purpose": "方锥与重元素",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709629.0097334,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24606,
+          "MolecularFormula": "BrF5",
+          "ConnectivitySMILES": "FBr(F)(F)(F)F",
+          "InChIKey": "XHVUVQAANZKEKF-UHFFFAOYSA-N",
+          "IUPACName": "pentafluoro-lambda5-bromane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24606"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709629.0097334,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-008\\response-1.json",
+          "sha256": "bd6fec5d7c393257e78d6278ae99a07e1e4f7664d7c53e3b78c5aa265df85274",
+          "bytes": 299,
+          "elapsed_seconds": 2.517991065979004
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/bromine%20pentafluoride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-009",
+      "query": "iodine heptafluoride",
+      "expected_formula": "IF7",
+      "expected_charge": 0,
+      "family": "超价主族",
+      "purpose": "七配位与重元素",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709631.5287278,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 85645,
+          "MolecularFormula": "F7I",
+          "ConnectivitySMILES": "FI(F)(F)(F)(F)(F)F",
+          "InChIKey": "XRURPHMPXJDCOO-UHFFFAOYSA-N",
+          "IUPACName": "heptafluoro-lambda7-iodane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/85645"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709631.5287278,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-009\\response-1.json",
+          "sha256": "bc1b56ef2e450092a22e470498ec8836b32e98573f77f9e75731ae49bee77f9f",
+          "bytes": 302,
+          "elapsed_seconds": 2.1090869903564453
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/iodine%20heptafluoride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-010",
+      "query": "oxygen difluoride",
+      "expected_formula": "OF2",
+      "expected_charge": 0,
+      "family": "主族",
+      "purpose": "弯曲分子及键极性",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709633.6383305,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24547,
+          "MolecularFormula": "F2O",
+          "ConnectivitySMILES": "O(F)F",
+          "InChIKey": "UJMWVICAENGCRF-UHFFFAOYSA-N",
+          "IUPACName": "fluoro hypofluorite",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24547"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709633.6383305,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-010\\response-1.json",
+          "sha256": "8ad0c0367f3e28bc28419f4df0e54c856f6858c11d810ed4ab0982be6df142d1",
+          "bytes": 282,
+          "elapsed_seconds": 2.94401216506958
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/oxygen%20difluoride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-011",
+      "query": "sulfur trioxide",
+      "expected_formula": "SO3",
+      "expected_charge": 0,
+      "family": "主族多中心",
+      "purpose": "平面与离域",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709636.5839555,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24682,
+          "MolecularFormula": "O3S",
+          "ConnectivitySMILES": "O=S(=O)=O",
+          "InChIKey": "AKEJUJNQAAGONA-UHFFFAOYSA-N",
+          "IUPACName": "sulfur trioxide",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24682"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709636.5839555,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-011\\response-1.json",
+          "sha256": "1f721bc139009357920114d801f946f07bbd80eb531025169cb4abc94d538827",
+          "bytes": 282,
+          "elapsed_seconds": 4.849890470504761
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/sulfur%20trioxide/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-012",
+      "query": "carbon disulfide",
+      "expected_formula": "CS2",
+      "expected_charge": 0,
+      "family": "线性分子",
+      "purpose": "线性群及多个 π 通道",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709641.4353566,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 6348,
+          "MolecularFormula": "CS2",
+          "ConnectivitySMILES": "C(=S)=S",
+          "InChIKey": "QGJOPFRUJISHPQ-UHFFFAOYSA-N",
+          "IUPACName": "methanedithione",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/6348"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709641.4353566,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-012\\response-1.json",
+          "sha256": "b35b3e37521b4576adaa8cd8b4bc701bf04670cd5b2dbe4a8016d5c2afb65506",
+          "bytes": 279,
+          "elapsed_seconds": 1.8194599151611328
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/carbon%20disulfide/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-013",
+      "query": "carbonyl sulfide",
+      "expected_formula": "COS",
+      "expected_charge": 0,
+      "family": "线性分子",
+      "purpose": "异核线性及局部不等价",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709643.2553387,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 10039,
+          "MolecularFormula": "COS",
+          "ConnectivitySMILES": "C(=O)=S",
+          "InChIKey": "JJWKPURADFRFRB-UHFFFAOYSA-N",
+          "IUPACName": "sulfanylidenemethanone",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/10039"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709643.2553387,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-013\\response-1.json",
+          "sha256": "2208a115a5d7807cb765be9c74969fdfeea81c2ba97434f83ee1dc6deef9f585",
+          "bytes": 287,
+          "elapsed_seconds": 1.4759647846221924
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/carbonyl%20sulfide/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-014",
+      "query": "nitrous oxide",
+      "expected_formula": "N2O",
+      "expected_charge": 0,
+      "family": "线性分子",
+      "purpose": "异核线性与多中心",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709644.7323802,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 948,
+          "MolecularFormula": "N2O",
+          "ConnectivitySMILES": "[N-]=[N+]=O",
+          "InChIKey": "GQPLMRYTRLFLPF-UHFFFAOYSA-N",
+          "IUPACName": "nitrous oxide",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/948"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709644.7323802,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-014\\response-1.json",
+          "sha256": "1a1befc4dff88432265b0207dfb004ac24ebb7d4a7e2f28c19b20daf73c87079",
+          "bytes": 280,
+          "elapsed_seconds": 2.548762083053589
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/nitrous%20oxide/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-015",
+      "query": "hydrazine",
+      "expected_formula": "N2H4",
+      "expected_charge": 0,
+      "family": "主族",
+      "purpose": "非平面与孤对耦合",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709647.2821474,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9321,
+          "MolecularFormula": "H4N2",
+          "ConnectivitySMILES": "NN",
+          "InChIKey": "OAKJQQAXSVQMHS-UHFFFAOYSA-N",
+          "IUPACName": "hydrazine",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9321"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709647.2821474,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-015\\response-1.json",
+          "sha256": "e8389f4d33a24d6ac05f6f3f9faaed1e7345391bbda6232a11d42ad7cddd5e27",
+          "bytes": 269,
+          "elapsed_seconds": 3.695401191711426
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/hydrazine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-016",
+      "query": "nitrosyl chloride",
+      "expected_formula": "ClNO",
+      "expected_charge": 0,
+      "family": "主族",
+      "purpose": "混合键极性",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709650.9785528,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 17601,
+          "MolecularFormula": "ClNO",
+          "ConnectivitySMILES": "N(=O)Cl",
+          "InChIKey": "VPCDQGACGWYTMC-UHFFFAOYSA-N",
+          "IUPACName": "nitrosyl chloride",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/17601"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709650.9785528,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-016\\response-1.json",
+          "sha256": "c7e71f502e1aed092903d3ad757ab3cf92ba613a9868bc895a1ae293364395e1",
+          "bytes": 283,
+          "elapsed_seconds": 2.7121357917785645
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/nitrosyl%20chloride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-017",
+      "query": "thionyl chloride",
+      "expected_formula": "Cl2OS",
+      "expected_charge": 0,
+      "family": "主族",
+      "purpose": "S/O/Cl 价层与局部几何",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709653.6916933,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 24386,
+          "MolecularFormula": "Cl2OS",
+          "ConnectivitySMILES": "O=S(Cl)Cl",
+          "InChIKey": "FYSNRJHAOHDILO-UHFFFAOYSA-N",
+          "IUPACName": "thionyl dichloride",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24386"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709653.6916933,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-017\\response-1.json",
+          "sha256": "4bc61e04a32862cf6ae3afac1f8cc76a15c33bbade46a92f68d69ed1248b4b5d",
+          "bytes": 287,
+          "elapsed_seconds": 4.181159973144531
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/thionyl%20chloride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-018",
+      "query": "borazine",
+      "expected_formula": "B3H6N3",
+      "expected_charge": 0,
+      "family": "无机共轭环",
+      "purpose": "杂原子环及离域",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709657.8738585,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 138768,
+          "MolecularFormula": "B3H6N3",
+          "ConnectivitySMILES": "B1NBNBN1",
+          "InChIKey": "BGECDVWSWDRFSP-UHFFFAOYSA-N",
+          "IUPACName": "1,3,5,2,4,6-triazatriborinane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/138768"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709657.8738585,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-018\\response-1.json",
+          "sha256": "1d44f855a92b5662d0ca0e11b474399a704490e82810813ba8ff8674998eb9e8",
+          "bytes": 299,
+          "elapsed_seconds": 1.3752272129058838
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/borazine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-019",
+      "query": "phosphinine",
+      "expected_formula": "C5H5P",
+      "expected_charge": 0,
+      "family": "杂芳环",
+      "purpose": "环内 P 与多方向轨道",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709659.2500896,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 123046,
+          "MolecularFormula": "C5H5P",
+          "ConnectivitySMILES": "C1=CC=PC=C1",
+          "InChIKey": "UNQNIRQQBJCMQR-UHFFFAOYSA-N",
+          "IUPACName": "phosphinine",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/123046"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709659.2500896,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-019\\response-1.json",
+          "sha256": "174c2dec2b15c430dc6776f636b26e2e5f5e8fe527df971c78a4b9bb8c50a990",
+          "bytes": 283,
+          "elapsed_seconds": 2.3087728023529053
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/phosphinine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-020",
+      "query": "pyrazine",
+      "expected_formula": "C4H4N2",
+      "expected_charge": 0,
+      "family": "杂芳环",
+      "purpose": "多个 N 与全局对称性",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709661.5594635,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9261,
+          "MolecularFormula": "C4H4N2",
+          "ConnectivitySMILES": "C1=CN=CC=N1",
+          "InChIKey": "KYQCOXFCLRTKLS-UHFFFAOYSA-N",
+          "IUPACName": "pyrazine",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9261"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709661.5594635,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-020\\response-1.json",
+          "sha256": "bb4816b6f7b7a560f35934dfd29d6fbd61adb495232b3b56e23a38d1ea6ca58a",
+          "bytes": 279,
+          "elapsed_seconds": 1.4579393863677979
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pyrazine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-021",
+      "query": "1,3,5-triazine",
+      "expected_formula": "C3H3N3",
+      "expected_charge": 0,
+      "family": "杂芳环",
+      "purpose": "三重 N 与简并空间",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709663.0184073,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9262,
+          "MolecularFormula": "C3H3N3",
+          "ConnectivitySMILES": "C1=NC=NC=N1",
+          "InChIKey": "JIHQDMXYYFUGFV-UHFFFAOYSA-N",
+          "IUPACName": "1,3,5-triazine",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9262"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709663.0184073,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-021\\response-1.json",
+          "sha256": "56c835c2e92dd2a9b9c0df65c8558c6172a24052f356d6ccf5e694c530bf2b04",
+          "bytes": 285,
+          "elapsed_seconds": 2.0920958518981934
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/1%2C3%2C5-triazine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-022",
+      "query": "oxazole",
+      "expected_formula": "C3H3NO",
+      "expected_charge": 0,
+      "family": "杂芳环",
+      "purpose": "N/O 混合",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709665.1110256,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9255,
+          "MolecularFormula": "C3H3NO",
+          "ConnectivitySMILES": "C1=COC=N1",
+          "InChIKey": "ZCQWOFVYLHDMMC-UHFFFAOYSA-N",
+          "IUPACName": "1,3-oxazole",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9255"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709665.1110256,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-022\\response-1.json",
+          "sha256": "f4f4ed1dc84e4c8c7b715f7946d7fdb25d50289505af7f3c8abd071fb9ecbdbe",
+          "bytes": 280,
+          "elapsed_seconds": 3.4681169986724854
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/oxazole/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-023",
+      "query": "isoxazole",
+      "expected_formula": "C3H3NO",
+      "expected_charge": 0,
+      "family": "杂芳环",
+      "purpose": "同分子式异构图去重",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709668.5801485,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9254,
+          "MolecularFormula": "C3H3NO",
+          "ConnectivitySMILES": "C1=CON=C1",
+          "InChIKey": "CTAPFRYPJLPFDF-UHFFFAOYSA-N",
+          "IUPACName": "1,2-oxazole",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9254"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709668.5801485,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-023\\response-1.json",
+          "sha256": "53c4a5ad80ba03038527f070c40e890ba643f0e52fc882ffcda59a3a69f1ebd6",
+          "bytes": 280,
+          "elapsed_seconds": 1.990858793258667
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/isoxazole/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-024",
+      "query": "thiazole",
+      "expected_formula": "C3H3NS",
+      "expected_charge": 0,
+      "family": "杂芳环",
+      "purpose": "N/S 混合",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709670.571604,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9256,
+          "MolecularFormula": "C3H3NS",
+          "ConnectivitySMILES": "C1=CSC=N1",
+          "InChIKey": "FZWLAAWBMGSTSO-UHFFFAOYSA-N",
+          "IUPACName": "1,3-thiazole",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9256"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709670.571604,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-024\\response-1.json",
+          "sha256": "b7e1698a3f725e8d42f8fbdbc94a10c8c92001e930bf22171513d382a58cc340",
+          "bytes": 281,
+          "elapsed_seconds": 0.9738507270812988
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/thiazole/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-025",
+      "query": "indole",
+      "expected_formula": "C8H7N",
+      "expected_charge": 0,
+      "family": "稠合芳环",
+      "purpose": "稠环与孤对",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709671.5459738,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 798,
+          "MolecularFormula": "C8H7N",
+          "ConnectivitySMILES": "C1=CC=C2C(=C1)C=CN2",
+          "InChIKey": "SIKJAQJRHWYJAI-UHFFFAOYSA-N",
+          "IUPACName": "1H-indole",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/798"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709671.5459738,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-025\\response-1.json",
+          "sha256": "632806071ae3a078377ecaa50267b058d738ab92939af4453c377d6d7a44e7c8",
+          "bytes": 286,
+          "elapsed_seconds": 1.2601432800292969
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/indole/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-026",
+      "query": "benzofuran",
+      "expected_formula": "C8H6O",
+      "expected_charge": 0,
+      "family": "稠合芳环",
+      "purpose": "稠合 O 杂环",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709672.8071208,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9223,
+          "MolecularFormula": "C8H6O",
+          "ConnectivitySMILES": "C1=CC=C2C(=C1)C=CO2",
+          "InChIKey": "IANQTJSKSUMEQM-UHFFFAOYSA-N",
+          "IUPACName": "1-benzofuran",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9223"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709672.8071208,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-026\\response-1.json",
+          "sha256": "ea790c0b0d44e89bf92c2e866050dc6104878ac50d441573d3d4c89e02d85229",
+          "bytes": 290,
+          "elapsed_seconds": 3.7721102237701416
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/benzofuran/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-027",
+      "query": "benzothiophene",
+      "expected_formula": "C8H6S",
+      "expected_charge": 0,
+      "family": "稠合芳环",
+      "purpose": "稠合 S 杂环",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709676.5797486,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 7221,
+          "MolecularFormula": "C8H6S",
+          "ConnectivitySMILES": "C1=CC=C2C(=C1)C=CS2",
+          "InChIKey": "FCEHBMOGCRZNNI-UHFFFAOYSA-N",
+          "IUPACName": "1-benzothiophene",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/7221"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709676.5797486,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-027\\response-1.json",
+          "sha256": "722e25572050a9c1081282f0c66aa96731cc971bc1296980f9efa76e54cb5c38",
+          "bytes": 294,
+          "elapsed_seconds": 1.726794958114624
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/benzothiophene/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-028",
+      "query": "pyrene",
+      "expected_formula": "C16H10",
+      "expected_charge": 0,
+      "family": "稠合芳环",
+      "purpose": "多环 π 网络",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709678.3075476,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 31423,
+          "MolecularFormula": "C16H10",
+          "ConnectivitySMILES": "C1=CC2=C3C(=C1)C=CC4=CC=CC(=C43)C=C2",
+          "InChIKey": "BBEAQIROQSPTKN-UHFFFAOYSA-N",
+          "IUPACName": "pyrene",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/31423"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709678.3075476,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-028\\response-1.json",
+          "sha256": "c4758b0edec59c21878f8b72f9ee731c49f8223d38179049d2f1e171b64d507a",
+          "bytes": 303,
+          "elapsed_seconds": 1.2982206344604492
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pyrene/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-029",
+      "query": "perylene",
+      "expected_formula": "C20H12",
+      "expected_charge": 0,
+      "family": "稠合芳环",
+      "purpose": "较大 π 空间",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709679.6067717,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 9142,
+          "MolecularFormula": "C20H12",
+          "ConnectivitySMILES": "C1=CC2=C3C(=C1)C4=CC=CC5=C4C(=CC=C5)C3=CC=C2",
+          "InChIKey": "CSHWQDPOILHKBI-UHFFFAOYSA-N",
+          "IUPACName": "perylene",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9142"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709679.6067717,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-029\\response-1.json",
+          "sha256": "4749b8e401b3edb635bee34c35acb1334fee551c22b35d65df07310bf5df4b28",
+          "bytes": 312,
+          "elapsed_seconds": 1.92470121383667
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/perylene/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-030",
+      "query": "cubane",
+      "expected_formula": "C8H8",
+      "expected_charge": 0,
+      "family": "笼状分子",
+      "purpose": "高对称 σ 骨架及 COT 图去重",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [
+        "OLD-100",
+        "OLD-101"
+      ],
+      "lookup_epoch": 1788709681.5320058,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 136090,
+          "MolecularFormula": "C8H8",
+          "ConnectivitySMILES": "C12C3C4C1C5C2C3C45",
+          "InChIKey": "TXWRERCHRDBNLG-UHFFFAOYSA-N",
+          "IUPACName": "cubane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/136090"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709681.5320058,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-030\\response-1.json",
+          "sha256": "5e656cd5ea0387c7a16c2bf156f792f352afc8ea7dfc15e45fda63c17e2a673f",
+          "bytes": 284,
+          "elapsed_seconds": 4.895715236663818
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/cubane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-031",
+      "query": "spiro[3.3]heptane",
+      "expected_formula": "C7H12",
+      "expected_charge": 0,
+      "family": "螺环",
+      "purpose": "真实螺连接正例",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709686.4282365,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 20277173,
+          "MolecularFormula": "C7H12",
+          "ConnectivitySMILES": "C1CC2(C1)CCC2",
+          "InChIKey": "LBJQKYPPYSCCBH-UHFFFAOYSA-N",
+          "IUPACName": "spiro[3.3]heptane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/20277173"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709686.4282365,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-031\\response-1.json",
+          "sha256": "e02bbacb6e9650a7bceed700ee58c1f3b228ffe2cfe7b011c03675eb313d54ba",
+          "bytes": 293,
+          "elapsed_seconds": 2.1425318717956543
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/spiro%5B3.3%5Dheptane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-032",
+      "query": "bicyclo[1.1.1]pentane",
+      "expected_formula": "C5H8",
+      "expected_charge": 0,
+      "family": "桥环",
+      "purpose": "桥联骨架与非螺反例",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709688.5712848,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 136153,
+          "MolecularFormula": "C5H8",
+          "ConnectivitySMILES": "C1C2CC1C2",
+          "InChIKey": "MKCBRYIXFFGIKN-UHFFFAOYSA-N",
+          "IUPACName": "bicyclo[1.1.1]pentane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/136153"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709688.5712848,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-032\\response-1.json",
+          "sha256": "1a782240961157afe8da582c1ec749bf2d5a6683fdc8161e164029b08e052485",
+          "bytes": 290,
+          "elapsed_seconds": 1.265427589416504
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/bicyclo%5B1.1.1%5Dpentane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-033",
+      "query": "norbornadiene",
+      "expected_formula": "C7H8",
+      "expected_charge": 0,
+      "family": "桥环共轭",
+      "purpose": "空间分离双键及桥骨架",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709689.8373199,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 8473,
+          "MolecularFormula": "C7H8",
+          "ConnectivitySMILES": "C1C2C=CC1C=C2",
+          "InChIKey": "SJYNFBVQFBRSIB-UHFFFAOYSA-N",
+          "IUPACName": "bicyclo[2.2.1]hepta-2,5-diene",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/8473"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709689.8373199,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-033\\response-1.json",
+          "sha256": "89bdd239b11ad56eeeb72cc91bb3ad833d05bb4ab963075a6cc6d687005cd8ed",
+          "bytes": 300,
+          "elapsed_seconds": 1.2814793586730957
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/norbornadiene/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-034",
+      "query": "pentatetraene",
+      "expected_formula": "C5H4",
+      "expected_charge": 0,
+      "family": "累积双键",
+      "purpose": "多通道及非螺反例",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [
+        "OLD-107"
+      ],
+      "lookup_epoch": 1788709691.1193202,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 139338,
+          "MolecularFormula": "C5H4",
+          "ConnectivitySMILES": "C=C=C=C=C",
+          "InChIKey": "UNSWNZFTRPSXHQ-UHFFFAOYSA-N",
+          "IUPACName": "penta-1,2,3,4-tetraene",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/139338"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709691.1193202,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-034\\response-1.json",
+          "sha256": "9c8aa2a3614b4f92fa187a67fda93d57a7390ba56ff23ceaf360482fb8e75e56",
+          "bytes": 291,
+          "elapsed_seconds": 3.086428165435791
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pentatetraene/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-035",
+      "query": "malonaldehyde",
+      "expected_formula": "C3H4O2",
+      "expected_charge": 0,
+      "family": "互变异构",
+      "purpose": "环境及构象需另行确定",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709694.2067528,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 10964,
+          "MolecularFormula": "C3H4O2",
+          "ConnectivitySMILES": "C(C=O)C=O",
+          "InChIKey": "WSMYVTOQOOLQHP-UHFFFAOYSA-N",
+          "IUPACName": "propanedial",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/10964"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709694.2067528,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-035\\response-1.json",
+          "sha256": "10ce8fd8d7f328e518d717fb346001ae5737627fe187be511d2ed01b8bf19083",
+          "bytes": 281,
+          "elapsed_seconds": 1.9512958526611328
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/malonaldehyde/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-036",
+      "query": "acetylacetone",
+      "expected_formula": "C5H8O2",
+      "expected_charge": 0,
+      "family": "互变异构",
+      "purpose": "分子内氢键与互变异构",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709696.1586022,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 31261,
+          "MolecularFormula": "C5H8O2",
+          "ConnectivitySMILES": "CC(=O)CC(=O)C",
+          "InChIKey": "YRKCREAYFQTBPV-UHFFFAOYSA-N",
+          "IUPACName": "pentane-2,4-dione",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/31261"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709696.1586022,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-036\\response-1.json",
+          "sha256": "12e63f2c75f954a6f518da5405662d24280c9c5cd780d5b30dfbc43efc82a883",
+          "bytes": 291,
+          "elapsed_seconds": 1.597391128540039
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/acetylacetone/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-037",
+      "query": "biphenyl",
+      "expected_formula": "C12H10",
+      "expected_charge": 0,
+      "family": "共轭构象",
+      "purpose": "非共面芳环",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709697.757008,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 7095,
+          "MolecularFormula": "C12H10",
+          "ConnectivitySMILES": "C1=CC=C(C=C1)C2=CC=CC=C2",
+          "InChIKey": "ZUOUZKKEUPVFJK-UHFFFAOYSA-N",
+          "IUPACName": "1,1'-biphenyl",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/7095"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709697.757008,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-037\\response-1.json",
+          "sha256": "279c457a2fe351dc98ec81791a93436d4a157b325eb6732fbdd499cef4017784",
+          "bytes": 297,
+          "elapsed_seconds": 1.4213790893554688
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/biphenyl/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-038",
+      "query": "1,4-dioxane",
+      "expected_formula": "C4H8O2",
+      "expected_charge": 0,
+      "family": "饱和杂环",
+      "purpose": "孤对与构象",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709699.1793907,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 31275,
+          "MolecularFormula": "C4H8O2",
+          "ConnectivitySMILES": "C1COCCO1",
+          "InChIKey": "RYHBNJHYFVUHQT-UHFFFAOYSA-N",
+          "IUPACName": "1,4-dioxane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/31275"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709699.1793907,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-038\\response-1.json",
+          "sha256": "da91f4091d4ef847aeac5ceb3dda4335e30991921d5e4506b07c3c9fc0c18cf8",
+          "bytes": 280,
+          "elapsed_seconds": 1.9235005378723145
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/1%2C4-dioxane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-039",
+      "query": "acetic acid",
+      "expected_formula": "C2H4O2",
+      "expected_charge": 0,
+      "family": "羧酸",
+      "purpose": "单体及后续弱复合物对照",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709701.1038945,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 176,
+          "MolecularFormula": "C2H4O2",
+          "ConnectivitySMILES": "CC(=O)O",
+          "InChIKey": "QTBSBXVTEAMEQO-UHFFFAOYSA-N",
+          "IUPACName": "acetic acid",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/176"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709701.1038945,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-039\\response-1.json",
+          "sha256": "a2d9ee00c2933d27c654ec83fab8b74c0b5f6828fb4adadb0a6184f4b3a8500b",
+          "bytes": 277,
+          "elapsed_seconds": 1.3483877182006836
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/acetic%20acid/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-040",
+      "query": "dimethyl sulfoxide",
+      "expected_formula": "C2H6OS",
+      "expected_charge": 0,
+      "family": "含硫配体",
+      "purpose": "S/O 极性与后续配位",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709702.4532855,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 679,
+          "MolecularFormula": "C2H6OS",
+          "ConnectivitySMILES": "CS(=O)C",
+          "InChIKey": "IAZDPXIOMUYVGZ-UHFFFAOYSA-N",
+          "IUPACName": "methylsulfinylmethane",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/679"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709702.4532855,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-040\\response-1.json",
+          "sha256": "d53aa306916e41cf35574e23d824aba142bf1727bed4ee06d265ad5ecacc04cf",
+          "bytes": 287,
+          "elapsed_seconds": 2.7669837474823
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/dimethyl%20sulfoxide/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-041",
+      "query": "TEMPO",
+      "expected_formula": "C9H18NO",
+      "expected_charge": 0,
+      "family": "自由基",
+      "purpose": "开放壳层及 α/β",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709705.2212725,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 2724126,
+          "MolecularFormula": "C9H18NO",
+          "ConnectivitySMILES": "CC1(CCCC(N1[O])(C)C)C",
+          "InChIKey": "QYTDEUPAUMOIOP-UHFFFAOYSA-N",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/2724126"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709705.2212725,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-041\\response-1.json",
+          "sha256": "99114405e87c299383256a9b05340777283dfe4e3508cad14c1137ec5e20deb7",
+          "bytes": 260,
+          "elapsed_seconds": 3.414783239364624
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/TEMPO/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-042",
+      "query": "phenoxy radical",
+      "expected_formula": "C6H5O",
+      "expected_charge": 0,
+      "family": "自由基",
+      "purpose": "离域自由基",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709708.6370602,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 123143,
+          "MolecularFormula": "C6H5O",
+          "ConnectivitySMILES": "C1=CC=C(C=C1)[O]",
+          "InChIKey": "KHUXNRRPPZOJPT-UHFFFAOYSA-N",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/123143"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709708.6370602,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-042\\response-1.json",
+          "sha256": "3a61567b0a4356af4618aa3d95d62eda9aaa4ebac10f47e1e30fd10f4a7705d8",
+          "bytes": 252,
+          "elapsed_seconds": 1.6643126010894775
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/phenoxy%20radical/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-043",
+      "query": "benzyl radical",
+      "expected_formula": "C7H7",
+      "expected_charge": 0,
+      "family": "自由基",
+      "purpose": "与环状 C7H7 图去重",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [
+        "OLD-097"
+      ],
+      "lookup_epoch": 1788709710.3018894,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 123147,
+          "MolecularFormula": "C7H7",
+          "ConnectivitySMILES": "[CH2]C1=CC=CC=C1",
+          "InChIKey": "SLRMQYXOBQWXCR-UHFFFAOYSA-N",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/123147"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709710.3018894,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-043\\response-1.json",
+          "sha256": "8b222103bfc0dca3b154b2538e47cd1e0ce0c559219fb8a9ba41e9258a50bc87",
+          "bytes": 251,
+          "elapsed_seconds": 1.2831251621246338
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/benzyl%20radical/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-044",
+      "query": "ethynyl radical",
+      "expected_formula": "C2H",
+      "expected_charge": 0,
+      "family": "自由基",
+      "purpose": "线性开放壳层",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709711.5860465,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 123271,
+          "MolecularFormula": "C2H",
+          "ConnectivitySMILES": "C#[C]",
+          "InChIKey": "XEHVFKKSDRMODV-UHFFFAOYSA-N",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/123271"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709711.5860465,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-044\\response-1.json",
+          "sha256": "1598a7cd01660c728364b535b459c50582d67ecbc247b2ab8636fe4993bebf0a",
+          "bytes": 239,
+          "elapsed_seconds": 2.1152899265289307
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/ethynyl%20radical/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-045",
+      "query": "methylperoxy radical",
+      "expected_formula": "CH3O2",
+      "expected_charge": 0,
+      "family": "自由基",
+      "purpose": "过氧与自旋",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709713.7019007,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709713.7019007,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 1.1579453945159912,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-045\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/methylperoxy%20radical/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-046",
+      "query": "hydroperoxyl radical",
+      "expected_formula": "HO2",
+      "expected_charge": 0,
+      "family": "自由基",
+      "purpose": "小型开放壳层",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709714.8635283,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 520535,
+          "MolecularFormula": "HO2",
+          "ConnectivitySMILES": "O[O]",
+          "InChIKey": "OUUQCZGPVNCOIJ-UHFFFAOYSA-N",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/520535"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709714.8635283,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-046\\response-1.json",
+          "sha256": "fc12a799f4bc2e50c62d6f2d3b8542336e591782dccc1418a9897c06a6d629b7",
+          "bytes": 238,
+          "elapsed_seconds": 2.605036735534668
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/hydroperoxyl%20radical/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-047",
+      "query": "tetrakis(trifluorophosphine)nickel",
+      "expected_formula": "F12NiP4",
+      "expected_charge": 0,
+      "family": "磷金属配合物",
+      "purpose": "P 先验与 π 受体轨道",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [
+        "https://pubs.rsc.org/en/content/articlelanding/1970/c2/c29700000595"
+      ],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709717.4695685,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 83776,
+          "MolecularFormula": "F12NiP4",
+          "ConnectivitySMILES": "FP(F)F.FP(F)F.FP(F)F.FP(F)F.[Ni]",
+          "InChIKey": "TXBNRHVYQQTHJK-UHFFFAOYSA-N",
+          "IUPACName": "nickel;tetrakis(trifluorophosphane)",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/83776"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709717.4695685,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-047\\response-1.json",
+          "sha256": "2ce071da9bf113d43065e2c52640b6181acf965af1b88b51b0438d08b5b840b5",
+          "bytes": 329,
+          "elapsed_seconds": 1.4875566959381104
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/tetrakis%28trifluorophosphine%29nickel/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-048",
+      "query": "tetrakis(trimethylphosphine)nickel",
+      "expected_formula": "C12H36NiP4",
+      "expected_charge": 0,
+      "family": "磷金属配合物",
+      "purpose": "候选名称及真实结构待核对",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709718.9576359,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709718.9576359,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-048\\response-1.json",
+          "sha256": "378ac903eb558241a3c6255bcd994da6c8765d206b6816ceb21240ea6529a6eb",
+          "bytes": 936,
+          "error": "ValueError: Unsupported formula syntax: C12H40NiP4+4",
+          "elapsed_seconds": 1.7690179347991943
+        },
+        {
+          "attempt": 2,
+          "started_epoch": 1788709722.7274368,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-048\\response-2.json",
+          "sha256": "378ac903eb558241a3c6255bcd994da6c8765d206b6816ceb21240ea6529a6eb",
+          "bytes": 936,
+          "error": "ValueError: Unsupported formula syntax: C12H40NiP4+4",
+          "elapsed_seconds": 2.100558280944824
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/tetrakis%28trimethylphosphine%29nickel/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-049",
+      "query": "pentacarbonyl(trimethylphosphine)chromium",
+      "expected_formula": "C8H9CrO5P",
+      "expected_charge": 0,
+      "family": "混合配体金属",
+      "purpose": "CO/PMe3",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709724.8285115,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709724.8285115,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 1.1790602207183838,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-049\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pentacarbonyl%28trimethylphosphine%29chromium/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-050",
+      "query": "pentacarbonyl(trifluorophosphine)chromium",
+      "expected_formula": "C5CrF3O5P",
+      "expected_charge": 0,
+      "family": "混合配体金属",
+      "purpose": "CO/PF3",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709726.0114653,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709726.0124695,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 1.549302577972412,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-050\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pentacarbonyl%28trifluorophosphine%29chromium/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-051",
+      "query": "cisplatin",
+      "expected_formula": "Cl2H6N2Pt",
+      "expected_charge": 0,
+      "family": "金属配合物",
+      "purpose": "顺式 Pt 配合物及局部/整体",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709727.5662026,
+      "lookup_status": "unique-metadata-match",
+      "identity_candidates": [
+        {
+          "CID": 5702198,
+          "MolecularFormula": "Cl2H6N2Pt",
+          "ConnectivitySMILES": "N.N.Cl[Pt]Cl",
+          "InChIKey": "LXZZYRPGZAFOLE-UHFFFAOYSA-L",
+          "IUPACName": "azane;dichloroplatinum",
+          "Charge": 0,
+          "formula_matches_request": true,
+          "charge_matches_request": true,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/5702198"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709727.5662026,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-051\\response-1.json",
+          "sha256": "0c779c70279e89357dec4e9e1d3bb78138320e0819fc69e7c8b3093567f06dfe",
+          "bytes": 300,
+          "elapsed_seconds": 3.330854892730713
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/cisplatin/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-052",
+      "query": "dichlorobis(trimethylphosphine)platinum(II)",
+      "expected_formula": "C6H18Cl2P2Pt",
+      "expected_charge": 0,
+      "family": "磷金属配合物",
+      "purpose": "顺反结构不得凭名称选定",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709730.8980608,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709730.8980608,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 0.9002082347869873,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-052\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/dichlorobis%28trimethylphosphine%29platinum%28II%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-053",
+      "query": "chlorotris(trimethylphosphine)rhodium(I)",
+      "expected_formula": "C9H27ClP3Rh",
+      "expected_charge": 0,
+      "family": "磷金属配合物",
+      "purpose": "实验畸变及局部群",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [
+        "https://pubs.rsc.org/en/content/articlelanding/1980/dt/dt9800000511"
+      ],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709731.8032165,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709731.8032165,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 2.5508503913879395,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-053\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/chlorotris%28trimethylphosphine%29rhodium%28I%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-054",
+      "query": "carbonylchlorobis(trimethylphosphine)rhodium(I)",
+      "expected_formula": "C7H18ClOP2Rh",
+      "expected_charge": 0,
+      "family": "混合配体金属",
+      "purpose": "CO/PMe3/Cl",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [
+        "https://pubs.rsc.org/en/content/articlelanding/1980/dt/dt9800000511"
+      ],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709734.3583143,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709734.3583143,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 1.1953091621398926,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-054\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/carbonylchlorobis%28trimethylphosphine%29rhodium%28I%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-055",
+      "query": "bis(ethylenediamine)copper(II)",
+      "expected_formula": "C4H16CuN4",
+      "expected_charge": 2,
+      "family": "螯合金属",
+      "purpose": "有限环境与电子态待建",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709735.5575724,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709735.5575724,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-055\\response-1.json",
+          "sha256": "0a11ecafddacbf26c081df9af862eab7d5b7b8467baeb8a59cac93cc8bfb0d8d",
+          "bytes": 318,
+          "error": "ValueError: Unsupported formula syntax: C4H16CuN4+2",
+          "elapsed_seconds": 3.8569562435150146
+        },
+        {
+          "attempt": 2,
+          "started_epoch": 1788709741.415317,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-055\\response-2.json",
+          "sha256": "0a11ecafddacbf26c081df9af862eab7d5b7b8467baeb8a59cac93cc8bfb0d8d",
+          "bytes": 318,
+          "error": "ValueError: Unsupported formula syntax: C4H16CuN4+2",
+          "elapsed_seconds": 1.647496223449707
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/bis%28ethylenediamine%29copper%28II%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-056",
+      "query": "bis(ethylenediamine)zinc(II)",
+      "expected_formula": "C4H16N4Zn",
+      "expected_charge": 2,
+      "family": "螯合金属",
+      "purpose": "螯合几何",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709743.063326,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709743.063326,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 1.413431167602539,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-056\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/bis%28ethylenediamine%29zinc%28II%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-057",
+      "query": "tris(ethylenediamine)cobalt(III)",
+      "expected_formula": "C6H24CoN6",
+      "expected_charge": 3,
+      "family": "螯合金属",
+      "purpose": "手性及不同作用域",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709744.4810472,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709744.4810472,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-057\\response-1.json",
+          "sha256": "fea962b421bef99bfcabab4aecd3243a6804fc996a5f7ec17c79fc92a902bcaa",
+          "bytes": 329,
+          "error": "ValueError: Unsupported formula syntax: C6H24CoN6+3",
+          "elapsed_seconds": 1.3439197540283203
+        },
+        {
+          "attempt": 2,
+          "started_epoch": 1788709747.8254323,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-057\\response-2.json",
+          "sha256": "fea962b421bef99bfcabab4aecd3243a6804fc996a5f7ec17c79fc92a902bcaa",
+          "bytes": 329,
+          "error": "ValueError: Unsupported formula syntax: C6H24CoN6+3",
+          "elapsed_seconds": 1.1510124206542969
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/tris%28ethylenediamine%29cobalt%28III%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-058",
+      "query": "nitroprusside ion",
+      "expected_formula": "C5FeN6O",
+      "expected_charge": -2,
+      "family": "混合配体金属",
+      "purpose": "NO/CN 非无辜配体",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709748.9774492,
+      "lookup_status": "ambiguous-or-mismatched-metadata",
+      "identity_candidates": [
+        {
+          "CID": 166638194,
+          "MolecularFormula": "C5HFeN6O",
+          "ConnectivitySMILES": "[C-]#N.[C-]#N.[C-]#N.[C-]#N.[C-]#N.N=O.[Fe+5]",
+          "InChIKey": "SJCKVGOQDNJZFE-UHFFFAOYSA-N",
+          "IUPACName": "iron(5+);nitroxyl;pentacyanide",
+          "Charge": 0,
+          "formula_matches_request": false,
+          "charge_matches_request": false,
+          "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/166638194"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709748.9774492,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-058\\response-1.json",
+          "sha256": "e7c850ae34185209a7442e32aa1a11fcd840f4875dcd909298d02e61ba02067f",
+          "bytes": 342,
+          "elapsed_seconds": 2.021709680557251
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/nitroprusside%20ion/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-059",
+      "query": "permanganate",
+      "expected_formula": "MnO4",
+      "expected_charge": -1,
+      "family": "金属氧阴离子",
+      "purpose": "高氧化态与简并",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709751.0005646,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709751.0005646,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-059\\response-1.json",
+          "sha256": "10f3e022dc077d1dad6f19b043a373607a6a415c6fabf16f1b5f21302fadf157",
+          "bytes": 291,
+          "error": "ValueError: Unsupported formula syntax: MnO4-",
+          "elapsed_seconds": 0.99912428855896
+        },
+        {
+          "attempt": 2,
+          "started_epoch": 1788709754.00034,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-059\\response-2.json",
+          "sha256": "10f3e022dc077d1dad6f19b043a373607a6a415c6fabf16f1b5f21302fadf157",
+          "bytes": 291,
+          "error": "ValueError: Unsupported formula syntax: MnO4-",
+          "elapsed_seconds": 5.061526536941528
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/permanganate/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-060",
+      "query": "molybdate",
+      "expected_formula": "MoO4",
+      "expected_charge": -2,
+      "family": "金属氧阴离子",
+      "purpose": "与 MnO4 不同电子结构",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709759.0628712,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709759.0628712,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-060\\response-1.json",
+          "sha256": "3e8c9b7bcc6b46012524669ce151cd7c7a84cf6efcef06c6199e19c6a35c945c",
+          "bytes": 306,
+          "error": "ValueError: Unsupported formula syntax: MoO4-2",
+          "elapsed_seconds": 0.9307756423950195
+        },
+        {
+          "attempt": 2,
+          "started_epoch": 1788709761.9941669,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-060\\response-2.json",
+          "sha256": "3e8c9b7bcc6b46012524669ce151cd7c7a84cf6efcef06c6199e19c6a35c945c",
+          "bytes": 306,
+          "error": "ValueError: Unsupported formula syntax: MoO4-2",
+          "elapsed_seconds": 3.0268056392669678
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/molybdate/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-061",
+      "query": "tetracyanoplatinate(II)",
+      "expected_formula": "C4N4Pt",
+      "expected_charge": -2,
+      "family": "金属配合物",
+      "purpose": "d8 与线性配体",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709765.021498,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709765.021498,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 2.0146360397338867,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-061\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/tetracyanoplatinate%28II%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-062",
+      "query": "bis(trimethylphosphine)silver(I)",
+      "expected_formula": "C6H18AgP2",
+      "expected_charge": 1,
+      "family": "磷金属配合物",
+      "purpose": "线性局部环境",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709767.0406125,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709767.0406125,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 1.348297357559204,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-062\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/bis%28trimethylphosphine%29silver%28I%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-063",
+      "query": "chlorotris(trimethylphosphine)copper(I)",
+      "expected_formula": "C9H27ClCuP3",
+      "expected_charge": 0,
+      "family": "磷金属配合物",
+      "purpose": "d10 及 P/Cl 混合",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709768.3901794,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709768.3901794,
+          "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+          "elapsed_seconds": 1.1809635162353516,
+          "http_status": 404,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-063\\response-1.error",
+          "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+          "bytes": 156
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/chlorotris%28trimethylphosphine%29copper%28I%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-064",
+      "query": "hexamethyltungsten",
+      "expected_formula": "C6H18W",
+      "expected_charge": 0,
+      "family": "少见配位几何",
+      "purpose": "实验畸变三棱柱候选",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [
+        "https://pubs.acs.org/doi/10.1021/ja952231p"
+      ],
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709769.5732267,
+      "lookup_status": "lookup-failed-retained",
+      "identity_candidates": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_epoch": 1788709769.5732267,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-064\\response-1.json",
+          "sha256": "adff29718e64765cb6f0967298bdb0ebe24ec4782766d51b4d4e45e43c4b8138",
+          "bytes": 328,
+          "error": "ValueError: Unsupported formula syntax: C6H18W-6",
+          "elapsed_seconds": 1.183823823928833
+        },
+        {
+          "attempt": 2,
+          "started_epoch": 1788709772.757744,
+          "http_status": 200,
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-064\\response-2.json",
+          "sha256": "adff29718e64765cb6f0967298bdb0ebe24ec4782766d51b4d4e45e43c4b8138",
+          "bytes": 328,
+          "error": "ValueError: Unsupported formula syntax: C6H18W-6",
+          "elapsed_seconds": 1.3910303115844727
+        }
+      ],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+      "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/hexamethyltungsten/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+    },
+    {
+      "candidate_id": "PREP-065",
+      "query": "Co@Ge10(3-)",
+      "expected_formula": "CoGe10",
+      "expected_charge": -3,
+      "family": "少见配位几何",
+      "purpose": "实验簇/环境核对；不预设理想 PPR-10",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [
+        "https://onlinelibrary.wiley.com/doi/10.1002/anie.200805511"
+      ],
+      "skip_name_lookup": true,
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709774.1497784,
+      "lookup_status": "source-coordinate-work-pending",
+      "identity_candidates": [],
+      "attempts": [],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review"
+    },
+    {
+      "candidate_id": "PREP-066",
+      "query": "Pd@Bi10(4+)",
+      "expected_formula": "Bi10Pd",
+      "expected_charge": 4,
+      "family": "少见配位几何",
+      "purpose": "实验盐环境核对；不预设理想 PAPR-10",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [
+        "https://repository.lsu.edu/chemistry_pubs/3848/"
+      ],
+      "skip_name_lookup": true,
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709774.1507773,
+      "lookup_status": "source-coordinate-work-pending",
+      "identity_candidates": [],
+      "attempts": [],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review"
+    },
+    {
+      "candidate_id": "PREP-067",
+      "query": "La(NO3)2(phen)(H2O)4(+)",
+      "expected_formula": "C12H16LaN4O10",
+      "expected_charge": 1,
+      "family": "少见配位几何",
+      "purpose": "完整氢键环境与 TD-10 候选重新分类",
+      "formal": false,
+      "geometry_status": "not-established",
+      "electronic_state_status": "not-established",
+      "primary_structure_sources": [
+        "https://link.springer.com/article/10.1007/s11243-007-0224-4"
+      ],
+      "skip_name_lookup": true,
+      "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+      "original_cases_with_same_element_counts": [],
+      "lookup_epoch": 1788709774.1507773,
+      "lookup_status": "source-coordinate-work-pending",
+      "identity_candidates": [],
+      "attempts": [],
+      "formal_case": false,
+      "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "case_id": "OLD-018",
+  "status": "timeout_recoverable_candidate",
+  "scientific_pass": false,
+  "checkpoint_sha256": "12c50a01ca0d2b37b1f1234df94ea7d0b2c62553ef605a1108212238de08087e",
+  "checkpoint_bytes": 27983872,
+  "original_checkpoint": "F:\\CalChem\\COV\\Resume\\work\\jobs\\REF-001\\OLD-018\\initial\\attempt-01\\job.chk",
+  "salvage_checkpoint": "F:\\CalChem\\COV\\Resume\\OLD-018-SALVAGE\\job.chk",
+  "salvage_fchk": {
+    "path": "F:\\CalChem\\COV\\Resume\\OLD-018-SALVAGE\\job.fch",
+    "sha256": "544c01bac10548b985839ed9213d33be6e9763e7897fd505b28b7faea0dae50e",
+    "identity_gate": "passed",
+    "nbasis": 502,
+    "method": "UPBE1PBE"
+  },
+  "current_formchk_execution": false,
+  "formchk_history": "User-provided handoff records successful cold conversion; preserved existing FCHK independently passes identity gate.",
+  "log_observations": {
+    "optimization_completed": false,
+    "normal_termination": false,
+    "error_termination": false,
+    "optimization_step": 46,
+    "maximum_steps": 150,
+    "nbasis": 502,
+    "last_scf_cycle": 6,
+    "last_convergence_tables": [
+      [
+        {
+          "item": "Maximum Force",
+          "value": 0.00026,
+          "printed_threshold": 2e-06,
+          "ratio_to_printed_threshold": 130.0,
+          "passed": false
+        },
+        {
+          "item": "RMS Force",
+          "value": 6.4e-05,
+          "printed_threshold": 1e-06,
+          "ratio_to_printed_threshold": 64.0,
+          "passed": false
+        },
+        {
+          "item": "Maximum Displacement",
+          "value": 0.08581,
+          "printed_threshold": 6e-06,
+          "ratio_to_printed_threshold": 14301.666666666666,
+          "passed": false
+        },
+        {
+          "item": "RMS Displacement",
+          "value": 0.01494,
+          "printed_threshold": 4e-06,
+          "ratio_to_printed_threshold": 3735.0,
+          "passed": false
+        }
+      ],
+      [
+        {
+          "item": "Maximum Force",
+          "value": 0.000152,
+          "printed_threshold": 2e-06,
+          "ratio_to_printed_threshold": 76.00000000000001,
+          "passed": false
+        },
+        {
+          "item": "RMS Force",
+          "value": 2.6e-05,
+          "printed_threshold": 1e-06,
+          "ratio_to_printed_threshold": 26.0,
+          "passed": false
+        },
+        {
+          "item": "Maximum Displacement",
+          "value": 0.033117,
+          "printed_threshold": 6e-06,
+          "ratio_to_printed_threshold": 5519.5,
+          "passed": false
+        },
+        {
+          "item": "RMS Displacement",
+          "value": 0.005147,
+          "printed_threshold": 4e-06,
+          "ratio_to_printed_threshold": 1286.75,
+          "passed": false
+        }
+      ],
+      [
+        {
+          "item": "Maximum Force",
+          "value": 0.000105,
+          "printed_threshold": 2e-06,
+          "ratio_to_printed_threshold": 52.50000000000001,
+          "passed": false
+        },
+        {
+          "item": "RMS Force",
+          "value": 2.2e-05,
+          "printed_threshold": 1e-06,
+          "ratio_to_printed_threshold": 22.0,
+          "passed": false
+        },
+        {
+          "item": "Maximum Displacement",
+          "value": 0.022993,
+          "printed_threshold": 6e-06,
+          "ratio_to_printed_threshold": 3832.1666666666665,
+          "passed": false
+        },
+        {
+          "item": "RMS Displacement",
+          "value": 0.003338,
+          "printed_threshold": 4e-06,
+          "ratio_to_printed_threshold": 834.5,
+          "passed": false
+        }
+      ]
+    ],
+    "convergence_note": "Ratios use rounded printed thresholds; four tests are not a time percentage.",
+    "phase_observed": "optimization",
+    "eta_seconds": null
+  },
+  "timeout_reason": "legacy runner 86400 second stage deadline; not SCF convergence failure",
+  "maxcycles_discrepancy": {
+    "input_and_echoed_route": 512,
+    "berny_printed_maximum": 150,
+    "cause": "unresolved; preserve evidence; do not guess or change scientific input"
+  },
+  "recovery": "Verify checkpoint and current identity, complete small-case native G16W restart acceptance, then use reviewed Opt=Restart in a new runtime-v2 attempt. Never silently restart initial geometry.",
+  "remaining": [
+    "geometry optimization",
+    "separate frequency",
+    "stability and applicable repair",
+    "physical adjudication"
+  ],
+  "return_to_cov": "Archival does not require immediately restarting OLD-018 or migrating the queue."
+}

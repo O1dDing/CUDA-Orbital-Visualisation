@@ -1,0 +1,120 @@
+{
+  "created_epoch": 1788853575.5631492,
+  "scientific_source_commit": "21036b2990ef86dcdc419c65cdebd2a03bf4a12b",
+  "controls": 20,
+  "requirement_passes": 8,
+  "failed_controls": 12,
+  "passing_controls": [
+    "DEN-C06",
+    "DEN-C07",
+    "DEN-C08",
+    "DEN-C09",
+    "DEN-C15",
+    "DEN-C16",
+    "DEN-C17",
+    "DEN-C20"
+  ],
+  "failing_controls": [
+    "DEN-C01",
+    "DEN-C02",
+    "DEN-C03",
+    "DEN-C04",
+    "DEN-C05",
+    "DEN-C10",
+    "DEN-C11",
+    "DEN-C12",
+    "DEN-C13",
+    "DEN-C14",
+    "DEN-C18",
+    "DEN-C19"
+  ],
+  "issues": [
+    {
+      "issue_id": "DEN-001",
+      "decision": "新增",
+      "category": "数据有效性与可用状态",
+      "controls": [
+        "DEN-C01",
+        "DEN-C11",
+        "DEN-C12",
+        "DEN-C13",
+        "DEN-C14"
+      ],
+      "problem": "缺失或非法 Occup 仍产生带 Derived 来源的密度，零值、缺项和失败状态混淆。",
+      "solution": "保留逐 MO 字段来源，严格检查普通占据模型的范围和有限性；P/Q 分别保存矩阵、状态和原因。"
+    },
+    {
+      "issue_id": "DEN-002",
+      "decision": "新增",
+      "category": "轨道身份与占据解释",
+      "controls": [
+        "DEN-C02",
+        "DEN-C03"
+      ],
+      "problem": "共享整数占据的未配对方向按列表索引重新填充；同一 MO 集合重排使 Q 改变。",
+      "solution": "规范 FCHK 占据绑定不可变来源身份；Molden 保持逐 MO Occup 并明确共享整数单行列式假设。"
+    },
+    {
+      "issue_id": "DEN-003",
+      "decision": "新增",
+      "category": "自旋来源与模型边界",
+      "controls": [
+        "DEN-C04",
+        "DEN-C05",
+        "DEN-C10"
+      ],
+      "problem": "共享分数占据或缺失 Spin 时，未知 Q 被表示为可用矩阵或带 Derived 的空矩阵。",
+      "solution": "显式 α/β 与共享空间分别处理；共享分数占据不自动推断自旋分区，已知 P 保留。"
+    },
+    {
+      "issue_id": "DEN-004",
+      "decision": "新增",
+      "category": "占据子空间完整性",
+      "controls": [
+        "DEN-C18",
+        "DEN-C19"
+      ],
+      "problem": "缺少占据方向的原始 MO 重建返回完整外观的 P/Q；C19 的输入矩阵正确但原始重建仍错误。",
+      "solution": "用独立输入计数和来源身份检查占据覆盖；实际 producer P/Q 与原始 MO 重建分开保存。"
+    },
+    {
+      "issue_id": "DEN-005",
+      "decision": "新增",
+      "category": "派生分析的输入依赖",
+      "controls": [
+        "DEN-C01",
+        "DEN-C02",
+        "DEN-C03",
+        "DEN-C04",
+        "DEN-C05",
+        "DEN-C10",
+        "DEN-C11",
+        "DEN-C12",
+        "DEN-C13",
+        "DEN-C14",
+        "DEN-C18"
+      ],
+      "problem": "P 或 Q 不可用或不正确时，完整 Mayer 结果仍被标记 Derived。",
+      "solution": "完整 Mayer 分析要求两个有效密度；缺 Q 时不省略自旋项后沿用相同名称。"
+    }
+  ],
+  "checker_issue_counts": {
+    "DENSITY-TOTAL-FALSE-AVAILABILITY": 6,
+    "DENSITY-TOTAL-STATUS-EVIDENCE": 6,
+    "DENSITY-SPIN-FALSE-AVAILABILITY": 9,
+    "DENSITY-SPIN-STATUS-EVIDENCE": 9,
+    "DENSITY-MAYER-INCOMPLETE": 11,
+    "DENSITY-SPIN-MATRIX": 2,
+    "DENSITY-SPIN-MODEL-EVIDENCE": 2,
+    "DENSITY-TRUNCATED-OCCUPIED-SPACE": 4
+  },
+  "maximum_observed_reordering_spin_density_change": 1.2614725579091308,
+  "fixed_matrix_absolute_tolerance": 2e-12,
+  "review_sha256": "9191a9afbd5f0c799ff71e28eead3e079c75ef3df49293615d380e8ed0e02278",
+  "collection_sha256": "8a200f902361a63ff6d25963a9de9f16df3216328cc3c8ab0dd2bd62ec509f71",
+  "collection_seconds": 10.471790313720703,
+  "proposed_fix_commit": "e2e835a70229b94501127ad336e0ddbc3ea69df3",
+  "fix_validation_status": "ON/OFF compilation and component checks running; fixed controls not run yet",
+  "formal_case_passes": 0,
+  "scope": "20 finite AO controls; not 20 molecules or a physical-reference result"
+}

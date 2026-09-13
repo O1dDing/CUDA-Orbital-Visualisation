@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 139338,
+        "MolecularFormula": "C5H4",
+        "ConnectivitySMILES": "C=C=C=C=C",
+        "InChIKey": "UNSWNZFTRPSXHQ-UHFFFAOYSA-N",
+        "IUPACName": "penta-1,2,3,4-tetraene",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "case_id": "OLD-004",
+  "original_case_identity": "bee5e8abcf657a3b050b2c5faec067db103da0dbe77f1da3f2c8899dc2ab41ca",
+  "purpose": {
+    "kind": "equilibrium_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Original input requested optimization; final FCHK geometry is the new starting point",
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPPD",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Net anion or documented anionic fragment",
+  "ecp_core_electrons_by_atomic_number": {
+    "17": 0,
+    "30": 0
+  },
+  "explicit_electrons": 100,
+  "alpha_electrons": 50,
+  "beta_electrons": 50,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": true,
+  "is_verified_reference": false,
+  "basis_sha256": "937a17dcb57028e944cfaee1f8d086dd7511cdc064bbf83891a59b4d30f07afd",
+  "initial_input_sha256": "1d7da7dbfe26b5086259c7381cc6b9234f5399683ce9823cd6a6983bba318272",
+  "identity": "5c6bb7c9d6f25f1ef767875172b11e9f3ec5c7fc63d611421c4b53eca0780748"
+}

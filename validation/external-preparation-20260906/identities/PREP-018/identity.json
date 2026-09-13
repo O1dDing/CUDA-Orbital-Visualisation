@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-018",
+  "query": "borazine",
+  "expected_formula": "B3H6N3",
+  "expected_charge": 0,
+  "family": "无机共轭环",
+  "purpose": "杂原子环及离域",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709657.8738585,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 138768,
+      "MolecularFormula": "B3H6N3",
+      "ConnectivitySMILES": "B1NBNBN1",
+      "InChIKey": "BGECDVWSWDRFSP-UHFFFAOYSA-N",
+      "IUPACName": "1,3,5,2,4,6-triazatriborinane",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/138768"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709657.8738585,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-018\\response-1.json",
+      "sha256": "1d44f855a92b5662d0ca0e11b474399a704490e82810813ba8ff8674998eb9e8",
+      "bytes": 299,
+      "elapsed_seconds": 1.3752272129058838
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/borazine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

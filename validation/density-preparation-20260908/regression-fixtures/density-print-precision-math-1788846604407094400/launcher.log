@@ -1,0 +1,12 @@
+test_decimal_nearest_endpoints_are_inside_float_intervals (__main__.PrintPrecisionControls.test_decimal_nearest_endpoints_are_inside_float_intervals) ... ok
+test_dimension_nonfinite_negative_radius_and_overflow_rejected (__main__.PrintPrecisionControls.test_dimension_nonfinite_negative_radius_and_overflow_rejected) ... ok
+test_exact_decimal_perturbations_and_signed_cancellation (__main__.PrintPrecisionControls.test_exact_decimal_perturbations_and_signed_cancellation) ... ok
+test_fortran_final_place_and_declared_rounding (__main__.PrintPrecisionControls.test_fortran_final_place_and_declared_rounding) ... ok
+test_orbital_phase_reorder_and_ao_permutation_invariants (__main__.PrintPrecisionControls.test_orbital_phase_reorder_and_ao_permutation_invariants) ... ok
+test_strict_same_input_check_does_not_inherit_print_allowance (__main__.PrintPrecisionControls.test_strict_same_input_check_does_not_inherit_print_allowance) ... ok
+test_zero_matrix_has_distinct_zero_and_unknown_source_uncertainty (__main__.PrintPrecisionControls.test_zero_matrix_has_distinct_zero_and_unknown_source_uncertainty) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.867s
+
+OK

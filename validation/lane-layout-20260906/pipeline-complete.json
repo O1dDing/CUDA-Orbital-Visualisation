@@ -1,0 +1,38 @@
+{
+  "round_identity": "85d3d2c5d287f1a229bf079a5b49715a900396f796264181b3b74a3331491471",
+  "stage": "reviews-terminal-awaiting-root-cause-analysis",
+  "started_epoch": 1788707910.621598,
+  "updated_epoch": 1788711425.9334917,
+  "steps": [
+    {
+      "stage": "numerical-review",
+      "exit_code": 0,
+      "wall_seconds": 1115.3219151496887,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\post-collection-pipeline-1788707910621597900\\numerical-review.log",
+      "log_sha256": "e0a1120bdee773933a6d5382a891556b77b5c6be792ab3bba3f7fd92f588cf33"
+    },
+    {
+      "stage": "numerical-summary",
+      "exit_code": 0,
+      "wall_seconds": 0.3596804141998291,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\post-collection-pipeline-1788707910621597900\\numerical-summary.log",
+      "log_sha256": "326932b8cf546ec33c8c8f93c254102f7b9b4445ab132660c24cd7362cac1e55"
+    },
+    {
+      "stage": "numerical-extrema",
+      "exit_code": 0,
+      "wall_seconds": 0.22702550888061523,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\post-collection-pipeline-1788707910621597900\\numerical-extrema.log",
+      "log_sha256": "49df5431bcda147a0666fbd7a70123b58a73ad884db2146fdfabb8b12d2e3d58"
+    },
+    {
+      "stage": "view-snapshot-review",
+      "exit_code": 2,
+      "wall_seconds": 29.08573317527771,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\post-collection-pipeline-1788707910621597900\\view-snapshot-review.log",
+      "log_sha256": "8175b1d5c3dcb3810609d69a0c1a595cddc3e6349e280b7aa35343976e8974c6"
+    }
+  ],
+  "formal_case_passes": 0,
+  "REF-001": "paused-by-user"
+}

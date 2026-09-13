@@ -1,0 +1,38 @@
+{
+  "candidate_id": "PREP-045",
+  "initial_url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+  "followed_link": {
+    "href": "geom3x.asp?method=64&basis=0",
+    "text": "geom",
+    "preceding_text": "ation. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3 geom G3B3",
+    "url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0"
+  },
+  "source_link_receipt_sha256": "76f2a6d696cb9b6add75350ac170d6edc1f3d80f791251b85bde6901fb77f9fb",
+  "requests": [
+    {
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+      "resolved_url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+      "http_status": 200,
+      "content_type": "text/html",
+      "stage": "experimental-index",
+      "sha256": "8a5b3b61d243657893cc92ffb5af6879bdf46f2a6f9b5aced02eff7dc84fdd00",
+      "bytes": 43337,
+      "started_epoch": 1788848437.1052387,
+      "finished_epoch": 1788848437.8241346
+    },
+    {
+      "url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0",
+      "resolved_url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0",
+      "http_status": 200,
+      "content_type": "text/html",
+      "stage": "geometry",
+      "sha256": "0a8c7da665170869121bee9eb86dd4ba2700079e58e756d758d45bd071111d18",
+      "bytes": 49246,
+      "started_epoch": 1788848437.8246572,
+      "finished_epoch": 1788848440.017022
+    }
+  ],
+  "status": "geometry-page-retrieved-awaiting-review",
+  "tables": 6,
+  "normalized_sha256": "38b17c54b2b80cf667ee701aaafd3e6558b864fa5d600544070b85bd6a52c337"
+}

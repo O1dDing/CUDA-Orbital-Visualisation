@@ -775,7 +775,7 @@ bool write_mo_diagram_svg(const MODiagramData& data,
             << xml_escape(level.metadata.display_label) << "</text>\n";
 
         std::string secondary;
-        if (!level.metadata.symmetry.empty()) secondary += level.metadata.symmetry;
+        if (!level.metadata.symmetry_view.label.empty()) secondary += level.metadata.symmetry_view.label;
         const char* symbol = family_symbol(level.annotation.family);
         if (*symbol) {
             if (!secondary.empty()) secondary += " · ";

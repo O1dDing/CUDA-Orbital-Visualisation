@@ -2,9 +2,13 @@
 
 #include "cov/model.hpp"
 #include "cov/orbital_view.hpp"
+#include "cov/pi_pair_evidence.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <filesystem>
+#include <limits>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -13,7 +17,23 @@ namespace cov {
 
 enum class MODiagramMode {
     ValenceCentral = 0,
+    DelocalisedPiFamilyOnly,
+    MulticentreActiveSpaceOnly,
 };
+
+// Stable machine and human labels shared by the live view and every export
+// format.  The built diagram is authoritative because a requested compact
+// mode may legitimately fall back to the valence view when no active space is
+// supported by the wavefunction.
+[[nodiscard]] const char* mo_diagram_mode_name(MODiagramMode mode) noexcept;
+[[nodiscard]] const char* mo_diagram_mode_title(MODiagramMode mode) noexcept;
+
+// Compact main-group conjugated systems are clearer as their complete
+// delocalised-pi active space.  Transition-metal ligand-field cases retain the
+// valence-central diagram even if a ligand happens to contain a pi family.
+[[nodiscard]] MODiagramMode preferred_compact_mo_diagram_mode(
+    const Wavefunction& wavefunction,
+    bool compact) noexcept;
 
 enum class EnergyAxisMode {
     Linear = 0,
@@ -29,10 +49,6 @@ struct EnergyTransform {
     EnergyAxisMode mode = EnergyAxisMode::NonlinearFocus;
     double focus_hartree = 0.0;
     double scale_hartree = 1.0e-4;
-    // In adaptive mode this is the minimum normalized share of the drawable
-    // axis reserved for every non-zero, non-degenerate adjacent energy gap.
-    // 0.070 reaches the transform's 90%-floor safety cap for the default Cp-
-    // valence set, yielding about 50 px minimum separation on a 900 px export.
     double minimum_gap_weight = 0.070;
     std::vector<EnergyAxisKnot> knots;
 };
@@ -53,6 +69,7 @@ struct EnergyTransform {
 enum class AnnotationSource {
     Direct,
     ParsedLabel,
+    Derived,
     Heuristic,
     Unavailable,
 };
@@ -70,6 +87,9 @@ struct MulticentreDescriptor {
     double electrons = 0.0;
     std::vector<std::size_t> atom_indices;
     std::string label;
+    std::size_t channel_count = 0;
+    std::string source_subspace_id;
+    double source_subspace_electron_count = 0.0;
     AnnotationSource source = AnnotationSource::Unavailable;
     double confidence = 0.0;
     bool heuristic = false;
@@ -80,11 +100,45 @@ struct DelocalisedPiDescriptor {
     std::size_t participating_atoms = 0;
     double participating_electrons = 0.0;
     std::vector<std::size_t> atom_indices;
+    std::vector<std::size_t> orbital_indices;
+    std::string family_id;
+    // `available` says that a delocalised-pi family is known.  Topology is a
+    // separate claim: parsed producer labels can establish the family without
+    // establishing channel directions or cyclicity.
+    bool topology_available = false;
+    DelocalisedPiTopology topology = DelocalisedPiTopology::Unknown;
+    std::size_t orientation_channels = 0;
+    bool cyclic_topology = false;
+    std::vector<PiOrientationChannel> orientation_channel_details;
+    PiTopologyGraphEvidence topology_graph;
     std::string label;
     AnnotationSource source = AnnotationSource::Unavailable;
     double confidence = 0.0;
     bool heuristic = false;
 };
+
+// The same compact topology suffix is used by the live diagram and bitmap/
+// vector exports. An empty suffix means that the family is known but a
+// concrete topology is not.
+[[nodiscard]] inline const char* compact_pi_topology_code(
+    const DelocalisedPiTopology topology) noexcept {
+    switch (topology) {
+        case DelocalisedPiTopology::Path: return "P";
+        case DelocalisedPiTopology::Cycle: return "C";
+        case DelocalisedPiTopology::BranchedResonance: return "B";
+        case DelocalisedPiTopology::Spiro: return "S";
+        case DelocalisedPiTopology::HapticMetal: return "H";
+        case DelocalisedPiTopology::SymmetryDirectSum: return "D";
+        case DelocalisedPiTopology::MultiChannel: return "M";
+        default: return "?";
+    }
+}
+[[nodiscard]] inline std::string compact_pi_topology_suffix(
+    const DelocalisedPiDescriptor& descriptor) {
+    if (!descriptor.topology_available) return {};
+    return std::to_string(descriptor.orientation_channels)+"ch "+
+           compact_pi_topology_code(descriptor.topology);
+}
 
 struct OrbitalAnnotation {
     // Machine-friendly canonical family names: sigma / pi / delta / phi / unavailable.
@@ -114,6 +168,10 @@ struct DiagramSelectionPlan {
     std::size_t hidden_count = 0;
     std::size_t valence_occupied_count = 0;
     std::size_t frontier_virtual_count = 0;
+    // Complete protected manifolds may legitimately exceed the visual row
+    // target. This records only that unavoidable excess; it is never a
+    // licence to keep arbitrary unprotected rows.
+    std::size_t protected_overflow_count = 0;
     std::string summary;
 };
 
@@ -125,42 +183,246 @@ struct MODiagramOptions {
     OrbitalFilterSettings filter{};
     std::size_t selected_index = 0;
 
-    // In ValenceCentral mode this controls approximate diagram capacity.
     std::size_t neighbourhood = 12;
-    std::size_t max_levels = 0;          // 0 => derive from neighbourhood
+    std::size_t max_levels = 0;
     std::size_t max_virtual_levels = 10;
+    bool hide_ligand_centred_intermediates = false;
 
-    // Adaptive nonlinear axis: minimum normalized vertical share allocated to
-    // each distinct adjacent energy gap. The default intentionally spreads the
-    // dense Cp- 11..27 region to roughly twice the original crowded spacing.
     double nonlinear_minimum_gap_weight = 0.070;
+
+    // A small same-symmetry pi splitting is shown as an approximately
+    // nonbonding weak-coupling level instead of forcing a donor/acceptor
+    // assignment.  The retained member is the one with the larger metal
+    // valence contribution, so the reduced ligand-field diagram keeps the
+    // chemically relevant d-level rather than an arbitrary canonical MO.
+    double weak_pi_split_hartree = 0.020;
+    double weak_metal_ligand_overlap = 0.025;
 
     int width = 1200;
     int height = 900;
     bool include_hidden_in_metadata = true;
+    double weak_crystal_field_split_hartree = 0.020;
+    double weak_crystal_field_overlap = 0.025;
 };
+
+enum class PiInteractionKind {
+    Donor,
+    Acceptor,
+    Coupled,
+    WeakNearNonbonding,
+};
+
+enum class OrbitalEnergyGapKind { PiPartner, CrystalField };
+
+struct OrbitalEnergyGapDescriptor {
+    std::size_t lower_level = 0;
+    std::size_t upper_level = 0;
+    std::vector<std::size_t> lower_orbitals;
+    std::vector<std::size_t> upper_orbitals;
+    std::string symmetry;
+    PiInteractionKind kind = PiInteractionKind::Coupled;
+    double splitting_hartree = 0.0;
+    double confidence = 0.0;
+    bool lower_visible = true;
+    bool upper_visible = true;
+    std::size_t retained_level = 0;
+    std::shared_ptr<const PiPartnerAssessment> orbital_evidence;
+    OrbitalEnergyGapKind gap_kind = OrbitalEnergyGapKind::PiPartner;
+    OrbitalSymmetryExplanation lower_symmetry_scope;
+    OrbitalSymmetryExplanation upper_symmetry_scope;
+    double lower_energy_hartree = std::numeric_limits<double>::quiet_NaN();
+    double upper_energy_hartree = std::numeric_limits<double>::quiet_NaN();
+    double lower_energy_spread_hartree = std::numeric_limits<double>::quiet_NaN();
+    double upper_energy_spread_hartree = std::numeric_limits<double>::quiet_NaN();
+    double weak_split_threshold_hartree = std::numeric_limits<double>::quiet_NaN();
+    double weak_overlap_threshold = std::numeric_limits<double>::quiet_NaN();
+    std::shared_ptr<const WeakCrystalFieldAssessment> crystal_field_evidence;
+};
+
+// Source compatibility for callers that construct actual pi partner records.
+using PiInteractionDescriptor = OrbitalEnergyGapDescriptor;
+[[nodiscard]] const char* orbital_energy_gap_kind_name(OrbitalEnergyGapKind kind) noexcept;
+[[nodiscard]] std::string orbital_energy_gap_json(
+    const OrbitalEnergyGapDescriptor& gap, EnergyUnit unit = EnergyUnit::Hartree);
+[[nodiscard]] std::string orbital_energy_gap_array_json(
+    const std::vector<OrbitalEnergyGapDescriptor>& gaps, EnergyUnit unit = EnergyUnit::Hartree);
+
+[[nodiscard]] const char* pi_interaction_kind_name(
+    PiInteractionKind kind) noexcept;
 
 struct MODiagramLevel {
     OrbitalMetadata metadata;
     OrbitalAnnotation annotation;
+    OrbitalChemistry chemistry;
     ElectronGlyphs electrons;
     bool homo = false;
     bool lumo = false;
-    // Degenerate members share the group-average layout energy so they remain
-    // exactly co-linear vertically even when producer print rounding differs.
     double layout_energy_hartree = 0.0;
+
+    // One row represents a complete degenerate subspace.  Group-level
+    // quantities are averaged per member and therefore remain invariant to a
+    // rotation of canonical MOs inside an exactly degenerate subspace.
+    std::vector<std::size_t> member_indices;
+    std::vector<ElectronGlyphs> member_electrons;
+    // For a UDFT spatial-row view, each majority-spin member can retain the
+    // matched minority-spin canonical MO.  This keeps selection highlighting
+    // and exact member metadata available without drawing a duplicate row.
+    std::vector<std::size_t> member_spin_counterparts;
+    double energy_spread_hartree = 0.0;
+    double total_occupation = 0.0;
+    double metal_s_weight = 0.0;
+    double metal_p_weight = 0.0;
+    double metal_d_weight = 0.0;
+    // p population on the atoms directly coordinated to the selected metal.
+    // ligand_p_weight may additionally include the rest of those ligand
+    // fragments (for example O in CO or N in CN).
+    double direct_ligand_p_weight = 0.0;
+    double ligand_p_weight = 0.0;
+    double sigma_fraction = 0.0;
+    double pi_fraction = 0.0;
+    double metal_ligand_overlap = 0.0;
+    bool raw_data_fallback = false;
+    bool approximate_nonbonding = false;
+};
+
+// One visible row may represent an exactly-degenerate canonical-MO set and,
+// after UDFT spatial collapse, its matched opposite-spin counterparts.
+[[nodiscard]] inline bool mo_diagram_level_covers_orbital(
+    const MODiagramLevel& level,
+    const std::size_t orbital_index) noexcept {
+    if (std::find(level.member_indices.begin(),level.member_indices.end(),
+                  orbital_index)!=level.member_indices.end()) {
+        return true;
+    }
+    if (std::find(level.member_spin_counterparts.begin(),
+                  level.member_spin_counterparts.end(),orbital_index)!=
+            level.member_spin_counterparts.end()) {
+        return true;
+    }
+    return level.member_indices.empty() &&
+           level.metadata.orbital_index==orbital_index;
+}
+
+struct LocalGeometryDiagramDescriptor {
+    std::size_t centre_atom = 0;
+    std::string geometry_id;
+    std::string geometry_name;
+    std::string point_group;
+    std::vector<std::size_t> neighbour_atoms;
+    double confidence = 0.0;
+    double angular_rms = 0.0;
+    double shape_measure = 0.0;
+    double radial_cv = 0.0;
+};
+
+struct ElectronicStateDiagramMetadata {
+    WavefunctionSource source = WavefunctionSource::Unknown;
+    std::int32_t charge = 0;
+    std::uint32_t multiplicity = 0;
+    std::uint32_t alpha_electrons = 0;
+    std::uint32_t beta_electrons = 0;
+    DataProvenance charge_provenance = DataProvenance::Unavailable;
+    DataProvenance multiplicity_provenance = DataProvenance::Unavailable;
+    DataProvenance electron_counts_provenance = DataProvenance::Unavailable;
+    ScfConvergenceStatus scf_convergence = ScfConvergenceStatus::Unavailable;
+    DataProvenance scf_convergence_provenance = DataProvenance::Unavailable;
+    WavefunctionStabilityStatus stability =
+        WavefunctionStabilityStatus::Unavailable;
+    DataProvenance stability_provenance = DataProvenance::Unavailable;
+    std::string stability_detail;
+    double spin_squared_before = 0.0;
+    double spin_squared_after = 0.0;
+    DataProvenance spin_squared_provenance = DataProvenance::Unavailable;
+    std::vector<double> atomic_partial_charges;
+    std::string atomic_partial_charge_scheme;
+    DataProvenance atomic_partial_charge_provenance =
+        DataProvenance::Unavailable;
+    std::string point_group_detected;
+    std::string point_group_used;
+    DataProvenance point_group_provenance = DataProvenance::Unavailable;
+    DataProvenance point_group_detected_provenance = DataProvenance::Unavailable;
+    DataProvenance point_group_used_provenance = DataProvenance::Unavailable;
+    std::string source_title;
+    std::string source_route;
+    std::string enrichment_source;
+};
+
+struct MODiagramViewContext {
+    // Correlates one immutable view with its exports; artifact hashes identify
+    // the bytes separately. The selection anchor controls row construction,
+    // while inspection can select a hidden MO or an opposite-spin counterpart.
+    std::string id;
+    std::string origin;
+    std::size_t selection_anchor = 0;
+    std::optional<std::size_t> inspected_orbital_index;
 };
 
 struct MODiagramData {
+    std::optional<MODiagramViewContext> view;
     DiagramPlan plan;
     FrontierOrbitals frontier;
     DiagramSelectionPlan selection;
     std::vector<MODiagramLevel> levels;
     std::vector<OrbitalMetadata> metadata;
-    std::vector<OrbitalAnnotation> annotations; // aligned with metadata
+    std::vector<OrbitalAnnotation> annotations;
+    std::vector<PiInteractionDescriptor> pi_interactions;
+    ElectronicStateDiagramMetadata electronic_state;
+    // Every unambiguous Mayer-supported CN2--CN10 centre, including main-group
+    // and non-metal centres.  This is structural metadata and never creates a
+    // transition-metal ligand-field diagram by itself.
+    std::vector<LocalGeometryDiagramDescriptor> local_geometries;
     MODiagramMode mode = MODiagramMode::ValenceCentral;
     EnergyTransform energy_transform;
+
+    // Local first-shell ligand-field information is kept separate from the
+    // full molecular point group.  For an unrestricted calculation the
+    // diagram can use majority-spin spatial representatives while retaining
+    // the paired alpha/beta occupation and member metadata.
+    std::string ligand_field_point_group;
+    std::string ligand_field_geometry_id;
+    std::string ligand_field_geometry_name;
+    std::size_t ligand_field_coordination_number = 0;
+    std::size_t ligand_field_metal_atom = 0;
+    std::vector<std::size_t> ligand_field_ligand_atoms;
+    double ligand_field_confidence = 0.0;
+    double ligand_field_angular_rms = 0.0;
+    double ligand_field_shape_measure = 0.0;
+    double ligand_field_radial_cv = 0.0;
+    bool spin_counterparts_collapsed = false;
+    bool spin_counterparts_partial = false;
+    std::size_t spin_counterpart_pair_count = 0;
+    std::size_t spin_counterpart_unmatched_visible = 0;
+    // Different-irrep local d-level gaps never contribute to pi partner counts.
+    std::vector<OrbitalEnergyGapDescriptor> crystal_field_gaps;
 };
+
+[[nodiscard]] std::vector<const OrbitalEnergyGapDescriptor*> orbital_energy_gaps(
+    const MODiagramData& data);
+
+struct MODiagramViewSnapshot {
+    const MODiagramData data;
+    const MODiagramOptions options;
+};
+
+struct MODiagramMemberView {
+    std::size_t orbital_index = 0;
+    std::optional<std::size_t> spin_counterpart;
+    ElectronGlyphs electrons;
+    bool selected = false;
+    std::size_t inspected_orbital_index = 0;
+};
+
+[[nodiscard]] MODiagramViewSnapshot make_mo_diagram_view_snapshot(
+    const MODiagramData& data,
+    const MODiagramOptions& options,
+    std::optional<std::size_t> inspected_orbital_index,
+    std::string origin = "explicit-data");
+// A mark always has a real canonical MO identity. A degeneracy count alone
+// cannot manufacture adjacent MO identities or extra electron arrows.
+[[nodiscard]] std::vector<MODiagramMemberView> mo_diagram_member_views(
+    const MODiagramData& data, const MODiagramLevel& level);
+[[nodiscard]] std::optional<std::size_t> mo_diagram_row_for_orbital(
+    const MODiagramData& data, std::size_t orbital_index) noexcept;
 
 [[nodiscard]] const char* annotation_source_name(AnnotationSource source) noexcept;
 [[nodiscard]] const char* bonding_class_name(BondingClass value) noexcept;
@@ -173,14 +435,35 @@ struct MODiagramData {
     const Wavefunction& wavefunction,
     const MODiagramOptions& options);
 
+// Availability of the local metal/first-shell fields shown for a row's
+// representative members. A default numeric zero is not availability evidence.
+struct MetalLigandDetailAvailability {
+    ChemistryStatus scope = ChemistryStatus::Unavailable;
+    bool populations = false;
+    bool overlap = false;
+    bool channels = false;
+};
+[[nodiscard]] MetalLigandDetailAvailability metal_ligand_detail_availability(
+    const Wavefunction& wavefunction, const MODiagramData& data,
+    const MODiagramLevel& level);
+
 struct MODiagramExportResult {
     bool svg = false;
     bool png = false;
     bool json = false;
     bool csv = false;
+    std::filesystem::path svg_path;
+    std::filesystem::path png_path;
+    std::filesystem::path json_path;
+    std::filesystem::path csv_path;
     std::string error;
 };
 
+[[nodiscard]] MODiagramExportResult export_mo_diagram_bundle(
+    const MODiagramViewSnapshot& snapshot,
+    const std::filesystem::path& base_path);
+// Explicit computed-export API for noninteractive callers. The live UI must
+// pass its already drawn snapshot through the overload above.
 [[nodiscard]] MODiagramExportResult export_mo_diagram_bundle(
     const Wavefunction& wavefunction,
     const MODiagramOptions& options,

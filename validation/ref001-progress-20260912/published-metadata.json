@@ -1,0 +1,11 @@
+{
+  "name": "cov-ref001-progress-20260912-published-metadata.zip",
+  "bytes": 375903,
+  "sha256": "219c1b7923ec73188d44ea9fcaf8f1c5a0427dabfb8b0f5a3236fd5f860239d9",
+  "asset_id": 559630247,
+  "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-published-metadata.zip",
+  "remote_digest": "sha256:219c1b7923ec73188d44ea9fcaf8f1c5a0427dabfb8b0f5a3236fd5f860239d9",
+  "verified_epoch": 1789232996.2410266,
+  "purpose": "Complete public metadata index, immutable reference records and verification of the 34 data volumes and pre-upload metadata snapshot.",
+  "release_url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/cov-ref-paused-20260906"
+}

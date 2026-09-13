@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 9262,
+        "MolecularFormula": "C3H3N3",
+        "ConnectivitySMILES": "C1=NC=NC=N1",
+        "InChIKey": "JIHQDMXYYFUGFV-UHFFFAOYSA-N",
+        "IUPACName": "1,3,5-triazine",
+        "Charge": 0
+      }
+    ]
+  }
+}

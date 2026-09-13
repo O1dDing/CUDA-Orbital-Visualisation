@@ -1,0 +1,42 @@
+{
+  "candidate_id": "PREP-008",
+  "source_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+  "raw_source_sha256": "6d88c7ce5371f758a8d317923c742f9fee56e40bd11a0336ccd0e512002b5ecc",
+  "literal_table_sha256": "821cd28e1818ad340ac465c56339bcece6ace3723d17ac9407bda0f34370aba2",
+  "formal_case": false,
+  "accepted_quality_reference": false,
+  "gaussian_started": false,
+  "cov_executed": false,
+  "status": "literal-starting-geometry-prepared",
+  "charge": 0,
+  "interpretation": {
+    "name": "bromine pentafluoride",
+    "multiplicity": 1,
+    "state": "1A1",
+    "point_group": "C4v",
+    "coordinate_method": null,
+    "source_type": "NIST curated experimental-geometry compilation",
+    "state_table_index": 3,
+    "expected_state_row": [
+      "1A1",
+      "C4V"
+    ],
+    "geometry_reference": "Gurvich, Veyts, Alcock, Thermodynamic Properties of Individual Substances, fourth edition, Hemisphere, New York, 1989",
+    "limitations": [
+      "The original experimental coordinate derivation has not been obtained.",
+      "The Cartesian table has four decimal places; this is not the experimental uncertainty.",
+      "The 1965 vibrational-spectrum paper listed on the same page is not automatically the geometry source."
+    ]
+  },
+  "source_table_index": 9,
+  "atom_count": 6,
+  "element_counts": {
+    "Br": 1,
+    "F": 5
+  },
+  "units": "angstrom",
+  "xyz_file": "PREP-008\\starting.xyz",
+  "xyz_sha256": "83bcd92743020c960df9bc0bb35a1e5fcd4f81bd3d9c2f7366a5bf1de9e513b6",
+  "transformations": "None; source element order and literal coordinate tokens retained.",
+  "geometry_quality": "Starting coordinates only; future optimization, frequency, stability, environment and identity checks remain required."
+}

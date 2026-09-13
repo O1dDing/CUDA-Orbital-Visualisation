@@ -1,0 +1,181 @@
+{
+  "created_epoch": 1788853055.750424,
+  "stage": "fifty-starting-geometries-prepared",
+  "starting_geometry_candidates": 50,
+  "candidate_ids": [
+    "PREP-001",
+    "PREP-002",
+    "PREP-003",
+    "PREP-004",
+    "PREP-005",
+    "PREP-006",
+    "PREP-007",
+    "PREP-008",
+    "PREP-010",
+    "PREP-011",
+    "PREP-012",
+    "PREP-013",
+    "PREP-014",
+    "PREP-015",
+    "PREP-016",
+    "PREP-017",
+    "PREP-018",
+    "PREP-019",
+    "PREP-020",
+    "PREP-021",
+    "PREP-022",
+    "PREP-023",
+    "PREP-024",
+    "PREP-025",
+    "PREP-026",
+    "PREP-027",
+    "PREP-028",
+    "PREP-029",
+    "PREP-030",
+    "PREP-031",
+    "PREP-032",
+    "PREP-033",
+    "PREP-034",
+    "PREP-035",
+    "PREP-036",
+    "PREP-037",
+    "PREP-038",
+    "PREP-039",
+    "PREP-040",
+    "PREP-042",
+    "PREP-043",
+    "PREP-044",
+    "PREP-045",
+    "PREP-046",
+    "PREP-051",
+    "PREP-060",
+    "PREP-068",
+    "PREP-069",
+    "PREP-070",
+    "PREP-071"
+  ],
+  "source_sets": [
+    {
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877",
+      "count": 35,
+      "candidate_ids": [
+        "PREP-001",
+        "PREP-003",
+        "PREP-004",
+        "PREP-005",
+        "PREP-006",
+        "PREP-010",
+        "PREP-011",
+        "PREP-012",
+        "PREP-013",
+        "PREP-014",
+        "PREP-015",
+        "PREP-016",
+        "PREP-017",
+        "PREP-019",
+        "PREP-020",
+        "PREP-021",
+        "PREP-022",
+        "PREP-023",
+        "PREP-024",
+        "PREP-025",
+        "PREP-026",
+        "PREP-027",
+        "PREP-028",
+        "PREP-029",
+        "PREP-030",
+        "PREP-031",
+        "PREP-032",
+        "PREP-033",
+        "PREP-034",
+        "PREP-035",
+        "PREP-036",
+        "PREP-037",
+        "PREP-038",
+        "PREP-039",
+        "PREP-040"
+      ]
+    },
+    {
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\benchmark-geometry-preparation-v1\\review-v2\\summary.json",
+      "sha256": "3fe377eae37bd026b1881c8e62fc571ebacd4b42dc4990b5b1691f14f5dd47b9",
+      "count": 4,
+      "candidate_ids": [
+        "PREP-018",
+        "PREP-043",
+        "PREP-044",
+        "PREP-046"
+      ]
+    },
+    {
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\nist-geometry-preparation-v1\\starting-geometries-v1\\summary.json",
+      "sha256": "a033e1233f7898f7443119cf5ecc4bd436c338c5b914058191e300359d22f809",
+      "count": 3,
+      "candidate_ids": [
+        "PREP-002",
+        "PREP-008",
+        "PREP-042"
+      ]
+    },
+    {
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\nist-followed-geometries-v1\\starting-geometries-v1\\summary.json",
+      "sha256": "5833327b1826d020658a388c6fa04e2e8c313b95af29f8c9e839c028b8ab667e",
+      "count": 2,
+      "candidate_ids": [
+        "PREP-007",
+        "PREP-045"
+      ]
+    },
+    {
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\summary.json",
+      "sha256": "d3e537b05b631bbce9a2d0032d3f1c2f6a812471a04b61f32ab88fbec15286a9",
+      "count": 2,
+      "candidate_ids": [
+        "PREP-051",
+        "PREP-060"
+      ]
+    },
+    {
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\summary.json",
+      "sha256": "69cc6463aa776d81fb6cbb456f2ac265eb52e60dcb6f09425cbe3bc7c25a6ccd",
+      "count": 4,
+      "candidate_ids": [
+        "PREP-068",
+        "PREP-069",
+        "PREP-070",
+        "PREP-071"
+      ]
+    }
+  ],
+  "additional_preparation_ids": [
+    "PREP-068",
+    "PREP-069",
+    "PREP-070",
+    "PREP-071"
+  ],
+  "original_67_preparation_candidates_retained": true,
+  "formal_external_list_frozen": false,
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "formal_case_passes": 0,
+  "gaussian_started_by_this_preparation": false,
+  "cov_external_validation_started": false,
+  "author_data_git_verification": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\pinned-tree-verification-v1.json",
+    "sha256": "6af3a133e9b41d5e2fcc91293a97f5d537264aff0af9a1dce9b69641e7357f71",
+    "verified_files": 9
+  },
+  "independent_metric_projector_math": {
+    "tests": 7,
+    "passed": 7,
+    "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\metric-projector-preparation-1788849174127690200",
+    "production_comparison": false
+  },
+  "limitations": [
+    "Starting coordinates do not establish a minimum, a stable wavefunction, or the requested reference quality.",
+    "Cisplatin uses the primary small-molecule DMF-solvate coordinate table; the downloaded CCD model is retained as rejected reference geometry.",
+    "The four MOR41 structures have proposed charge/spin pending individual source and ligand-state review.",
+    "Rare coordination geometry candidates and pure/Cartesian g-shell coverage still need completion."
+  ]
+}

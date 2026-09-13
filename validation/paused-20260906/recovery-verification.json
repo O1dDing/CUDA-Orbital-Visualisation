@@ -1,0 +1,13 @@
+{
+  "recorded_epoch": 1788691226.4138012,
+  "recovery_unit_checks_passed": 7,
+  "archives_restored_and_individually_verified": 23,
+  "restored_file_checksums_verified": 78481,
+  "restored_runtime_identity_verified_with_installed_gaussian": true,
+  "restored_prepared_reference_inputs_verified": 273,
+  "restored_complete_stage_hashes_verified": 28,
+  "staged_file_contents_equal_local_bytes": 855,
+  "gitattributes_preserves_exact_input_bytes": true,
+  "gaussian_calculations_started_for_verification": 0,
+  "formal_scientific_passes": 0
+}

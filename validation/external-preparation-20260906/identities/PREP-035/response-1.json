@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 10964,
+        "MolecularFormula": "C3H4O2",
+        "ConnectivitySMILES": "C(C=O)C=O",
+        "InChIKey": "WSMYVTOQOOLQHP-UHFFFAOYSA-N",
+        "IUPACName": "propanedial",
+        "Charge": 0
+      }
+    ]
+  }
+}

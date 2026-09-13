@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 9321,
+        "MolecularFormula": "H4N2",
+        "ConnectivitySMILES": "NN",
+        "InChIKey": "OAKJQQAXSVQMHS-UHFFFAOYSA-N",
+        "IUPACName": "hydrazine",
+        "Charge": 0
+      }
+    ]
+  }
+}

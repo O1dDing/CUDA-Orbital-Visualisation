@@ -1,0 +1,9 @@
+-- The CXX compiler identification is MSVC 19.44.35228.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: F:/Dev/VS2022BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (26.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: F:/Codex/2026-09-05/branch-15/outputs/cov-complete-validation-20260906/regression-fixtures/density-source-v1/baseline-production-21036b2-v3/build

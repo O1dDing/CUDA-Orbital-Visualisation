@@ -1,0 +1,13 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 520535,
+        "MolecularFormula": "HO2",
+        "ConnectivitySMILES": "O[O]",
+        "InChIKey": "OUUQCZGPVNCOIJ-UHFFFAOYSA-N",
+        "Charge": 0
+      }
+    ]
+  }
+}

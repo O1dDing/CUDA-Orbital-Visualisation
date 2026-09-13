@@ -1,0 +1,127 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "programs": {
+    "cov_validation.exe": "973dbb316753deb80202849b734411ea7debcd65afc59e90853667aa3dcf8c48",
+    "cov_scientific_audit_dump.exe": "dd09969b6195e8ec48e906122df8e44d110bbe6ee200cbdae4503a68035340ff",
+    "cov.exe": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6",
+    "cov_scientific_audit_dump_off.exe": "e41c45c69d3b5f63eab8b485e0e84ebdbcc72b0f15b3b6486a9633f2411e2eae"
+  },
+  "applicable_local_controls_passed": true,
+  "checks": [
+    {
+      "name": "embedded_build_commit_preflight",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\build-identity-preflight.json",
+        "sha256": "55954eca4c4753b17e6bb120ff495553b0224f5d5fc53fbee68a0e64d16ca0b9"
+      },
+      "scope": "Actual validation run reports the clean candidate commit; ordinary and audit SHA unchanged after metadata rebuild."
+    },
+    {
+      "name": "current_candidate_dedicated_controls",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\review-1789211531499047000\\summary.json",
+        "sha256": "a8986739923e6124eb3255627f9cad7f436777e39cf36ccf6a232fbabb054770"
+      },
+      "scope": "Eight ON/OFF mathematical probes; all 39 CTests in each configuration; same source and exact tested binary identities."
+    },
+    {
+      "name": "current_candidate_native_viewport",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\review-1789211531499047000\\native-viewport.json",
+        "sha256": "9268a68c938242f09d4f9a8c8ec948da5631a5b1cd4dbf7e9a247a45a4a34065"
+      },
+      "scope": "Actual native viewport/window/input actions and captured scene evidence."
+    },
+    {
+      "name": "current_candidate_viewport_direct_scene_review",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\review.json",
+        "sha256": "089c957c076e155ba3e034ededdf2ee70ea8b8607dbb44317a6e0f336c9f0c96"
+      },
+      "scope": "Directly inspected all 11 actual frames for scene placement and silhouette, with explicit small-sidebar readability limits."
+    },
+    {
+      "name": "current_candidate_availability_machine_checks",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\availability-ui-1789211532102031600\\review-v2\\machine-review.json",
+        "sha256": "27fc329e48f3df8a8a499dbdbafb30241739a7c8a4df5ff037dcb3f9ee42b267"
+      },
+      "scope": "Six controls, 356 native actions, 20 complete selected-MO target frames and embedded source identity checks."
+    },
+    {
+      "name": "current_candidate_availability_visual_checks",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\availability-ui-1789211532102031600\\review-v2\\visual-review.json",
+        "sha256": "e9ada8e402d8aab7d76dd1fdc1a89108d0da4217ba62ed9757b456f27afddefa"
+      },
+      "scope": "All 20 new frames directly inspected for declared availability and localized alpha/beta information."
+    },
+    {
+      "name": "ordinary_interaction_UI009_UI010",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\review.json",
+        "sha256": "6feac8c6bbc944f13737763b519536a74147b80cfe4666f066f5baf590aced6d"
+      },
+      "scope": "Exact unchanged ordinary binary: manual load, selection, restore, move, resize, scroll, close/reopen, bilingual narrow wrapping; 13 directly inspected frames."
+    },
+    {
+      "name": "current_candidate_pure_cartesian_g_end_to_end",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-g-control-adjudication.json",
+        "sha256": "22760c2783babe64541e3bbd701d460b78548eccea7ca0c066effb8932cd0a7f"
+      },
+      "scope": "New actual COV measurements and independent comparisons for two existing pure/cartesian g Gaussian-derived fixtures; no new physical calculations or external molecule acceptance."
+    },
+    {
+      "name": "ordinary_final_delivery_directory",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\review.json",
+        "sha256": "0e88fb71d074f5c6f7f473cf18c034baa8e1ae68802be5f365675fd9c34c7ac5"
+      },
+      "scope": "Actual ordinary startup and manual file loading in the delivery directory, normal exit confirmed; prior isolated blank observation preserved."
+    }
+  ],
+  "control_identity": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\identity.json",
+    "sha256": "0cd3ec9666040177a6538f622f7d90c1ee3c0b874cccea444f05ff862fe2806a"
+  },
+  "control_barrier": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\collection-complete.json",
+    "sha256": "5ff37621d04ae419de886da6ab220c39ae34b62d067ce4f32de377863c5c95e5"
+  },
+  "ui_identity": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\availability-ui-1789211532102031600\\identity.json",
+    "sha256": "10cbd9e9d93091b8e67407d04170d28f15a28ed6daf2fbcad1568fa5f8159e4b"
+  },
+  "ui_barrier": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\availability-ui-1789211532102031600\\collection-complete.json",
+    "sha256": "15b55ae89dfdddc569b03c541112484f9f346b9ca72cb4d1bb1b667d30e87f58"
+  },
+  "all_applicable_controls_included": true,
+  "formal_case_passes": 0,
+  "gaussian_started": false,
+  "ordinary_startup_observation": "One preserved blank startup, then four consecutive successful normal startups of the identical ordinary file. The fourth was from the final delivery directory. Cause of the initial blank remains unknown; no source fix for it is claimed.",
+  "limitations": [
+    "Declared-model software checks do not certify physical references.",
+    "The invalid D round is retained, without current-candidate acceptance.",
+    "Prior measurements and verdicts are not substituted for current validation evidence."
+  ],
+  "recorded_epoch": 1789211725.9565413,
+  "earlier_partial_control_summary": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-local-controls.json",
+    "sha256": "383ace00d25255f87baac231891d158ae1ece44942203384e61032fbb06ea0a6"
+  },
+  "coverage_gap_resolution": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-g-control-coverage-complete.json",
+    "sha256": "ce8fab1a0e8d8f2914452e1e7b5a88d00f07f56f3c196193870ba6aaaa893c49"
+  }
+}

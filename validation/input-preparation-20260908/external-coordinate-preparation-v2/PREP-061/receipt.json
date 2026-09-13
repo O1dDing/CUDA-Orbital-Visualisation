@@ -1,0 +1,15 @@
+{
+  "candidate_id": "PREP-061",
+  "query": "tetracyanoplatinate(II)",
+  "family": "金属配合物",
+  "expected_formula": "C4N4Pt",
+  "expected_charge": -2,
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "started_epoch": 1788843132.3562164,
+  "input_geometry_accepted": false,
+  "formal_case": false,
+  "gaussian_started": false,
+  "status": "identity-unresolved-retained",
+  "lookup_status": "lookup-failed-retained",
+  "finished_epoch": 1788843132.3562164
+}

@@ -1,0 +1,2823 @@
+{
+  "schema": 1,
+  "round_identity": "389d5ae5700ec4ab04b38b814b533b47b7cf1c646e0a0d09dd7829d2b4d7403b",
+  "collection_sha256": "2caa827c1420f5a332aca6feacf0bd14a9b5b8ff73fbbd74e872bc5c03c11266",
+  "review_barrier_sha256": "27ae468f0cbe10f17bc2fc8c729b1d0b56b18381b057709aa7c95eb05b2c5f70",
+  "summary_script_sha256": "98065496b5e55aba1ee07b27f30ac51c5d8399432d711a5fc8de952b618d3886",
+  "created_epoch": 1788853178.3302362,
+  "case_count": 273,
+  "collection_counts": {
+    "complete": 273,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 273
+  },
+  "check_counts": {
+    "BUILD-ON-OFF": {
+      "pass": 273
+    },
+    "ACTUAL-EXE-METRIC-DATA": {
+      "pass": 273
+    },
+    "AO-INTEGRAL": {
+      "pass": 273
+    },
+    "MO-RAW-PRECISION": {
+      "pass": 273
+    },
+    "MO-AO-TRANSFORM": {
+      "pass": 273
+    },
+    "AO-TRANSFORM-PROVENANCE": {
+      "pass": 273
+    },
+    "MO-ENERGIES": {
+      "pass": 273
+    },
+    "MO-GRAM-0": {
+      "pass": 273
+    },
+    "MO-RECONSTRUCTED-ELECTRON-TRACE": {
+      "pass": 273
+    },
+    "DECOMPOSITION-CONSERVATION": {
+      "pass": 273
+    },
+    "ALL-MO-SAMPLED-TEXTURES": {
+      "pass": 273
+    },
+    "FRONTIER-COMPLETE-TEXTURES": {
+      "pass": 273
+    },
+    "MO-GRAM-1": {
+      "pass": 32
+    }
+  },
+  "sampled_mos": 31871,
+  "complete_frontier_textures": 1214,
+  "failed_check_count": 0,
+  "failed_texture_count": 0,
+  "failures": [],
+  "texture_failures": [],
+  "cases": [
+    {
+      "case_id": "OLD-001",
+      "input": "gaussian_validation_set\\01_H3plus_3c2e.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 30.943507999996655,
+      "numerical_review_seconds": 2.032614299998386,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-002",
+      "input": "gaussian_validation_set\\02_XeF2_3c4e.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 38.04160250001587,
+      "numerical_review_seconds": 8.421627899981104,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-003",
+      "input": "gaussian_validation_set\\03_TiF6_2minus_Oh.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 40.745014999993145,
+      "numerical_review_seconds": 18.248114699992584,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-004",
+      "input": "gaussian_validation_set\\04_ZnCl4_2minus_Td.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 29.457863700023154,
+      "numerical_review_seconds": 17.07048759999452,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-005",
+      "input": "gaussian_validation_set\\05_benzene_D6h_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 76.13286820001667,
+      "numerical_review_seconds": 17.148263599985512,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-006",
+      "input": "gaussian_validation_set\\06_benzene_rotated_NoSymm_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 72.4190699000028,
+      "numerical_review_seconds": 16.850336600007722,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-007",
+      "input": "gaussian_validation_set\\07_benzene_D6h_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 112.20529099999112,
+      "numerical_review_seconds": 32.90924390000873,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-008",
+      "input": "gaussian_validation_set\\08_trans_butadiene_C2h_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 90.5464824999799,
+      "numerical_review_seconds": 12.280176400003256,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-009",
+      "input": "gaussian_validation_set\\09_ethylene_D2h_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 21.862731700006407,
+      "numerical_review_seconds": 6.787421599990921,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-010",
+      "input": "gaussian_validation_set\\10_diborane_D2h_two_3c2e_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 69.80740820002393,
+      "numerical_review_seconds": 7.525552899984177,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-011",
+      "input": "gaussian_validation_set\\11_CO_reference_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 66.42237489999388,
+      "numerical_review_seconds": 4.296287499979371,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-012",
+      "input": "gaussian_validation_set\\12_CrCO6_Oh_backbonding_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 49.78098219999811,
+      "numerical_review_seconds": 31.06363930000225,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-013",
+      "input": "gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 51.21461179998005,
+      "numerical_review_seconds": 29.660724399989704,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-014",
+      "input": "gaussian_validation_set\\14_allyl_radical_C2v_UDFT_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 65.0622594000015,
+      "numerical_review_seconds": 11.463119599997299,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-015",
+      "input": "gaussian_validation_set\\15_naphthalene_D2h_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 67.46341050000046,
+      "numerical_review_seconds": 36.005420900008176,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-016",
+      "input": "gaussian_validation_set\\16_trans_butadiene_twisted90_NoSymm_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 74.3937838000129,
+      "numerical_review_seconds": 14.14172429998871,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-017",
+      "input": "gaussian_validation_set\\17_H3plus_triplet_UDFT_negative_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 55.95835269999225,
+      "numerical_review_seconds": 2.6098762000037823,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-018",
+      "input": "gaussian_validation_set\\18_CrNH3_6_3plus_Oh_sigma_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 197.61963939998532,
+      "numerical_review_seconds": 38.79602639999939,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-019",
+      "input": "gaussian_validation_set\\cp_anion_pi.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 158.102143600001,
+      "numerical_review_seconds": 61.78550529998029,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-020",
+      "input": "gaussian_validation_set\\cp_anion_pi_vmd.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 126.64683539999533,
+      "numerical_review_seconds": 52.789134099992225,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-021",
+      "input": "molecular_ion_crosscheck_20260831\\001_so2_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 45.396638399979565,
+      "numerical_review_seconds": 19.011536800011527,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-022",
+      "input": "molecular_ion_crosscheck_20260831\\002_clo2_UPBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 48.11265060000005,
+      "numerical_review_seconds": 19.514149499998894,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-023",
+      "input": "molecular_ion_crosscheck_20260831\\003_propyne_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 60.03460039998754,
+      "numerical_review_seconds": 20.868331600009697,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-024",
+      "input": "molecular_ion_crosscheck_20260831\\004_imidazole_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 61.48505750001641,
+      "numerical_review_seconds": 33.724414800002705,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-025",
+      "input": "molecular_ion_crosscheck_20260831\\005_quinoline_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 137.4686231999949,
+      "numerical_review_seconds": 64.9733054000244,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-026",
+      "input": "molecular_ion_crosscheck_20260831\\006_thiourea_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 98.1974532000022,
+      "numerical_review_seconds": 29.17745830002241,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-027",
+      "input": "molecular_ion_crosscheck_20260831\\007_cl3_minus_PBE1PBE_augccpVTZ.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 101.20810260000871,
+      "numerical_review_seconds": 35.06510140001774,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-028",
+      "input": "molecular_ion_gold_opt_20260831\\001_ozone_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 77.79062689997954,
+      "numerical_review_seconds": 18.02749050001148,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-029",
+      "input": "molecular_ion_gold_opt_20260831\\002_no2_UPBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 110.59240829999908,
+      "numerical_review_seconds": 18.147307200008072,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-030",
+      "input": "molecular_ion_gold_opt_20260831\\003_allyl_plus_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 89.17677089999779,
+      "numerical_review_seconds": 21.73567729999195,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-031",
+      "input": "molecular_ion_gold_opt_20260831\\004_allyl_radical_UPBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 49.42149189999327,
+      "numerical_review_seconds": 23.24752949998947,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-032",
+      "input": "molecular_ion_gold_opt_20260831\\005_allyl_minus_PBE1PBE_augccpVTZ.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 107.20158309998806,
+      "numerical_review_seconds": 42.96211749999202,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-033",
+      "input": "molecular_ion_gold_opt_20260831\\006_butatriene_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 56.63447520000045,
+      "numerical_review_seconds": 26.76232949999394,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-034",
+      "input": "molecular_ion_gold_opt_20260831\\007_diborane_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.31875950001995,
+      "numerical_review_seconds": 15.820654299983289,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-035",
+      "input": "molecular_ion_gold_opt_20260831\\008_ammonia_borane_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.53356350000831,
+      "numerical_review_seconds": 16.475572499999544,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-036",
+      "input": "molecular_ion_gold_opt_20260831\\009_urea_planar_start_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 33.07662520001759,
+      "numerical_review_seconds": 27.915868400014006,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-037",
+      "input": "molecular_ion_gold_opt_20260831\\010_urea_nonplanar_start_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 32.67960820000735,
+      "numerical_review_seconds": 26.586997600010363,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-038",
+      "input": "molecular_ion_gold_opt_20260831\\011_al2cl6_PBE1PBE_def2TZVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 106.27330790000269,
+      "numerical_review_seconds": 59.30342539999401,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-039",
+      "input": "molecular_ion_master_20260831\\001_h2_plus_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 55.52019629999995,
+      "numerical_review_seconds": 1.7749596000066958,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-040",
+      "input": "molecular_ion_master_20260831\\002_h2_equilibrium_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 17.862693799979752,
+      "numerical_review_seconds": 1.3176118999836035,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-041",
+      "input": "molecular_ion_master_20260831\\003_h2_stretched_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 79.58357930000057,
+      "numerical_review_seconds": 1.4883956999983639,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-042",
+      "input": "molecular_ion_master_20260831\\004_h3_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 50.37489249999635,
+      "numerical_review_seconds": 1.8733544000133406,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-043",
+      "input": "molecular_ion_master_20260831\\005_li2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 25.488673999992898,
+      "numerical_review_seconds": 2.7397119999805,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-044",
+      "input": "molecular_ion_master_20260831\\006_be2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 23.892448399972636,
+      "numerical_review_seconds": 2.5595443999918643,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-045",
+      "input": "molecular_ion_master_20260831\\007_b2_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.42035649999161,
+      "numerical_review_seconds": 4.446663200011244,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-046",
+      "input": "molecular_ion_master_20260831\\008_c2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 80.5942985000147,
+      "numerical_review_seconds": 4.392467300000135,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-047",
+      "input": "molecular_ion_master_20260831\\009_n2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 20.3850034000061,
+      "numerical_review_seconds": 4.852707600017311,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-048",
+      "input": "molecular_ion_master_20260831\\010_o2_plus_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 28.065077500010375,
+      "numerical_review_seconds": 4.856516400002874,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-049",
+      "input": "molecular_ion_master_20260831\\011_o2_triplet_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.10318960002041,
+      "numerical_review_seconds": 4.733417899988126,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-050",
+      "input": "molecular_ion_master_20260831\\012_o2_minus_UPBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 77.41095319998567,
+      "numerical_review_seconds": 6.805390499997884,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-051",
+      "input": "molecular_ion_master_20260831\\013_o2_2minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 90.84544199999073,
+      "numerical_review_seconds": 6.355528499989305,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-052",
+      "input": "molecular_ion_master_20260831\\014_o2_singlet_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.9785652999999,
+      "numerical_review_seconds": 4.324010600015754,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-053",
+      "input": "molecular_ion_master_20260831\\015_f2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 19.10561639998923,
+      "numerical_review_seconds": 4.436614100006409,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-054",
+      "input": "molecular_ion_master_20260831\\016_lih_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 13.272591700020712,
+      "numerical_review_seconds": 2.244703899981687,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-055",
+      "input": "molecular_ion_master_20260831\\017_hf_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.24410869998974,
+      "numerical_review_seconds": 3.1268717999919318,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-056",
+      "input": "molecular_ion_master_20260831\\018_co_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 80.49213889997918,
+      "numerical_review_seconds": 4.552988700015703,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-057",
+      "input": "molecular_ion_master_20260831\\019_no_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 95.63329860000522,
+      "numerical_review_seconds": 4.806154999998398,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-058",
+      "input": "molecular_ion_master_20260831\\020_no_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 82.52417530000093,
+      "numerical_review_seconds": 5.105582299991511,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-059",
+      "input": "molecular_ion_master_20260831\\021_cn_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 134.32970830000704,
+      "numerical_review_seconds": 6.049332099995809,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-060",
+      "input": "molecular_ion_master_20260831\\022_beh2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 119.71692299999995,
+      "numerical_review_seconds": 2.9490795000165235,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-061",
+      "input": "molecular_ion_master_20260831\\023_co2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 19.16964310000185,
+      "numerical_review_seconds": 7.105006300000241,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-062",
+      "input": "molecular_ion_master_20260831\\024_hcn_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 17.148673499992583,
+      "numerical_review_seconds": 5.278918700001668,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-063",
+      "input": "molecular_ion_master_20260831\\025_h2o_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 19.476168599998346,
+      "numerical_review_seconds": 3.773918999999296,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-064",
+      "input": "molecular_ion_master_20260831\\026_nh3_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 18.654420200007735,
+      "numerical_review_seconds": 4.329069800005527,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-065",
+      "input": "molecular_ion_master_20260831\\027_ch4_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.4642479000031,
+      "numerical_review_seconds": 4.73843230001512,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-066",
+      "input": "molecular_ion_master_20260831\\028_bh3_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 79.15954740002053,
+      "numerical_review_seconds": 4.203794600005494,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-067",
+      "input": "molecular_ion_master_20260831\\029_bf3_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 28.907277899998007,
+      "numerical_review_seconds": 8.181691500009038,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-068",
+      "input": "molecular_ion_master_20260831\\030_formaldehyde_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 27.254046199988807,
+      "numerical_review_seconds": 5.493711500021163,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-069",
+      "input": "molecular_ion_master_20260831\\031_ethene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.93988320001517,
+      "numerical_review_seconds": 6.846825499989791,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-070",
+      "input": "molecular_ion_master_20260831\\032_acetylene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.1170967000071,
+      "numerical_review_seconds": 5.793819000013173,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-071",
+      "input": "molecular_ion_master_20260831\\033_allene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 27.849431299982825,
+      "numerical_review_seconds": 8.798575499997241,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-072",
+      "input": "molecular_ion_master_20260831\\034_xef2_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 27.339383899990935,
+      "numerical_review_seconds": 12.90080350000062,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-073",
+      "input": "molecular_ion_master_20260831\\035_diborane_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 78.2378691000049,
+      "numerical_review_seconds": 7.850937600014731,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-074",
+      "input": "molecular_ion_master_20260831\\036_i3_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.51016350000282,
+      "numerical_review_seconds": 15.948495799995726,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-075",
+      "input": "molecular_ion_master_20260831\\037_pf5_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 31.244598599994788,
+      "numerical_review_seconds": 13.023621000000276,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-076",
+      "input": "molecular_ion_master_20260831\\038_sf6_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 25.930009300005622,
+      "numerical_review_seconds": 15.185816000011982,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-077",
+      "input": "molecular_ion_master_20260831\\039_xef4_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.18158929998754,
+      "numerical_review_seconds": 16.720453299989458,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-078",
+      "input": "molecular_ion_master_20260831\\040_al2cl6_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 94.70099070001743,
+      "numerical_review_seconds": 25.063789300009375,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-079",
+      "input": "molecular_ion_master_20260831\\041_ch3_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 15.916354199987836,
+      "numerical_review_seconds": 4.147398600005545,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-080",
+      "input": "molecular_ion_master_20260831\\042_ch3_radical_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 89.07105729999603,
+      "numerical_review_seconds": 4.653739300003508,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-081",
+      "input": "molecular_ion_master_20260831\\043_ch3_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 79.84373390002293,
+      "numerical_review_seconds": 6.2768587000027765,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-082",
+      "input": "molecular_ion_master_20260831\\044_ozone_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 22.694328500016127,
+      "numerical_review_seconds": 6.587848099996336,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-083",
+      "input": "molecular_ion_master_20260831\\045_no2_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 25.502008200011915,
+      "numerical_review_seconds": 6.641971100005321,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-084",
+      "input": "molecular_ion_master_20260831\\046_cyclopropane_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 90.1689757000131,
+      "numerical_review_seconds": 11.589298200007761,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-085",
+      "input": "molecular_ion_master_20260831\\047_cp_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 85.71260100000654,
+      "numerical_review_seconds": 22.35805789998267,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-086",
+      "input": "molecular_ion_master_20260831\\048_benzene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 27.993421499995748,
+      "numerical_review_seconds": 17.86964370001806,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-087",
+      "input": "molecular_ion_master_20260831\\049_benzene_radical_cation_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 123.43908929999452,
+      "numerical_review_seconds": 20.803333499992732,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-088",
+      "input": "molecular_ion_master_20260831\\050_naphthalene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 89.56467660001363,
+      "numerical_review_seconds": 30.100696499983314,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-089",
+      "input": "molecular_ion_master_20260831\\051_butatriene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 87.61478960001841,
+      "numerical_review_seconds": 12.767569399991771,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-090",
+      "input": "molecular_ion_master_20260831\\052_allyl_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 74.71895099998801,
+      "numerical_review_seconds": 9.882341599994106,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-091",
+      "input": "molecular_ion_master_20260831\\053_allyl_radical_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.8241493999958,
+      "numerical_review_seconds": 10.484265500010224,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-092",
+      "input": "molecular_ion_master_20260831\\054_allyl_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 25.541346199985128,
+      "numerical_review_seconds": 15.191024300002027,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-093",
+      "input": "molecular_ion_master_20260831\\055_butadiene_s_cis_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 78.49750090000452,
+      "numerical_review_seconds": 13.371067799977027,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-094",
+      "input": "molecular_ion_master_20260831\\056_butadiene_s_trans_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 23.426144600001862,
+      "numerical_review_seconds": 13.833995900000446,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-095",
+      "input": "molecular_ion_master_20260831\\057_hexatriene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 28.991422099992633,
+      "numerical_review_seconds": 20.692429799993988,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-096",
+      "input": "molecular_ion_master_20260831\\058_cyclopropenyl_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 18.250376700016204,
+      "numerical_review_seconds": 7.7313973999989685,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-097",
+      "input": "molecular_ion_master_20260831\\059_tropylium_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 90.90995050000492,
+      "numerical_review_seconds": 24.611247199994978,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-098",
+      "input": "molecular_ion_master_20260831\\060_cyclobutadiene_square_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 71.61329639999894,
+      "numerical_review_seconds": 11.309566500014625,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-099",
+      "input": "molecular_ion_master_20260831\\061_cyclobutadiene_rectangle_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 21.985426599974744,
+      "numerical_review_seconds": 14.746445700002369,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-100",
+      "input": "molecular_ion_master_20260831\\062_cot_tub_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 110.34169049997581,
+      "numerical_review_seconds": 28.231159100017976,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-101",
+      "input": "molecular_ion_master_20260831\\063_cot_planar_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.09332040001755,
+      "numerical_review_seconds": 28.317377800005488,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-102",
+      "input": "molecular_ion_master_20260831\\064_pyridine_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 94.80720710000605,
+      "numerical_review_seconds": 15.61102949999622,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-103",
+      "input": "molecular_ion_master_20260831\\065_pyrrole_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 87.01973910001107,
+      "numerical_review_seconds": 13.664059900009306,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-104",
+      "input": "molecular_ion_master_20260831\\066_furan_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 24.11829189999844,
+      "numerical_review_seconds": 12.936255499982508,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-105",
+      "input": "molecular_ion_master_20260831\\067_thiophene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 24.421313799975906,
+      "numerical_review_seconds": 13.600455900013912,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-106",
+      "input": "molecular_ion_master_20260831\\068_fulvene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 80.1097636000195,
+      "numerical_review_seconds": 16.576707600004738,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-107",
+      "input": "molecular_ion_master_20260831\\069_spiropentadiene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 73.7529526000144,
+      "numerical_review_seconds": 12.644308099988848,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-108",
+      "input": "molecular_ion_master_20260831\\070_anthracene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 50.622000500006834,
+      "numerical_review_seconds": 35.650923299981514,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-109",
+      "input": "molecular_ion_master_20260831\\071_phenanthrene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 50.285932700004196,
+      "numerical_review_seconds": 35.507155300001614,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-110",
+      "input": "molecular_ion_master_20260831\\072_azulene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 67.16506190001382,
+      "numerical_review_seconds": 23.82866629998898,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-111",
+      "input": "molecular_ion_master_20260831\\073_ethane_staggered_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 47.19711599999573,
+      "numerical_review_seconds": 7.390619200014044,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-112",
+      "input": "molecular_ion_master_20260831\\074_ethane_eclipsed_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.54488430000492,
+      "numerical_review_seconds": 7.402930300013395,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-113",
+      "input": "molecular_ion_master_20260831\\075_methanol_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 65.22783960000379,
+      "numerical_review_seconds": 6.580733000009786,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-114",
+      "input": "molecular_ion_master_20260831\\076_dimethyl_ether_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 135.61773659999017,
+      "numerical_review_seconds": 9.768888700025855,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-115",
+      "input": "molecular_ion_master_20260831\\077_hydrogen_peroxide_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 126.17976159998216,
+      "numerical_review_seconds": 5.618631599994842,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-116",
+      "input": "molecular_ion_master_20260831\\078_methylamine_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 35.01661029999377,
+      "numerical_review_seconds": 7.152696599980118,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-117",
+      "input": "molecular_ion_master_20260831\\079_acetone_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 36.22533719998319,
+      "numerical_review_seconds": 11.94439560000319,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-118",
+      "input": "molecular_ion_master_20260831\\080_acrolein_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 82.13927980000153,
+      "numerical_review_seconds": 11.161454600020079,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-119",
+      "input": "molecular_ion_master_20260831\\081_formate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 73.43386499999906,
+      "numerical_review_seconds": 10.391057999979239,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-120",
+      "input": "molecular_ion_master_20260831\\082_formamide_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 23.904352200013818,
+      "numerical_review_seconds": 8.28611080002156,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-121",
+      "input": "molecular_ion_master_20260831\\083_urea_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 32.25047830000403,
+      "numerical_review_seconds": 10.461858599999687,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-122",
+      "input": "molecular_ion_master_20260831\\084_acetonitrile_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 85.99264859998948,
+      "numerical_review_seconds": 7.952495000005001,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-123",
+      "input": "molecular_ion_master_20260831\\085_nitromethane_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 75.30682420000085,
+      "numerical_review_seconds": 9.275655599980382,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-124",
+      "input": "molecular_ion_master_20260831\\086_carbonate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 28.761610899993684,
+      "numerical_review_seconds": 12.28165339998668,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-125",
+      "input": "molecular_ion_master_20260831\\087_nitrate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 26.590517899981933,
+      "numerical_review_seconds": 12.548558399983449,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-126",
+      "input": "molecular_ion_master_20260831\\088_nico4_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 95.61725419998402,
+      "numerical_review_seconds": 20.69013050000649,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-127",
+      "input": "molecular_ion_master_20260831\\089_re2cl8_2minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 119.05941919999896,
+      "numerical_review_seconds": 40.88096249999944,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-128",
+      "input": "molecular_ion_master_20260831\\090_feco5_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 113.15158870001324,
+      "numerical_review_seconds": 25.316505199996755,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-129",
+      "input": "molecular_ion_master_20260831\\091_crco6_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.343183399993,
+      "numerical_review_seconds": 31.530496399995172,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-130",
+      "input": "molecular_ion_master_20260831\\092_ferrocene_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 112.01532340000267,
+      "numerical_review_seconds": 32.63211659999797,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-131",
+      "input": "molecular_ion_master_20260831\\093_water_dimer_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.20507530000759,
+      "numerical_review_seconds": 6.897372999985237,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-132",
+      "input": "molecular_ion_master_20260831\\094_hf_dimer_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 22.840747799986275,
+      "numerical_review_seconds": 5.852207899995847,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-133",
+      "input": "molecular_ion_master_20260831\\095_ammonia_borane_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 84.9104970000044,
+      "numerical_review_seconds": 7.615194699988933,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-134",
+      "input": "molecular_ion_master_20260831\\096_co2_ammonia_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 80.61236050000298,
+      "numerical_review_seconds": 10.286321699997643,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-135",
+      "input": "molecular_ion_master_20260831\\097_sbf6_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 37.03527680001571,
+      "numerical_review_seconds": 24.145596999995178,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-136",
+      "input": "molecular_ion_master_20260831\\098_hf2_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 18.766512700007297,
+      "numerical_review_seconds": 7.663459399977,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-137",
+      "input": "molecular_ion_master_20260831\\100_h_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 75.51388969999971,
+      "numerical_review_seconds": 1.062823499989463,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-138",
+      "input": "molecular_ion_master_20260831\\101_he_plus_UPBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 60.83773110000766,
+      "numerical_review_seconds": 1.0184796000248753,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-139",
+      "input": "molecular_ion_master_20260831\\102_li_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 25.19160560000455,
+      "numerical_review_seconds": 1.4973623999976553,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-140",
+      "input": "molecular_ion_master_20260831\\103_na_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 24.461476099997526,
+      "numerical_review_seconds": 2.779053500009468,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-141",
+      "input": "molecular_ion_master_20260831\\104_k_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 86.63163489999715,
+      "numerical_review_seconds": 4.102917999989586,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-142",
+      "input": "molecular_ion_master_20260831\\105_mg_2plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 82.7403301000013,
+      "numerical_review_seconds": 3.2252975000010338,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-143",
+      "input": "molecular_ion_master_20260831\\106_ca_2plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 24.180168299993966,
+      "numerical_review_seconds": 4.711233200010611,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-144",
+      "input": "molecular_ion_master_20260831\\107_al_3plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 20.0888874999946,
+      "numerical_review_seconds": 3.1477787000185344,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-145",
+      "input": "molecular_ion_master_20260831\\108_f_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.19345029999386,
+      "numerical_review_seconds": 3.522275700001046,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-146",
+      "input": "molecular_ion_master_20260831\\109_cl_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.68815169998561,
+      "numerical_review_seconds": 4.272730299999239,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-147",
+      "input": "molecular_ion_master_20260831\\110_br_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 26.98729699998512,
+      "numerical_review_seconds": 8.59245229998487,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-148",
+      "input": "molecular_ion_master_20260831\\111_i_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 26.187108800018905,
+      "numerical_review_seconds": 6.330691800016211,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-149",
+      "input": "molecular_ion_master_20260831\\112_h3o_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 80.59335009998176,
+      "numerical_review_seconds": 3.9323444000037853,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-150",
+      "input": "molecular_ion_master_20260831\\113_nh4_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.86680530000012,
+      "numerical_review_seconds": 4.532175100001041,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-151",
+      "input": "molecular_ion_master_20260831\\114_no2_plus_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 23.268369299999904,
+      "numerical_review_seconds": 6.223748499993235,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-152",
+      "input": "molecular_ion_master_20260831\\115_tetramethylammonium_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 42.068685100006405,
+      "numerical_review_seconds": 19.950665999989724,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-153",
+      "input": "molecular_ion_master_20260831\\116_pyridinium_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 91.69853779999539,
+      "numerical_review_seconds": 19.350679299997864,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-154",
+      "input": "molecular_ion_master_20260831\\117_guanidinium_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 66.64420749997953,
+      "numerical_review_seconds": 13.311152800015407,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-155",
+      "input": "molecular_ion_master_20260831\\118_oh_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 15.03426600000239,
+      "numerical_review_seconds": 4.693633900023997,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-156",
+      "input": "molecular_ion_master_20260831\\119_nh2_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 15.362089000002015,
+      "numerical_review_seconds": 4.910332700004801,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-157",
+      "input": "molecular_ion_master_20260831\\120_bh4_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 86.24716619998799,
+      "numerical_review_seconds": 6.443626699998276,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-158",
+      "input": "molecular_ion_master_20260831\\121_nitrite_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.03243960000691,
+      "numerical_review_seconds": 10.15853449999122,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-159",
+      "input": "molecular_ion_master_20260831\\122_azide_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 21.004652900010115,
+      "numerical_review_seconds": 8.59060940000927,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-160",
+      "input": "molecular_ion_master_20260831\\123_cyanate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 20.760883600014495,
+      "numerical_review_seconds": 9.193489199999021,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-161",
+      "input": "molecular_ion_master_20260831\\124_thiocyanate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.90277690000948,
+      "numerical_review_seconds": 11.532191200007219,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-162",
+      "input": "molecular_ion_master_20260831\\125_sulfate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 90.00618309999118,
+      "numerical_review_seconds": 18.731371200003196,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-163",
+      "input": "molecular_ion_master_20260831\\126_phosphate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 91.91412209998816,
+      "numerical_review_seconds": 19.617900499986717,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-164",
+      "input": "molecular_ion_master_20260831\\127_bf4_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 85.12007249999442,
+      "numerical_review_seconds": 17.326777799986303,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-165",
+      "input": "molecular_ion_master_20260831\\128_pf6_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 141.72569490000024,
+      "numerical_review_seconds": 28.96825649999664,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-166",
+      "input": "molecular_ion_master_20260831\\129_asf6_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 142.51805330000934,
+      "numerical_review_seconds": 29.387805000005756,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-167",
+      "input": "molecular_ion_master_20260831\\130_clo4_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 28.061255999986315,
+      "numerical_review_seconds": 19.804437200014945,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-168",
+      "input": "molecular_ion_master_20260831\\131_triflate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 45.19372040001326,
+      "numerical_review_seconds": 29.49639919999754,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-169",
+      "input": "molecular_ion_master_20260831\\132_bis_triflimide_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 70.15336280001793,
+      "numerical_review_seconds": 50.6526968999824,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-170",
+      "input": "molecular_ion_master_20260831\\133_tetrakis_pentafluorophenyl_borate_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 255.39864719999605,
+      "numerical_review_seconds": 140.31673990000854,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-171",
+      "input": "molecular_ion_master_20260831\\134_closo_cb11h12_minus_PBE1PBE_def2SVPD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.05849830000079,
+      "numerical_review_seconds": 39.51569319999544,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-172",
+      "input": "molecular_ion_master_20260831\\135_glycine_zwitterion_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 30.61985280000954,
+      "numerical_review_seconds": 13.437549399997806,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-173",
+      "input": "molecular_ion_master_20260831\\136_nme4_sbf6_contact_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 57.52908379997825,
+      "numerical_review_seconds": 33.15883939998457,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-174",
+      "input": "molecular_ion_master_20260831\\137_nme4_sbf6_separated_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 78.06591559998924,
+      "numerical_review_seconds": 34.80663450001157,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-175",
+      "input": "molecular_ion_master_20260831\\138_nh4_pf6_contact_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 38.15306179999607,
+      "numerical_review_seconds": 21.235120400000596,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-176",
+      "input": "molecular_ion_master_20260831\\139_nh4_pf6_separated_PBE1PBE_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 96.7067640000023,
+      "numerical_review_seconds": 22.387438099976862,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-177",
+      "input": "molecular_scan_master_20260831\\01_h2_dissociation_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 62.513390699983574,
+      "numerical_review_seconds": 1.3828717000142206,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-178",
+      "input": "molecular_scan_master_20260831\\01_h2_dissociation_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 22.974081199994544,
+      "numerical_review_seconds": 1.588174100004835,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-179",
+      "input": "molecular_scan_master_20260831\\01_h2_dissociation_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 82.2010715000215,
+      "numerical_review_seconds": 1.4469579000142403,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-180",
+      "input": "molecular_scan_master_20260831\\01_h2_dissociation_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 78.03507129999343,
+      "numerical_review_seconds": 1.4559015999839175,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-181",
+      "input": "molecular_scan_master_20260831\\01_h2_dissociation_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 22.398084100015694,
+      "numerical_review_seconds": 1.5913181999931112,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-182",
+      "input": "molecular_scan_master_20260831\\02_h2o_walsh_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 25.6451522000134,
+      "numerical_review_seconds": 3.6552871000021696,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-183",
+      "input": "molecular_scan_master_20260831\\02_h2o_walsh_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 87.78492760000518,
+      "numerical_review_seconds": 3.615369000006467,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-184",
+      "input": "molecular_scan_master_20260831\\02_h2o_walsh_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 84.20153330001631,
+      "numerical_review_seconds": 3.6801010000053793,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-185",
+      "input": "molecular_scan_master_20260831\\02_h2o_walsh_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 20.27736670000013,
+      "numerical_review_seconds": 3.2896676000091247,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-186",
+      "input": "molecular_scan_master_20260831\\02_h2o_walsh_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 19.318504399998346,
+      "numerical_review_seconds": 3.743993500014767,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-187",
+      "input": "molecular_scan_master_20260831\\03_ethane_torsion_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 88.1125624999986,
+      "numerical_review_seconds": 7.806929600017611,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-188",
+      "input": "molecular_scan_master_20260831\\03_ethane_torsion_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 89.91123189998325,
+      "numerical_review_seconds": 7.610086200002115,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-189",
+      "input": "molecular_scan_master_20260831\\03_ethane_torsion_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 85.9879422999802,
+      "numerical_review_seconds": 7.555627000023378,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-190",
+      "input": "molecular_scan_master_20260831\\03_ethane_torsion_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.35262839999632,
+      "numerical_review_seconds": 7.639822800003458,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-191",
+      "input": "molecular_scan_master_20260831\\03_ethane_torsion_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 134.63040339999134,
+      "numerical_review_seconds": 7.66473760001827,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-192",
+      "input": "molecular_scan_master_20260831\\04_butadiene_torsion_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 134.4543113000109,
+      "numerical_review_seconds": 12.464924300002167,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-193",
+      "input": "molecular_scan_master_20260831\\04_butadiene_torsion_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 29.781237299990607,
+      "numerical_review_seconds": 12.342694899998605,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-194",
+      "input": "molecular_scan_master_20260831\\04_butadiene_torsion_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 29.764106799993897,
+      "numerical_review_seconds": 12.074857100000372,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-195",
+      "input": "molecular_scan_master_20260831\\04_butadiene_torsion_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 98.12369200002286,
+      "numerical_review_seconds": 12.592452100012451,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-196",
+      "input": "molecular_scan_master_20260831\\04_butadiene_torsion_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.36042610000004,
+      "numerical_review_seconds": 12.221098899986828,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-197",
+      "input": "molecular_scan_master_20260831\\05_pf5_berry_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 27.364445400016848,
+      "numerical_review_seconds": 12.877800999995088,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-198",
+      "input": "molecular_scan_master_20260831\\05_pf5_berry_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 30.59719029997359,
+      "numerical_review_seconds": 12.830612699995982,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-199",
+      "input": "molecular_scan_master_20260831\\05_pf5_berry_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 91.34397990000434,
+      "numerical_review_seconds": 12.808823399973335,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-200",
+      "input": "molecular_scan_master_20260831\\05_pf5_berry_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 82.29541550000431,
+      "numerical_review_seconds": 13.209058499982348,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-201",
+      "input": "molecular_scan_master_20260831\\05_pf5_berry_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 23.826072299998486,
+      "numerical_review_seconds": 13.439337799994973,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-202",
+      "input": "molecular_scan_master_20260831\\06_sn2_cl_ch3_cl_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 25.511586399981752,
+      "numerical_review_seconds": 11.838953800004674,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-203",
+      "input": "molecular_scan_master_20260831\\06_sn2_cl_ch3_cl_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 75.0845594999846,
+      "numerical_review_seconds": 12.117176700005075,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-204",
+      "input": "molecular_scan_master_20260831\\06_sn2_cl_ch3_cl_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 73.39778659999138,
+      "numerical_review_seconds": 12.202749799995217,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-205",
+      "input": "molecular_scan_master_20260831\\06_sn2_cl_ch3_cl_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 26.65390639999532,
+      "numerical_review_seconds": 13.121553799981484,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-206",
+      "input": "molecular_scan_master_20260831\\06_sn2_cl_ch3_cl_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 26.549111100001028,
+      "numerical_review_seconds": 12.786426499980735,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-207",
+      "input": "molecular_scan_master_20260831\\06_sn2_cl_ch3_cl_05.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 80.84918650001055,
+      "numerical_review_seconds": 12.256718299991917,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-208",
+      "input": "molecular_scan_master_20260831\\06_sn2_cl_ch3_cl_06.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 85.84277449999354,
+      "numerical_review_seconds": 12.503636799985543,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-209",
+      "input": "molecular_scan_master_20260831\\07_butadiene_cyclobutene_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 33.713229899993166,
+      "numerical_review_seconds": 11.845662500010803,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-210",
+      "input": "molecular_scan_master_20260831\\07_butadiene_cyclobutene_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 28.716643699997803,
+      "numerical_review_seconds": 11.913356300006853,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-211",
+      "input": "molecular_scan_master_20260831\\07_butadiene_cyclobutene_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 82.03898189999745,
+      "numerical_review_seconds": 11.972055599995656,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-212",
+      "input": "molecular_scan_master_20260831\\07_butadiene_cyclobutene_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 82.29396290000295,
+      "numerical_review_seconds": 11.73984749999363,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-213",
+      "input": "molecular_scan_master_20260831\\07_butadiene_cyclobutene_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 29.606242200010456,
+      "numerical_review_seconds": 12.364385099994252,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-214",
+      "input": "molecular_scan_master_20260831\\08_diels_alder_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 29.175811399996746,
+      "numerical_review_seconds": 18.074481099989498,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-215",
+      "input": "molecular_scan_master_20260831\\08_diels_alder_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 85.74128980000387,
+      "numerical_review_seconds": 17.996311299997615,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-216",
+      "input": "molecular_scan_master_20260831\\08_diels_alder_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 85.56676169999992,
+      "numerical_review_seconds": 18.54416650001076,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-217",
+      "input": "molecular_scan_master_20260831\\08_diels_alder_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 105.09267719998024,
+      "numerical_review_seconds": 20.145419400010724,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-218",
+      "input": "molecular_scan_master_20260831\\08_diels_alder_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 105.14275800000178,
+      "numerical_review_seconds": 19.31919559999369,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-219",
+      "input": "molecular_scan_master_20260831\\08_diels_alder_05.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 103.61864969998715,
+      "numerical_review_seconds": 19.133875700004864,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-220",
+      "input": "molecular_scan_master_20260831\\08_diels_alder_06.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 103.55686329997843,
+      "numerical_review_seconds": 17.248621100006858,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-221",
+      "input": "molecular_scan_master_20260831\\09_hf2_asymmetric_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 75.80082019997644,
+      "numerical_review_seconds": 6.017429400002584,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-222",
+      "input": "molecular_scan_master_20260831\\09_hf2_asymmetric_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 75.789810199989,
+      "numerical_review_seconds": 5.729580100014573,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-223",
+      "input": "molecular_scan_master_20260831\\09_hf2_asymmetric_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 20.688378199993167,
+      "numerical_review_seconds": 6.396775900007924,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-224",
+      "input": "molecular_scan_master_20260831\\09_hf2_asymmetric_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 20.688923799985787,
+      "numerical_review_seconds": 6.352610200003255,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-225",
+      "input": "molecular_scan_master_20260831\\09_hf2_asymmetric_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 83.03362450000714,
+      "numerical_review_seconds": 6.24229400002514,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-226",
+      "input": "molecular_scan_master_20260831\\09_hf2_asymmetric_05.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 84.3259129000071,
+      "numerical_review_seconds": 6.193659499986097,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-227",
+      "input": "molecular_scan_master_20260831\\09_hf2_asymmetric_06.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 22.557176499976777,
+      "numerical_review_seconds": 6.244470799982082,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-228",
+      "input": "molecular_scan_master_20260831\\10_nme4_sbf6_approach_00.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 37.35925589999533,
+      "numerical_review_seconds": 33.80013710001367,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-229",
+      "input": "molecular_scan_master_20260831\\10_nme4_sbf6_approach_01.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 103.12268169998424,
+      "numerical_review_seconds": 33.583001799997874,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-230",
+      "input": "molecular_scan_master_20260831\\10_nme4_sbf6_approach_02.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 87.0196525999927,
+      "numerical_review_seconds": 33.698862300021574,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-231",
+      "input": "molecular_scan_master_20260831\\10_nme4_sbf6_approach_03.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 127.12644480000017,
+      "numerical_review_seconds": 34.2763549000083,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-232",
+      "input": "molecular_scan_master_20260831\\10_nme4_sbf6_approach_04.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 127.10956710000755,
+      "numerical_review_seconds": 34.19336390000535,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-233",
+      "input": "pyridine_n_oxide.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 81.64082269999199,
+      "numerical_review_seconds": 19.5573158999905,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-234",
+      "input": "tm_coordination_geometry_matrix_20260830\\25_AgNH3_2_plus_CN2_linear_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 72.40467750001699,
+      "numerical_review_seconds": 12.997130500007188,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-235",
+      "input": "tm_coordination_geometry_matrix_20260830\\26_FeCl3_CN3_D3h_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 106.31585240000277,
+      "numerical_review_seconds": 14.939443300012499,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-236",
+      "input": "tm_coordination_geometry_matrix_20260830\\27_FeCO5_CN5_D3h_strong_closed_pi_acceptor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 90.0785337999987,
+      "numerical_review_seconds": 26.42371249999269,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-237",
+      "input": "tm_coordination_geometry_matrix_20260830\\28_ZrF7_3minus_CN7_D5h_weak_closed_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 130.9960037000128,
+      "numerical_review_seconds": 19.536101100005908,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-238",
+      "input": "tm_coordination_geometry_matrix_20260830\\29_MoCN8_4minus_CN8_D4d_strong_open_pi_acceptor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 193.73592520001694,
+      "numerical_review_seconds": 36.68246049998561,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-239",
+      "input": "tm_coordination_geometry_matrix_20260830\\30_ReH9_2minus_CN9_D3h_strong_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 26.20204519998515,
+      "numerical_review_seconds": 9.981474300002446,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-240",
+      "input": "tm_coordination_geometry_matrix_20260830\\31_HfH2O10_4plus_CN10_D5d_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 88.09959639998851,
+      "numerical_review_seconds": 34.110175999987405,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-241",
+      "input": "tm_coordination_geometry_matrix_20260830\\32_CuCl4_2minus_CN4_C3v_vTBPY_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 32.71397759998217,
+      "numerical_review_seconds": 17.52920040002209,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-242",
+      "input": "tm_full_geometry_matrix_20260830\\33_AuCN2_minus_CN2_L-2_strong_closed_pi_acceptor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 16.490786899987143,
+      "numerical_review_seconds": 12.72792499998468,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-243",
+      "input": "tm_full_geometry_matrix_20260830\\34_CuCl2_minus_CN2_A-2_weak_closed_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 10.309450200002175,
+      "numerical_review_seconds": 11.600080600008368,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-244",
+      "input": "tm_full_geometry_matrix_20260830\\35_FeCl3_CN3_TP-3_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 96.15824600000633,
+      "numerical_review_seconds": 14.811922099994263,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-245",
+      "input": "tm_full_geometry_matrix_20260830\\36_VCl3_CN3_TPY-3_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.18308060002164,
+      "numerical_review_seconds": 14.73003730000346,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-246",
+      "input": "tm_full_geometry_matrix_20260830\\37_CuCl3_2minus_CN3_TS-3_weak_closed_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 27.586510099994484,
+      "numerical_review_seconds": 14.731572800024878,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-247",
+      "input": "tm_full_geometry_matrix_20260830\\38_CoCl4_2minus_CN4_T-4_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 60.32957649999298,
+      "numerical_review_seconds": 17.597714500006987,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-248",
+      "input": "tm_full_geometry_matrix_20260830\\39_NiCN4_2minus_CN4_SP-4_strong_closed_pi_acceptor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 92.27503449999494,
+      "numerical_review_seconds": 23.69006839999929,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-249",
+      "input": "tm_full_geometry_matrix_20260830\\40_FeCl4_minus_CN4_SS-4_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 70.28756249998696,
+      "numerical_review_seconds": 18.5550950000179,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-250",
+      "input": "tm_full_geometry_matrix_20260830\\41_CuCl4_2minus_CN4_vTBPY-4_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 118.76989659998799,
+      "numerical_review_seconds": 17.484443499997724,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-251",
+      "input": "tm_full_geometry_matrix_20260830\\42_FeCO5_CN5_TBPY-5_strong_closed_pi_acceptor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 96.83994429997983,
+      "numerical_review_seconds": 26.610483299999032,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-252",
+      "input": "tm_full_geometry_matrix_20260830\\43_CuCl5_3minus_CN5_SPY-5_weak_open_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 124.34551149999606,
+      "numerical_review_seconds": 20.95947430000524,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-253",
+      "input": "tm_full_geometry_matrix_20260830\\44_CrNH3_6_3plus_CN6_OC-6_medium_open_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 142.98310250000213,
+      "numerical_review_seconds": 29.237575599981938,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-254",
+      "input": "tm_full_geometry_matrix_20260830\\45_MoCl6_CN6_TPR-6_weak_closed_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 84.18044669998926,
+      "numerical_review_seconds": 24.132642999989912,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-255",
+      "input": "tm_full_geometry_matrix_20260830\\46_ZrF7_3minus_CN7_PBPY-7_weak_closed_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 55.35044760000892,
+      "numerical_review_seconds": 19.858726500009652,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-256",
+      "input": "tm_full_geometry_matrix_20260830\\47_HfH2O7_4plus_CN7_COC-7_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 108.47489740001038,
+      "numerical_review_seconds": 28.264531900000293,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-257",
+      "input": "tm_full_geometry_matrix_20260830\\48_ZrF7_3minus_CN7_CTPR-7_weak_closed_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 99.89845470001455,
+      "numerical_review_seconds": 20.742904599988833,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-258",
+      "input": "tm_full_geometry_matrix_20260830\\49_MoCN8_4minus_CN8_SAPR-8_strong_open_pi_acceptor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 178.35094289999688,
+      "numerical_review_seconds": 37.74527109999326,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-259",
+      "input": "tm_full_geometry_matrix_20260830\\50_ZrF8_4minus_CN8_TDD-8_weak_closed_pi_donor_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 97.8145305000071,
+      "numerical_review_seconds": 23.147599200019613,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-260",
+      "input": "tm_full_geometry_matrix_20260830\\51_HfH2O8_4plus_CN8_BTPR-8_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 113.48419610000565,
+      "numerical_review_seconds": 31.619693000015104,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-261",
+      "input": "tm_full_geometry_matrix_20260830\\52_HfH2O9_4plus_CN9_CSAPR-9_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 49.780958499992266,
+      "numerical_review_seconds": 36.09974819998024,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-262",
+      "input": "tm_full_geometry_matrix_20260830\\53_HfH2O9_4plus_CN9_TCTPR-9_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 110.84784699999727,
+      "numerical_review_seconds": 33.41366160000325,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-263",
+      "input": "tm_full_geometry_matrix_20260830\\54_HfH2O10_4plus_CN10_PPR-10_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 105.45758009998826,
+      "numerical_review_seconds": 35.74875959998462,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-264",
+      "input": "tm_full_geometry_matrix_20260830\\55_HfH2O10_4plus_CN10_PAPR-10_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 109.54926790000172,
+      "numerical_review_seconds": 36.32493410000461,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-265",
+      "input": "tm_full_geometry_matrix_20260830\\56_HfH2O10_4plus_CN10_BCSAPR-10_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 106.06924070001696,
+      "numerical_review_seconds": 34.37293549999595,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-266",
+      "input": "tm_full_geometry_matrix_20260830\\57_HfH2O10_4plus_CN10_SPC-10_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 84.41304499999387,
+      "numerical_review_seconds": 34.858951599977445,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-267",
+      "input": "tm_full_geometry_matrix_20260830\\58_HfH2O10_4plus_CN10_TD-10_medium_closed_sigma_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 84.80810039999778,
+      "numerical_review_seconds": 33.684797800000524,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-268",
+      "input": "tm_ligand_field_matrix_20260829\\19_FeF6_3minus_Oh_weak_open_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 142.2010936999868,
+      "numerical_review_seconds": 19.413471699983347,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-269",
+      "input": "tm_ligand_field_matrix_20260829\\20_CoCl4_2minus_Td_weak_open_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 139.09493120000116,
+      "numerical_review_seconds": 17.53612410000642,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-270",
+      "input": "tm_ligand_field_matrix_20260829\\21_CoNH3_6_3plus_Oh_medium_closed_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 107.23334870001418,
+      "numerical_review_seconds": 29.38877130000037,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-271",
+      "input": "tm_ligand_field_matrix_20260829\\22_ZnNH3_4_2plus_Td_medium_closed_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 97.19177909998689,
+      "numerical_review_seconds": 22.274702199996682,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-272",
+      "input": "tm_ligand_field_matrix_20260829\\23_NiCO4_Td_strong_closed_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 106.1651406000019,
+      "numerical_review_seconds": 21.68136640000739,
+      "failed_checks": []
+    },
+    {
+      "case_id": "OLD-273",
+      "input": "tm_ligand_field_matrix_20260829\\24_CrCN6_3minus_Oh_strong_open_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 157.78507610000088,
+      "numerical_review_seconds": 31.18922180001391,
+      "failed_checks": []
+    }
+  ],
+  "timing": {
+    "collection_wall_seconds": 9727.5011391,
+    "independent_review_wall_seconds": 2387.5332678999985,
+    "collection_per_case": {
+      "n": 273,
+      "sum_seconds": 19393.858098399767,
+      "minimum_seconds": 10.309450200002175,
+      "median_seconds": 79.58357930000057,
+      "p95_seconds": 134.52474814000306,
+      "maximum_seconds": 255.39864719999605
+    },
+    "independent_review_per_case": {
+      "n": 273,
+      "sum_seconds": 4424.5440523000725,
+      "minimum_seconds": 1.0184796000248753,
+      "median_seconds": 12.786426499980735,
+      "p95_seconds": 36.043151819997,
+      "maximum_seconds": 140.31673990000854
+    }
+  },
+  "formal_case_passes": 0,
+  "remaining": [
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

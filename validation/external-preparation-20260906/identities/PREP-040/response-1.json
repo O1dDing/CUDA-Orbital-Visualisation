@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 679,
+        "MolecularFormula": "C2H6OS",
+        "ConnectivitySMILES": "CS(=O)C",
+        "InChIKey": "IAZDPXIOMUYVGZ-UHFFFAOYSA-N",
+        "IUPACName": "methylsulfinylmethane",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "case_id": "OLD-244",
+  "round_identity": "4c6a0986839ecaf985be304d66b75e89dec54288400c1839423a3c681348aa45",
+  "status": "numeric_subset_pass",
+  "checks": [
+    {
+      "check": "BUILD-ON-OFF",
+      "status": "pass",
+      "observed": {
+        "scope": "Entire recorded production analysis and diagram data"
+      }
+    },
+    {
+      "check": "ACTUAL-EXE-METRIC-DATA",
+      "status": "pass",
+      "observed": {
+        "matching_actual_exe_input_events": 1
+      }
+    },
+    {
+      "check": "AO-INTEGRAL",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error": 1.4432899320127035e-15
+      }
+    },
+    {
+      "check": "MO-RAW-PRECISION",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error": 0.0
+      }
+    },
+    {
+      "check": "MO-AO-TRANSFORM",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error": 0.0
+      }
+    },
+    {
+      "check": "AO-TRANSFORM-PROVENANCE",
+      "status": "pass",
+      "observed": {
+        "ao_count": 85
+      }
+    },
+    {
+      "check": "MO-ENERGIES",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error_hartree": 0.0
+      }
+    },
+    {
+      "check": "MO-GRAM-0",
+      "status": "pass",
+      "observed": {
+        "spin": 0,
+        "ao_count": 85,
+        "mo_count": 85,
+        "reference_gram_max_error": 8.941126283801282e-09,
+        "production_gram_max_error": 8.941126061756677e-09,
+        "production_reference_gram_max_error": 2.6645352591003757e-15
+      }
+    },
+    {
+      "check": "MO-GRAM-1",
+      "status": "pass",
+      "observed": {
+        "spin": 1,
+        "ao_count": 85,
+        "mo_count": 85,
+        "reference_gram_max_error": 9.778246101710408e-09,
+        "production_gram_max_error": 9.778245879665803e-09,
+        "production_reference_gram_max_error": 2.6645352591003757e-15
+      }
+    },
+    {
+      "check": "MO-RECONSTRUCTED-ELECTRON-TRACE",
+      "status": "pass",
+      "observed": {
+        "trace": 77.00000002718518,
+        "expected_electrons": 77.0,
+        "scope": "MO-reconstructed density, not all optional stored producer density fields"
+      }
+    },
+    {
+      "check": "DECOMPOSITION-CONSERVATION",
+      "status": "pass",
+      "observed": {
+        "invalid_distributions": [],
+        "available_mos": 170,
+        "scope": "Every reported available distribution; unavailable chemistry is not certified"
+      }
+    },
+    {
+      "check": "ALL-MO-SAMPLED-TEXTURES",
+      "status": "pass",
+      "observed": {
+        "expected_mos": 170,
+        "measured": 170,
+        "passed": 170,
+        "maximum_nrms": 4.509504305664961e-06
+      }
+    },
+    {
+      "check": "FRONTIER-COMPLETE-TEXTURES",
+      "status": "pass",
+      "observed": {
+        "expected": 8,
+        "measured": 8,
+        "passed": 8,
+        "maximum_nrms": 1.3080366017311253e-06
+      }
+    }
+  ],
+  "wall_seconds": 14.9946454000019,
+  "formal_case_pass": false,
+  "coordinate_reference": "Recorded CUDA float grid interpolation with one final FMA rounding, as in the pre-existing independent checker",
+  "remaining_scope": [
+    "reference physical conclusions paused",
+    "full independent stored-density checks",
+    "symmetry/topology/chemical adjudication",
+    "visual correctness and all UI/export semantics",
+    "all required invariants and ordinary-build behavior"
+  ],
+  "source_sha256": "ccadd48555932fcd0831260e6419166f478eaef04201833b70fa6adcdf814284",
+  "reviewer_sha256": "6460245b238aa1d9ba3f523abe0bc98da5f8bc715394eec82f035af892fc43fc",
+  "artifacts": {
+    "complete-textures.json": {
+      "bytes": 6467,
+      "sha256": "e183218ab6d2da35c74b7c4b9127c29f93cd70e4d511a9daaf2459c566ec475d"
+    },
+    "full-reference-00.npy": {
+      "bytes": 67108992,
+      "sha256": "ff5b235427d8eafa414b686d64e3c9e73759d02fedec33d4c893849b0db15e33"
+    },
+    "full-reference-01.npy": {
+      "bytes": 8388736,
+      "sha256": "a4276c2804ab87d14d33d82d9adc132299da6727f97e31bdaa3eafaf892e0c27"
+    },
+    "independent-metric.npz": {
+      "bytes": 122294,
+      "sha256": "6cb8655561eb4fe58d903f165121458d99eafcefe5f274ed45c934136620ac7a"
+    },
+    "metric-checks.json": {
+      "bytes": 2075,
+      "sha256": "5a6fb2d95c662bcc83be4c6ef3d41e438708d2bc092bbf5f6fba6f1be5213bff"
+    },
+    "sampled-textures.json": {
+      "bytes": 107920,
+      "sha256": "8d2419f3ae0d55e953bae24cd9b6d627e29f17016832d3dafa27e343fd3cc630"
+    }
+  }
+}

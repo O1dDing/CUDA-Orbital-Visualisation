@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 9255,
+        "MolecularFormula": "C3H3NO",
+        "ConnectivitySMILES": "C1=COC=N1",
+        "InChIKey": "ZCQWOFVYLHDMMC-UHFFFAOYSA-N",
+        "IUPACName": "1,3-oxazole",
+        "Charge": 0
+      }
+    ]
+  }
+}

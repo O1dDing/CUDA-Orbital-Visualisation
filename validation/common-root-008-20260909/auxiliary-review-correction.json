@@ -1,0 +1,48 @@
+{
+  "round_identity": "735aa91a53da07b58f106de916fcc4d90879086f6e4385b183921b3476048feb",
+  "manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-g-controls\\manifest.json",
+    "sha256": "0186e06a948cc53335bdb3c509eb684cfb9f5ef0028ed01937fd21ee576db448"
+  },
+  "collection_barrier": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-g-controls\\collection-complete.json",
+    "sha256": "c539c777d64cb7fef6270a2ea24b9ce446064d940e78304c2cdeea64e78d8f86"
+  },
+  "old_view_summary": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-g-controls\\view-review-v1\\summary.json",
+    "sha256": "3041d48b40a28c202222445c24fdcf70c15497a993137df99a341d08e3ee5dff"
+  },
+  "old_reviewer": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-view-review-v2\\reviewer-v1.py",
+    "sha256": "5e79ec82ae3347da601e4c4d70df3ae9658cd267f8a117aa211c2cbcf16d81de"
+  },
+  "new_reviewer": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-view-review-v2\\review_export_snapshot_round.py",
+    "sha256": "25351b76a7b374fa421c146dc00c6b64c3dedd088902077c76b241e63a8b2f4e"
+  },
+  "validation_process": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-view-review-v2\\validation_process.py",
+    "sha256": "9dd461a36d6becd6a31bb9edad7f2234601b9cd0f5ba8318063e6bd012184fac"
+  },
+  "orchestrator": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-view-review-v2\\orchestrator.py",
+    "sha256": "5cd23ec0fd267963f075b3cbf82d578c58ca4b9fa5b0b2abcca27d110f93030e"
+  },
+  "prior_adjudication_failure": {
+    "exception": "KeyError: 'AUX-G-CARTESIAN.json'",
+    "line": 44,
+    "source": {
+      "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-view-review-v2\\adjudicator-v1.py",
+      "sha256": "5f6f03fce880cc42b757a27f27823e069b8afeb42c32c1407a918cb797f4d4f1"
+    }
+  },
+  "change": {
+    "before": "'case_reports':{p.name:sha(p) for p in out.glob('OLD-*.json')}",
+    "after": "'case_reports':{r['case_id']+'.json':sha(out/(r['case_id']+'.json')) for r in results}",
+    "scope": "Summary case-report hashes use actual reviewed case identities instead of an OLD-only filename pattern. Per-case checks and tolerances are unchanged."
+  },
+  "review_id": "view-review-v2",
+  "new_cov_collection": false,
+  "reuse_cached_verdicts": false,
+  "created_epoch": 1788958675.167941
+}

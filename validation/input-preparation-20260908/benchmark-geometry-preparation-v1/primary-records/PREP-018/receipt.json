@@ -1,0 +1,42 @@
+{
+  "candidate_id": "PREP-018",
+  "query": "borazine",
+  "commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+  "local_candidate": {
+    "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\NBPRC\\bz.xyz",
+    "relative_path": "NBPRC/bz.xyz",
+    "sha256": "05f83049affa8d152f078789d2ded416dfe10fae205edaa208f974dd048db2f8",
+    "atom_count": 12,
+    "charge": 0,
+    "multiplicity": 1,
+    "formula_counts": {
+      "B": 3,
+      "H": 6,
+      "N": 3
+    },
+    "original_source_coordinates_verified": false
+  },
+  "source_directory": "NBPRC/bz",
+  "started_epoch": 1788843963.4818864,
+  "files": [
+    {
+      "name": "coord",
+      "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/NBPRC/bz/coord",
+      "git_blob_sha1": "bf1a71b66357491f3023bb2381a84a8201f51ca8",
+      "sha256": "4e523f963066e911665402302ea7a989b820592d9b54dc25a37bd0d7ccd3dbae",
+      "bytes": 972
+    }
+  ],
+  "formal_case": false,
+  "gaussian_started": false,
+  "accepted_reference_geometry": false,
+  "directory_url": "https://api.github.com/repos/grimme-lab/GMTKN55/contents/NBPRC/bz?ref=8d485b37a1ca8837e395042671ca5ba4e0714691",
+  "directory_sha256": "dd17b5d43443cc4a7b535e935a73927f56c9706d9318996806c8704677141e19",
+  "entry_names": [
+    "PBEh-3c",
+    "coord",
+    "struc.xyz"
+  ],
+  "status": "primary-records-collected",
+  "finished_epoch": 1788843964.7123656
+}

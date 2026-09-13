@@ -1,8 +1,11 @@
 #include "cov/molden_parser.hpp"
+#include "cov/density.hpp"
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <fstream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -293,6 +296,12 @@ void finalise_mo(MolecularOrbital& mo,
             std::to_string(wf.basis_count) +
             " functions. Check Cartesian/spherical shell convention or file completeness.");
     }
+    if (mo.spin_provenance != DataProvenance::Unavailable) {
+        mo.source_orbital_index = static_cast<std::size_t>(std::count_if(
+            wf.orbitals.begin(), wf.orbitals.end(), [&](const auto& other) {
+                return other.spin_provenance != DataProvenance::Unavailable && other.spin == mo.spin;
+            }));
+    }
     wf.orbitals.push_back(std::move(mo));
     mo = MolecularOrbital{};
     have_mo = false;
@@ -309,6 +318,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
     }
 
     Wavefunction wf;
+    wf.source = WavefunctionSource::Molden;
     std::vector<RawShell> raw_shells;
     BasisMarkerState basis_markers;
 
@@ -464,9 +474,9 @@ Wavefunction parse_molden(const std::filesystem::path& path,
 
             for (const RawPrimitive& p : raw.primitives) {
                 Primitive primitive;
-                primitive.exponent = static_cast<float>(p.exponent);
+                primitive.exponent = p.exponent;
                 primitive.coefficient =
-                    static_cast<float>(use_second_coeff ? p.c2 : p.c1);
+                    use_second_coeff ? p.c2 : p.c1;
                 wf.primitives.push_back(primitive);
             }
             basis_offset += shell_basis_count(shell);
@@ -525,6 +535,9 @@ Wavefunction parse_molden(const std::filesystem::path& path,
             }
             if (!have_mo) begin_mo();
             current_mo.symmetry = value_after_equals(t);
+            if (!current_mo.symmetry.empty()) {
+                current_mo.symmetry_provenance = DataProvenance::Producer;
+            }
             continue;
         }
 
@@ -552,13 +565,17 @@ Wavefunction parse_molden(const std::filesystem::path& path,
         }
 
         if (starts_with_ci(t, "spin=")) {
-            const auto spin = lower(value_after_equals(t));
-            current_mo.spin = (spin.find("beta") != std::string::npos)
-                                  ? Spin::Beta
-                                  : Spin::Alpha;
+            current_mo.spin_source_text = value_after_equals(t);
+            const auto spin = lower(trim(current_mo.spin_source_text));
+            current_mo.spin_provenance = DataProvenance::Unavailable;
+            if (spin == "alpha" || spin == "beta") {
+                current_mo.spin = spin == "beta" ? Spin::Beta : Spin::Alpha;
+                current_mo.spin_provenance = DataProvenance::Producer;
+            }
         } else if (starts_with_ci(t, "occup=")) {
             current_mo.occupation =
-                static_cast<float>(parse_fortran_double(value_after_equals(t)));
+                parse_fortran_double(value_after_equals(t));
+            current_mo.occupation_provenance = DataProvenance::Producer;
         } else {
             std::istringstream css(t);
             int coefficient_index = 0;
@@ -578,8 +595,7 @@ Wavefunction parse_molden(const std::filesystem::path& path,
                 }
                 coefficient_seen[ci] = 1u;
                 ++coefficient_count;
-                current_mo.coefficients[ci] =
-                    static_cast<float>(parse_fortran_double(coefficient_s));
+                current_mo.coefficients[ci] = parse_fortran_double(coefficient_s);
             }
         }
     }
@@ -594,6 +610,8 @@ Wavefunction parse_molden(const std::filesystem::path& path,
             throw std::runtime_error("MO/basis consistency check failed");
         }
     }
+
+    derive_molden_electron_counts(wf);
 
     return wf;
 }

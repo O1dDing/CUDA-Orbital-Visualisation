@@ -1,0 +1,30 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "status": "software_validation_and_local_delivery_complete_with_preserved_observation",
+  "package_directory": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\delivery\\COV-3752f8a-Windows-20260912",
+  "archive": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\delivery\\COV-3752f8a-Windows-20260912.zip",
+    "sha256": "0ac5f572a4b6514acf69b53d8a0e932d7f139bb4735fecb1cbdaabff83dd4e3f",
+    "size": 4675698
+  },
+  "package_manifest": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\delivery\\COV-3752f8a-Windows-20260912\\package-manifest.json",
+    "sha256": "e57da420dd0ecd50ea823c7e7270308ce41096dfd9ec18142d4781888f61a0f8"
+  },
+  "status_receipt": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\delivery\\COV-3752f8a-Windows-20260912\\delivery-status.json",
+    "sha256": "06445ca8d2012352749710498f8aec4b4610af8978b094687605fce8643a7383"
+  },
+  "archive_contents_verified": true,
+  "file_count": 30,
+  "full273_adjudication": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-adjudication.json",
+    "sha256": "a54d14b9d07fcfd5a7283ef053846df7fce0eab7ccea54b77ac61eac2e2b7a42"
+  },
+  "ordinary_final_directory_review": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\review.json",
+    "sha256": "0e88fb71d074f5c6f7f473cf18c034baa8e1ae68802be5f365675fd9c34c7ac5"
+  },
+  "gaussian_control_actions_performed": 0,
+  "recorded_epoch": 1789222563.5112104
+}

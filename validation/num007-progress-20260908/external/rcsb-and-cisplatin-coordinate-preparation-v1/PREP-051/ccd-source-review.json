@@ -1,0 +1,407 @@
+{
+  "candidate_id": "PREP-051",
+  "component_id": "CPT",
+  "source_url": "https://files.rcsb.org/ligands/download/CPT.cif",
+  "source_sha256": "d6c1323f478e5a357bbf0553af52c36675ffe7f3b3463e36652a1f7451baf99c",
+  "source_modified_date": "2026-07-31",
+  "source_charge_literal": "?",
+  "source_charge_status": "not-reported",
+  "intended_charge": 0,
+  "intended_charge_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-051\\response-1.json",
+  "charge_source_sha256": "0c779c70279e89357dec4e9e1d3bb78138320e0819fc69e7c8b3093567f06dfe",
+  "inchikey": "LXZZYRPGZAFOLE-UHFFFAOYSA-L",
+  "element_counts": {
+    "Cl": 2,
+    "H": 6,
+    "N": 2,
+    "Pt": 1
+  },
+  "variants": [
+    {
+      "kind": "model",
+      "atoms": [
+        {
+          "source_atom_id": "PT1",
+          "element": "Pt",
+          "literal_coordinates": [
+            "9.157",
+            "7.362",
+            "35.129"
+          ],
+          "xyz_angstrom": [
+            9.157,
+            7.362,
+            35.129
+          ]
+        },
+        {
+          "source_atom_id": "N1",
+          "element": "N",
+          "literal_coordinates": [
+            "9.603",
+            "6.346",
+            "33.453"
+          ],
+          "xyz_angstrom": [
+            9.603,
+            6.346,
+            33.453
+          ]
+        },
+        {
+          "source_atom_id": "N2",
+          "element": "N",
+          "literal_coordinates": [
+            "7.233",
+            "7.331",
+            "34.594"
+          ],
+          "xyz_angstrom": [
+            7.233,
+            7.331,
+            34.594
+          ]
+        },
+        {
+          "source_atom_id": "H11",
+          "element": "H",
+          "literal_coordinates": [
+            "10.589",
+            "6.184",
+            "33.413"
+          ],
+          "xyz_angstrom": [
+            10.589,
+            6.184,
+            33.413
+          ]
+        },
+        {
+          "source_atom_id": "H12",
+          "element": "H",
+          "literal_coordinates": [
+            "9.121",
+            "5.470",
+            "33.456"
+          ],
+          "xyz_angstrom": [
+            9.121,
+            5.47,
+            33.456
+          ]
+        },
+        {
+          "source_atom_id": "H21",
+          "element": "H",
+          "literal_coordinates": [
+            "6.686",
+            "7.802",
+            "35.286"
+          ],
+          "xyz_angstrom": [
+            6.686,
+            7.802,
+            35.286
+          ]
+        },
+        {
+          "source_atom_id": "H22",
+          "element": "H",
+          "literal_coordinates": [
+            "7.125",
+            "7.792",
+            "33.713"
+          ],
+          "xyz_angstrom": [
+            7.125,
+            7.792,
+            33.713
+          ]
+        },
+        {
+          "source_atom_id": "CL2",
+          "element": "Cl",
+          "literal_coordinates": [
+            "9.080",
+            "7.948",
+            "36.213"
+          ],
+          "xyz_angstrom": [
+            9.08,
+            7.948,
+            36.213
+          ]
+        },
+        {
+          "source_atom_id": "CL1",
+          "element": "Cl",
+          "literal_coordinates": [
+            "10.583",
+            "7.390",
+            "35.485"
+          ],
+          "xyz_angstrom": [
+            10.583,
+            7.39,
+            35.485
+          ]
+        },
+        {
+          "source_atom_id": "H13",
+          "element": "H",
+          "literal_coordinates": [
+            "9.321",
+            "6.879",
+            "32.655"
+          ],
+          "xyz_angstrom": [
+            9.321,
+            6.879,
+            32.655
+          ]
+        },
+        {
+          "source_atom_id": "H23",
+          "element": "H",
+          "literal_coordinates": [
+            "6.925",
+            "6.383",
+            "34.514"
+          ],
+          "xyz_angstrom": [
+            6.925,
+            6.383,
+            34.514
+          ]
+        }
+      ],
+      "metal_neighbours": [
+        {
+          "atom_id": "N1",
+          "distance_angstrom": 2.010011940263038
+        },
+        {
+          "atom_id": "N2",
+          "distance_angstrom": 1.997238593658754
+        },
+        {
+          "atom_id": "CL2",
+          "distance_angstrom": 1.2346582523111436
+        },
+        {
+          "atom_id": "CL1",
+          "distance_angstrom": 1.4700326526985723
+        }
+      ],
+      "artifact": {
+        "file": "PREP-051\\model.xyz",
+        "sha256": "4e0e3eb464ed1fce9dff29c7dd7830342f0ee78d70e0db5baaa513404d5488d7",
+        "atom_count": 11
+      },
+      "experimental_reference": false,
+      "quality_reference": false,
+      "origin": "1A2E"
+    },
+    {
+      "kind": "ideal",
+      "atoms": [
+        {
+          "source_atom_id": "PT1",
+          "element": "Pt",
+          "literal_coordinates": [
+            "9.216",
+            "6.946",
+            "35.079"
+          ],
+          "xyz_angstrom": [
+            9.216,
+            6.946,
+            35.079
+          ]
+        },
+        {
+          "source_atom_id": "N1",
+          "element": "N",
+          "literal_coordinates": [
+            "9.274",
+            "5.547",
+            "33.622"
+          ],
+          "xyz_angstrom": [
+            9.274,
+            5.547,
+            33.622
+          ]
+        },
+        {
+          "source_atom_id": "N2",
+          "element": "N",
+          "literal_coordinates": [
+            "7.315",
+            "7.261",
+            "34.469"
+          ],
+          "xyz_angstrom": [
+            7.315,
+            7.261,
+            34.469
+          ]
+        },
+        {
+          "source_atom_id": "H11",
+          "element": "H",
+          "literal_coordinates": [
+            "8.532",
+            "5.042",
+            "33.634"
+          ],
+          "xyz_angstrom": [
+            8.532,
+            5.042,
+            33.634
+          ]
+        },
+        {
+          "source_atom_id": "H12",
+          "element": "H",
+          "literal_coordinates": [
+            "9.981",
+            "5.005",
+            "33.728"
+          ],
+          "xyz_angstrom": [
+            9.981,
+            5.005,
+            33.728
+          ]
+        },
+        {
+          "source_atom_id": "H21",
+          "element": "H",
+          "literal_coordinates": [
+            "6.740",
+            "6.762",
+            "34.945"
+          ],
+          "xyz_angstrom": [
+            6.74,
+            6.762,
+            34.945
+          ]
+        },
+        {
+          "source_atom_id": "H22",
+          "element": "H",
+          "literal_coordinates": [
+            "7.216",
+            "7.048",
+            "33.603"
+          ],
+          "xyz_angstrom": [
+            7.216,
+            7.048,
+            33.603
+          ]
+        },
+        {
+          "source_atom_id": "CL2",
+          "element": "Cl",
+          "literal_coordinates": [
+            "9.094",
+            "8.640",
+            "36.630"
+          ],
+          "xyz_angstrom": [
+            9.094,
+            8.64,
+            36.63
+          ]
+        },
+        {
+          "source_atom_id": "CL1",
+          "element": "Cl",
+          "literal_coordinates": [
+            "11.345",
+            "6.433",
+            "35.781"
+          ],
+          "xyz_angstrom": [
+            11.345,
+            6.433,
+            35.781
+          ]
+        },
+        {
+          "source_atom_id": "H13",
+          "element": "H",
+          "literal_coordinates": [
+            "9.336",
+            "5.931",
+            "32.813"
+          ],
+          "xyz_angstrom": [
+            9.336,
+            5.931,
+            32.813
+          ]
+        },
+        {
+          "source_atom_id": "H23",
+          "element": "H",
+          "literal_coordinates": [
+            "7.086",
+            "8.123",
+            "34.571"
+          ],
+          "xyz_angstrom": [
+            7.086,
+            8.123,
+            34.571
+          ]
+        }
+      ],
+      "metal_neighbours": [
+        {
+          "atom_id": "N1",
+          "distance_angstrom": 2.0207459018887066
+        },
+        {
+          "atom_id": "N2",
+          "distance_angstrom": 2.0211694634542634
+        },
+        {
+          "atom_id": "CL2",
+          "distance_angstrom": 2.3000263041974125
+        },
+        {
+          "atom_id": "CL1",
+          "distance_angstrom": 2.299698675913869
+        }
+      ],
+      "artifact": {
+        "file": "PREP-051\\ideal.xyz",
+        "sha256": "45aa4a6dd004ff0ce17bf5914ec0e1d29fa3e53d460bc148468916a2c303ac3d",
+        "atom_count": 11
+      },
+      "experimental_reference": false,
+      "quality_reference": false,
+      "origin": "MetalCoord"
+    }
+  ],
+  "formal_case": false,
+  "gaussian_started": false,
+  "cov_executed": false,
+  "accepted_quality_reference": false,
+  "source_notes": [
+    "CCD model and ideal coordinates are distinct source objects.",
+    "The current CIF charge is unknown; do not replace it with the web-summary default zero.",
+    "Published component-level geometry labels do not establish every instance or a molecular ground state."
+  ],
+  "model_rejection": {
+    "status": "retained-unsuitable-as-cisplatin-reference",
+    "reason": "Two Pt-Cl distances in the stored model are much shorter than the complete small-molecule crystal structure.",
+    "comparison_source": "https://doi.org/10.1039/J19660001609",
+    "experimental_Pt_Cl_angstrom": "2.33 +/- 0.01",
+    "details": "Do not repair these coordinates in place. Preserve the model and prefer the independently published molecular structure below."
+  }
+}

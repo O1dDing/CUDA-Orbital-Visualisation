@@ -1,0 +1,134 @@
+{
+  "case_id": "OLD-136",
+  "status": "view_subset_pass",
+  "linear_member_clicks": [
+    {
+      "mo": 4,
+      "pass": true,
+      "capture": "linear-member-0005"
+    },
+    {
+      "mo": 7,
+      "pass": true,
+      "capture": "linear-member-0008"
+    },
+    {
+      "mo": 20,
+      "pass": true,
+      "capture": "linear-member-0021"
+    }
+  ],
+  "bundles": [
+    {
+      "name": "export-compact-first",
+      "status": "pass",
+      "snapshot_id": "view-51102336833000-58",
+      "export_frame": 1314,
+      "selected_mo": 4,
+      "rows": 3,
+      "members": 3,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-compact-last",
+      "status": "pass",
+      "snapshot_id": "view-51102900036200-60",
+      "export_frame": 1399,
+      "selected_mo": 20,
+      "rows": 3,
+      "members": 3,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-expanded",
+      "status": "pass",
+      "snapshot_id": "view-51104360379300-67",
+      "export_frame": 1626,
+      "selected_mo": 4,
+      "rows": 7,
+      "members": 9,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-restored",
+      "status": "pass",
+      "snapshot_id": "view-51104608733300-68",
+      "export_frame": 1661,
+      "selected_mo": 4,
+      "rows": 3,
+      "members": 3,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-linear",
+      "status": "pass",
+      "snapshot_id": "view-51104857482400-69",
+      "export_frame": 1696,
+      "selected_mo": 4,
+      "rows": 3,
+      "members": 3,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-electron-volts",
+      "status": "pass",
+      "snapshot_id": "view-51105572090200-74",
+      "export_frame": 1826,
+      "selected_mo": 4,
+      "rows": 3,
+      "members": 3,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "actual-export",
+      "status": "pass",
+      "snapshot_id": "view-51106026593800-75",
+      "export_frame": 1879,
+      "selected_mo": 4,
+      "rows": 3,
+      "members": 3,
+      "selected_png_checks": 1
+    }
+  ],
+  "failures": [],
+  "consumed_artifacts": {
+    "expected-evidence.json": "d9cc7968b0f3ebde045773c091f7ba78fa8e19de659ebde8c82b829a2588f228",
+    "production.json": "31fc8abe7e2235e0260d9163bf779830b10885a877d06cc350cd6cdc8c53e70a",
+    "native/events.jsonl": "451641ef16662702ee2326e63925f98bbc5b12807bc6ff446489d8d3dfa20e19",
+    "native/linear-member-0005.ui.json": "4b0135a6c0eff447c1882acc3c1aa4b9e284d0658e2737df13fcd195c197c122",
+    "native/linear-member-0005.png": "6733b4ebd9edf1e9f6474810d82b89255d890ee823f213eafdc6dd15ebf5f998",
+    "native/linear-member-0008.ui.json": "a2ffd9710e1998ac985f9e957b15ec87658ec9692a7a3bbc52278e05b90ed6b0",
+    "native/linear-member-0008.png": "3a9d5ea6866b11109910fc376b9a0447190e79bba6115659c29586c9914ca8ab",
+    "native/linear-member-0021.ui.json": "79f7e48f0af8f2e3786a483911c2785ad769c44daa2537cb1cd35025bfe889da",
+    "native/linear-member-0021.png": "de453bf4e1136b9647499ea5dbf20e61225d50f0e48e8dfca851e67ab55d2865",
+    "native/export-compact-first.mo.json": "574a99b13369d90392b2841ea9937a13415cacb8c5f5854949efe56d3b8d36e2",
+    "native/export-compact-first.mo.csv": "9d6ebde8780ff2731ce5eb659c1a735454aa8c2cb6ab44d36a4e8624b88788ca",
+    "native/export-compact-first.mo.svg": "69e8f3ef3c363047289289c260b6825dcfdb8f0b6ca92f7ebcaaf13f6cda9e38",
+    "native/export-compact-first.mo.png": "ba806cb460f3044ea96f0bf931537f5aaa9e3c8d44c0889edcb99ec42fccba8b",
+    "native/export-compact-last.mo.json": "582bd609435194c891c35bea3b5443accce91a788e3ed3d25015542fcdef47e6",
+    "native/export-compact-last.mo.csv": "9d6962d58c721a62823d0d27b2cbff277b4cc34679f3954544d5421dafcd9e19",
+    "native/export-compact-last.mo.svg": "d357f95e9687d26e0f12e3fc7c4e9618bed9d461516d38fd46ac541459f35f7e",
+    "native/export-compact-last.mo.png": "499c818b47f04b2c4a2dc37bb202a76afef6e6728bba88c8829a7e3aa48fe982",
+    "native/export-expanded.mo.json": "27f9005591b8796d8e5c8f53e3f3f25178fc5423d1e762e38b92d89e0bc271e6",
+    "native/export-expanded.mo.csv": "71d7dbe884828815261e230a085b31e24b9e3f1987f2fc3dbdbaf35a420b5fc3",
+    "native/export-expanded.mo.svg": "707254f2e5448498756f4c577d4b703e090991243e18468b3703d406c19a63b5",
+    "native/export-expanded.mo.png": "089c26fa0a6efd6683241ac71db686e8d437ab131575a3260b9aaf076ee503ef",
+    "native/export-restored.mo.json": "ba1b4f4295236d5d73861c0e0aad10bef0ef100bcb14efa1fd5f5b1103aeb7d8",
+    "native/export-restored.mo.csv": "1f558532eda56e2fc8850c221d3e433b09f8578515946aa36b92176a41711348",
+    "native/export-restored.mo.svg": "b45bb0582bb4e9c1060d2942a442aa353e5e7ac96697efdeabf1ff107bd524ca",
+    "native/export-restored.mo.png": "c204e944f1e3957ca9bc65dd75be5def7acbbdf1bc6b15577c4d402c4e1286fa",
+    "native/export-linear.mo.json": "53a6e7f485826c2273e1c8560172f9d968b9865a059c8ca9b035c158f4148a19",
+    "native/export-linear.mo.csv": "a530ffe11a927a5cf11dd9fa66572de69c91f6b51ff6b4b9264f9cde11e32c67",
+    "native/export-linear.mo.svg": "b0185b957c1a05cbd3f861c8b521960616762613974fe63b08603f2ce2df3a40",
+    "native/export-linear.mo.png": "65a044673b778677eaf778450263107df005829e966fef04db9c13260d0477db",
+    "native/export-electron-volts.mo.json": "fa6222df6917add686cbcb258c3d36289636e56f58e753ccd8d3c09c9ccd3121",
+    "native/export-electron-volts.mo.csv": "ff32c0f2883b91c3d97587160cf66567d64f172d0303cd32a312bb1ef664c183",
+    "native/export-electron-volts.mo.svg": "9ee53568bf1ebd0731743b6e869a6f8f299ffcc6e21367bc4cbaceb944e4c104",
+    "native/export-electron-volts.mo.png": "71cdc85cbc3eb292a8b430708ab2a821a01f77fc88ef1c0a7ee6f35f20fa4659",
+    "native/actual-export.mo.json": "323208f33ef8b642cb24c511c9732ceb733d148fb4634dbfb7dea94aaec83d24",
+    "native/actual-export.mo.csv": "958bd0d11078ead7e8b30055ed6c342b73a5ef400485704126be03adc9dfe799",
+    "native/actual-export.mo.svg": "132f716982739cc17f3ba0c31e3a7aca0e15e2ad8c08e8cb031863a9534093c4",
+    "native/actual-export.mo.png": "70304c8e9d67736aa0bba9f9b9eba026f3a2638ee0364736fcfc2ffb16d3e885"
+  },
+  "formal_case_pass": false
+}

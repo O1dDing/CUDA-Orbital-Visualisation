@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 31261,
+        "MolecularFormula": "C5H8O2",
+        "ConnectivitySMILES": "CC(=O)CC(=O)C",
+        "InChIKey": "YRKCREAYFQTBPV-UHFFFAOYSA-N",
+        "IUPACName": "pentane-2,4-dione",
+        "Charge": 0
+      }
+    ]
+  }
+}

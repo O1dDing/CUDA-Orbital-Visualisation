@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_applied",
+  "base_source_commit": "fb3a24a6b6337093f20eb0f7d4bdec944a9ad372",
+  "issue_ids": [
+    "CHEM-001",
+    "CHEM-002",
+    "UI-008"
+  ],
+  "production_science_changed": false,
+  "formal_case_passes": 0,
+  "source_sha256": {
+    "include/cov/model.hpp": "6746bc61fd62cb2b92265b6978f3e3e3a860e6e4bd1e6bd46794dc620a0f8db1",
+    "include/cov/orbital_chemistry.hpp": "a3cc3a5d0ade870ef712c0ae383eabf35cb28bb4aadac5218b17be0031a91b84",
+    "src/analysis/orbital_chemistry.cpp": "96d48051bcc7e3dac0c3c8f3e6f77a09a2119f8c87e86bbf71cbc8b006f746bf"
+  },
+  "document": "分解与汇总通解实施契约.md",
+  "document_sha256": "328b362a63b209e05c9500b1a0b7feff35d3a7ccaaa914e2313137c3f88f44f0",
+  "dependencies": [
+    "validated AO conventions, complete precision and independent overlap",
+    "frozen reference batch terminal and input adjudication before production scientific changes"
+  ],
+  "implementation_units": [
+    "zero-only accumulator separate from default unavailable result",
+    "explicit availability, coverage and method provenance",
+    "scope-correct pair and center summaries",
+    "actual input-norm and projection residual checks",
+    "current-view status propagation"
+  ],
+  "weight_scaling_clarification": "Common positive scaling of already defined aggregation weights is invariant; scaling raw overlap_character across the fixed floor or role thresholds is not an unconditional invariant.",
+  "current_atomic_filter_definition": "Absolute per-atom sums of C_mu (S C)_mu, renormalized across atoms; not a Lowdin population."
+}

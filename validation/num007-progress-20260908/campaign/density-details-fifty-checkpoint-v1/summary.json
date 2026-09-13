@@ -1,0 +1,29 @@
+{
+  "created_epoch": 1788856292.9456952,
+  "density_fixed_control_count": 40,
+  "ordinary_validation_density_controls_identical": true,
+  "fixed_density_review": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\fixed-production-e2e835a7-1788854219897649100\\review-complete.json",
+  "fixed_density_review_sha256": "d053783d90ceef5f90eaab52121c0acd16bfdd90bcf359b82b495be62a7aa53a",
+  "density_issue_decisions": {
+    "DEN-001": "已实施通解且固定对照通过；全 273 回归前保留待关闭",
+    "DEN-002": "已实施通解且固定对照通过；全 273 回归前保留待关闭",
+    "DEN-003": "已实施通解且固定对照通过；全 273 回归前保留待关闭",
+    "DEN-004": "已实施通解且固定对照通过；全 273 回归前保留待关闭",
+    "DEN-005": "已实施通解且固定对照通过；全 273 回归前保留待关闭"
+  },
+  "tooltip_implementation_commit": "6b8b99b9f76c8d1f9d8c30d2e27c21796c2ee4b8",
+  "native_action_and_clip_fix_commit": "20a326365350a356356726e1e9e262dec7f79917",
+  "actual_density_crosscheck_commit": "8b2522716ec8c391cfc744699048b31c2b6d2538",
+  "first_pilot_round_identity": "3862f170906cdb852e770d09771c79c7fcfd753c40a1a9ae74f3640c080450af",
+  "first_pilot_status": "保留已完成且有缺口的试运行；不得按子检查通过改写为全通过",
+  "first_pilot_failed_commands": 2,
+  "first_pilot_collection_seconds": 24.196287600003416,
+  "external_constitutionally_distinct_candidates": 50,
+  "external_identity_evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-formula-collision-review-v1\\summary.json",
+  "external_identity_sha256": "9745f19e4f4e7745fb24405a842b2116904f453f065e122ef3eb10669e172862",
+  "formal_external_cases": 0,
+  "accepted_external_quality_references": 0,
+  "formal_original_complete_passes": 0,
+  "gaussian_control_actions_performed": 0,
+  "next": "Complete final evidence build, repeat the designated pilot and long-tooltip diagnostic, then freeze a full 273 round with density and actual details evidence."
+}

@@ -1,0 +1,10 @@
+{
+  "exit_code": 0,
+  "watchdog_timeout": false,
+  "wall_seconds": 35.71900000000096,
+  "tests_started": 130,
+  "remaining_owned_processes": 0,
+  "self_test": false,
+  "test_log": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-adaptive-scheduling-20260913\\tests-final-portable\\tests.log",
+  "passed": true
+}

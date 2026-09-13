@@ -159,7 +159,8 @@ void append_png_chunk(std::vector<std::uint8_t>& png,
 
 bool write_png_rgba(const Canvas& canvas,
                     const std::filesystem::path& path,
-                    std::string* error) {
+                    std::string* error,
+                    const std::string& view_id = {}) {
     std::vector<std::uint8_t> raw;
     raw.reserve(static_cast<std::size_t>(canvas.height) *
                 (1u + static_cast<std::size_t>(canvas.width) * 4u));

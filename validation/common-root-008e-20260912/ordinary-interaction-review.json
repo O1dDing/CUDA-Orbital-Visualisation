@@ -1,0 +1,287 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "ordinary_exe_sha256": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6",
+  "recorded_epoch": 1789209918.22011,
+  "process": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\process.json",
+    "sha256": "4e09ed3b2a54888ae630c727b401bd91f283639fb6a3cd4935ed92cf183eeb90"
+  },
+  "exit": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\exit-confirmed.json",
+    "sha256": "ae556de13c84255379a364a9eb1c3b79401aea8a723bdf91728b54fee49b5568"
+  },
+  "frames": [
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\01-startup.json",
+        "sha256": "ad62dce9910573d401247cb6576fee285ca8c4bda85552699d6a8f423e713051"
+      },
+      "step": "Second startup of identical frozen ordinary executable, client UI displayed normally; first failed startup retained separately.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\01-startup-0.jpg",
+          "sha256": "22bc962f0141ab7ff093233b4889c81a8b9442ac6ef5a11fa7124776ca6ad5fa",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\02-load.json",
+        "sha256": "965e2c126fc4c81ef900494a9f1d6d832346dfb964e3797711c5213063f1a811"
+      },
+      "step": "Ordinary file path and Load button succeeded for frozen OLD249; 5 atoms, 43 shells, 103 basis functions, 206 orbitals; scene rendered.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\02-load-0.jpg",
+          "sha256": "4dc81af1d1da004fb068f3cd3f15a0b2ccdc2070d54deb2f79deaeb32a7d1857",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\03-chemistry-wrap-en-max.json",
+        "sha256": "d6df9749483ad67c7432a0601e6838625810a7024acd3d145fc7b08ec046bbab"
+      },
+      "step": "UI-010 actual ordinary desktop: colored atom-pair fields, long bonding description, Mayer values, method and confidence wrap in complete horizontal lines within sidebar. Cl2-Cl5 nonbonding +0.0003 is readable.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\03-chemistry-wrap-en-max-0.jpg",
+          "sha256": "02921d8f13c6dcbf9beef2a491c332dad4fec3ff362377e4ce566652f3bfaa99",
+          "width": 3413,
+          "height": 1392
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\04-details-en-max.json",
+        "sha256": "35b7c9ad4cdbb1da096fb1919b2853bf63f8a794e784b3de1b300fb8f14205d5"
+      },
+      "step": "Source 138/internal 137, Beta, occupation 1, exact Ha -0.1911770900; full MO N/A, local A1/C2v with 44.555/100/26.254 percent and 1.710e-14 residual.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\04-details-en-max-0.jpg",
+          "sha256": "83e8e6a72c6ff8eb1e80b2e637b92b5ea7f218ef09f08d6d28ee8a79963e9fc0",
+          "width": 3413,
+          "height": 1392
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\05-details-en-restored.json",
+        "sha256": "7be34a3ae80876f184cdb35ff475f66c297dcd93288dc82071a056c3b1ff6f18"
+      },
+      "step": "UI-009: after maximized-to-1003x658 restore, complete details window automatically clamped inside client area; close control visible, selection and scientific values retained.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\05-details-en-restored-0.jpg",
+          "sha256": "8a3d5404fa66a2bc016c1f54439224607277c7fe86f31ecd293e3d17ef963211",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\06-details-drag-resize.json",
+        "sha256": "9e0a2e620d5f4ac8a04cf44a8ab3f9ba40e74c8818d53fee1877f896b9abb007"
+      },
+      "step": "Manual title-bar drag and bottom-right resize succeeded; close button, source identity and both scroll axes remain reachable in smaller window.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\06-details-drag-resize-0.jpg",
+          "sha256": "bbb622922193ba43acfaafcfaf24df039033e2a495ae892d9ac553939f6813ac",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\07-details-scroll-bottom.json",
+        "sha256": "0da7075636925100d19a22f7c4885ec7a613db3412cb67f19b65597f40ca227a"
+      },
+      "step": "Lower details reached using mouse wheel; local ML s/p/d 2.3/13.3/19.1, ligand p49.7, sigma/pi61.6/17.3, overlap0.035874 visible and unchanged.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\07-details-scroll-bottom-0.jpg",
+          "sha256": "e6bd69c78721ce192e96760f84c713401c67d295ba21c51fef83f49627c6a340",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\08-details-title-close.json",
+        "sha256": "ebc5c5fd256eea9bd4e29273548ac40cde41dc2df5353bbe38697d947dcd2697"
+      },
+      "step": "Title-bar close succeeded in resized details; browser still selected source138 and scene unchanged.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\08-details-title-close-0.jpg",
+          "sha256": "cf963a322bc727f154dc62f1fe30ea7d5c7a66be5ee2fdc848e6d465975db779",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\09-chemistry-wrap-en-restored.json",
+        "sha256": "c2c8a824135ddc57fa11c0b95e68178b1ddf6a21575790cf1fa593de9e657c5d"
+      },
+      "step": "UI-010 actual narrower ordinary sidebar: every atom-pair description and numerical continuation stays horizontally readable; no one-character vertical column; confidence and explanation wrap inside panel.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\09-chemistry-wrap-en-restored-0.jpg",
+          "sha256": "3bc1979835d21e200c6c17d608e3887e5982a6a264770fa2325e2be4b0ed2e8b",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\10-chemistry-wrap-zh-restored.json",
+        "sha256": "4e532f293bc118f2a73e3956e82024a18d134fce4b28e5ceae86bf37632a5908"
+      },
+      "step": "Chinese narrow sidebar: atom-pair channel, bonding, MO contribution and Mayer values remain readable, explanation and confidence visible; same source selection retained.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\10-chemistry-wrap-zh-restored-0.jpg",
+          "sha256": "709634f45bd7f38fe5a6948d2e239fe6dca4697c4360ef25526e9a1cef226af9",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\11-details-zh-reopen.json",
+        "sha256": "01a7281a2e3208121739f944ede16bf904780b96062e1a296f43d07621d346c8"
+      },
+      "step": "Chinese details reopened inside restored window; lower ML values and representative/member scope explanation remain readable and unchanged.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\11-details-zh-reopen-0.jpg",
+          "sha256": "752ed096e702c921593abd60a1db15c4c1b47afbf604e6fe15b211b351ed3d1c",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\12-details-zh-source.json",
+        "sha256": "47f6c586892c31e6d30e937c04cdf0d1e171c73c9ecb746d3945d9fe88f10e3c"
+      },
+      "step": "Chinese source138/internal137/Beta/occupation1/-0.1911770900 Ha unchanged; whole N/A and local A1 remain distinct; close-details button visible after upward scroll.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\12-details-zh-source-0.jpg",
+          "sha256": "8516efdde4e5d37d62447c5dcd3e67aeed3a85abd3dfb74ef12a663c9b240bbf",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    },
+    {
+      "record": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\13-details-button-close.json",
+        "sha256": "521bc98daf8b0b15d29330f997927a2a6b64df11c82be366e45df1ea48f8a316"
+      },
+      "step": "Chinese close-details button succeeded; normal diagram remains interactive and concise tooltip visible for same Beta138.",
+      "screenshots": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\13-details-button-close-0.jpg",
+          "sha256": "4edffa81fa5226028813bfedfc03cf00809eaaea684e56e362ecc292b536e991",
+          "width": 1003,
+          "height": 658
+        }
+      ]
+    }
+  ],
+  "directly_reviewed_frames": 13,
+  "ordinary_details_resize_passed": true,
+  "ordinary_colored_text_wrapping_passed": true,
+  "ordinary_interaction_acceptance_passed": true,
+  "observed_passes": [
+    "Ordinary no-argument startup, manual path input and Load of frozen OLD-249, orbital selection and rendered scene",
+    "Source MO138, internal137, Beta, occupation1, exact energy -0.1911770900 Ha retained",
+    "Whole MO symmetry N/A remains separate from local A1/C2v and 44.555/100/26.254 percent projection quantities",
+    "Maximized 3413x1392 to restored 1003x658 transition keeps details title, close controls and bounds inside the viewport",
+    "Actual title drag, resize-grip drag, lower-content wheel scroll, title close, Chinese reopen and close-details button",
+    "Metal s/p/d 2.3/13.3/19.1, ligand p49.7, M-L sigma/pi61.6/17.3, overlap0.035874 unchanged",
+    "English maximized and restored narrow sidebar, and Chinese restored sidebar, show readable horizontal colored chemistry runs",
+    "Three consecutive normal startups after the retained initial blank capture; each exited normally"
+  ],
+  "startup_observation": {
+    "first_attempt": "persistent blank captured client area; no file controls visible",
+    "failed_evidence": [
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-002\\01-blank-maximized-0.jpg",
+        "sha256": "ea47c23f289b156e2f974ce52718c67b37cb52db6ea271fcff5f8b565db2bd54"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-002\\01-blank-maximized.json",
+        "sha256": "f7c2ec77575e4a667ccff6f3ea767e9a7845ea2567a1863e67f361bdfe423040"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-002\\exit-confirmed.json",
+        "sha256": "e2dd8f23bcea3da315de1150fe26eafa524b7efda9b56857d088e515c327e03a"
+      }
+    ],
+    "failed_pid": 29504,
+    "subsequent_normal_pids": [
+      17668,
+      14372,
+      14392
+    ],
+    "same_executable_and_path": true,
+    "consecutive_normal_startups": 3,
+    "operational_recovery_verified": true,
+    "root_cause_known": false,
+    "recheck_evidence": [
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-startup-rechecks\\01-exit.json",
+        "sha256": "5e94fc3ac59d2872297106630be08574cf996066a3f1c1023228107a35b4c094"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-startup-rechecks\\01-startup-0.jpg",
+        "sha256": "923ead447536cd4fc1992f225f873a2c91e23e3dff2bdd0a7cb4b3d66026f4f9"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-startup-rechecks\\01-startup.json",
+        "sha256": "feb9a088a5c5a103326edcc67d8992a1c2cb29e7f6687a8f2f424a874f611111"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-startup-rechecks\\02-exit.json",
+        "sha256": "7eb1a1174b1bcc66da8252cf414dcd37fd9f85219a3f331fb2b1a15df02b772f"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-startup-rechecks\\02-startup-0.jpg",
+        "sha256": "3190ab8db09c6e32b2cbd3349535d6dd5f32f1b7281c63f34bd31f1259c4e385"
+      },
+      {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-startup-rechecks\\02-startup.json",
+        "sha256": "c8536ff85710023dcbf96702dd9cbc0eeed23bb228a5b28ce1382da789deb7f1"
+      }
+    ],
+    "limitation": "The first blank observation was not reproduced. Its cause is unresolved; no source fix or definitive attribution to the application, driver, overlay or capture environment is claimed."
+  },
+  "separate_validation_provenance_finding": {
+    "round": "COMMON-ROOT-008D-precheck",
+    "embedded_validation_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+    "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+    "status": "Identity mismatch invalidates that validation round; rebuild after commit and freeze a fresh round. This does not substitute an ordinary UI pass for native validation."
+  },
+  "formal_case_passes": 0,
+  "gaussian_started": false,
+  "recorder_sha256": "dfe383693e63594c2af343598aadee683f908c5c37e0c811971126efee843301"
+}

@@ -1,0 +1,231 @@
+{
+  "candidate_id": "PREP-060",
+  "component_id": "MOO",
+  "source_url": "https://files.rcsb.org/ligands/download/MOO.cif",
+  "source_sha256": "826a6a15639b6ed6b0a5b0169daf9ce5d54871ffb65bd53ce1b29408691a0809",
+  "source_modified_date": "2026-07-31",
+  "source_charge_literal": "?",
+  "source_charge_status": "not-reported",
+  "intended_charge": -2,
+  "intended_charge_source": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-060\\response-1.json",
+  "charge_source_sha256": "3e8c9b7bcc6b46012524669ce151cd7c7a84cf6efcef06c6199e19c6a35c945c",
+  "inchikey": "MEFBJEMVZONFCJ-UHFFFAOYSA-N",
+  "element_counts": {
+    "Mo": 1,
+    "O": 4
+  },
+  "variants": [
+    {
+      "kind": "model",
+      "atoms": [
+        {
+          "source_atom_id": "MO",
+          "element": "Mo",
+          "literal_coordinates": [
+            "34.327",
+            "35.344",
+            "29.539"
+          ],
+          "xyz_angstrom": [
+            34.327,
+            35.344,
+            29.539
+          ]
+        },
+        {
+          "source_atom_id": "O1",
+          "element": "O",
+          "literal_coordinates": [
+            "33.586",
+            "34.309",
+            "30.657"
+          ],
+          "xyz_angstrom": [
+            33.586,
+            34.309,
+            30.657
+          ]
+        },
+        {
+          "source_atom_id": "O2",
+          "element": "O",
+          "literal_coordinates": [
+            "35.790",
+            "35.950",
+            "30.202"
+          ],
+          "xyz_angstrom": [
+            35.79,
+            35.95,
+            30.202
+          ]
+        },
+        {
+          "source_atom_id": "O3",
+          "element": "O",
+          "literal_coordinates": [
+            "33.430",
+            "36.745",
+            "29.197"
+          ],
+          "xyz_angstrom": [
+            33.43,
+            36.745,
+            29.197
+          ]
+        },
+        {
+          "source_atom_id": "O4",
+          "element": "O",
+          "literal_coordinates": [
+            "34.664",
+            "34.442",
+            "28.120"
+          ],
+          "xyz_angstrom": [
+            34.664,
+            34.442,
+            28.12
+          ]
+        }
+      ],
+      "metal_neighbours": [
+        {
+          "atom_id": "O1",
+          "distance_angstrom": 1.6941753156034365
+        },
+        {
+          "atom_id": "O2",
+          "distance_angstrom": 1.7167335262060928
+        },
+        {
+          "atom_id": "O3",
+          "distance_angstrom": 1.698344488023554
+        },
+        {
+          "atom_id": "O4",
+          "distance_angstrom": 1.7148568453372444
+        }
+      ],
+      "artifact": {
+        "file": "PREP-060\\model.xyz",
+        "sha256": "f91076aa080e89f41c9a39ad11ad35922b4902ed6eb7a2837e356a69d242d7fb",
+        "atom_count": 5
+      },
+      "experimental_reference": false,
+      "quality_reference": false,
+      "origin": "1AMF"
+    },
+    {
+      "kind": "ideal",
+      "atoms": [
+        {
+          "source_atom_id": "MO",
+          "element": "Mo",
+          "literal_coordinates": [
+            "34.381",
+            "35.366",
+            "29.528"
+          ],
+          "xyz_angstrom": [
+            34.381,
+            35.366,
+            29.528
+          ]
+        },
+        {
+          "source_atom_id": "O1",
+          "element": "O",
+          "literal_coordinates": [
+            "33.496",
+            "34.347",
+            "30.642"
+          ],
+          "xyz_angstrom": [
+            33.496,
+            34.347,
+            30.642
+          ]
+        },
+        {
+          "source_atom_id": "O2",
+          "element": "O",
+          "literal_coordinates": [
+            "35.801",
+            "36.006",
+            "30.326"
+          ],
+          "xyz_angstrom": [
+            35.801,
+            36.006,
+            30.326
+          ]
+        },
+        {
+          "source_atom_id": "O3",
+          "element": "O",
+          "literal_coordinates": [
+            "33.359",
+            "36.687",
+            "29.007"
+          ],
+          "xyz_angstrom": [
+            33.359,
+            36.687,
+            29.007
+          ]
+        },
+        {
+          "source_atom_id": "O4",
+          "element": "O",
+          "literal_coordinates": [
+            "34.870",
+            "34.423",
+            "28.137"
+          ],
+          "xyz_angstrom": [
+            34.87,
+            34.423,
+            28.137
+          ]
+        }
+      ],
+      "metal_neighbours": [
+        {
+          "atom_id": "O1",
+          "distance_angstrom": 1.7500234284146012
+        },
+        {
+          "atom_id": "O2",
+          "distance_angstrom": 1.7500868549874913
+        },
+        {
+          "atom_id": "O3",
+          "distance_angstrom": 1.749561659387856
+        },
+        {
+          "atom_id": "O4",
+          "distance_angstrom": 1.7502145582756385
+        }
+      ],
+      "artifact": {
+        "file": "PREP-060\\ideal.xyz",
+        "sha256": "fe75f55a172c9eeafd6bcf4e3619584c85fc159a05f3138f20fcc21618036742",
+        "atom_count": 5
+      },
+      "experimental_reference": false,
+      "quality_reference": false,
+      "origin": "MetalCoord"
+    }
+  ],
+  "formal_case": false,
+  "gaussian_started": false,
+  "cov_executed": false,
+  "accepted_quality_reference": false,
+  "source_notes": [
+    "CCD model and ideal coordinates are distinct source objects.",
+    "The current CIF charge is unknown; do not replace it with the web-summary default zero.",
+    "Published component-level geometry labels do not establish every instance or a molecular ground state."
+  ],
+  "starting_geometry_choice": "model-pending-binding-environment-and-state-review"
+}

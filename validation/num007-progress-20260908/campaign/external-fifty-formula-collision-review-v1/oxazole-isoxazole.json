@@ -1,0 +1,388 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "PREP-022",
+      "raw_sha256": "0f0384f2010a3ac5f36b92f2d7649d8c610b404f981e9ff4b2a8ea3609c7dfc1",
+      "normalized_sha256": "723f111f851f4d1a8ca5c31a38ee0b187561118acfbbfcfb87d2307035239e60",
+      "inchikey": "ZCQWOFVYLHDMMC-UHFFFAOYSA-N",
+      "source_declared_heavy_edges": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "coordinate_sweeps": [
+        {
+          "cutoff_angstrom": 1.65,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 0
+        },
+        {
+          "cutoff_angstrom": 1.7,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 0
+        },
+        {
+          "cutoff_angstrom": 1.75,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 0
+        },
+        {
+          "cutoff_angstrom": 1.8,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 0
+        }
+      ],
+      "declared_and_coordinate_edges_agree_at_all_cutoffs": true
+    },
+    {
+      "candidate_id": "PREP-023",
+      "raw_sha256": "9a1104329ee23bc0f745ae5eef95739c62d616a322bfd7165fc25b2424f33f56",
+      "normalized_sha256": "7fc38b6aab371571e8c34bceb10312cf42bd49ac873f81a5fc81592b8b113187",
+      "inchikey": "CTAPFRYPJLPFDF-UHFFFAOYSA-N",
+      "source_declared_heavy_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "coordinate_sweeps": [
+        {
+          "cutoff_angstrom": 1.65,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 1
+        },
+        {
+          "cutoff_angstrom": 1.7,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 1
+        },
+        {
+          "cutoff_angstrom": 1.75,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 1
+        },
+        {
+          "cutoff_angstrom": 1.8,
+          "source_atom_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "sorted_degrees": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "oxygen_nitrogen_edges": 1
+        }
+      ],
+      "declared_and_coordinate_edges_agree_at_all_cutoffs": true
+    }
+  ],
+  "constitutional_graph_nonisomorphism_established": true,
+  "reason": "An element-preserving graph isomorphism must preserve the number of oxygen-nitrogen edges. The two source graphs have zero and one respectively."
+}

@@ -1,0 +1,45 @@
+{
+  "candidate_id": "PREP-034",
+  "query": "pentatetraene",
+  "expected_formula": "C5H4",
+  "expected_charge": 0,
+  "family": "累积双键",
+  "purpose": "多通道及非螺反例",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [
+    "OLD-107"
+  ],
+  "lookup_epoch": 1788709691.1193202,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 139338,
+      "MolecularFormula": "C5H4",
+      "ConnectivitySMILES": "C=C=C=C=C",
+      "InChIKey": "UNSWNZFTRPSXHQ-UHFFFAOYSA-N",
+      "IUPACName": "penta-1,2,3,4-tetraene",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/139338"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709691.1193202,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-034\\response-1.json",
+      "sha256": "9c8aa2a3614b4f92fa187a67fda93d57a7390ba56ff23ceaf360482fb8e75e56",
+      "bytes": 291,
+      "elapsed_seconds": 3.086428165435791
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pentatetraene/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

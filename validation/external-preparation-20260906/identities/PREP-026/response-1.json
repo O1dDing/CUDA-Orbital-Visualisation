@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 9223,
+        "MolecularFormula": "C8H6O",
+        "ConnectivitySMILES": "C1=CC=C2C(=C1)C=CO2",
+        "InChIKey": "IANQTJSKSUMEQM-UHFFFAOYSA-N",
+        "IUPACName": "1-benzofuran",
+        "Charge": 0
+      }
+    ]
+  }
+}

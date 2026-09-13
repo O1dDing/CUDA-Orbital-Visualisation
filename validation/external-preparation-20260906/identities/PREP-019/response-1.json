@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 123046,
+        "MolecularFormula": "C5H5P",
+        "ConnectivitySMILES": "C1=CC=PC=C1",
+        "InChIKey": "UNQNIRQQBJCMQR-UHFFFAOYSA-N",
+        "IUPACName": "phosphinine",
+        "Charge": 0
+      }
+    ]
+  }
+}

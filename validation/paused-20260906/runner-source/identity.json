@@ -1,0 +1,10 @@
+{
+  "commit": "29304a6",
+  "files": {
+    "gaussian_reference_batch.py": "aa0fec3a5d06c4c7ca81d97db538b26b9ad836b2a950e6a0a4f3c73d47d878a6",
+    "gaussian_reference_inputs.py": "702aefc7635791557cf640298e584dae1ab26d0c08bc3148128277428f9947fc",
+    "gaussian_rebuild.py": "4088ac0b49999d5a8ab2876369e1b9dd9d8957b95ae5ad9a88979515166f9bbd",
+    "validation_process.py": "89dc90efa30cb97ad60a84b50245e82ceaef03840351da0eb1c9689149f3f790"
+  },
+  "purpose": "Frozen queued reference collector; execute after original reproduction barrier"
+}

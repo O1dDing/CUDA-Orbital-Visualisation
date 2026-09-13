@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 3032609,
+        "MolecularFormula": "C4H16CuN4+2",
+        "ConnectivitySMILES": "C(CN)N.C(CN)N.[Cu+2]",
+        "InChIKey": "ATSGLBOJGVTHHC-UHFFFAOYSA-N",
+        "IUPACName": "copper bis(ethane-1,2-diamine)",
+        "Charge": 2
+      }
+    ]
+  }
+}

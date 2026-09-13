@@ -1,0 +1,326 @@
+{
+  "release_id": 383547061,
+  "release_url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/cov-ref-paused-20260906",
+  "all_uploaded": true,
+  "count": 35,
+  "bytes": 4423860660,
+  "assets": [
+    {
+      "name": "cov-ref001-progress-20260912-001-of-034.zip",
+      "bytes": 176266071,
+      "sha256": "322ecfae2ba461fbbb7d56b93d8227b22a9f0c51b1c2de3a5b556268b54382f8",
+      "asset_id": 559499144,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-001-of-034.zip",
+      "remote_digest": "sha256:322ecfae2ba461fbbb7d56b93d8227b22a9f0c51b1c2de3a5b556268b54382f8",
+      "verified_epoch": 1789227555.967891
+    },
+    {
+      "name": "cov-ref001-progress-20260912-002-of-034.zip",
+      "bytes": 67848070,
+      "sha256": "dcbd134ddcd71be08f25ab6e18cf59e9979bad8e8be1b5b670c4040e558fa776",
+      "asset_id": 559500084,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-002-of-034.zip",
+      "remote_digest": "sha256:dcbd134ddcd71be08f25ab6e18cf59e9979bad8e8be1b5b670c4040e558fa776",
+      "verified_epoch": 1789227569.5750089
+    },
+    {
+      "name": "cov-ref001-progress-20260912-003-of-034.zip",
+      "bytes": 123057872,
+      "sha256": "cc6ebf5693e15ffe5678ead8425757506e3614999c2218a542cb24832ea732ec",
+      "asset_id": 559500404,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-003-of-034.zip",
+      "remote_digest": "sha256:cc6ebf5693e15ffe5678ead8425757506e3614999c2218a542cb24832ea732ec",
+      "verified_epoch": 1789227594.8285866
+    },
+    {
+      "name": "cov-ref001-progress-20260912-004-of-034.zip",
+      "bytes": 238628299,
+      "sha256": "b418ce118fcbf5188a96bbe4a86061558803415222d816b4ce856215b406783c",
+      "asset_id": 559500914,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-004-of-034.zip",
+      "remote_digest": "sha256:b418ce118fcbf5188a96bbe4a86061558803415222d816b4ce856215b406783c",
+      "verified_epoch": 1789227641.9901843
+    },
+    {
+      "name": "cov-ref001-progress-20260912-005-of-034.zip",
+      "bytes": 208467345,
+      "sha256": "dc960aea5424732d72321d19e232f3fc9bb4ee33459cf8daf957c289d31ba6b2",
+      "asset_id": 559502037,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-005-of-034.zip",
+      "remote_digest": "sha256:dc960aea5424732d72321d19e232f3fc9bb4ee33459cf8daf957c289d31ba6b2",
+      "verified_epoch": 1789227684.8537946
+    },
+    {
+      "name": "cov-ref001-progress-20260912-006-of-034.zip",
+      "bytes": 89106950,
+      "sha256": "e32df58eb44f49e612e3cebbc9a264f8e1a5c5c859c53c26938da114fb7c2bd7",
+      "asset_id": 559503061,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-006-of-034.zip",
+      "remote_digest": "sha256:e32df58eb44f49e612e3cebbc9a264f8e1a5c5c859c53c26938da114fb7c2bd7",
+      "verified_epoch": 1789227705.4847803
+    },
+    {
+      "name": "cov-ref001-progress-20260912-007-of-034.zip",
+      "bytes": 117519332,
+      "sha256": "23ad14b1c4b1ff6e13650ba52a41462d6245cc2147334c1d6f5669d56bd71fb7",
+      "asset_id": 559503553,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-007-of-034.zip",
+      "remote_digest": "sha256:23ad14b1c4b1ff6e13650ba52a41462d6245cc2147334c1d6f5669d56bd71fb7",
+      "verified_epoch": 1789227731.310582
+    },
+    {
+      "name": "cov-ref001-progress-20260912-008-of-034.zip",
+      "bytes": 145165027,
+      "sha256": "884b2c96f21f6a5b59a5f163d341a12c843bae0a0593fcaefd31292865a1a5b8",
+      "asset_id": 559504187,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-008-of-034.zip",
+      "remote_digest": "sha256:884b2c96f21f6a5b59a5f163d341a12c843bae0a0593fcaefd31292865a1a5b8",
+      "verified_epoch": 1789227762.635501
+    },
+    {
+      "name": "cov-ref001-progress-20260912-009-of-034.zip",
+      "bytes": 158030086,
+      "sha256": "fab9c873790c98f4766587437ce163f484d668e0001fff10d6d8e3da617f09a7",
+      "asset_id": 559505120,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-009-of-034.zip",
+      "remote_digest": "sha256:fab9c873790c98f4766587437ce163f484d668e0001fff10d6d8e3da617f09a7",
+      "verified_epoch": 1789227798.4492912
+    },
+    {
+      "name": "cov-ref001-progress-20260912-010-of-034.zip",
+      "bytes": 133827368,
+      "sha256": "cd5e8640e4a090731d9a24d0e068751b076147dff332a403e2a955348669f3c4",
+      "asset_id": 559505846,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-010-of-034.zip",
+      "remote_digest": "sha256:cd5e8640e4a090731d9a24d0e068751b076147dff332a403e2a955348669f3c4",
+      "verified_epoch": 1789227826.5153906
+    },
+    {
+      "name": "cov-ref001-progress-20260912-011-of-034.zip",
+      "bytes": 87125780,
+      "sha256": "40944b80b9562608545861fe02a70ca85deee03ab63a767ed8b65b532cb91017",
+      "asset_id": 559506408,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-011-of-034.zip",
+      "remote_digest": "sha256:40944b80b9562608545861fe02a70ca85deee03ab63a767ed8b65b532cb91017",
+      "verified_epoch": 1789227843.6403756
+    },
+    {
+      "name": "cov-ref001-progress-20260912-012-of-034.zip",
+      "bytes": 207585429,
+      "sha256": "e81735742f3eb58247e57d0f1b2a7735242155ab344e7ea96ffa7288fa00772a",
+      "asset_id": 559506856,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-012-of-034.zip",
+      "remote_digest": "sha256:e81735742f3eb58247e57d0f1b2a7735242155ab344e7ea96ffa7288fa00772a",
+      "verified_epoch": 1789227886.1684399
+    },
+    {
+      "name": "cov-ref001-progress-20260912-013-of-034.zip",
+      "bytes": 66395951,
+      "sha256": "c518455b174201c27541b717102368f103bbb96d716044630ee962772ddbc30a",
+      "asset_id": 559507804,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-013-of-034.zip",
+      "remote_digest": "sha256:c518455b174201c27541b717102368f103bbb96d716044630ee962772ddbc30a",
+      "verified_epoch": 1789227901.767655
+    },
+    {
+      "name": "cov-ref001-progress-20260912-014-of-034.zip",
+      "bytes": 82358765,
+      "sha256": "a06ccdce8d8e682b5a908f5608b88dae9308c043bf4f51e95901e49474fe4e18",
+      "asset_id": 559508130,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-014-of-034.zip",
+      "remote_digest": "sha256:a06ccdce8d8e682b5a908f5608b88dae9308c043bf4f51e95901e49474fe4e18",
+      "verified_epoch": 1789227920.9395692
+    },
+    {
+      "name": "cov-ref001-progress-20260912-015-of-034.zip",
+      "bytes": 61492226,
+      "sha256": "c23124571b30459811b6c9556ad7cbe5e264a170321a9ddbc235225ba408837d",
+      "asset_id": 559508611,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-015-of-034.zip",
+      "remote_digest": "sha256:c23124571b30459811b6c9556ad7cbe5e264a170321a9ddbc235225ba408837d",
+      "verified_epoch": 1789227936.6413863
+    },
+    {
+      "name": "cov-ref001-progress-20260912-016-of-034.zip",
+      "bytes": 69860118,
+      "sha256": "b40ce3d63bc874f551e77cb0b1430a7e4dfef94897ef62e9454916542fdace85",
+      "asset_id": 559508996,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-016-of-034.zip",
+      "remote_digest": "sha256:b40ce3d63bc874f551e77cb0b1430a7e4dfef94897ef62e9454916542fdace85",
+      "verified_epoch": 1789227953.092241
+    },
+    {
+      "name": "cov-ref001-progress-20260912-017-of-034.zip",
+      "bytes": 85739373,
+      "sha256": "8a304ccbf29cddb3e6d7886d07fe9bfa877274d7f3b5ecb447dc20e6a4ed3dc9",
+      "asset_id": 559509375,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-017-of-034.zip",
+      "remote_digest": "sha256:8a304ccbf29cddb3e6d7886d07fe9bfa877274d7f3b5ecb447dc20e6a4ed3dc9",
+      "verified_epoch": 1789227974.5839806
+    },
+    {
+      "name": "cov-ref001-progress-20260912-018-of-034.zip",
+      "bytes": 79488301,
+      "sha256": "640de7a2c00213df1bc89656e27d3fa9141b4f6259216d7d3263a60956db4f28",
+      "asset_id": 559509863,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-018-of-034.zip",
+      "remote_digest": "sha256:640de7a2c00213df1bc89656e27d3fa9141b4f6259216d7d3263a60956db4f28",
+      "verified_epoch": 1789227992.6294506
+    },
+    {
+      "name": "cov-ref001-progress-20260912-019-of-034.zip",
+      "bytes": 72685386,
+      "sha256": "3e4f5723317747b689bd23d28a70772294ab27e6c35dc136d7d68bb46853991f",
+      "asset_id": 559510278,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-019-of-034.zip",
+      "remote_digest": "sha256:3e4f5723317747b689bd23d28a70772294ab27e6c35dc136d7d68bb46853991f",
+      "verified_epoch": 1789228009.6179526
+    },
+    {
+      "name": "cov-ref001-progress-20260912-020-of-034.zip",
+      "bytes": 107833993,
+      "sha256": "0f153c507587282c737d30b6b2ded768a06c049cceb6d48fc165ac76e4a0187b",
+      "asset_id": 559510687,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-020-of-034.zip",
+      "remote_digest": "sha256:0f153c507587282c737d30b6b2ded768a06c049cceb6d48fc165ac76e4a0187b",
+      "verified_epoch": 1789228033.1085923
+    },
+    {
+      "name": "cov-ref001-progress-20260912-021-of-034.zip",
+      "bytes": 80596197,
+      "sha256": "d974bddcb6b1af17e3c2eea66e3a5fc89918a587104b50abe4e984044400a272",
+      "asset_id": 559511192,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-021-of-034.zip",
+      "remote_digest": "sha256:d974bddcb6b1af17e3c2eea66e3a5fc89918a587104b50abe4e984044400a272",
+      "verified_epoch": 1789228051.6556492
+    },
+    {
+      "name": "cov-ref001-progress-20260912-022-of-034.zip",
+      "bytes": 225025702,
+      "sha256": "967c8cc0228a0df7494a248d647d63882d9444e06315953bea58f38bd810061f",
+      "asset_id": 559511594,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-022-of-034.zip",
+      "remote_digest": "sha256:967c8cc0228a0df7494a248d647d63882d9444e06315953bea58f38bd810061f",
+      "verified_epoch": 1789228103.4330754
+    },
+    {
+      "name": "cov-ref001-progress-20260912-023-of-034.zip",
+      "bytes": 12857185,
+      "sha256": "11cd47dd0cfa80575dc43025506fb0d2b5c1cb3d000910f85059d6fe2bcb0b6b",
+      "asset_id": 559513047,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-023-of-034.zip",
+      "remote_digest": "sha256:11cd47dd0cfa80575dc43025506fb0d2b5c1cb3d000910f85059d6fe2bcb0b6b",
+      "verified_epoch": 1789228109.1015782
+    },
+    {
+      "name": "cov-ref001-progress-20260912-024-of-034.zip",
+      "bytes": 98014592,
+      "sha256": "2202a3bb3dd5ca968b5066f327cc3bb1dd4db79b8d47ff1ef98c0082d7b527b3",
+      "asset_id": 559513174,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-024-of-034.zip",
+      "remote_digest": "sha256:2202a3bb3dd5ca968b5066f327cc3bb1dd4db79b8d47ff1ef98c0082d7b527b3",
+      "verified_epoch": 1789228130.5843863
+    },
+    {
+      "name": "cov-ref001-progress-20260912-025-of-034.zip",
+      "bytes": 142160089,
+      "sha256": "875744c78fff689945786cda2bc630b3bebb59701fe6a5ef50809dcf172accf7",
+      "asset_id": 559513755,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-025-of-034.zip",
+      "remote_digest": "sha256:875744c78fff689945786cda2bc630b3bebb59701fe6a5ef50809dcf172accf7",
+      "verified_epoch": 1789228162.529926
+    },
+    {
+      "name": "cov-ref001-progress-20260912-026-of-034.zip",
+      "bytes": 128623406,
+      "sha256": "bef13ae416c2626289af94487751c13cdd1fff2f591d9b27c768d6638f374d0e",
+      "asset_id": 559514466,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-026-of-034.zip",
+      "remote_digest": "sha256:bef13ae416c2626289af94487751c13cdd1fff2f591d9b27c768d6638f374d0e",
+      "verified_epoch": 1789228192.481753
+    },
+    {
+      "name": "cov-ref001-progress-20260912-027-of-034.zip",
+      "bytes": 155148709,
+      "sha256": "a4ffb549629e92f11b61dd361202c1f4592a8350387dfa72effc624dd6cf5f08",
+      "asset_id": 559515050,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-027-of-034.zip",
+      "remote_digest": "sha256:a4ffb549629e92f11b61dd361202c1f4592a8350387dfa72effc624dd6cf5f08",
+      "verified_epoch": 1789228225.435453
+    },
+    {
+      "name": "cov-ref001-progress-20260912-028-of-034.zip",
+      "bytes": 158041295,
+      "sha256": "76996951c668f2702b28059f2d17b7e690b9090729881ddf5cf32bcb4f4a7bfa",
+      "asset_id": 559515826,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-028-of-034.zip",
+      "remote_digest": "sha256:76996951c668f2702b28059f2d17b7e690b9090729881ddf5cf32bcb4f4a7bfa",
+      "verified_epoch": 1789228260.6444325
+    },
+    {
+      "name": "cov-ref001-progress-20260912-029-of-034.zip",
+      "bytes": 173525560,
+      "sha256": "5a67492dfb7a01814ae46116188a9752d726645b82fa99b2c26cfa1ef90ee3f7",
+      "asset_id": 559516571,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-029-of-034.zip",
+      "remote_digest": "sha256:5a67492dfb7a01814ae46116188a9752d726645b82fa99b2c26cfa1ef90ee3f7",
+      "verified_epoch": 1789228297.9999237
+    },
+    {
+      "name": "cov-ref001-progress-20260912-030-of-034.zip",
+      "bytes": 232037445,
+      "sha256": "63d4c0718eeca4e520cd3938542c40bc3ee53a934661628336fbd92000d13e46",
+      "asset_id": 559517472,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-030-of-034.zip",
+      "remote_digest": "sha256:63d4c0718eeca4e520cd3938542c40bc3ee53a934661628336fbd92000d13e46",
+      "verified_epoch": 1789228351.957015
+    },
+    {
+      "name": "cov-ref001-progress-20260912-031-of-034.zip",
+      "bytes": 228122809,
+      "sha256": "994588ed644ddb3e086e95246f063f387ae8092b51e094b3467a17f4ad041770",
+      "asset_id": 559518450,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-031-of-034.zip",
+      "remote_digest": "sha256:994588ed644ddb3e086e95246f063f387ae8092b51e094b3467a17f4ad041770",
+      "verified_epoch": 1789228399.4155502
+    },
+    {
+      "name": "cov-ref001-progress-20260912-032-of-034.zip",
+      "bytes": 66565396,
+      "sha256": "634c538392755cf353ad40aa44e03be9cf3aadfa08d495c4979036e7b52336e8",
+      "asset_id": 559519427,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-032-of-034.zip",
+      "remote_digest": "sha256:634c538392755cf353ad40aa44e03be9cf3aadfa08d495c4979036e7b52336e8",
+      "verified_epoch": 1789228413.5341604
+    },
+    {
+      "name": "cov-ref001-progress-20260912-033-of-034.zip",
+      "bytes": 179051494,
+      "sha256": "5e5f4027ebf266375d640b3644ea26398d9476213ccb71bb7289c0f1719843b0",
+      "asset_id": 559519820,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-033-of-034.zip",
+      "remote_digest": "sha256:5e5f4027ebf266375d640b3644ea26398d9476213ccb71bb7289c0f1719843b0",
+      "verified_epoch": 1789228453.2692888
+    },
+    {
+      "name": "cov-ref001-progress-20260912-034-of-034.zip",
+      "bytes": 165238012,
+      "sha256": "a70593ee79143cd3a5a36f203a8e76b9464a6195465539c4e3a28f14ca343554",
+      "asset_id": 559520610,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-034-of-034.zip",
+      "remote_digest": "sha256:a70593ee79143cd3a5a36f203a8e76b9464a6195465539c4e3a28f14ca343554",
+      "verified_epoch": 1789228485.5006223
+    },
+    {
+      "name": "cov-ref001-progress-20260912-metadata.zip",
+      "bytes": 371027,
+      "sha256": "42228ddf3ab796e02e37199ca3a252bef23e3ede2877e4d255883c1de7483b46",
+      "asset_id": 559521509,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260912-metadata.zip",
+      "remote_digest": "sha256:42228ddf3ab796e02e37199ca3a252bef23e3ede2877e4d255883c1de7483b46",
+      "verified_epoch": 1789228488.703641
+    }
+  ],
+  "scientific_passes": 0,
+  "calculations_started": 0
+}

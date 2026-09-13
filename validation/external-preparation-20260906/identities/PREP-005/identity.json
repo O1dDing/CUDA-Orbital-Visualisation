@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-005",
+  "query": "phosphorus trichloride",
+  "expected_formula": "PCl3",
+  "expected_charge": 0,
+  "family": "磷配体",
+  "purpose": "不同卤素与 P 价层",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709623.0315242,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 24387,
+      "MolecularFormula": "Cl3P",
+      "ConnectivitySMILES": "P(Cl)(Cl)Cl",
+      "InChIKey": "FAIAAWCVCHQXDN-UHFFFAOYSA-N",
+      "IUPACName": "trichlorophosphane",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/24387"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709623.0315242,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-005\\response-1.json",
+      "sha256": "81d59139933db5ec401701b5f8f6da993f016e0891010c65fb3c6218e2ba3d37",
+      "bytes": 288,
+      "elapsed_seconds": 2.8794727325439453
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/phosphorus%20trichloride/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

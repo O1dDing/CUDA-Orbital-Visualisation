@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-002",
+  "query": "germane",
+  "expected_formula": "GeH4",
+  "expected_charge": 0,
+  "family": "主族氢化物",
+  "purpose": "重主族及 ECP 对照",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709615.4556437,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 23984,
+      "MolecularFormula": "GeH4",
+      "ConnectivitySMILES": "[GeH4]",
+      "InChIKey": "QUZPNFFHZPRKJD-UHFFFAOYSA-N",
+      "IUPACName": "germane",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/23984"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709615.4556437,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-002\\response-1.json",
+      "sha256": "bd125542dfebcc09f1796b012f750079aa0827e85083bc7d476a9b24de93fcee",
+      "bytes": 272,
+      "elapsed_seconds": 2.4184834957122803
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/germane/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

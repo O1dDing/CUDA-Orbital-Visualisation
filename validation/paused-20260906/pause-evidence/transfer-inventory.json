@@ -1,0 +1,167 @@
+[
+  {
+    "scope": "reference_jobs",
+    "directory": "F:\\Dev\\cov-cycle-20260906\\jobs\\REF-001",
+    "bytes_by_type": {
+      ".json": 368969,
+      ".chk": 414261248,
+      ".fch": 92186035,
+      ".gjf": 56658,
+      ".log": 3713260,
+      ".inp": 12877,
+      ".d2e": 0,
+      ".int": 0,
+      ".rwf": 1493159936,
+      ".skr": 2146304,
+      ".py": 68655
+    },
+    "files_by_type": {
+      ".json": 46,
+      ".chk": 32,
+      ".fch": 28,
+      ".gjf": 32,
+      ".log": 64,
+      ".inp": 4,
+      ".d2e": 4,
+      ".int": 4,
+      ".rwf": 4,
+      ".skr": 4,
+      ".py": 4
+    },
+    "total_bytes": 2005973942
+  },
+  {
+    "scope": "reproduction_jobs",
+    "directory": "F:\\Dev\\cov-cycle-20260906\\jobs\\R001",
+    "bytes_by_type": {
+      ".json": 2902331,
+      ".chk": 511623168,
+      ".fch": 257100535,
+      ".gjf": 272922,
+      ".log": 180999444,
+      ".py": 39633
+    },
+    "files_by_type": {
+      ".json": 274,
+      ".chk": 273,
+      ".fch": 273,
+      ".gjf": 273,
+      ".log": 546,
+      ".py": 2
+    },
+    "total_bytes": 952938033
+  },
+  {
+    "scope": "stability_jobs",
+    "directory": "F:\\Dev\\cov-cycle-20260906\\jobs\\S-001",
+    "bytes_by_type": {
+      ".chk": 1998848,
+      ".fch": 658319,
+      ".gjf": 202,
+      ".log": 1002725
+    },
+    "files_by_type": {
+      ".chk": 1,
+      ".fch": 1,
+      ".gjf": 1,
+      ".log": 2
+    },
+    "total_bytes": 3660094
+  },
+  {
+    "scope": "campaign",
+    "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906",
+    "bytes_by_type": {
+      ".json": 248703639,
+      ".md": 186367,
+      ".bib": 17972,
+      ".py": 1541217,
+      ".log": 1316883,
+      ".jsonl": 211821,
+      ".pyc": 1274430,
+      ".gjf": 2226623,
+      ".txt": 13366,
+      ".lock": 6,
+      ".npz": 973461828,
+      ".out": 3583772,
+      ".gbs": 1254618,
+      ".cube": 580368276,
+      ".cub": 143788640,
+      ".npy": 217863712,
+      ".fch": 5173443,
+      ".cpp": 32537,
+      ".bmp": 31500162,
+      ".f32": 1179648,
+      ".cmd": 849,
+      ".obj": 2805958,
+      ".exe": 937968,
+      ".fchk": 2508,
+      ".hpp": 49161,
+      ".dll": 7185824,
+      ".chk": 3788800
+    },
+    "files_by_type": {
+      ".json": 9410,
+      ".md": 35,
+      ".bib": 4,
+      ".py": 147,
+      ".log": 1213,
+      ".jsonl": 60,
+      ".pyc": 59,
+      ".gjf": 1095,
+      ".txt": 63,
+      ".lock": 6,
+      ".npz": 3643,
+      ".out": 1,
+      ".gbs": 546,
+      ".cube": 510,
+      ".cub": 4,
+      ".npy": 12,
+      ".fch": 5,
+      ".cpp": 7,
+      ".bmp": 3,
+      ".f32": 2,
+      ".cmd": 3,
+      ".obj": 4,
+      ".exe": 4,
+      ".fchk": 12,
+      ".hpp": 6,
+      ".dll": 4,
+      ".chk": 1
+    },
+    "total_bytes": 2228470028
+  },
+  {
+    "scope": "original_collection",
+    "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\fchk-collection-20260905",
+    "bytes_by_type": {
+      ".txt": 3565581,
+      ".jsonl": 401841868,
+      ".json": 8926239000,
+      ".html": 2015670,
+      ".md": 3025,
+      ".plan": 3561796,
+      ".log": 14493029,
+      ".out": 18507596,
+      ".fch": 257465741,
+      ".csv": 13660818,
+      ".png": 3413776611,
+      ".svg": 4331872
+    },
+    "files_by_type": {
+      ".txt": 820,
+      ".jsonl": 820,
+      ".json": 44896,
+      ".html": 274,
+      ".md": 1,
+      ".plan": 273,
+      ".log": 512,
+      ".out": 33,
+      ".fch": 273,
+      ".csv": 273,
+      ".png": 11378,
+      ".svg": 273
+    },
+    "total_bytes": 13059462607
+  }
+]

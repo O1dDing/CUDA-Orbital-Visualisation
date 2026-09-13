@@ -1,0 +1,673 @@
+{
+  "created_epoch": 1788855904.98699,
+  "prepared_candidates": 50,
+  "original_cases": 273,
+  "nonidentity_to_originals_established": 50,
+  "all_fifty_pairwise_constitutionally_distinct": true,
+  "remaining_unresolved_identity_collisions": 0,
+  "records": [
+    {
+      "candidate_id": "PREP-001",
+      "element_counts": {
+        "Si": 1,
+        "H": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-002",
+      "element_counts": {
+        "Ge": 1,
+        "H": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\nist-geometry-preparation-v1\\starting-geometries-v1\\summary.json",
+      "source_sha256": "a033e1233f7898f7443119cf5ecc4bd436c338c5b914058191e300359d22f809"
+    },
+    {
+      "candidate_id": "PREP-003",
+      "element_counts": {
+        "P": 1,
+        "H": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-004",
+      "element_counts": {
+        "P": 1,
+        "F": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-005",
+      "element_counts": {
+        "Cl": 3,
+        "P": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-006",
+      "element_counts": {
+        "S": 1,
+        "F": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-007",
+      "element_counts": {
+        "Cl": 1,
+        "F": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\nist-followed-geometries-v1\\starting-geometries-v1\\summary.json",
+      "source_sha256": "5833327b1826d020658a388c6fa04e2e8c313b95af29f8c9e839c028b8ab667e"
+    },
+    {
+      "candidate_id": "PREP-008",
+      "element_counts": {
+        "Br": 1,
+        "F": 5
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\nist-geometry-preparation-v1\\starting-geometries-v1\\summary.json",
+      "source_sha256": "a033e1233f7898f7443119cf5ecc4bd436c338c5b914058191e300359d22f809"
+    },
+    {
+      "candidate_id": "PREP-010",
+      "element_counts": {
+        "F": 2,
+        "O": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-011",
+      "element_counts": {
+        "S": 1,
+        "O": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-012",
+      "element_counts": {
+        "S": 2,
+        "C": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-013",
+      "element_counts": {
+        "S": 1,
+        "O": 1,
+        "C": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-014",
+      "element_counts": {
+        "O": 1,
+        "N": 2
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-015",
+      "element_counts": {
+        "N": 2,
+        "H": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-016",
+      "element_counts": {
+        "Cl": 1,
+        "O": 1,
+        "N": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-017",
+      "element_counts": {
+        "Cl": 2,
+        "S": 1,
+        "O": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-018",
+      "element_counts": {
+        "N": 3,
+        "B": 3,
+        "H": 6
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\benchmark-geometry-preparation-v1\\review-v2\\summary.json",
+      "source_sha256": "3fe377eae37bd026b1881c8e62fc571ebacd4b42dc4990b5b1691f14f5dd47b9"
+    },
+    {
+      "candidate_id": "PREP-019",
+      "element_counts": {
+        "P": 1,
+        "C": 5,
+        "H": 5
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-020",
+      "element_counts": {
+        "N": 2,
+        "C": 4,
+        "H": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-021",
+      "element_counts": {
+        "N": 3,
+        "C": 3,
+        "H": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-022",
+      "element_counts": {
+        "O": 1,
+        "N": 1,
+        "C": 3,
+        "H": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-023",
+      "element_counts": {
+        "O": 1,
+        "N": 1,
+        "C": 3,
+        "H": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-024",
+      "element_counts": {
+        "S": 1,
+        "N": 1,
+        "C": 3,
+        "H": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-025",
+      "element_counts": {
+        "N": 1,
+        "C": 8,
+        "H": 7
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-026",
+      "element_counts": {
+        "O": 1,
+        "C": 8,
+        "H": 6
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-027",
+      "element_counts": {
+        "S": 1,
+        "C": 8,
+        "H": 6
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-028",
+      "element_counts": {
+        "C": 16,
+        "H": 10
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-029",
+      "element_counts": {
+        "C": 20,
+        "H": 12
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-030",
+      "element_counts": {
+        "C": 8,
+        "H": 8
+      },
+      "original_same_formula_cases": [
+        "OLD-100",
+        "OLD-101"
+      ],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\formula-collision-review-v2\\PREP-030.json",
+        "sha256": "1eb062851dfea4657c9ab9da3a8ad7a59d5782ee6db8c505249e8bec0ebdb006"
+      },
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-031",
+      "element_counts": {
+        "C": 7,
+        "H": 12
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-032",
+      "element_counts": {
+        "C": 5,
+        "H": 8
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-033",
+      "element_counts": {
+        "C": 7,
+        "H": 8
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-034",
+      "element_counts": {
+        "C": 5,
+        "H": 4
+      },
+      "original_same_formula_cases": [
+        "OLD-107"
+      ],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\formula-collision-review-v2\\PREP-034.json",
+        "sha256": "ebe9d9b3059f9beb2c39d206fb9b5bbdfb60195aa15c809ce9e61dd3889d8a88"
+      },
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-035",
+      "element_counts": {
+        "O": 2,
+        "C": 3,
+        "H": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-036",
+      "element_counts": {
+        "O": 2,
+        "C": 5,
+        "H": 8
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-037",
+      "element_counts": {
+        "C": 12,
+        "H": 10
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-038",
+      "element_counts": {
+        "O": 2,
+        "C": 4,
+        "H": 8
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-039",
+      "element_counts": {
+        "O": 2,
+        "C": 2,
+        "H": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-040",
+      "element_counts": {
+        "S": 1,
+        "O": 1,
+        "C": 2,
+        "H": 6
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\summary.json",
+      "source_sha256": "b79bed7928e931f257717a1da833df104651d3bdb337265f309d34a658093877"
+    },
+    {
+      "candidate_id": "PREP-042",
+      "element_counts": {
+        "C": 6,
+        "O": 1,
+        "H": 5
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\nist-geometry-preparation-v1\\starting-geometries-v1\\summary.json",
+      "source_sha256": "a033e1233f7898f7443119cf5ecc4bd436c338c5b914058191e300359d22f809"
+    },
+    {
+      "candidate_id": "PREP-043",
+      "element_counts": {
+        "C": 7,
+        "H": 7
+      },
+      "original_same_formula_cases": [
+        "OLD-097"
+      ],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-fifty-formula-collision-review-v1\\benzyl-tropylium.json",
+        "sha256": "2ee9b552fb085b846ab7522c518bdc2ba1fdfbe99716ef65f4ed4e01e8e4694d"
+      },
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\benchmark-geometry-preparation-v1\\review-v2\\summary.json",
+      "source_sha256": "3fe377eae37bd026b1881c8e62fc571ebacd4b42dc4990b5b1691f14f5dd47b9"
+    },
+    {
+      "candidate_id": "PREP-044",
+      "element_counts": {
+        "C": 2,
+        "H": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\benchmark-geometry-preparation-v1\\review-v2\\summary.json",
+      "source_sha256": "3fe377eae37bd026b1881c8e62fc571ebacd4b42dc4990b5b1691f14f5dd47b9"
+    },
+    {
+      "candidate_id": "PREP-045",
+      "element_counts": {
+        "C": 1,
+        "H": 3,
+        "O": 2
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\nist-followed-geometries-v1\\starting-geometries-v1\\summary.json",
+      "source_sha256": "5833327b1826d020658a388c6fa04e2e8c313b95af29f8c9e839c028b8ab667e"
+    },
+    {
+      "candidate_id": "PREP-046",
+      "element_counts": {
+        "O": 2,
+        "H": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\benchmark-geometry-preparation-v1\\review-v2\\summary.json",
+      "source_sha256": "3fe377eae37bd026b1881c8e62fc571ebacd4b42dc4990b5b1691f14f5dd47b9"
+    },
+    {
+      "candidate_id": "PREP-051",
+      "element_counts": {
+        "Cl": 2,
+        "H": 6,
+        "N": 2,
+        "Pt": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\summary.json",
+      "source_sha256": "d3e537b05b631bbce9a2d0032d3f1c2f6a812471a04b61f32ab88fbec15286a9"
+    },
+    {
+      "candidate_id": "PREP-060",
+      "element_counts": {
+        "Mo": 1,
+        "O": 4
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\rcsb-and-cisplatin-coordinate-preparation-v1\\summary.json",
+      "source_sha256": "d3e537b05b631bbce9a2d0032d3f1c2f6a812471a04b61f32ab88fbec15286a9"
+    },
+    {
+      "candidate_id": "PREP-068",
+      "element_counts": {
+        "C": 14,
+        "H": 13,
+        "Ni": 1,
+        "O": 2,
+        "P": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\summary.json",
+      "source_sha256": "69cc6463aa776d81fb6cbb456f2ac265eb52e60dcb6f09425cbe3bc7c25a6ccd"
+    },
+    {
+      "candidate_id": "PREP-069",
+      "element_counts": {
+        "C": 7,
+        "Cl": 1,
+        "H": 18,
+        "Ir": 1,
+        "O": 1,
+        "P": 2
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\summary.json",
+      "source_sha256": "69cc6463aa776d81fb6cbb456f2ac265eb52e60dcb6f09425cbe3bc7c25a6ccd"
+    },
+    {
+      "candidate_id": "PREP-070",
+      "element_counts": {
+        "C": 8,
+        "H": 22,
+        "P": 2,
+        "Pt": 1
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\summary.json",
+      "source_sha256": "69cc6463aa776d81fb6cbb456f2ac265eb52e60dcb6f09425cbe3bc7c25a6ccd"
+    },
+    {
+      "candidate_id": "PREP-071",
+      "element_counts": {
+        "C": 12,
+        "H": 27,
+        "Mo": 1,
+        "O": 3,
+        "P": 3
+      },
+      "original_same_formula_cases": [],
+      "nonidentity_to_originals_established": true,
+      "constitutional_distinction": null,
+      "source_summary": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\mor41-geometry-preparation-v2\\selection-v1\\summary.json",
+      "source_sha256": "69cc6463aa776d81fb6cbb456f2ac265eb52e60dcb6f09425cbe3bc7c25a6ccd"
+    }
+  ],
+  "new_evidence": {
+    "benzyl-tropylium.json": "2ee9b552fb085b846ab7522c518bdc2ba1fdfbe99716ef65f4ed4e01e8e4694d",
+    "oxazole-isoxazole.json": "2ada34d26d9edb547a64ea363b6d04c41ea3ae0e5580cba1696818d73a8e9645",
+    "protocol.json": "e26a5c4b98360d5e9cc8ddcb52cb765e44c27f05e641da20581500965b608d21"
+  },
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "gaussian_started": false,
+  "limitation": "Identity screening only: none of these results certify equilibrium geometry, electronic state, physical reference quality, or COV correctness."
+}

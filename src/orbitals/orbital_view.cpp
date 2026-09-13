@@ -29,7 +29,9 @@ std::optional<std::size_t> highest_occupied_for_spin(
     const double threshold) {
     std::optional<std::size_t> result;
     for (std::size_t i = 0; i < orbitals.size(); ++i) {
-        if (orbitals[i].spin == spin && occupied(orbitals[i], threshold)) {
+        if (orbitals[i].spin == spin && occupied(orbitals[i], threshold) &&
+            (!result || orbitals[i].energy_hartree>
+                            orbitals[*result].energy_hartree)) {
             result = i;
         }
     }
@@ -40,12 +42,15 @@ std::optional<std::size_t> lowest_virtual_for_spin(
     const std::vector<MolecularOrbital>& orbitals,
     const Spin spin,
     const double threshold) {
+    std::optional<std::size_t> result;
     for (std::size_t i = 0; i < orbitals.size(); ++i) {
-        if (orbitals[i].spin == spin && !occupied(orbitals[i], threshold)) {
-            return i;
+        if (orbitals[i].spin == spin && !occupied(orbitals[i], threshold) &&
+            (!result || orbitals[i].energy_hartree<
+                            orbitals[*result].energy_hartree)) {
+            result=i;
         }
     }
-    return std::nullopt;
+    return result;
 }
 
 bool is_meaningful_symmetry(const std::string& value) {
@@ -113,9 +118,13 @@ FrontierOrbitals find_frontier_orbitals(
 
     for (std::size_t i = 0; i < orbitals.size(); ++i) {
         if (occupied(orbitals[i], occupation_threshold)) {
-            result.homo = i;
-        } else if (!result.lumo.has_value()) {
-            result.lumo = i;
+            if (!result.homo || orbitals[i].energy_hartree>
+                                orbitals[*result.homo].energy_hartree) {
+                result.homo=i;
+            }
+        } else if (!result.lumo || orbitals[i].energy_hartree<
+                                  orbitals[*result.lumo].energy_hartree) {
+            result.lumo=i;
         }
     }
 
@@ -212,6 +221,10 @@ std::vector<OrbitalLabel> build_orbital_labels(
     while (begin < orbitals.size()) {
         std::size_t end = begin + 1;
         while (end < orbitals.size()) {
+            if (settings.maximum_group_size > 0u &&
+                end - begin >= settings.maximum_group_size) {
+                break;
+            }
             const auto& first = orbitals[begin];
             const auto& current = orbitals[end];
             if (settings.require_same_spin && current.spin != first.spin) break;

@@ -24,6 +24,24 @@ enum class Text {
     BasisFunctions,
     Orbitals,
     ShellConvention,
+    ChargeMultiplicity,
+    AlphaBetaElectrons,
+    SCFStability,
+    SpinSquared,
+    Converged,
+    Failed,
+    Stable,
+    Unstable,
+    FrameTracking,
+    AtomMappingCompatibility,
+    MatchedSubspaces,
+    UnmatchedSubspaces,
+    TrackingOptimisation,
+    ExactOrNotNeeded,
+    ConservativeFallback,
+    Compatible,
+    Incompatible,
+    NoPreviousFrame,
     OrbitalSection,
     MoldenMO,
     InternalIndex,
@@ -89,6 +107,11 @@ enum class Text {
     MoleculeOpacity,
     OrbitalOpacity,
     ShowHydrogens,
+    ShowCoordinationContacts,
+    ShowMulticentreSupport,
+    ShowPolyhedralCageSupport,
+    ShowWeakInteractions,
+    WeakInteractionsHint,
     DelocalisationHeuristic,
     SALCUnavailable,
     SymmetryGrouped,
@@ -128,6 +151,11 @@ enum class Tone {
 
 [[nodiscard]] const char* tr(Text key, Language language) noexcept;
 [[nodiscard]] const char* language_name(Language language) noexcept;
+// Text rendered outside the main localisation table (for example the orbital
+// material and selected-MO chemistry panels).  Font construction consumes
+// this seed so those glyphs cannot silently fall back to '?'.
+[[nodiscard]] const char* supplemental_glyph_seed(Language language) noexcept;
+[[nodiscard]] const char* scientific_glyph_seed() noexcept;
 
 void apply_theme(float scale = 1.0f);
 bool configure_fonts(float pixel_size = 17.0f);

@@ -1,0 +1,34 @@
+{
+  "candidate_id": "PREP-053",
+  "query": "chlorotris(trimethylphosphine)rhodium(I)",
+  "expected_formula": "C9H27ClP3Rh",
+  "expected_charge": 0,
+  "family": "磷金属配合物",
+  "purpose": "实验畸变及局部群",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [
+    "https://pubs.rsc.org/en/content/articlelanding/1980/dt/dt9800000511"
+  ],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709731.8032165,
+  "lookup_status": "lookup-failed-retained",
+  "identity_candidates": [],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709731.8032165,
+      "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+      "elapsed_seconds": 2.5508503913879395,
+      "http_status": 404,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-053\\response-1.error",
+      "sha256": "fbfc1748cfbb386bfb21964a4b487153d17c908ce3bd58db1ff68f55de4dd691",
+      "bytes": 156
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/chlorotris%28trimethylphosphine%29rhodium%28I%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

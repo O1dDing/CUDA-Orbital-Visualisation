@@ -1,0 +1,1142 @@
+{
+  "status": "all_collection_terminal",
+  "round_identity": "1cf61800e5179b615a861b9d000be5410bd7325791bee29eb7ce03ff1a8dea23",
+  "all_terminal": true,
+  "expected_cases": 1,
+  "terminal_cases": 1,
+  "collection_counts": {
+    "complete": 1,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "wall_seconds_this_session": 50.16233319998719,
+  "finished_epoch": 1788856913.1593158,
+  "scientific_analysis": "ready after this barrier; not yet performed",
+  "formal_case_passes": 0,
+  "cases": [
+    {
+      "case_id": "OLD-013",
+      "input": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+      "started_at": "2026-09-08T16:41:03.044896+08:00",
+      "collection_status": "complete",
+      "scientific_analysis": "deferred",
+      "inspection_process": {
+        "argv": [
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\programs\\cov_scientific_audit_dump.exe",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+          "--interactions"
+        ],
+        "cwd": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production",
+        "stdin_path": null,
+        "console_log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production\\launcher.log",
+        "pid": 64976,
+        "started_epoch": 1788856863.0498943,
+        "finished_epoch": 1788856863.59233,
+        "wall_seconds": 0.5470000000204891,
+        "exit_code": 0,
+        "timed_out": false,
+        "completion_policy": "entire_tree",
+        "finite_driver_helpers": [],
+        "root_exit_observation": {
+          "exit_code": 0,
+          "active_job_processes": 0
+        },
+        "terminated_declared_helpers": [],
+        "cpu_mask": 327680,
+        "cpu_rate_hard_cap": null,
+        "core_count": 2,
+        "memory_limit_gib": 24,
+        "peak_tree_commit_bytes": 8347648,
+        "tree_process_count": 2,
+        "tree_cpu_seconds": 0.375,
+        "lifecycle_schema_version": 2,
+        "lifecycle_clock": "perf_counter_ns from run_tree entry; integer ticks and observer time retained",
+        "lifecycle_clock_origin_nanoseconds": 199032628480200,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "legacy_wall_seconds_clock_info": {
+          "implementation": "GetTickCount64()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 0.015625
+        },
+        "epoch_clock_info": {
+          "implementation": "GetSystemTimeAsFileTime()",
+          "monotonic": false,
+          "adjustable": true,
+          "resolution": 0.015625
+        },
+        "lifecycle_events": [
+          {
+            "sequence": 0,
+            "phase": "supervisor_enter",
+            "elapsed_nanoseconds": 900,
+            "elapsed_seconds": 9e-07,
+            "epoch": 1788856863.0488946,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 5100,
+            "after_observer_elapsed_seconds": 5.1e-06
+          },
+          {
+            "sequence": 1,
+            "phase": "job_creation_enter",
+            "elapsed_nanoseconds": 159000,
+            "elapsed_seconds": 0.000159,
+            "epoch": 1788856863.0488946,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 160600,
+            "after_observer_elapsed_seconds": 0.0001606
+          },
+          {
+            "sequence": 2,
+            "phase": "job_created",
+            "elapsed_nanoseconds": 182500,
+            "elapsed_seconds": 0.0001825,
+            "epoch": 1788856863.0488946,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 183200,
+            "after_observer_elapsed_seconds": 0.0001832
+          },
+          {
+            "sequence": 3,
+            "phase": "standard_stream_open_enter",
+            "elapsed_nanoseconds": 185600,
+            "elapsed_seconds": 0.0001856,
+            "epoch": 1788856863.0488946,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 186600,
+            "after_observer_elapsed_seconds": 0.0001866
+          },
+          {
+            "sequence": 4,
+            "phase": "standard_streams_opened",
+            "elapsed_nanoseconds": 362200,
+            "elapsed_seconds": 0.0003622,
+            "epoch": 1788856863.0498943,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 364400,
+            "after_observer_elapsed_seconds": 0.0003644
+          },
+          {
+            "sequence": 5,
+            "phase": "resource_limits_enter",
+            "elapsed_nanoseconds": 365900,
+            "elapsed_seconds": 0.0003659,
+            "epoch": 1788856863.0498943,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 366700,
+            "after_observer_elapsed_seconds": 0.0003667
+          },
+          {
+            "sequence": 6,
+            "phase": "resource_limits_installed",
+            "elapsed_nanoseconds": 391200,
+            "elapsed_seconds": 0.0003912,
+            "epoch": 1788856863.0498943,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 391700,
+            "after_observer_elapsed_seconds": 0.0003917
+          },
+          {
+            "sequence": 7,
+            "phase": "process_creation_enter",
+            "elapsed_nanoseconds": 643400,
+            "elapsed_seconds": 0.0006434,
+            "epoch": 1788856863.0498943,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 644100,
+            "after_observer_elapsed_seconds": 0.0006441
+          },
+          {
+            "sequence": 8,
+            "phase": "process_created_suspended",
+            "elapsed_nanoseconds": 39717900,
+            "elapsed_seconds": 0.0397179,
+            "epoch": 1788856863.0889845,
+            "observer_called": false,
+            "pid": 64976,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39727600,
+            "after_observer_elapsed_seconds": 0.0397276
+          },
+          {
+            "sequence": 9,
+            "phase": "job_assignment_enter",
+            "elapsed_nanoseconds": 39729900,
+            "elapsed_seconds": 0.0397299,
+            "epoch": 1788856863.0889845,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39731100,
+            "after_observer_elapsed_seconds": 0.0397311
+          },
+          {
+            "sequence": 10,
+            "phase": "job_assigned",
+            "elapsed_nanoseconds": 39799000,
+            "elapsed_seconds": 0.039799,
+            "epoch": 1788856863.0889845,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39800400,
+            "after_observer_elapsed_seconds": 0.0398004
+          },
+          {
+            "sequence": 11,
+            "phase": "started_callback_enter",
+            "elapsed_nanoseconds": 39802100,
+            "elapsed_seconds": 0.0398021,
+            "epoch": 1788856863.0889845,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 39803500,
+            "after_observer_elapsed_seconds": 0.0398035
+          },
+          {
+            "sequence": 12,
+            "phase": "started_callback_returned",
+            "elapsed_nanoseconds": 41830300,
+            "elapsed_seconds": 0.0418303,
+            "epoch": 1788856863.090985,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41835000,
+            "after_observer_elapsed_seconds": 0.041835
+          },
+          {
+            "sequence": 13,
+            "phase": "resume_thread_enter",
+            "elapsed_nanoseconds": 41835600,
+            "elapsed_seconds": 0.0418356,
+            "epoch": 1788856863.090985,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41836500,
+            "after_observer_elapsed_seconds": 0.0418365
+          },
+          {
+            "sequence": 14,
+            "phase": "thread_resumed",
+            "elapsed_nanoseconds": 41849800,
+            "elapsed_seconds": 0.0418498,
+            "epoch": 1788856863.090985,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41851100,
+            "after_observer_elapsed_seconds": 0.0418511
+          },
+          {
+            "sequence": 15,
+            "phase": "tree_monitor_enter",
+            "elapsed_nanoseconds": 41853000,
+            "elapsed_seconds": 0.041853,
+            "epoch": 1788856863.090985,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 41854100,
+            "after_observer_elapsed_seconds": 0.0418541
+          },
+          {
+            "sequence": 16,
+            "phase": "root_exit_observed",
+            "elapsed_nanoseconds": 542408300,
+            "elapsed_seconds": 0.5424083,
+            "epoch": 1788856863.5918255,
+            "observer_called": false,
+            "exit_code": 0,
+            "active_job_processes": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 542417600,
+            "after_observer_elapsed_seconds": 0.5424176
+          },
+          {
+            "sequence": 17,
+            "phase": "tree_empty",
+            "elapsed_nanoseconds": 542419400,
+            "elapsed_seconds": 0.5424194,
+            "epoch": 1788856863.5918255,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 542420400,
+            "after_observer_elapsed_seconds": 0.5424204
+          },
+          {
+            "sequence": 18,
+            "phase": "final_accounting_collected",
+            "elapsed_nanoseconds": 542427700,
+            "elapsed_seconds": 0.5424277,
+            "epoch": 1788856863.5918255,
+            "observer_called": false,
+            "exit_code": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 542428800,
+            "after_observer_elapsed_seconds": 0.5424288
+          },
+          {
+            "sequence": 19,
+            "phase": "cleanup_enter",
+            "elapsed_nanoseconds": 542910000,
+            "elapsed_seconds": 0.54291,
+            "epoch": 1788856863.59233,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 542911400,
+            "after_observer_elapsed_seconds": 0.5429114
+          },
+          {
+            "sequence": 20,
+            "phase": "cleanup_complete",
+            "elapsed_nanoseconds": 543105600,
+            "elapsed_seconds": 0.5431056,
+            "epoch": 1788856863.59233,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 543106900,
+            "after_observer_elapsed_seconds": 0.5431069
+          }
+        ]
+      },
+      "inspection_seconds": 0.5481144999794196,
+      "native_process": {
+        "argv": [
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\programs\\cov_validation.exe",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+          "--validation-plan",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\case.plan",
+          "--validation-output",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native",
+          "--validation-background"
+        ],
+        "cwd": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-native",
+        "stdin_path": null,
+        "console_log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-native\\launcher.log",
+        "pid": 77468,
+        "started_epoch": 1788856863.7195864,
+        "finished_epoch": 1788856906.3189101,
+        "wall_seconds": 42.60999999998603,
+        "exit_code": 0,
+        "timed_out": false,
+        "completion_policy": "entire_tree",
+        "finite_driver_helpers": [],
+        "root_exit_observation": {
+          "exit_code": 0,
+          "active_job_processes": 0
+        },
+        "terminated_declared_helpers": [],
+        "cpu_mask": 327680,
+        "cpu_rate_hard_cap": null,
+        "core_count": 2,
+        "memory_limit_gib": 24,
+        "peak_tree_commit_bytes": 767025152,
+        "tree_process_count": 2,
+        "tree_cpu_seconds": 15.984375,
+        "lifecycle_schema_version": 2,
+        "lifecycle_clock": "perf_counter_ns from run_tree entry; integer ticks and observer time retained",
+        "lifecycle_clock_origin_nanoseconds": 199033298339100,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "legacy_wall_seconds_clock_info": {
+          "implementation": "GetTickCount64()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 0.015625
+        },
+        "epoch_clock_info": {
+          "implementation": "GetSystemTimeAsFileTime()",
+          "monotonic": false,
+          "adjustable": true,
+          "resolution": 0.015625
+        },
+        "lifecycle_events": [
+          {
+            "sequence": 0,
+            "phase": "supervisor_enter",
+            "elapsed_nanoseconds": 1400,
+            "elapsed_seconds": 1.4e-06,
+            "epoch": 1788856863.7185879,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 5400,
+            "after_observer_elapsed_seconds": 5.4e-06
+          },
+          {
+            "sequence": 1,
+            "phase": "job_creation_enter",
+            "elapsed_nanoseconds": 159500,
+            "elapsed_seconds": 0.0001595,
+            "epoch": 1788856863.7185879,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 160500,
+            "after_observer_elapsed_seconds": 0.0001605
+          },
+          {
+            "sequence": 2,
+            "phase": "job_created",
+            "elapsed_nanoseconds": 187500,
+            "elapsed_seconds": 0.0001875,
+            "epoch": 1788856863.7185879,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 188100,
+            "after_observer_elapsed_seconds": 0.0001881
+          },
+          {
+            "sequence": 3,
+            "phase": "standard_stream_open_enter",
+            "elapsed_nanoseconds": 190000,
+            "elapsed_seconds": 0.00019,
+            "epoch": 1788856863.7185879,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 190500,
+            "after_observer_elapsed_seconds": 0.0001905
+          },
+          {
+            "sequence": 4,
+            "phase": "standard_streams_opened",
+            "elapsed_nanoseconds": 408400,
+            "elapsed_seconds": 0.0004084,
+            "epoch": 1788856863.7195864,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 410800,
+            "after_observer_elapsed_seconds": 0.0004108
+          },
+          {
+            "sequence": 5,
+            "phase": "resource_limits_enter",
+            "elapsed_nanoseconds": 412300,
+            "elapsed_seconds": 0.0004123,
+            "epoch": 1788856863.7195864,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 412900,
+            "after_observer_elapsed_seconds": 0.0004129
+          },
+          {
+            "sequence": 6,
+            "phase": "resource_limits_installed",
+            "elapsed_nanoseconds": 433600,
+            "elapsed_seconds": 0.0004336,
+            "epoch": 1788856863.7195864,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 434100,
+            "after_observer_elapsed_seconds": 0.0004341
+          },
+          {
+            "sequence": 7,
+            "phase": "process_creation_enter",
+            "elapsed_nanoseconds": 729900,
+            "elapsed_seconds": 0.0007299,
+            "epoch": 1788856863.7195864,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 730600,
+            "after_observer_elapsed_seconds": 0.0007306
+          },
+          {
+            "sequence": 8,
+            "phase": "process_created_suspended",
+            "elapsed_nanoseconds": 68752700,
+            "elapsed_seconds": 0.0687527,
+            "epoch": 1788856863.7880914,
+            "observer_called": false,
+            "pid": 77468,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 68760900,
+            "after_observer_elapsed_seconds": 0.0687609
+          },
+          {
+            "sequence": 9,
+            "phase": "job_assignment_enter",
+            "elapsed_nanoseconds": 68762500,
+            "elapsed_seconds": 0.0687625,
+            "epoch": 1788856863.7880914,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 68763800,
+            "after_observer_elapsed_seconds": 0.0687638
+          },
+          {
+            "sequence": 10,
+            "phase": "job_assigned",
+            "elapsed_nanoseconds": 68811400,
+            "elapsed_seconds": 0.0688114,
+            "epoch": 1788856863.7880914,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 68812100,
+            "after_observer_elapsed_seconds": 0.0688121
+          },
+          {
+            "sequence": 11,
+            "phase": "started_callback_enter",
+            "elapsed_nanoseconds": 68812800,
+            "elapsed_seconds": 0.0688128,
+            "epoch": 1788856863.7880914,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 68813200,
+            "after_observer_elapsed_seconds": 0.0688132
+          },
+          {
+            "sequence": 12,
+            "phase": "started_callback_returned",
+            "elapsed_nanoseconds": 70618900,
+            "elapsed_seconds": 0.0706189,
+            "epoch": 1788856863.789095,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 70623800,
+            "after_observer_elapsed_seconds": 0.0706238
+          },
+          {
+            "sequence": 13,
+            "phase": "resume_thread_enter",
+            "elapsed_nanoseconds": 70624300,
+            "elapsed_seconds": 0.0706243,
+            "epoch": 1788856863.789095,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 70624900,
+            "after_observer_elapsed_seconds": 0.0706249
+          },
+          {
+            "sequence": 14,
+            "phase": "thread_resumed",
+            "elapsed_nanoseconds": 70639700,
+            "elapsed_seconds": 0.0706397,
+            "epoch": 1788856863.789095,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 70640300,
+            "after_observer_elapsed_seconds": 0.0706403
+          },
+          {
+            "sequence": 15,
+            "phase": "tree_monitor_enter",
+            "elapsed_nanoseconds": 70641700,
+            "elapsed_seconds": 0.0706417,
+            "epoch": 1788856863.789095,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 70642100,
+            "after_observer_elapsed_seconds": 0.0706421
+          },
+          {
+            "sequence": 16,
+            "phase": "root_exit_observed",
+            "elapsed_nanoseconds": 42601020600,
+            "elapsed_seconds": 42.6010206,
+            "epoch": 1788856906.3184032,
+            "observer_called": false,
+            "exit_code": 0,
+            "active_job_processes": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 42601030300,
+            "after_observer_elapsed_seconds": 42.6010303
+          },
+          {
+            "sequence": 17,
+            "phase": "tree_empty",
+            "elapsed_nanoseconds": 42601032600,
+            "elapsed_seconds": 42.6010326,
+            "epoch": 1788856906.3184032,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 42601033600,
+            "after_observer_elapsed_seconds": 42.6010336
+          },
+          {
+            "sequence": 18,
+            "phase": "final_accounting_collected",
+            "elapsed_nanoseconds": 42601040400,
+            "elapsed_seconds": 42.6010404,
+            "epoch": 1788856906.3184032,
+            "observer_called": false,
+            "exit_code": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 42601041300,
+            "after_observer_elapsed_seconds": 42.6010413
+          },
+          {
+            "sequence": 19,
+            "phase": "cleanup_enter",
+            "elapsed_nanoseconds": 42601528900,
+            "elapsed_seconds": 42.6015289,
+            "epoch": 1788856906.3189101,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 42601531100,
+            "after_observer_elapsed_seconds": 42.6015311
+          },
+          {
+            "sequence": 20,
+            "phase": "cleanup_complete",
+            "elapsed_nanoseconds": 42601590200,
+            "elapsed_seconds": 42.6015902,
+            "epoch": 1788856906.3189101,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 42601591000,
+            "after_observer_elapsed_seconds": 42.601591
+          }
+        ]
+      },
+      "native_seconds": 42.608336800010875,
+      "native_session": {
+        "schema": 1,
+        "seconds": 42.0843947,
+        "frames": 6518,
+        "commands": 1004,
+        "failed_commands": 0,
+        "capture_status": "completed",
+        "scientific_verdict": "external checker required"
+      },
+      "orbitals": 216,
+      "texture_count": 216,
+      "sample_points_min": 8179,
+      "sample_points_max": 8179,
+      "screenshots": 94,
+      "export_png": true,
+      "complete_texture_grids": [
+        {
+          "mo": 83,
+          "shape": [
+            128,
+            128,
+            128
+          ],
+          "metadata": "frontier-0084-128.volume.json",
+          "binary": "frontier-0084-128.volume.f32"
+        },
+        {
+          "mo": 83,
+          "shape": [
+            64,
+            64,
+            64
+          ],
+          "metadata": "frontier-0084-64.volume.json",
+          "binary": "frontier-0084-64.volume.f32"
+        },
+        {
+          "mo": 84,
+          "shape": [
+            128,
+            128,
+            128
+          ],
+          "metadata": "frontier-0085-128.volume.json",
+          "binary": "frontier-0085-128.volume.f32"
+        },
+        {
+          "mo": 84,
+          "shape": [
+            64,
+            64,
+            64
+          ],
+          "metadata": "frontier-0085-64.volume.json",
+          "binary": "frontier-0085-64.volume.f32"
+        }
+      ],
+      "primary_members": 21,
+      "spin_counterparts": 0,
+      "selection_records": [
+        {
+          "capture": "member-0043-surface",
+          "requested_mo": 42,
+          "observed_mo": 42
+        },
+        {
+          "capture": "member-0048-surface",
+          "requested_mo": 47,
+          "observed_mo": 47
+        },
+        {
+          "capture": "member-0049-surface",
+          "requested_mo": 48,
+          "observed_mo": 48
+        },
+        {
+          "capture": "member-0058-surface",
+          "requested_mo": 57,
+          "observed_mo": 57
+        },
+        {
+          "capture": "member-0060-surface",
+          "requested_mo": 59,
+          "observed_mo": 59
+        },
+        {
+          "capture": "member-0061-surface",
+          "requested_mo": 60,
+          "observed_mo": 60
+        },
+        {
+          "capture": "member-0062-surface",
+          "requested_mo": 61,
+          "observed_mo": 61
+        },
+        {
+          "capture": "member-0063-surface",
+          "requested_mo": 62,
+          "observed_mo": 62
+        },
+        {
+          "capture": "member-0064-surface",
+          "requested_mo": 63,
+          "observed_mo": 63
+        },
+        {
+          "capture": "member-0065-surface",
+          "requested_mo": 64,
+          "observed_mo": 64
+        },
+        {
+          "capture": "member-0070-surface",
+          "requested_mo": 69,
+          "observed_mo": 69
+        },
+        {
+          "capture": "member-0082-surface",
+          "requested_mo": 81,
+          "observed_mo": 81
+        },
+        {
+          "capture": "member-0083-surface",
+          "requested_mo": 82,
+          "observed_mo": 82
+        },
+        {
+          "capture": "member-0084-surface",
+          "requested_mo": 83,
+          "observed_mo": 83
+        },
+        {
+          "capture": "member-0085-surface",
+          "requested_mo": 84,
+          "observed_mo": 84
+        },
+        {
+          "capture": "member-0087-surface",
+          "requested_mo": 86,
+          "observed_mo": 86
+        },
+        {
+          "capture": "member-0088-surface",
+          "requested_mo": 87,
+          "observed_mo": 87
+        },
+        {
+          "capture": "member-0089-surface",
+          "requested_mo": 88,
+          "observed_mo": 88
+        },
+        {
+          "capture": "member-0091-surface",
+          "requested_mo": 90,
+          "observed_mo": 90
+        },
+        {
+          "capture": "member-0092-surface",
+          "requested_mo": 91,
+          "observed_mo": 91
+        },
+        {
+          "capture": "member-0098-surface",
+          "requested_mo": 97,
+          "observed_mo": 97
+        }
+      ],
+      "missing": [],
+      "integrity_errors": [],
+      "failed_actions": [],
+      "note": "Collection completeness only; scientific correctness and visual/chemical review deferred.",
+      "finished_at": "2026-09-08T16:41:52.159379+08:00",
+      "wall_seconds": 49.11711450002622,
+      "ordinary_process": {
+        "argv": [
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\programs\\cov_scientific_audit_dump_off.exe",
+          "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\inputs\\.chk\\gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+          "--interactions"
+        ],
+        "cwd": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production-off",
+        "stdin_path": null,
+        "console_log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-diagnostic\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\process-production-off\\launcher.log",
+        "pid": 74044,
+        "started_epoch": 1788856912.1663833,
+        "finished_epoch": 1788856912.70593,
+        "wall_seconds": 0.5470000000204891,
+        "exit_code": 0,
+        "timed_out": false,
+        "completion_policy": "entire_tree",
+        "finite_driver_helpers": [],
+        "root_exit_observation": {
+          "exit_code": 0,
+          "active_job_processes": 0
+        },
+        "terminated_declared_helpers": [],
+        "cpu_mask": 327680,
+        "cpu_rate_hard_cap": null,
+        "core_count": 2,
+        "memory_limit_gib": 24,
+        "peak_tree_commit_bytes": 8351744,
+        "tree_process_count": 2,
+        "tree_cpu_seconds": 0.390625,
+        "lifecycle_schema_version": 2,
+        "lifecycle_clock": "perf_counter_ns from run_tree entry; integer ticks and observer time retained",
+        "lifecycle_clock_origin_nanoseconds": 199081748162300,
+        "lifecycle_clock_info": {
+          "name": "perf_counter",
+          "implementation": "QueryPerformanceCounter()",
+          "resolution_seconds": 1e-07,
+          "monotonic": true,
+          "adjustable": false,
+          "resolution_is_not_an_accuracy_guarantee": true
+        },
+        "legacy_wall_seconds_clock_info": {
+          "implementation": "GetTickCount64()",
+          "monotonic": true,
+          "adjustable": false,
+          "resolution": 0.015625
+        },
+        "epoch_clock_info": {
+          "implementation": "GetSystemTimeAsFileTime()",
+          "monotonic": false,
+          "adjustable": true,
+          "resolution": 0.015625
+        },
+        "lifecycle_events": [
+          {
+            "sequence": 0,
+            "phase": "supervisor_enter",
+            "elapsed_nanoseconds": 900,
+            "elapsed_seconds": 9e-07,
+            "epoch": 1788856912.1663833,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 4000,
+            "after_observer_elapsed_seconds": 4e-06
+          },
+          {
+            "sequence": 1,
+            "phase": "job_creation_enter",
+            "elapsed_nanoseconds": 139000,
+            "elapsed_seconds": 0.000139,
+            "epoch": 1788856912.1663833,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 139900,
+            "after_observer_elapsed_seconds": 0.0001399
+          },
+          {
+            "sequence": 2,
+            "phase": "job_created",
+            "elapsed_nanoseconds": 159300,
+            "elapsed_seconds": 0.0001593,
+            "epoch": 1788856912.1663833,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 159800,
+            "after_observer_elapsed_seconds": 0.0001598
+          },
+          {
+            "sequence": 3,
+            "phase": "standard_stream_open_enter",
+            "elapsed_nanoseconds": 161400,
+            "elapsed_seconds": 0.0001614,
+            "epoch": 1788856912.1663833,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 161900,
+            "after_observer_elapsed_seconds": 0.0001619
+          },
+          {
+            "sequence": 4,
+            "phase": "standard_streams_opened",
+            "elapsed_nanoseconds": 335300,
+            "elapsed_seconds": 0.0003353,
+            "epoch": 1788856912.1663833,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 337400,
+            "after_observer_elapsed_seconds": 0.0003374
+          },
+          {
+            "sequence": 5,
+            "phase": "resource_limits_enter",
+            "elapsed_nanoseconds": 338400,
+            "elapsed_seconds": 0.0003384,
+            "epoch": 1788856912.1663833,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 338800,
+            "after_observer_elapsed_seconds": 0.0003388
+          },
+          {
+            "sequence": 6,
+            "phase": "resource_limits_installed",
+            "elapsed_nanoseconds": 357900,
+            "elapsed_seconds": 0.0003579,
+            "epoch": 1788856912.1673825,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 358400,
+            "after_observer_elapsed_seconds": 0.0003584
+          },
+          {
+            "sequence": 7,
+            "phase": "process_creation_enter",
+            "elapsed_nanoseconds": 615900,
+            "elapsed_seconds": 0.0006159,
+            "epoch": 1788856912.1673825,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 616800,
+            "after_observer_elapsed_seconds": 0.0006168
+          },
+          {
+            "sequence": 8,
+            "phase": "process_created_suspended",
+            "elapsed_nanoseconds": 36772800,
+            "elapsed_seconds": 0.0367728,
+            "epoch": 1788856912.2033806,
+            "observer_called": false,
+            "pid": 74044,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 36781200,
+            "after_observer_elapsed_seconds": 0.0367812
+          },
+          {
+            "sequence": 9,
+            "phase": "job_assignment_enter",
+            "elapsed_nanoseconds": 36783200,
+            "elapsed_seconds": 0.0367832,
+            "epoch": 1788856912.2033806,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 36784300,
+            "after_observer_elapsed_seconds": 0.0367843
+          },
+          {
+            "sequence": 10,
+            "phase": "job_assigned",
+            "elapsed_nanoseconds": 36831900,
+            "elapsed_seconds": 0.0368319,
+            "epoch": 1788856912.2033806,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 36832700,
+            "after_observer_elapsed_seconds": 0.0368327
+          },
+          {
+            "sequence": 11,
+            "phase": "started_callback_enter",
+            "elapsed_nanoseconds": 36833500,
+            "elapsed_seconds": 0.0368335,
+            "epoch": 1788856912.2033806,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 36834300,
+            "after_observer_elapsed_seconds": 0.0368343
+          },
+          {
+            "sequence": 12,
+            "phase": "started_callback_returned",
+            "elapsed_nanoseconds": 38404800,
+            "elapsed_seconds": 0.0384048,
+            "epoch": 1788856912.2053795,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 38409200,
+            "after_observer_elapsed_seconds": 0.0384092
+          },
+          {
+            "sequence": 13,
+            "phase": "resume_thread_enter",
+            "elapsed_nanoseconds": 38409800,
+            "elapsed_seconds": 0.0384098,
+            "epoch": 1788856912.2053795,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 38411000,
+            "after_observer_elapsed_seconds": 0.038411
+          },
+          {
+            "sequence": 14,
+            "phase": "thread_resumed",
+            "elapsed_nanoseconds": 38425300,
+            "elapsed_seconds": 0.0384253,
+            "epoch": 1788856912.2053795,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 38426100,
+            "after_observer_elapsed_seconds": 0.0384261
+          },
+          {
+            "sequence": 15,
+            "phase": "tree_monitor_enter",
+            "elapsed_nanoseconds": 38427800,
+            "elapsed_seconds": 0.0384278,
+            "epoch": 1788856912.2053795,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 38428600,
+            "after_observer_elapsed_seconds": 0.0384286
+          },
+          {
+            "sequence": 16,
+            "phase": "root_exit_observed",
+            "elapsed_nanoseconds": 539011200,
+            "elapsed_seconds": 0.5390112,
+            "epoch": 1788856912.70593,
+            "observer_called": false,
+            "exit_code": 0,
+            "active_job_processes": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 539018300,
+            "after_observer_elapsed_seconds": 0.5390183
+          },
+          {
+            "sequence": 17,
+            "phase": "tree_empty",
+            "elapsed_nanoseconds": 539019800,
+            "elapsed_seconds": 0.5390198,
+            "epoch": 1788856912.70593,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 539020700,
+            "after_observer_elapsed_seconds": 0.5390207
+          },
+          {
+            "sequence": 18,
+            "phase": "final_accounting_collected",
+            "elapsed_nanoseconds": 539025600,
+            "elapsed_seconds": 0.5390256,
+            "epoch": 1788856912.70593,
+            "observer_called": false,
+            "exit_code": 0,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 539026400,
+            "after_observer_elapsed_seconds": 0.5390264
+          },
+          {
+            "sequence": 19,
+            "phase": "cleanup_enter",
+            "elapsed_nanoseconds": 539452600,
+            "elapsed_seconds": 0.5394526,
+            "epoch": 1788856912.70593,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 539453700,
+            "after_observer_elapsed_seconds": 0.5394537
+          },
+          {
+            "sequence": 20,
+            "phase": "cleanup_complete",
+            "elapsed_nanoseconds": 539646800,
+            "elapsed_seconds": 0.5396468,
+            "epoch": 1788856912.70593,
+            "observer_called": false,
+            "observer_wall_nanoseconds": 0,
+            "observer_wall_seconds": 0.0,
+            "after_observer_elapsed_nanoseconds": 539647900,
+            "after_observer_elapsed_seconds": 0.5396479
+          }
+        ]
+      },
+      "evidence_directory": "cases\\OLD-013\\attempt-001\\cases\\OLD-013",
+      "source_sha256": "6a7060eaa8d022b547063ad01bb007585cfd1964677ede08c75789a19cbfb98f",
+      "round_identity": "1cf61800e5179b615a861b9d000be5410bd7325791bee29eb7ce03ff1a8dea23",
+      "evidence_manifest": "cases\\OLD-013\\attempt-001\\evidence-manifest.json",
+      "evidence_manifest_sha256": "235bed460b468b2f380c91bba74e6bceb0fd18179909eea5b6ff87cabb2fec3f",
+      "wall_seconds_including_ordinary_and_packaging": 50.09542999998666
+    }
+  ]
+}

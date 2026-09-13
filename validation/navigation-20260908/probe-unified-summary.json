@@ -1,0 +1,78 @@
+{
+  "round_identity": "a799ed5b21ff6eaefcc70611f886cef2ebb21861e7b2fcd407d967fca0c7c0bb",
+  "production_commit": "21036b2990ef86dcdc419c65cdebd2a03bf4a12b",
+  "created_epoch": 1788841027.7850583,
+  "summary_script_sha256": "680b8da577de3c494c6c0ce91fd852d4b9b7b3c42b660818cec3e1701d268100",
+  "collection_counts": {
+    "complete": 1,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 1
+  },
+  "view_subset_counts": {
+    "view_subset_pass": 1
+  },
+  "bundle_counts": {
+    "pass": 7
+  },
+  "selected_png_strokes_checked": 7,
+  "case_count": 1,
+  "linear_member_click_counts": {
+    "pass": 21
+  },
+  "view_failures": [],
+  "view_failures_by_check": {},
+  "view_case_reports": [
+    {
+      "case_id": "OLD-013",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\view-review-v1\\OLD-013.json",
+      "sha256": "a390a0a884d601d84ebd82731ed366c4c446ef20a11f6f76a07be296e9cabd47"
+    }
+  ],
+  "numeric_failures": [],
+  "numeric_texture_failures": [],
+  "sampled_mos": 216,
+  "complete_frontier_textures": 4,
+  "timing": {
+    "collection_wall_seconds": 50.823767099995166,
+    "independent_review_wall_seconds": 40.27912210000795,
+    "collection_per_case": {
+      "n": 1,
+      "sum_seconds": 50.75753130001249,
+      "minimum_seconds": 50.75753130001249,
+      "median_seconds": 50.75753130001249,
+      "p95_seconds": 50.75753130001249,
+      "maximum_seconds": 50.75753130001249
+    },
+    "independent_review_per_case": {
+      "n": 1,
+      "sum_seconds": 37.396771899977466,
+      "minimum_seconds": 37.396771899977466,
+      "median_seconds": 37.396771899977466,
+      "p95_seconds": 37.396771899977466,
+      "maximum_seconds": 37.396771899977466
+    },
+    "view_review_wall_seconds": 0.16629700001794845,
+    "OLD-015": null
+  },
+  "consumed_summaries": {
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\collection-complete.json": "27ca581826be41d13ccf156fa691fb5717d70334557352a80cd7d4f8b26e5bed",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\review-v1\\unified-review\\summary.json": "6bc792aac978159902a75303f1aa930417529c368070fca5a81356d3e03f5645",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NAV-PROBE-001-diagnostic\\view-review-v1\\summary.json": "2753c744b97da3849764d1890d3cd8c87183559e6e89be12da5d3d7aa2909f7b"
+  },
+  "formal_case_passes": 0,
+  "external_molecule_count": 0,
+  "REF-001": "paused-by-user",
+  "limitations": [
+    "Draw-call semantics do not prove all visible text/glyph positions or clipping.",
+    "PNG stroke probes do not certify all output pixels.",
+    "Chemical/symmetry interpretation and paused physical references remain separate.",
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

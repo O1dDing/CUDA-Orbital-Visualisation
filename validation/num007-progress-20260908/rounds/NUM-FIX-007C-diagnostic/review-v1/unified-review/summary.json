@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "round_identity": "1cf61800e5179b615a861b9d000be5410bd7325791bee29eb7ce03ff1a8dea23",
+  "collection_sha256": "450d44d456a004e6423a26a3cb5eb8f07f655b7770921a4865da1d426605c5b3",
+  "review_barrier_sha256": "f835d86e970259f436498dbd30e766475bbbdb08e4a8998689be2b3acb17bde5",
+  "summary_script_sha256": "83d3526326ff227070a03a92eafc0dcd61040cd4c8e183c3e4ab773602e7e4a5",
+  "created_epoch": 1788856953.1917934,
+  "case_count": 1,
+  "collection_counts": {
+    "complete": 1,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 1
+  },
+  "check_counts": {
+    "BUILD-ON-OFF": {
+      "pass": 1
+    },
+    "ACTUAL-EXE-METRIC-DATA": {
+      "pass": 1
+    },
+    "ACTUAL-EXE-DENSITY-DATA": {
+      "pass": 1
+    },
+    "AO-INTEGRAL": {
+      "pass": 1
+    },
+    "MO-RAW-PRECISION": {
+      "pass": 1
+    },
+    "MO-AO-TRANSFORM": {
+      "pass": 1
+    },
+    "AO-TRANSFORM-PROVENANCE": {
+      "pass": 1
+    },
+    "DENSITY-EVIDENCE-CONTRACT": {
+      "pass": 1
+    },
+    "DENSITY-RECONSTRUCTION-MODEL-total": {
+      "pass": 1
+    },
+    "DENSITY-MO-SAME-INPUT-total": {
+      "pass": 1
+    },
+    "DENSITY-ACTUAL-AVAILABILITY-total": {
+      "pass": 1
+    },
+    "DENSITY-PRODUCER-AO-TRANSFORM-total": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-actual-total": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-actual-total": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-mo-total": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-mo-total": {
+      "pass": 1
+    },
+    "DENSITY-RECONSTRUCTION-MODEL-spin": {
+      "pass": 1
+    },
+    "DENSITY-MO-SAME-INPUT-spin": {
+      "pass": 1
+    },
+    "DENSITY-ACTUAL-AVAILABILITY-spin": {
+      "pass": 1
+    },
+    "DENSITY-ACTUAL-MO-FALLBACK-spin": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-actual-spin": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-actual-spin": {
+      "pass": 1
+    },
+    "DENSITY-INDEPENDENT-ELECTRON-TRACE-mo-spin": {
+      "pass": 1
+    },
+    "DENSITY-REPORTED-TRACE-mo-spin": {
+      "pass": 1
+    },
+    "MO-ENERGIES": {
+      "pass": 1
+    },
+    "MO-GRAM-0": {
+      "pass": 1
+    },
+    "MO-RECONSTRUCTED-ELECTRON-TRACE": {
+      "pass": 1
+    },
+    "DECOMPOSITION-CONSERVATION": {
+      "pass": 1
+    },
+    "ALL-MO-SAMPLED-TEXTURES": {
+      "pass": 1
+    },
+    "FRONTIER-COMPLETE-TEXTURES": {
+      "pass": 1
+    }
+  },
+  "sampled_mos": 216,
+  "complete_frontier_textures": 4,
+  "failed_check_count": 0,
+  "failed_texture_count": 0,
+  "failures": [],
+  "texture_failures": [],
+  "cases": [
+    {
+      "case_id": "OLD-013",
+      "input": "gaussian_validation_set\\13_Re2Cl8_2minus_D4h_delta_SDD.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 50.09542999998666,
+      "numerical_review_seconds": 30.169826800003648,
+      "failed_checks": []
+    }
+  ],
+  "timing": {
+    "collection_wall_seconds": 50.16233319998719,
+    "independent_review_wall_seconds": 32.8544798999792,
+    "collection_per_case": {
+      "n": 1,
+      "sum_seconds": 50.09542999998666,
+      "minimum_seconds": 50.09542999998666,
+      "median_seconds": 50.09542999998666,
+      "p95_seconds": 50.09542999998666,
+      "maximum_seconds": 50.09542999998666
+    },
+    "independent_review_per_case": {
+      "n": 1,
+      "sum_seconds": 30.169826800003648,
+      "minimum_seconds": 30.169826800003648,
+      "median_seconds": 30.169826800003648,
+      "p95_seconds": 30.169826800003648,
+      "maximum_seconds": 30.169826800003648
+    }
+  },
+  "formal_case_passes": 0,
+  "remaining": [
+    "independently managed physical reference calculations and adjudication",
+    "producer printed-density/MO rounding diagnosis and full real-space density acceptance",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

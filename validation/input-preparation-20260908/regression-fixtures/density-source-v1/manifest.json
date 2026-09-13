@@ -1,0 +1,536 @@
+{
+  "description": "Finite normalized s-AO algebra controls, not molecular reference calculations",
+  "generator_sha256": "2aa185861b6e3a0df6cd598ce2c1dcaa3bd278b170f698bd0ed6f9e046e0f294",
+  "scientific_source_commit_to_probe": "21036b2990ef86dcdc419c65cdebd2a03bf4a12b",
+  "source_ao_definition": "Normalized exponent-1 s Gaussians; Sij=exp(-|Ri-Rj|^2/2)",
+  "atomic_numbers": [
+    2,
+    2,
+    2
+  ],
+  "coordinates_bohr": [
+    [
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "1.25",
+      "0",
+      "0"
+    ],
+    [
+      "0.3",
+      "1.7",
+      "0"
+    ]
+  ],
+  "overlap_decimal": [
+    [
+      "1",
+      "0.4578333617716142609021468406541889706823290687715449060378795405614443",
+      "0.2253726555394387256606070068808678544546712554043176414121284053134510"
+    ],
+    [
+      "0.4578333617716142609021468406541889706823290687715449060378795405614443",
+      "1",
+      "0.1501305545148751179571430303851994715963717784039042306615699088941454"
+    ],
+    [
+      "0.2253726555394387256606070068808678544546712554043176414121284053134510",
+      "0.1501305545148751179571430303851994715963717784039042306615699088941454",
+      "1"
+    ]
+  ],
+  "coefficients_by_mo_decimal": [
+    [
+      "1",
+      "0E+35",
+      "0E+35"
+    ],
+    [
+      "-0.5149761293014995279689232647897931857824686369142726185416171738508475",
+      "1.124811279171023764991593539831744127181641107757053829496928811957037",
+      "0E+35"
+    ],
+    [
+      "-0.2037110038398598638480880631437854052797204318841984973447955552228379",
+      "-0.06105616955905577622448034704308435421694474264964308370032488502700754",
+      "1.027917759816431246159615905216051793385073454726098514540635050077878"
+    ]
+  ],
+  "decimal_precision": 70,
+  "analytic_gram_max_error": "1E-69",
+  "fixed_matrix_absolute_tolerance": 2e-12,
+  "coefficient_print_significant_digits": 18,
+  "threshold_status": "set before any execution against COV; not adjusted to observed failures",
+  "control_count": 20,
+  "formal_case_count": 0,
+  "new_external_molecule_count": 0,
+  "cov_executed": false,
+  "gaussian_executed": false,
+  "controls": [
+    {
+      "control_id": "DEN-C01",
+      "file": "DEN-C01-missing-occupation.molden",
+      "sha256": "d22765cf3cb83267a33bb88896b7a56355127fe14ba79f78bbfbd9d4db1b6116",
+      "expected_total_status": "missing-input",
+      "expected_spin_status": "missing-input",
+      "notes": "Unknown occupation cannot be replaced by zero. Complete density and total Mayer evidence must remain unavailable.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false
+    },
+    {
+      "control_id": "DEN-C02",
+      "file": "DEN-C02-shared-open-unsorted.molden",
+      "sha256": "314e521e4290cb58c167d04e92db27fc0138487677b622da1047717829e11851",
+      "expected_total_status": "available",
+      "expected_spin_status": "available-under-explicitly-recorded-integer-shared-determinant-interpretation",
+      "notes": "With conventional integer shared-orbital interpretation, the actual singly occupied direction is c0. A stricter unknown-model result must expose its reason; c1 spin density is incorrect.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "1.530400827500709521416857271528925858110632324674847506537752461759188",
+        "-1.158501917484324434373121985642910714695544088215064221783322361742488",
+        "2.530400827500709521416857271528925858110632324674847506537752461759186",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "3.000000000000000000000000000000000000000000000000000000000000000000000",
+      "spin_density_lower_packed_decimal": [
+        "1.000000000000000000000000000000000000000000000000000000000000000000000",
+        "0E-141",
+        "0E-142",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "1.000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "control_id": "DEN-C03",
+      "file": "DEN-C03-shared-open-reordered.molden",
+      "sha256": "9f76411e4cb411cbe2bdad5d50102cea28d746c0d56f3fddb2a5d74aecc76aa1",
+      "expected_total_status": "available",
+      "expected_spin_status": "same-interpretation-as-DEN-C02",
+      "notes": "",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "1.530400827500709521416857271528925858110632324674847506537752461759188",
+        "-1.158501917484324434373121985642910714695544088215064221783322361742488",
+        "2.530400827500709521416857271528925858110632324674847506537752461759186",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "3.000000000000000000000000000000000000000000000000000000000000000000000",
+      "spin_density_lower_packed_decimal": [
+        "1.000000000000000000000000000000000000000000000000000000000000000000000",
+        "0E-141",
+        "0E-142",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "1.000000000000000000000000000000000000000000000000000000000000000000000",
+      "metamorphic_relation": {
+        "control": "DEN-C02",
+        "old_mo_for_new": [
+          1,
+          2,
+          0
+        ],
+        "total": "equal",
+        "spin": "equal",
+        "occupations": "follow-coefficient-vector"
+      }
+    },
+    {
+      "control_id": "DEN-C04",
+      "file": "DEN-C04-fractional-shared.molden",
+      "sha256": "f114b3eb27dec2e2f87e46924f2d27f8a03290746417e32d239d13a148c86d10",
+      "expected_total_status": "available",
+      "expected_spin_status": "missing-input-unless-external-model-supplied",
+      "notes": "Total Occup does not encode a unique alpha-minus-beta partition. Aggregated integer counts do not remove this ambiguity.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "0.6326002068751773803542143178822314645276580811687118766344381154397969",
+        "-0.2896254793710811085932804964107276786738860220537660554458305904356221",
+        "0.6326002068751773803542143178822314645276580811687118766344381154397966",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "0.9999999999999999999999999999999999999999999999999999999999999999999997"
+    },
+    {
+      "control_id": "DEN-C05",
+      "file": "DEN-C05-fractional-shared.molden",
+      "sha256": "6f6840815578cb3339cd09a149e5bf675ab455dc5029c0246df0f4d10131dfd1",
+      "expected_total_status": "available",
+      "expected_spin_status": "missing-input-unless-external-model-supplied",
+      "notes": "Total Occup does not encode a unique alpha-minus-beta partition. Aggregated integer counts do not remove this ambiguity.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "1.632600206875177380354214317882231464527658081168711876634438115439797",
+        "-0.2896254793710811085932804964107276786738860220537660554458305904356221",
+        "0.6326002068751773803542143178822314645276580811687118766344381154397966",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "control_id": "DEN-C06",
+      "file": "DEN-C06-explicit-spins-equal-counts.molden",
+      "sha256": "6ed207907dacd671c148f059c59c02be71c0913e8bb281b6d05bf742fdbca2ee",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "Explicit alpha/beta spaces each contain one electron, but Q is nonzero. Equal electron counts do not prove a closed shell.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "1.035351180670787500003227992691054816244232452458249488292128300866126",
+        "0.1691888004071075881965658637135057523446136234945652871878626739817814",
+        "0.8097282648002270468533943268892562745954023438959512020920807877629397",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.000000000000000000000000000000000000000000000000000000000000000000000",
+      "spin_density_lower_packed_decimal": [
+        "0.9646488193292124999967720073089451837557675475417505117078716991338736",
+        "-0.1691888004071075881965658637135057523446136234945652871878626739817814",
+        "-0.8097282648002270468533943268892562745954023438959512020920807877629397",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "5.000000000000000000000000000000000000000000000000000000000000000000000E-70"
+    },
+    {
+      "control_id": "DEN-C07",
+      "file": "DEN-C07-explicit-spins-reversed.molden",
+      "sha256": "c945b9f2ef3f1b3821c6856ef01bcd95770be83b743f087e1fb051bb404845a6",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "1.035351180670787500003227992691054816244232452458249488292128300866126",
+        "0.1691888004071075881965658637135057523446136234945652871878626739817814",
+        "0.8097282648002270468533943268892562745954023438959512020920807877629397",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.000000000000000000000000000000000000000000000000000000000000000000000",
+      "spin_density_lower_packed_decimal": [
+        "-0.9646488193292124999967720073089451837557675475417505117078716991338736",
+        "0.1691888004071075881965658637135057523446136234945652871878626739817814",
+        "0.8097282648002270468533943268892562745954023438959512020920807877629397",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "-5.000000000000000000000000000000000000000000000000000000000000000000000E-70",
+      "metamorphic_relation": {
+        "control": "DEN-C06",
+        "total": "equal",
+        "spin": "negated"
+      }
+    },
+    {
+      "control_id": "DEN-C08",
+      "file": "DEN-C08-explicit-spins-reordered-phases.molden",
+      "sha256": "2f1842567f5b92f403fc47b5ede56c13561fbb911f6204ae05455e8ab6c2d929",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "1.035351180670787500003227992691054816244232452458249488292128300866126",
+        "0.1691888004071075881965658637135057523446136234945652871878626739817814",
+        "0.8097282648002270468533943268892562745954023438959512020920807877629397",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.000000000000000000000000000000000000000000000000000000000000000000000",
+      "spin_density_lower_packed_decimal": [
+        "0.9646488193292124999967720073089451837557675475417505117078716991338736",
+        "-0.1691888004071075881965658637135057523446136234945652871878626739817814",
+        "-0.8097282648002270468533943268892562745954023438959512020920807877629397",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "5.000000000000000000000000000000000000000000000000000000000000000000000E-70",
+      "metamorphic_relation": {
+        "control": "DEN-C06",
+        "old_mo_for_new": [
+          5,
+          0,
+          3,
+          2,
+          1,
+          4
+        ],
+        "total": "equal",
+        "spin": "equal"
+      }
+    },
+    {
+      "control_id": "DEN-C09",
+      "file": "DEN-C09-closed-zero-spin.molden",
+      "sha256": "215eb8b3a2211e5dc006571cb90d0172b53df8cf483f02d448abffad02590dd4",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "An explicit complete shared closed-shell occupation has an available all-zero spin matrix.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "2.000000000000000000000000000000000000000000000000000000000000000000000",
+        "0E-141",
+        "0E-142",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.000000000000000000000000000000000000000000000000000000000000000000000",
+      "spin_density_lower_packed_decimal": [
+        "0E-140",
+        "0E-141",
+        "0E-142",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "0E-211"
+    },
+    {
+      "control_id": "DEN-C10",
+      "file": "DEN-C10-missing-spin-field.molden",
+      "sha256": "b0c06a61357fe207a3e59fe1e71eab340b0e6570fab0f0afa71ed318ab4ef189",
+      "expected_total_status": "available",
+      "expected_spin_status": "missing-input-unless-explicit-model-supplied",
+      "notes": "Default Alpha enum is not a producer Spin field. Preserve independent total-density usability.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "1.000000000000000000000000000000000000000000000000000000000000000000000",
+        "0E-141",
+        "0E-142",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "1.000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "control_id": "DEN-C11",
+      "file": "DEN-C11-invalid-ordinary-occupation.molden",
+      "sha256": "401f6aa5cfdbce741c8c30f9bf7d20d307590c5ba48d772f1780f852d9b76358",
+      "expected_total_status": "invalid-input-or-unsupported-input-purpose",
+      "expected_spin_status": "invalid-input-or-unsupported-input-purpose",
+      "notes": "Do not output fabricated zero/full density. Signed difference-density files may have another legitimate purpose, but are outside this ordinary electronic-state control.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false
+    },
+    {
+      "control_id": "DEN-C12",
+      "file": "DEN-C12-invalid-ordinary-occupation.molden",
+      "sha256": "1fd6a24551d54d63866dece52fe715b9bc4b2ce51f3605cb7073df3393020446",
+      "expected_total_status": "invalid-input-or-unsupported-input-purpose",
+      "expected_spin_status": "invalid-input-or-unsupported-input-purpose",
+      "notes": "Do not output fabricated zero/full density. Signed difference-density files may have another legitimate purpose, but are outside this ordinary electronic-state control.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false
+    },
+    {
+      "control_id": "DEN-C13",
+      "file": "DEN-C13-invalid-ordinary-occupation.molden",
+      "sha256": "83dc2df390db0c32a0071d0ade5bb315af561230ec7848d32904cbf51d5af72c",
+      "expected_total_status": "invalid-input-or-unsupported-input-purpose",
+      "expected_spin_status": "invalid-input-or-unsupported-input-purpose",
+      "notes": "Do not output fabricated zero/full density. Signed difference-density files may have another legitimate purpose, but are outside this ordinary electronic-state control.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false
+    },
+    {
+      "control_id": "DEN-C14",
+      "file": "DEN-C14-invalid-explicit-spin-occupation.molden",
+      "sha256": "de09e9e8086b94979d360cf29d4b46669f7856c0cf275be4da453d9fa85e0d65",
+      "expected_total_status": "invalid-input",
+      "expected_spin_status": "invalid-input",
+      "notes": "Explicit-spin occupation exceeds Pauli range [0,1]. Electron-count unavailability alone is insufficient if complete density is still published.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false
+    },
+    {
+      "control_id": "DEN-C15",
+      "file": "DEN-C15-missing-virtual-coefficient.molden",
+      "sha256": "7a9958d62cf537f0794815c83bad0b6006c868be6d425c46f42ab3426720d4ce",
+      "expected_total_status": "parser-rejects-incomplete-coefficient-block",
+      "expected_spin_status": "parser-rejects-incomplete-coefficient-block",
+      "notes": "Existing parser protection control: malformed coefficient dimensions must not be hidden by a zero occupation.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false
+    },
+    {
+      "control_id": "DEN-C16",
+      "file": "DEN-C16-canonical-full.fchk",
+      "sha256": "63919046594e976d86f802120f57e046717bf45c39b9dba0db6298e0dadfd081",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "Canonical Gaussian-style count-to-MO rule is appropriate for this explicitly defined complete shared determinant.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "2.265200413750354760708428635764462929055316162337423753268876230879594",
+        "-0.5792509587421622171865609928214553573477720441075321108916611808712442",
+        "1.265200413750354760708428635764462929055316162337423753268876230879593",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.999999999999999999999999999999999999999999999999999999999999999999999",
+      "spin_density_lower_packed_decimal": [
+        "0.2652004137503547607084286357644629290553161623374237532688762308795938",
+        "-0.5792509587421622171865609928214553573477720441075321108916611808712442",
+        "1.265200413750354760708428635764462929055316162337423753268876230879593",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "0.9999999999999999999999999999999999999999999999999999999999999999999994"
+    },
+    {
+      "control_id": "DEN-C17",
+      "file": "DEN-C17-canonical-virtual-truncated.fchk",
+      "sha256": "eec1d01a2fa2ebcd77ebabbd0fd806451740977fde71c4e04e1b5a880e0ad8f7",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "2.265200413750354760708428635764462929055316162337423753268876230879594",
+        "-0.5792509587421622171865609928214553573477720441075321108916611808712442",
+        "1.265200413750354760708428635764462929055316162337423753268876230879593",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.999999999999999999999999999999999999999999999999999999999999999999999",
+      "spin_density_lower_packed_decimal": [
+        "0.2652004137503547607084286357644629290553161623374237532688762308795938",
+        "-0.5792509587421622171865609928214553573477720441075321108916611808712442",
+        "1.265200413750354760708428635764462929055316162337423753268876230879593",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "0.9999999999999999999999999999999999999999999999999999999999999999999994",
+      "metamorphic_relation": {
+        "control": "DEN-C16",
+        "total": "equal",
+        "spin": "equal",
+        "removed_mo": "unoccupied-only"
+      }
+    },
+    {
+      "control_id": "DEN-C18",
+      "file": "DEN-C18-canonical-occupied-truncated.fchk",
+      "sha256": "35929bdf341ba72ec0c24af6007fb2081f9172fee11ae2f9c44d70f69a4ba0dd",
+      "expected_total_status": "missing-input-occupied-subspace",
+      "expected_spin_status": "missing-input-occupied-subspace",
+      "notes": "Alpha count 2 with only one supplied canonical direction: cannot reconstruct the absent occupied orbital.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false
+    },
+    {
+      "control_id": "DEN-C19",
+      "file": "DEN-C19-stored-density-with-truncated-mos.fchk",
+      "sha256": "4556fd83d7d489a8be44b24ac6eeaf3994ba7e88856a79627ffc09af0d1dd607",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "Actual stored producer-format P/Q are complete, but MO-reconstruction diagnostics must report missing occupied subspace; do not overwrite the stored matrices.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "2.265200413750354760708428635764462929055316162337423753268876230879594",
+        "-0.5792509587421622171865609928214553573477720441075321108916611808712442",
+        "1.265200413750354760708428635764462929055316162337423753268876230879593",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "2.999999999999999999999999999999999999999999999999999999999999999999999",
+      "spin_density_lower_packed_decimal": [
+        "0.2652004137503547607084286357644629290553161623374237532688762308795938",
+        "-0.5792509587421622171865609928214553573477720441075321108916611808712442",
+        "1.265200413750354760708428635764462929055316162337423753268876230879593",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "0.9999999999999999999999999999999999999999999999999999999999999999999994"
+    },
+    {
+      "control_id": "DEN-C20",
+      "file": "DEN-C20-explicit-fractional-spins.molden",
+      "sha256": "1c685efdd505f121da6e2cddfa7859992ceaa3e6f8cd0b9ea248208537a374ee",
+      "expected_total_status": "available",
+      "expected_spin_status": "available",
+      "notes": "Explicit alpha/beta fractional occupations define P/Q even when integer electron counters cannot represent their trace; density availability must not depend on integer count storage.",
+      "cov_execution_status": "not-run; wait for NUM-FIX-006 full collection and unified analysis",
+      "formal_case": false,
+      "new_external_molecule": false,
+      "total_density_lower_packed_decimal": [
+        "0.9489003103127660705313214768233471967914871217530678149516571731596951",
+        "-0.4344382190566216628899207446160915180108290330806490831687458856534331",
+        "0.9489003103127660705313214768233471967914871217530678149516571731596949",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "total_electrons_trace_ps": "1.499999999999999999999999999999999999999999999999999999999999999999999",
+      "spin_density_lower_packed_decimal": [
+        "0.3163001034375886901771071589411157322638290405843559383172190577198987",
+        "-0.1448127396855405542966402482053638393369430110268830277229152952178111",
+        "0.3163001034375886901771071589411157322638290405843559383172190577198983",
+        "0E-139",
+        "0E-140",
+        "0E-138"
+      ],
+      "spin_electrons_trace_qs": "0.5000000000000000000000000000000000000000000000000000000000000000000001"
+    }
+  ]
+}

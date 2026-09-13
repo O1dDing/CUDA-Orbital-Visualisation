@@ -1,0 +1,32 @@
+{
+  "case_id": "OLD-041",
+  "original_case_identity": "17401f6dcd169b2a17659e6198ce52131a206c351c609d954c01da616e832ea5",
+  "purpose": {
+    "kind": "specified_geometry",
+    "reference_geometry": "fixed",
+    "basis": "Explicit diagnostic geometry in registered input name",
+    "needs_post_batch_purpose_review": true,
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPP",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Default quality reference",
+  "ecp_core_electrons_by_atomic_number": {
+    "1": 0
+  },
+  "explicit_electrons": 2,
+  "alpha_electrons": 1,
+  "beta_electrons": 1,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "52e1d9186e449980a70932dd0b95971f5c060a74b428e3e1dfd53dc0ccda33de",
+  "initial_input_sha256": "c643ac3b204e58cd2d913825feccab8980cdf4cfb5768770c9e2f2e10e842b89",
+  "identity": "5e9a6cc79d55dbaf79a95f608dd80ed1e3d14372f80a58dd24afdc2fb5e65917"
+}

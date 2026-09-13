@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "recorded_epoch": 1788675745.8796644,
+  "base_source_commit": "d802885a15eda92b467dfda9fa03a6137a26f3b8",
+  "status": "prepared_not_applied",
+  "source_sha256": {
+    "include/cov/model.hpp": "6746bc61fd62cb2b92265b6978f3e3e3a860e6e4bd1e6bd46794dc620a0f8db1",
+    "src/parser/fchk_parser.cpp": "c896ceb28e65b0bbac5bfe332dd248e9928b4a6bad2b2a841f11fc5ff1024bdf",
+    "src/parser/fchk_overlap.cpp": "14b67dc16c2f77b9dc8af8319ac137529a307ce7a8e458f60159dce6a2490323",
+    "src/parser/wavefunction_io.cpp": "0b9bb1fed7f9d6828b2250530bbd1d3b3d272b460777abe82f915422f887e5f2",
+    "include/cov/overlap.hpp": "f72a368297bf186e3b23b435d5c24b1f6dcedf560717b5c57bf403589824debc",
+    "src/analysis/overlap.cpp": "3c106a22c49a426e1f28bb6ab95ac568e3985bf607cc845b9e8bb6515178379e",
+    "src/analysis/orbital_symmetry.cpp": "6d9befda553b1cc463b248d16c90c015600a487e79a315bb0047a30ddd3f21be",
+    "src/analysis/orbital_symmetry_dispatch.cpp": "8b24904a5f9dbb60fa5a907da36e275cb82183ef596dde4e55d3a335c4d27242",
+    "src/cuda/orbital.cu": "b3589ec976ce6d3e6c99bacb9363605cc58709fcacb015cabcfa0039ad1579ca",
+    "src/parser/molden_parser.cpp": "94fb461b20047c6f23440f7a91a140f27582363c42ead16ae59ea21dc83ea9a5",
+    "tests/fchk_overlap_smoke.cpp": "ff78ce06110efd843b8c658bc5403e839e63e445cc5f27f8333f9edb2b27e98e",
+    "CMakeLists.txt": "c4ed55be589287c2b6b41d9914e187a1ac8aad854298b9a9fc65afb12efc63e9"
+  },
+  "contract_document": "数值层通解实施契约.md",
+  "contract_document_sha256": "64fede21eafa629c1a152babbcc610df691693e65ab8875a4a0054295c851577",
+  "current_issue_ids": [
+    "NUM-001",
+    "NUM-002"
+  ],
+  "proposed_additional_issue": "Optional producer overlap validation and unknown-as-zero diagnostics; component evidence pending.",
+  "implementation_units": [
+    {
+      "id": "AO_CONVENTION",
+      "depends_on": [],
+      "contract": "One directed transformation shared by coefficients, all AO matrices, angular evaluators and source provenance."
+    },
+    {
+      "id": "CPU_PRECISION",
+      "depends_on": [
+        "AO_CONVENTION"
+      ],
+      "contract": "Preserve scientific doubles and raw MO identity; explicit GPU conversion buffer and byte-size boundary."
+    },
+    {
+      "id": "ANALYTIC_OVERLAP",
+      "depends_on": [
+        "AO_CONVENTION",
+        "CPU_PRECISION"
+      ],
+      "contract": "Basis-derived complete S independent of MO count; rectangular all-spin Gram, spectrum/conditioning and finite-state diagnostics."
+    },
+    {
+      "id": "METRIC_PROVENANCE",
+      "depends_on": [
+        "ANALYTIC_OVERLAP"
+      ],
+      "contract": "Separate producer transport, basis consistency, MO consistency and availability; no fabricated zero residual."
+    },
+    {
+      "id": "DOWNSTREAM_INTEGRATION",
+      "depends_on": [
+        "METRIC_PROVENANCE"
+      ],
+      "contract": "Symmetry, density, bonding and reference-space consumers use the same qualified metric and allocated thread budget."
+    },
+    {
+      "id": "ACTUAL_RENDER_VERIFICATION",
+      "depends_on": [
+        "CPU_PRECISION",
+        "DOWNSTREAM_INTEGRATION"
+      ],
+      "contract": "Freeze build and full formal case set; compare real GPU textures and frames against independent references under unchanged thresholds."
+    }
+  ],
+  "acceptance_constraints": {
+    "all_alpha_beta_mos": true,
+    "rectangular_mos_supported": true,
+    "sample_nrms_max": 0.0001,
+    "sample_abs_cosine_min": 0.9999999,
+    "sample_relative_peak_error_max": 0.001,
+    "all_cases_terminal_before_batch_analysis": true,
+    "rerun_all_formal_cases_after_production_algorithm_change": true,
+    "no_molecule_mo_or_atom_order_special_case": true,
+    "no_input_wavefunction_fitting": true
+  },
+  "resource_limit": {
+    "cores": 12,
+    "memory_gib": 128
+  },
+  "production_science_changed": false,
+  "frozen_ref_001_changed": false,
+  "formal_case_passes": 0,
+  "external_molecules_added": 0,
+  "component_probe_round_identity": "8389a2424d90c42c952d3960800609c2d18dd7caa09f5d87386a55487d6944d5"
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "OLD-166",
+  "original_case_identity": "dff6b3eb0368243b2750d8906a7da2dc5b61cfd310f0694e474b103593a1a8a8",
+  "purpose": {
+    "kind": "equilibrium_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Candidate equilibrium at the specified charge and multiplicity",
+    "competing_states_required": false,
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPPD",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Net anion or documented anionic fragment",
+  "ecp_core_electrons_by_atomic_number": {
+    "9": 0,
+    "33": 0
+  },
+  "explicit_electrons": 88,
+  "alpha_electrons": 44,
+  "beta_electrons": 44,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "ff96902f5d967dbdbbe5c1124deed4c02d79bde031a3cf7948e02e4cc1e0bd12",
+  "initial_input_sha256": "bdf888e4622ced9990684c9f08bb578855fb821c6f71352104f0c8cf3dcabc2c",
+  "identity": "b874cb5b1f59ca7e459c41f687ebdfcb327226e8a7c918fb4b1e9774dfdf6f7f"
+}

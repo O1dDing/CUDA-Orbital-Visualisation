@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C06",
+  "input_sha256": "6ed207907dacd671c148f059c59c02be71c0913e8bb281b6d05bf742fdbca2ee",
+  "exe_sha256": "94dca3439868b6b092b548b7f220d9a2cbd3d3d69fdc47777194d4bdbb657a5c",
+  "started_epoch": 1788854233.2270453,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5,
+  "log_sha256": "990844879709de1204fcc59fe1cf27d9288b3c3dd7a6cfeaee32f5857648eb56",
+  "observed_sha256": "1a3cb71d8d195e2689d37df34e947c01135bda9acfa86216f84012ca6b652ccc",
+  "finished_epoch": 1788854233.7462025
+}

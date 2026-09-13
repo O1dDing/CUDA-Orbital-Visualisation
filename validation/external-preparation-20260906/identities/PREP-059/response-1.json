@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24401,
+        "MolecularFormula": "MnO4-",
+        "ConnectivitySMILES": "[O-][Mn](=O)(=O)=O",
+        "InChIKey": "NPDODHDPVPPRDJ-UHFFFAOYSA-N",
+        "IUPACName": "permanganate",
+        "Charge": -1
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C05",
+  "input_sha256": "6f6840815578cb3339cd09a149e5bf675ab455dc5029c0246df0f4d10131dfd1",
+  "exe_sha256": "0794aa923582c07c7ee7ac1d2a3828086e5ba374aeab8f0bf4aaa03839cf88d4",
+  "started_epoch": 1788853245.4511838,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5,
+  "log_sha256": "21f36509314ec0f2779f922c5d1a733d4ef41fc5c3e2ca2b66637ffed999706b",
+  "observed_sha256": "44da3a19499c72e661639eb6681aa73aece7d7575929f4d136e22b19e78da86c",
+  "finished_epoch": 1788853245.9699967
+}

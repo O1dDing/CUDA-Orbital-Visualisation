@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 62665,
+        "MolecularFormula": "F3P",
+        "ConnectivitySMILES": "FP(F)F",
+        "InChIKey": "WKFBZNUBXWCCHG-UHFFFAOYSA-N",
+        "IUPACName": "trifluorophosphane",
+        "Charge": 0
+      }
+    ]
+  }
+}

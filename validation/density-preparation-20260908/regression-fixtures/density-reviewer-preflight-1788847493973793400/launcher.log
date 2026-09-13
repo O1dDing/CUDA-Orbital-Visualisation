@@ -1,0 +1,12 @@
+test_all_declared_outcomes_and_zero_are_usable (__main__.ReviewerTests.test_all_declared_outcomes_and_zero_are_usable) ... ok
+test_ambiguous_spin_has_no_full_mayer_even_if_no_pairs (__main__.ReviewerTests.test_ambiguous_spin_has_no_full_mayer_even_if_no_pairs) ... ok
+test_equal_counts_nonzero_spin_and_wrong_direction_detected (__main__.ReviewerTests.test_equal_counts_nonzero_spin_and_wrong_direction_detected) ... ok
+test_invalid_json_numbers_dimensions_and_over_rejection_fail (__main__.ReviewerTests.test_invalid_json_numbers_dimensions_and_over_rejection_fail) ... ok
+test_producer_density_and_incomplete_reconstruction_are_distinct (__main__.ReviewerTests.test_producer_density_and_incomplete_reconstruction_are_distinct) ... ok
+test_shared_model_must_be_declared_or_explicitly_unresolved (__main__.ReviewerTests.test_shared_model_must_be_declared_or_explicitly_unresolved) ... ok
+test_unknown_occupation_cannot_be_derived_zero (__main__.ReviewerTests.test_unknown_occupation_cannot_be_derived_zero) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.003s
+
+OK

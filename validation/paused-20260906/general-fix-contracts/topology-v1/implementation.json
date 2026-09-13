@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_applied",
+  "recorded_epoch": 1788683217.7750318,
+  "base_source_commit": "a94135734d29edb0e4b3d19e5cc1e7572755d7c2",
+  "issue_ids": [
+    "TOPO-001",
+    "TOPO-002",
+    "CHEM-002"
+  ],
+  "source_sha256": {
+    "include/cov/model.hpp": "6746bc61fd62cb2b92265b6978f3e3e3a860e6e4bd1e6bd46794dc620a0f8db1",
+    "include/cov/pi_topology.hpp": "0618db483e6eab8c8d025aec9bb27589934784d6e826297e7067ed1d5eb8720f",
+    "include/cov/interaction_graph.hpp": "6d0a1ebbbb0fe14f14c73f3bb41f864acca398115442360e63e51257e00bd5c2",
+    "src/analysis/orbital_chemistry.cpp": "96d48051bcc7e3dac0c3c8f3e6f77a09a2119f8c87e86bbf71cbc8b006f746bf",
+    "src/analysis/interaction_graph.cpp": "c10c1f966288f91b4a45aac9f3eefdcb6bb39dea98589b23da4049f43d332a01",
+    "src/orbitals/mo_diagram_chemistry.cpp": "c4ca835e1c0cca52cfe327ba61a267a9db7cd5b612c0913f966d5fb465ab3eca",
+    "tests/pi_topology_smoke.cpp": "14ba8e7cfd04c9c1241a66f14a11e73f0113f6b83c6e024c657a500da53c77e4",
+    "tests/interaction_graph_smoke.cpp": "9501a4dd238d271a651d366725b672612ca9196fed121afd8399149d2e45ada6"
+  },
+  "document_sha256": "f18bd20580c61c4995cc6950f40cf14f74861710efc5fe63d9dafe4dcc690712",
+  "implementation_units": [
+    {
+      "id": "TOPO-SCOPE-01",
+      "purpose": "Store structural-ring witnesses, oriented pi channels and electronic coupling evidence independently; preserve coexisting scopes and availability."
+    },
+    {
+      "id": "TOPO-SPIRO-02",
+      "purpose": "Replace both direction/count shortcuts with explicit chemically supported ring-pair witnesses; retain channel bundling where supported without falsely naming it spiro."
+    },
+    {
+      "id": "TOPO-FREE-03",
+      "purpose": "Use articulation/cyclic blocks as a free-spiro witness; do not treat their absence as exclusion of every non-free spiro union."
+    },
+    {
+      "id": "TOPO-CONTACT-04",
+      "purpose": "Keep the latest TOPO-002 scope correction; separate primary coordination and secondary contacts without inventing an observed CN failure."
+    },
+    {
+      "id": "TOPO-VIEW-05",
+      "purpose": "Propagate the same scoped graph evidence and visible layers to actual controls, current-view snapshot and all exports; keep complete MO identities."
+    },
+    {
+      "id": "TOPO-VERIFY-06",
+      "purpose": "Add ring/bridge/channel positive and negative controls plus order, coordinate and subspace invariants; rerun every formal case after production changes."
+    }
+  ],
+  "source_findings": [
+    {
+      "path": "src/analysis/orbital_chemistry.cpp",
+      "line": 1291,
+      "observation": "spiro_coupled stores no explicit checked ring-pair witness"
+    },
+    {
+      "path": "src/analysis/orbital_chemistry.cpp",
+      "line": 1639,
+      "observation": "shared atom plus near-orthogonal directions can set bundle.spiro"
+    },
+    {
+      "path": "src/analysis/orbital_chemistry.cpp",
+      "line": 2060,
+      "observation": "multiple networks force Spiro independently of bundle.spiro"
+    },
+    {
+      "path": "src/orbitals/mo_diagram_chemistry.cpp",
+      "line": 1796,
+      "observation": "compact-family inclusion consumes topology enum; a new label must not silently lose applicable family members"
+    },
+    {
+      "path": "src/analysis/interaction_graph.cpp",
+      "line": 787,
+      "observation": "coordination candidates use covalent adjacency produced in earlier stages; preserve scope correction and evaluate any neighborhood changes independent of enumeration order"
+    }
+  ],
+  "existing_control_scope": [
+    {
+      "path": "tests/pi_topology_smoke.cpp",
+      "observation": "Contains an allene oriented-channel separation control; it does not by itself exercise final Spiro assignment"
+    },
+    {
+      "path": "tests/interaction_graph_smoke.cpp",
+      "observation": "Contains multicentre support, hydride, agostic, low-order coordination, ionic, water-dimer and carbonyl shielding controls; retain their intended behavior and add missing whole-path cases"
+    }
+  ],
+  "latest_issue_adjudication": {
+    "TOPO-001": "confirmed_unfixed",
+    "TOPO-002": "secondary_contact_display_scope_revision_not_confirmed_first_shell_CN_error",
+    "OLD-013_existing_first_shell": "four Cl plus other Re; CN five"
+  },
+  "independent_prior_evidence": {
+    "GI-001": "input-structure-identity/GI-001/post-batch-review-v1/review.json",
+    "distance_cutoff_followup": "input-structure-identity/GI-001/distance-control-followup-v1/review.json",
+    "GI-001_cycle_block_scope": "free-junction diagnostic only; not general chemical ring nomenclature or pi coupling proof"
+  },
+  "authoritative_definitions": [
+    {
+      "url": "https://goldbook.iupac.org/terms/view/S05881",
+      "access": "official indexed definition retrieved 2026-09-06; direct main page returned HTTP 403"
+    },
+    {
+      "url": "https://goldbook.iupac.org/terms/view/S05884",
+      "access": "official indexed definition retrieved 2026-09-06; direct main page served verification page"
+    },
+    {
+      "url": "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.components.biconnected_components.html",
+      "access": "official 3.6.1 documentation read 2026-09-06"
+    }
+  ],
+  "execution_gate": "Finish the accepted original-input reliability stage; freeze production changes and collect all formal cases before post-batch scientific analysis.",
+  "frozen_ref_001_runner_changed": false,
+  "production_science_changed": false,
+  "scientific_issues_closed": [],
+  "formal_case_passes": 0,
+  "external_molecules_added": 0
+}

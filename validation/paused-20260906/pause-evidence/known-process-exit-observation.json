@@ -1,0 +1,21 @@
+{
+  "epoch": 1788690091.311,
+  "coordinator_wait": 0,
+  "processes": [
+    {
+      "pid": 39504,
+      "error": 87,
+      "handle": false
+    },
+    {
+      "pid": 11100,
+      "error": 87,
+      "handle": false
+    },
+    {
+      "pid": 52068,
+      "error": 87,
+      "handle": false
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "checks_passed": 10,
+  "tests": [
+    "signed-spin-weights",
+    "small-corruption-is-rejected",
+    "same-spin-permutation-and-phase-invariant",
+    "known-zero",
+    "invalid-matrix-rejected",
+    "invalid-matrix-rejected",
+    "preserved-native-pilot-density-all-checks-pass",
+    "wrong-producer-matrix-rejected",
+    "wrong-raw-MO-reconstruction-rejected",
+    "missing-state-cannot-be-known-zero"
+  ],
+  "measured_native_density_checks": 17,
+  "measured_case": "OLD-001",
+  "measured_round_identity": "3862f170906cdb852e770d09771c79c7fcfd753c40a1a9ae74f3640c080450af",
+  "measured_events_sha256": "0594144b27233e8e7864736cb8a8c5cce2d05f55d50c8f5543324e09de101196",
+  "source_sha256": "af609aeae17853a2741d78dd1fe476137891ef5df3fb456aaa7dcc2f8cc2358a",
+  "scope": "Checker preflight only; retain NUM007 pilot collection gaps. The new full-round checklist is not retroactively applied to that frozen round.",
+  "formal_case_passes": 0
+}

@@ -1,0 +1,67 @@
+{
+  "candidate_id": "PREP-046",
+  "symbols": [
+    "O",
+    "O",
+    "H"
+  ],
+  "coordinates_bohr": [
+    [
+      1.31000278999999,
+      0.022578377,
+      0.0
+    ],
+    [
+      -1.199528743,
+      -0.124829762,
+      0.0
+    ],
+    [
+      -1.753664518,
+      1.623138016,
+      -1.00001e-09
+    ]
+  ],
+  "coordinates_angstrom": [
+    [
+      0.693223622687343,
+      0.011947962567576444,
+      0.0
+    ],
+    [
+      -0.6347632746187214,
+      -0.06605706529284529,
+      0.0
+    ],
+    [
+      -0.9279992984947937,
+      0.8589276482175089,
+      -5.291825026751089e-10
+    ]
+  ],
+  "bohr_to_angstrom": 0.529177210903,
+  "coordinate_source": "https://github.com/grimme-lab/GMTKN55/blob/8d485b37a1ca8837e395042671ca5ba4e0714691/W4-11/hoo/coord",
+  "coordinate_provenance": "Author-distributed computational benchmark geometry; not an experimental coordinate set",
+  "electronic_state_records": [
+    {
+      "field": ".CHRG",
+      "value": 0,
+      "source_file": ".CHRG"
+    },
+    {
+      "field": ".UHF",
+      "value": 1,
+      "source_file": ".UHF"
+    },
+    {
+      "field": "$eht",
+      "raw_record": "$eht charge=0 unpaired=1"
+    }
+  ],
+  "local_proposed_charge": 0,
+  "local_proposed_multiplicity": 2,
+  "electronic_state_provenance": "explicit-author-records",
+  "formal_case": false,
+  "gaussian_started": false,
+  "accepted_reference_geometry": false
+}

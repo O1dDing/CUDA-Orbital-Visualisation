@@ -1,0 +1,32 @@
+{
+  "candidate_id": "PREP-030",
+  "query": "cubane",
+  "family": "笼状分子",
+  "expected_formula": "C8H8",
+  "expected_charge": 0,
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "started_epoch": 1788843024.381472,
+  "input_geometry_accepted": false,
+  "formal_case": false,
+  "gaussian_started": false,
+  "cid": 136090,
+  "inchikey": "TXWRERCHRDBNLG-UHFFFAOYSA-N",
+  "disconnected_identity": false,
+  "original_cases_with_same_element_counts": [
+    "OLD-100",
+    "OLD-101"
+  ],
+  "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/136090/JSON?record_type=3d",
+  "http_status": 200,
+  "raw_file": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v1\\PREP-030\\pubchem-computed-3d.json",
+  "raw_sha256": "ed899b501835bae8fd2dacfecd6e14d5208e9996fecd226a668b7861329aad10",
+  "raw_bytes": 9448,
+  "status": "computed-starting-conformer-retrieved",
+  "atom_count": 16,
+  "conformer_count": 1,
+  "normalized_file": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v1\\PREP-030\\starting-conformers.json",
+  "normalized_sha256": "48595af3ec99b8d608d83c25b1fc535508911493d4e9077b6399f889a02eea5f",
+  "finished_epoch": 1788843025.0796366,
+  "retained_prior_receipt": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v1\\PREP-030\\receipt.json",
+  "retained_prior_receipt_sha256": "903bc403a008ff87dce307673166d692bdb5938ff639f419a253889827350cd3"
+}

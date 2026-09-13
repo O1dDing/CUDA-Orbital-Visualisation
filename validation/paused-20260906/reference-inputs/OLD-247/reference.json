@@ -1,0 +1,33 @@
+{
+  "case_id": "OLD-247",
+  "original_case_identity": "4cb4faf452d117e986303a59a40bd8122326716a57b15e049beb1c2c8b841073",
+  "purpose": {
+    "kind": "coordination_geometry_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Synthetic starting shell; target name is not a physical geometry verdict",
+    "additional_reference": "original fixed geometry diagnostic",
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPPD",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Net anion or documented anionic fragment",
+  "ecp_core_electrons_by_atomic_number": {
+    "17": 0,
+    "27": 0
+  },
+  "explicit_electrons": 97,
+  "alpha_electrons": 50,
+  "beta_electrons": 47,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": true,
+  "is_verified_reference": false,
+  "basis_sha256": "cc40599a2722ce5795655bdc92fb4f3e7c7331bc74c829a209baa54b63360716",
+  "initial_input_sha256": "2192eba4685dd84fa6e8a52f42a1ec7d4897dfc7f5b2fc3917024e471052890f",
+  "identity": "968bbbc95504600c953c691e3b94a891443c1e5a7cb9035bfa36ef078a34b004"
+}

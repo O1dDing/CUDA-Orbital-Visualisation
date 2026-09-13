@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "case_id": "OLD-043",
+  "round_identity": "4c6a0986839ecaf985be304d66b75e89dec54288400c1839423a3c681348aa45",
+  "status": "numeric_subset_pass",
+  "checks": [
+    {
+      "check": "BUILD-ON-OFF",
+      "status": "pass",
+      "observed": {
+        "scope": "Entire recorded production analysis and diagram data"
+      }
+    },
+    {
+      "check": "ACTUAL-EXE-METRIC-DATA",
+      "status": "pass",
+      "observed": {
+        "matching_actual_exe_input_events": 1
+      }
+    },
+    {
+      "check": "AO-INTEGRAL",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error": 4.440892098500626e-16
+      }
+    },
+    {
+      "check": "MO-RAW-PRECISION",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error": 0.0
+      }
+    },
+    {
+      "check": "MO-AO-TRANSFORM",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error": 0.0
+      }
+    },
+    {
+      "check": "AO-TRANSFORM-PROVENANCE",
+      "status": "pass",
+      "observed": {
+        "ao_count": 18
+      }
+    },
+    {
+      "check": "MO-ENERGIES",
+      "status": "pass",
+      "observed": {
+        "max_absolute_error_hartree": 0.0
+      }
+    },
+    {
+      "check": "MO-GRAM-0",
+      "status": "pass",
+      "observed": {
+        "spin": 0,
+        "ao_count": 18,
+        "mo_count": 18,
+        "reference_gram_max_error": 7.284538429926077e-09,
+        "production_gram_max_error": 7.284538500080892e-09,
+        "production_reference_gram_max_error": 2.886579864025407e-15
+      }
+    },
+    {
+      "check": "MO-RECONSTRUCTED-ELECTRON-TRACE",
+      "status": "pass",
+      "observed": {
+        "trace": 5.999999996716655,
+        "expected_electrons": 6.0,
+        "scope": "MO-reconstructed density, not all optional stored producer density fields"
+      }
+    },
+    {
+      "check": "DECOMPOSITION-CONSERVATION",
+      "status": "pass",
+      "observed": {
+        "invalid_distributions": [],
+        "available_mos": 18,
+        "scope": "Every reported available distribution; unavailable chemistry is not certified"
+      }
+    },
+    {
+      "check": "ALL-MO-SAMPLED-TEXTURES",
+      "status": "pass",
+      "observed": {
+        "expected_mos": 18,
+        "measured": 18,
+        "passed": 18,
+        "maximum_nrms": 4.904258209632318e-07
+      }
+    },
+    {
+      "check": "FRONTIER-COMPLETE-TEXTURES",
+      "status": "pass",
+      "observed": {
+        "expected": 4,
+        "measured": 4,
+        "passed": 4,
+        "maximum_nrms": 2.3739917102647606e-07
+      }
+    }
+  ],
+  "wall_seconds": 2.666681399998197,
+  "formal_case_pass": false,
+  "coordinate_reference": "Recorded CUDA float grid interpolation with one final FMA rounding, as in the pre-existing independent checker",
+  "remaining_scope": [
+    "reference physical conclusions paused",
+    "full independent stored-density checks",
+    "symmetry/topology/chemical adjudication",
+    "visual correctness and all UI/export semantics",
+    "all required invariants and ordinary-build behavior"
+  ],
+  "source_sha256": "53f37c4d60da8ea76245792aed5960d3c4750468e0bf7f78af4b22ef5249f4c4",
+  "reviewer_sha256": "6460245b238aa1d9ba3f523abe0bc98da5f8bc715394eec82f035af892fc43fc",
+  "artifacts": {
+    "complete-textures.json": {
+      "bytes": 3236,
+      "sha256": "2f545dcc357d9328ac4aee3473f95e4fba5275f5eb21f84cf3c635f014f3a7e5"
+    },
+    "full-reference-00.npy": {
+      "bytes": 33554560,
+      "sha256": "5e6d9d78e6b2767d1df05d33cc46829d08081300345be7572863f602c675ecce"
+    },
+    "full-reference-01.npy": {
+      "bytes": 4194432,
+      "sha256": "9f2a0f80526a1372a23046b20aab772cb6fd9e3c31dc03ed0aa4bc78f19a5fcb"
+    },
+    "independent-metric.npz": {
+      "bytes": 3322,
+      "sha256": "4787c43985bc3122d26bc2f4e0ef3f39369ba2c9f19fd7e61964bc0b06f1666b"
+    },
+    "metric-checks.json": {
+      "bytes": 1746,
+      "sha256": "bedd0c9a4e2e84aab7cba234d5e9fc2948d09106b0641dc74728c493717a920b"
+    },
+    "sampled-textures.json": {
+      "bytes": 13377,
+      "sha256": "f17d5f30a64dede47408ffb3522abd7dfedd7a4e470d7b6b4db4ceacaf9a2a17"
+    }
+  }
+}

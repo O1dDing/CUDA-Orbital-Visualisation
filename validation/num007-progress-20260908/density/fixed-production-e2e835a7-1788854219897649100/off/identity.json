@@ -1,0 +1,10 @@
+{
+  "scientific_source_commit": "e2e835a70229b94501127ad336e0ddbc3ea69df3",
+  "validation_enabled": false,
+  "controls_manifest_sha256": "feb182a29c8b9eff99df5cb776a68210927594540de0138ba2872f63e2e523dc",
+  "runtime": {
+    "cov_density_source_probe.exe": "94dca3439868b6b092b548b7f220d9a2cbd3d3d69fdc47777194d4bdbb657a5c"
+  },
+  "parser_library_sha256": "484e13d3fd4566f5ad9a7fbc93e18c0f10d865e935a88b298d33fba242063bfc",
+  "new_expected_results": false
+}

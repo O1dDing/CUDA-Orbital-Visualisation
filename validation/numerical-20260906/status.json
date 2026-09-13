@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "updated_epoch": 1788700784.8617392,
+  "reference_execution": "paused_by_user",
+  "reference_counts": {
+    "candidate_collected": 13,
+    "interrupted": 2,
+    "not_started": 258
+  },
+  "reference_handoff": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/cov-ref-paused-20260906",
+  "formal_cases": {
+    "original": 273,
+    "external": 0,
+    "fully_passed": 0
+  },
+  "numerical_subset_rounds": {
+    "NUM-FIX-003-original": {
+      "round_identity": "4c6a0986839ecaf985be304d66b75e89dec54288400c1839423a3c681348aa45",
+      "program_source_commit": "a9bf30a18a16c16e876abec133691b911696da3f",
+      "large_raw_evidence_directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-003-original",
+      "raw_evidence_uploaded_in_this_checkpoint": false
+    },
+    "NUM-FIX-003-g-controls": {
+      "round_identity": "313173ec79fd92685209f5fda4c637308b8677d107553a59dab962a9ce43b9b4",
+      "program_source_commit": "a9bf30a18a16c16e876abec133691b911696da3f",
+      "large_raw_evidence_directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-003-g-controls",
+      "raw_evidence_uploaded_in_this_checkpoint": false
+    }
+  },
+  "numerical_issues": {
+    "NUM-001": {
+      "disposition": "implemented; applicable numerical subset verified",
+      "version": "a9bf30a18a16c16e876abec133691b911696da3f",
+      "full_product_acceptance": false
+    },
+    "NUM-002": {
+      "disposition": "implemented; applicable numerical subset verified",
+      "version": "a9bf30a18a16c16e876abec133691b911696da3f",
+      "full_product_acceptance": false
+    },
+    "NUM-003": {
+      "disposition": "implemented; applicable numerical subset verified",
+      "version": "a9bf30a18a16c16e876abec133691b911696da3f",
+      "full_product_acceptance": false
+    },
+    "CHEM-001": {
+      "disposition": "implemented; applicable numerical subset verified",
+      "version": "a9bf30a18a16c16e876abec133691b911696da3f",
+      "full_product_acceptance": false
+    }
+  },
+  "symmetry_code": {
+    "source_commit": "94447b057be12f3126f6cbef8743bb894c622144",
+    "implemented_roots": [
+      "SYM-001",
+      "SYM-003",
+      "SYM-006"
+    ],
+    "scope_preparation": [
+      "derived subspace and axis evidence",
+      "detected/used group provenance"
+    ],
+    "on_tests": 33,
+    "off_tests": 33,
+    "failures": 0,
+    "skips": 0,
+    "full_original_collection": "pending next freeze"
+  },
+  "remaining": [
+    "scoped global/local MO and representative-row semantics",
+    "remaining symmetry derivation and mixed-subspace handling",
+    "spiro witnesses and secondary interaction scopes",
+    "ligand priors and distinct crystal-field/pi splitting types",
+    "real UI visibility/detail inspection and common view/export snapshot",
+    "full original reruns after production changes and required invariants",
+    "paused physical reference and external calculations"
+  ]
+}

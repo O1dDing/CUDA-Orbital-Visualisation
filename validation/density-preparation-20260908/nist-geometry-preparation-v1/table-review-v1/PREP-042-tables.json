@@ -1,0 +1,961 @@
+{
+  "candidate_id": "PREP-042",
+  "source_url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+  "raw_sha256": "53a69483ad2957bf1494da9e0a06311dc6259bbba5ab0eabb397404507fe57e5",
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "All results from a given calculation for C6H5O (phenoxy radical)"
+    },
+    {
+      "tag": "h2",
+      "text": "using model chemistry: G3B3"
+    },
+    {
+      "tag": "h3",
+      "text": "States and conformations"
+    }
+  ],
+  "tables": [
+    {
+      "index": 0,
+      "rows": [
+        [
+          "",
+          "Computational Chemistry Comparison and Benchmark DataBase Release 22 (May 2022) Standard Reference Database 101 National Institute of Standards and Technology"
+        ],
+        [
+          "Home All data for one species Geometry Experimental Experimental Geometries Same bond/angle many molecules Internal Coordinates by type Bond angles Calculated Calculated geometry Rotational constant Moments of inertia Products of moments of inertia BSE Bond lengths Show me a calculated geometry Comparisons Bonds, angles Rotational Constants Products of moments of inertia Point group Bad Calculations Bad moment of inertia Tutorials and Explanations Angle formulas Vibrations Experimental Vibrational frequencies Calculated Frequencies Scale factors Reactions Entropies Ions List Ions Energy Calculated Ionization Energy Compare Ionzation energy Electron Affinity Calculated Electron affinity Compare Electron affinity Proton Affinity Calculated Proton affinity Compare Proton affinity Ionization changes point group Experimental One molecule all properties One property a few molecules Enthalpy of formation Entropy Integrated Heat Capacity Heat Capacity Rotational Constants Vibrational Frequencies Dipole moment Ionization Energy Polarizability Quadrupole Point Groups Geometry Experimental Geometries Internal Coordinates by type Bond angles Rotational Constants Point Groups Diatomic bond lengths Vibrations Vibrational frequencies Diatomic Triatomics Energy Atomization Energy Internal Rotation Electrostatics Dipole Quadrupole Polarizability Reference Data Reference states Spin Splittings Molecules with good enthalpy Enthalpy at 0 Kelvin Calculated Energy Optimized Energy Energy 298K Minimum conformation Hydrogen bonds H bond with counterpoise Reaction Reaction Energy 0K Reaction Energy 298K Internal Rotation Barriers to internal rotation Rotational barrier and dipole Rotational Barrier 2 molecules Orbital HOMO LUMO gap HOMO Orbital Energies Nuclear repulsion energy Correlation Full vs Frozen core energies Partial correlation energies Ion Calculated Ionization Energy Vertical ionization Energy Calculated Electron affinity Calculated Proton affinity Atom charge differences Excited State Singlet triplet gap Electronic state Transition state Basis Set Extrapolation BSE energy BSE Bond lengths Geometry Calculated geometry AIM bond orders One type of bond Rotation Rotational constant Products of moments of inertia Moments of inertia Inertial defects Second moments Point group State symmetry <r2> Sorted by r2 Z-matrix Bad Calculations Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Frequencies Animated vibrations Anharmonic Zero point energy (ZPE) Scale Factors Scale factors Scale factor uncertainty Calculate a scale factor Why scale vibrations Set scaling factors Bad Calculations Bad Vib. HF vs MP2 Bad vib. Calc. vs exp. Big anharmonicity Electrostatics Charges Mulliken CHELP Aim ESP Dipole Dipole Dipole angle Dipole calculation types Quadrupole Polarizability Spin Spin density Entropy and Heat Capacity Entropy Reaction entropy Heat Capacity Reaction Reaction Energy 0K Reaction Energy 298K Isodesmic reactions Transition State Transition state Transition state frequencies Transition state geometries IRC Lookup by property By frequency Comparisons Geometry Bonds, angles Bond, angle, or dihedral DFT grid size on point group DFT grid on bond length Core correlation - bond length Same bond/angle many molecules Isoelectronic diatomics Isoelectronic triatomic angles Average bond lengths Rotation Rotational Constants Products of moments of inertia Point group Vibrations Vibrations 2 calculations Frequency differences One frequency Zero point energy Intensity Intensity for one mode Vibrational intensities Reduced mass comparison Anharmonic Triatomic Scale factors Energy Reaction Reaction Energy 0K Reaction Energy 298K Atomization 0K Atomization 298K Single point vs optimized DFT grid size on energy Semiempirical enthalpy Internal rotation Similar molecules Conformation Sets of isomers Sets of tautomers Isomers Entropy Entropy Heat capacity Entropy of several molecules Integrated heat capacity Reaction entropy Electrostatics Dipole Polarizability Several molecules Quadrupole Ion Compare Ionzation energy Koopman ionization energy Koopman IE for a few molecules Compare Electron affinity Compare Proton affinity Protonation Site Resources Info on Results Calculations Done Method and basis set List molecules One molecule Multiple conformers, states Multiple conformers, states Basis functions used I/O files Input/output files MOL file Z-matrix wfn files Glossary Conversion Forms B to I, I to B Angle formulas Integrated heat Capacity Calculating Enthalpy Links NIST Links NIST webbook bibliographic data CCCBDB Experimental data External links Basis Set Exchange Computational Chemistry List Thermochemistry in Gaussian Minnesota Database Collection Benchmark Energy and Geometry Point Groups Thermochemistry Thermochemistry Molecules with good enthalpy A → B + C Reference states Tutorials Vibrations Why scale vibrations Zero-point energies Entropy Methyl rotor entropy Entropy and conformations Energy Getting enthalpy of formation Vertical vs adiabatic IE Thermo from calculations Electrostatics Dipole parts by point group Quadrupoles Geometry Angle formulas Cost Cost Comparison Timings Comparison Bad Calculations Geometry Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Bad vib. Calc. vs exp. Bad Vib. HF vs MP2 Bad scale factors Low excited states Oddities NaCN Is not linear FAQ Help Units Choose Units Energy Bond length Rotational Constant Moment of Inertia Dipole and Quadrupole Polarizability Explanations Hartree cm-1 Debye Credits Just show me Show me a calculated geometry Summary Using older interface Limit Basis sets Method options List Recent molecules Choose a few Molecules Number of atoms By heavy atoms Diatomics InChI Deuterated Dimers Geometry Point group Point group count Bonds types Isodesmic reactions Bad point group Multiple conformers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants"
+        ],
+        [],
+        [
+          "You are here: Calculated > Energy > Optimized > Energy"
+        ]
+      ],
+      "preceding_text": "CCCBDB calculation results Page body{display:none !important;} if (self === top) { var antiClickjack = document.getElementById(\"antiClickjack\"); antiClickjack.parentNode.removeChild(antiClickjack); } else { top.location = self.location; }"
+    },
+    {
+      "index": 1,
+      "rows": [
+        [
+          "State",
+          "Conformation",
+          "minimum conformation",
+          "conformer description",
+          "state description"
+        ],
+        [
+          "1",
+          "1",
+          "yes",
+          "C2V",
+          "2B1"
+        ]
+      ],
+      "preceding_text": "formers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Calculated > Energy > Optimized > Energy All results from a given calculation for C 6 H 5 O (phenoxy radical) using model chemistry: G3B3 19 10 17 12 22 States and conformations"
+    },
+    {
+      "index": 2,
+      "rows": [
+        [
+          "",
+          "hartrees"
+        ],
+        [
+          "Energy at 0K",
+          "-306.609924"
+        ],
+        [
+          "Energy at 298.15K",
+          "-306.603529"
+        ],
+        [
+          "HF Energy",
+          "-306.827642"
+        ],
+        [
+          "Nuclear repulsion energy",
+          "259.859057"
+        ]
+      ],
+      "preceding_text": "rs Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Calculated > Energy > Optimized > Energy All results from a given calculation for C 6 H 5 O (phenoxy radical) using model chemistry: G3B3 19 10 17 12 22 States and conformations State Conformation minimum conformation conformer description state description 1 1 yes C2V 2 B 1 Energy calculated at G3B3"
+    },
+    {
+      "index": 3,
+      "rows": [
+        [
+          "Mode Number",
+          "Symmetry",
+          "Frequency (cm-1)",
+          "Scaled Frequency (cm-1)",
+          "IR Intensities (km mol-1)",
+          "Raman Act(Å4/u)",
+          "Dep P",
+          "Dep U"
+        ],
+        [
+          "1",
+          "A1",
+          "3223",
+          "3095",
+          "0.40",
+          "",
+          "",
+          ""
+        ],
+        [
+          "2",
+          "A1",
+          "3210",
+          "3083",
+          "20.47",
+          "",
+          "",
+          ""
+        ],
+        [
+          "3",
+          "A1",
+          "3188",
+          "3062",
+          "0.64",
+          "",
+          "",
+          ""
+        ],
+        [
+          "4",
+          "A1",
+          "1603",
+          "1540",
+          "34.04",
+          "",
+          "",
+          ""
+        ],
+        [
+          "5",
+          "A1",
+          "1499",
+          "1439",
+          "14.85",
+          "",
+          "",
+          ""
+        ],
+        [
+          "6",
+          "A1",
+          "1433",
+          "1376",
+          "0.00",
+          "",
+          "",
+          ""
+        ],
+        [
+          "7",
+          "A1",
+          "1175",
+          "1129",
+          "0.44",
+          "",
+          "",
+          ""
+        ],
+        [
+          "8",
+          "A1",
+          "1018",
+          "978",
+          "0.02",
+          "",
+          "",
+          ""
+        ],
+        [
+          "9",
+          "A1",
+          "986",
+          "947",
+          "1.84",
+          "",
+          "",
+          ""
+        ],
+        [
+          "10",
+          "A1",
+          "811",
+          "778",
+          "2.04",
+          "",
+          "",
+          ""
+        ],
+        [
+          "11",
+          "A1",
+          "531",
+          "510",
+          "2.16",
+          "",
+          "",
+          ""
+        ],
+        [
+          "12",
+          "A2",
+          "975",
+          "936",
+          "0.00",
+          "",
+          "",
+          ""
+        ],
+        [
+          "13",
+          "A2",
+          "808",
+          "776",
+          "0.00",
+          "",
+          "",
+          ""
+        ],
+        [
+          "14",
+          "A2",
+          "381",
+          "365",
+          "0.00",
+          "",
+          "",
+          ""
+        ],
+        [
+          "15",
+          "B1",
+          "995",
+          "956",
+          "0.16",
+          "",
+          "",
+          ""
+        ],
+        [
+          "16",
+          "B1",
+          "922",
+          "886",
+          "7.60",
+          "",
+          "",
+          ""
+        ],
+        [
+          "17",
+          "B1",
+          "796",
+          "765",
+          "38.74",
+          "",
+          "",
+          ""
+        ],
+        [
+          "18",
+          "B1",
+          "658",
+          "632",
+          "28.10",
+          "",
+          "",
+          ""
+        ],
+        [
+          "19",
+          "B1",
+          "486",
+          "467",
+          "0.18",
+          "",
+          "",
+          ""
+        ],
+        [
+          "20",
+          "B1",
+          "196",
+          "188",
+          "2.57",
+          "",
+          "",
+          ""
+        ],
+        [
+          "21",
+          "B2",
+          "3221",
+          "3093",
+          "11.71",
+          "",
+          "",
+          ""
+        ],
+        [
+          "22",
+          "B2",
+          "3195",
+          "3068",
+          "12.02",
+          "",
+          "",
+          ""
+        ],
+        [
+          "23",
+          "B2",
+          "1564",
+          "1502",
+          "3.82",
+          "",
+          "",
+          ""
+        ],
+        [
+          "24",
+          "B2",
+          "1458",
+          "1400",
+          "3.18",
+          "",
+          "",
+          ""
+        ],
+        [
+          "25",
+          "B2",
+          "1352",
+          "1299",
+          "7.49",
+          "",
+          "",
+          ""
+        ],
+        [
+          "26",
+          "B2",
+          "1289",
+          "1238",
+          "5.76",
+          "",
+          "",
+          ""
+        ],
+        [
+          "27",
+          "B2",
+          "1176",
+          "1129",
+          "0.98",
+          "",
+          "",
+          ""
+        ],
+        [
+          "28",
+          "B2",
+          "1098",
+          "1055",
+          "7.16",
+          "",
+          "",
+          ""
+        ],
+        [
+          "29",
+          "B2",
+          "598",
+          "574",
+          "0.60",
+          "",
+          "",
+          ""
+        ],
+        [
+          "30",
+          "B2",
+          "444",
+          "427",
+          "5.18",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "preceding_text": "ing model chemistry: G3B3 19 10 17 12 22 States and conformations State Conformation minimum conformation conformer description state description 1 1 yes C2V 2 B 1 Energy calculated at G3B3 hartrees Energy at 0K -306.609924 Energy at 298.15K -306.603529 HF Energy -306.827642 Nuclear repulsion energy 259.859057 The energy at 298.15K was derived from the energy at 0K and an integrated heat capacity that used the calculated vibrational frequencies. Vibrational Frequencies calculated at B3LYP/6-31G*"
+    },
+    {
+      "index": 4,
+      "rows": [
+        [
+          "A",
+          "B",
+          "C"
+        ],
+        [
+          "0.18372",
+          "0.09264",
+          "0.06159"
+        ]
+      ],
+      "preceding_text": "8 28 B 2 1098 1055 7.16 29 B 2 598 574 0.60 30 B 2 444 427 5.18 Unscaled Zero Point Vibrational Energy (zpe) 20144.9 cm -1 Scaled (by 0.9603) Zero Point Vibrational Energy (zpe) 19345.2 cm -1 See section III.C.1 List or set vibrational scaling factors to change the scale factors used here. See section III.C.2 Calculate a vibrational scaling factor for a given set of molecules to determine the least squares best scaling factor. Rotational Constants (cm -1 ) from geometry optimized at B3LYP/6-31G*"
+    },
+    {
+      "index": 5,
+      "rows": [
+        [
+          "Atom",
+          "x (Å)",
+          "y (Å)",
+          "z (Å)"
+        ],
+        [
+          "C1",
+          "0.000",
+          "0.000",
+          "1.048"
+        ],
+        [
+          "C2",
+          "0.000",
+          "1.240",
+          "0.290"
+        ],
+        [
+          "C3",
+          "0.000",
+          "-1.240",
+          "0.290"
+        ],
+        [
+          "C4",
+          "0.000",
+          "1.226",
+          "-1.088"
+        ],
+        [
+          "C5",
+          "0.000",
+          "-1.226",
+          "-1.088"
+        ],
+        [
+          "C6",
+          "0.000",
+          "0.000",
+          "-1.785"
+        ],
+        [
+          "O7",
+          "0.000",
+          "0.000",
+          "2.306"
+        ],
+        [
+          "H8",
+          "0.000",
+          "2.165",
+          "0.858"
+        ],
+        [
+          "H9",
+          "0.000",
+          "-2.165",
+          "0.858"
+        ],
+        [
+          "H10",
+          "0.000",
+          "2.158",
+          "-1.646"
+        ],
+        [
+          "H11",
+          "0.000",
+          "-2.158",
+          "-1.646"
+        ],
+        [
+          "H12",
+          "0.000",
+          "0.000",
+          "-2.872"
+        ]
+      ],
+      "preceding_text": "nal Energy (zpe) 19345.2 cm -1 See section III.C.1 List or set vibrational scaling factors to change the scale factors used here. See section III.C.2 Calculate a vibrational scaling factor for a given set of molecules to determine the least squares best scaling factor. Rotational Constants (cm -1 ) from geometry optimized at B3LYP/6-31G* A B C 0.18372 0.09264 0.06159 See section I.F.4 to change rotational constant units Geometric Data calculated at B3LYP/6-31G* Point Group is C 2v Cartesians (Å)"
+    },
+    {
+      "index": 6,
+      "rows": [
+        [
+          "",
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "O7",
+          "H8",
+          "H9",
+          "H10",
+          "H11",
+          "H12"
+        ],
+        [
+          "C1",
+          "",
+          "1.4527",
+          "1.4527",
+          "2.4625",
+          "2.4625",
+          "2.8333",
+          "1.2580",
+          "2.1731",
+          "2.1731",
+          "3.4518",
+          "3.4518",
+          "3.9197"
+        ]
+      ],
+      "preceding_text": "optimized at B3LYP/6-31G* A B C 0.18372 0.09264 0.06159 See section I.F.4 to change rotational constant units Geometric Data calculated at B3LYP/6-31G* Point Group is C 2v Cartesians (Å) Atom x (Å) y (Å) z (Å) C1 0.000 0.000 1.048 C2 0.000 1.240 0.290 C3 0.000 -1.240 0.290 C4 0.000 1.226 -1.088 C5 0.000 -1.226 -1.088 C6 0.000 0.000 -1.785 O7 0.000 0.000 2.306 H8 0.000 2.165 0.858 H9 0.000 -2.165 0.858 H10 0.000 2.158 -1.646 H11 0.000 -2.158 -1.646 H12 0.000 0.000 -2.872 Atom - Atom Distances (Å)"
+    },
+    {
+      "index": 7,
+      "rows": [
+        [
+          "atom1",
+          "atom2",
+          "atom3",
+          "angle",
+          "",
+          "atom1",
+          "atom2",
+          "atom3",
+          "angle"
+        ],
+        [
+          "C1",
+          "C2",
+          "C4",
+          "120.860",
+          "",
+          "C1",
+          "C2",
+          "H8",
+          "117.007"
+        ],
+        [
+          "C1",
+          "C3",
+          "C5",
+          "120.860",
+          "",
+          "C1",
+          "C3",
+          "H9",
+          "117.007"
+        ],
+        [
+          "C2",
+          "C1",
+          "C3",
+          "117.128",
+          "",
+          "C2",
+          "C1",
+          "O7",
+          "121.436"
+        ],
+        [
+          "C2",
+          "C4",
+          "C6",
+          "120.215",
+          "",
+          "C2",
+          "C4",
+          "H10",
+          "120.323"
+        ],
+        [
+          "C3",
+          "C1",
+          "O7",
+          "121.436",
+          "",
+          "C3",
+          "C5",
+          "C6",
+          "120.215"
+        ],
+        [
+          "C3",
+          "C5",
+          "H11",
+          "120.323",
+          "",
+          "C4",
+          "C2",
+          "H8",
+          "122.133"
+        ],
+        [
+          "C4",
+          "C6",
+          "C5",
+          "120.723",
+          "",
+          "C4",
+          "C6",
+          "H12",
+          "119.639"
+        ],
+        [
+          "C5",
+          "C3",
+          "H9",
+          "122.133",
+          "",
+          "C5",
+          "C6",
+          "H12",
+          "119.639"
+        ],
+        [
+          "C6",
+          "C4",
+          "H10",
+          "119.461",
+          "",
+          "C6",
+          "C5",
+          "H11",
+          "119.461"
+        ]
+      ],
+      "preceding_text": "3.6084 4.0913 2.6042 2.6042 4.5029 4.5029 5.1777 H8 2.1731 1.0858 3.4514 2.1611 3.9094 3.4170 2.6042 4.3297 2.5044 4.9961 4.3129 H9 2.1731 3.4514 1.0858 3.9094 2.1611 3.4170 2.6042 4.3297 4.9961 2.5044 4.3129 H10 3.4518 2.1432 3.9107 1.0868 3.4294 2.1627 4.5029 2.5044 4.9961 4.3163 2.4820 H11 3.4518 3.9107 2.1432 3.4294 1.0868 2.1627 4.5029 4.9961 2.5044 4.3163 2.4820 H12 3.9197 3.3964 3.3964 2.1643 2.1643 1.0864 5.1777 4.3129 4.3129 2.4820 2.4820 More geometry information Calculated Bond Angles"
+    },
+    {
+      "index": 8,
+      "rows": [
+        [
+          "Number",
+          "Element",
+          "Mulliken",
+          "CHELPG",
+          "AIM",
+          "ESP"
+        ]
+      ],
+      "preceding_text": "d Angles atom1 atom2 atom3 angle atom1 atom2 atom3 angle C1 C2 C4 120.860 C1 C2 H8 117.007 C1 C3 C5 120.860 C1 C3 H9 117.007 C2 C1 C3 117.128 C2 C1 O7 121.436 C2 C4 C6 120.215 C2 C4 H10 120.323 C3 C1 O7 121.436 C3 C5 C6 120.215 C3 C5 H11 120.323 C4 C2 H8 122.133 C4 C6 C5 120.723 C4 C6 H12 119.639 C5 C3 H9 122.133 C5 C6 H12 119.639 C6 C4 H10 119.461 C6 C5 H11 119.461 Electronic energy levels Charges, Dipole, Quadrupole and Polarizability Charges from optimized geometry at B3LYP/6-31G* Charges (e)"
+    },
+    {
+      "index": 9,
+      "rows": [
+        [
+          "",
+          "x",
+          "y",
+          "z",
+          "Total"
+        ],
+        [
+          "",
+          "0.000",
+          "0.000",
+          "-3.669",
+          "3.669"
+        ],
+        [
+          "CHELPG",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "AIM",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "ESP",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "preceding_text": "6 C5 120.723 C4 C6 H12 119.639 C5 C3 H9 122.133 C5 C6 H12 119.639 C6 C4 H10 119.461 C6 C5 H11 119.461 Electronic energy levels Charges, Dipole, Quadrupole and Polarizability Charges from optimized geometry at B3LYP/6-31G* Charges (e) Number Element Mulliken CHELPG AIM ESP 1 C 0.405 2 C -0.158 3 C -0.158 4 C -0.125 5 C -0.125 6 C -0.119 7 O -0.477 8 H 0.156 9 H 0.156 10 H 0.147 11 H 0.147 12 H 0.150 Electric dipole moments Electric dipole components in Debye (What's a Debye? See section VII.A.3 )"
+    },
+    {
+      "index": 10,
+      "rows": [
+        [
+          "",
+          "x",
+          "y",
+          "z"
+        ],
+        [
+          "x",
+          "0.000",
+          "0.000",
+          "0.000"
+        ],
+        [
+          "y",
+          "0.000",
+          "0.000",
+          "0.000"
+        ],
+        [
+          "z",
+          "0.000",
+          "0.000",
+          "0.000"
+        ]
+      ],
+      "preceding_text": "LYP/6-31G* Charges (e) Number Element Mulliken CHELPG AIM ESP 1 C 0.405 2 C -0.158 3 C -0.158 4 C -0.125 5 C -0.125 6 C -0.119 7 O -0.477 8 H 0.156 9 H 0.156 10 H 0.147 11 H 0.147 12 H 0.150 Electric dipole moments Electric dipole components in Debye (What's a Debye? See section VII.A.3 ) x y z Total 0.000 0.000 -3.669 3.669 CHELPG AIM ESP Electric Quadrupole moment Quadrupole components in D Å Polarizabilities Components of the polarizability tensor. Units are Å 3 (Angstrom cubed) Change units."
+    },
+    {
+      "index": 11,
+      "rows": [
+        [
+          "<r2>",
+          "178.604"
+        ],
+        [
+          "(<r2>)1/2",
+          "13.364"
+        ]
+      ],
+      "preceding_text": "125 5 C -0.125 6 C -0.119 7 O -0.477 8 H 0.156 9 H 0.156 10 H 0.147 11 H 0.147 12 H 0.150 Electric dipole moments Electric dipole components in Debye (What's a Debye? See section VII.A.3 ) x y z Total 0.000 0.000 -3.669 3.669 CHELPG AIM ESP Electric Quadrupole moment Quadrupole components in D Å Polarizabilities Components of the polarizability tensor. Units are Å 3 (Angstrom cubed) Change units. x y z x 0.000 0.000 0.000 y 0.000 0.000 0.000 z 0.000 0.000 0.000 <r 2 > (average value of r 2 ) Å 2"
+    }
+  ],
+  "related_links": [
+    {
+      "text": "Input/output files",
+      "url": "https://cccbdb.nist.gov/gaufiles1x.asp"
+    },
+    {
+      "text": "More geometry information",
+      "url": "https://cccbdb.nist.gov/geom3x.asp?casno=2122465&method=64&basis=0"
+    }
+  ],
+  "coordinate_tables": [
+    {
+      "source_table_index": 5,
+      "preceding_text": "nal Energy (zpe) 19345.2 cm -1 See section III.C.1 List or set vibrational scaling factors to change the scale factors used here. See section III.C.2 Calculate a vibrational scaling factor for a given set of molecules to determine the least squares best scaling factor. Rotational Constants (cm -1 ) from geometry optimized at B3LYP/6-31G* A B C 0.18372 0.09264 0.06159 See section I.F.4 to change rotational constant units Geometric Data calculated at B3LYP/6-31G* Point Group is C 2v Cartesians (Å)",
+      "rows": [
+        {
+          "label": "C1",
+          "element": "C",
+          "atom_number": 1,
+          "literal_coordinates": [
+            "0.000",
+            "0.000",
+            "1.048"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            0.0,
+            1.048
+          ]
+        },
+        {
+          "label": "C2",
+          "element": "C",
+          "atom_number": 2,
+          "literal_coordinates": [
+            "0.000",
+            "1.240",
+            "0.290"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            1.24,
+            0.29
+          ]
+        },
+        {
+          "label": "C3",
+          "element": "C",
+          "atom_number": 3,
+          "literal_coordinates": [
+            "0.000",
+            "-1.240",
+            "0.290"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            -1.24,
+            0.29
+          ]
+        },
+        {
+          "label": "C4",
+          "element": "C",
+          "atom_number": 4,
+          "literal_coordinates": [
+            "0.000",
+            "1.226",
+            "-1.088"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            1.226,
+            -1.088
+          ]
+        },
+        {
+          "label": "C5",
+          "element": "C",
+          "atom_number": 5,
+          "literal_coordinates": [
+            "0.000",
+            "-1.226",
+            "-1.088"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            -1.226,
+            -1.088
+          ]
+        },
+        {
+          "label": "C6",
+          "element": "C",
+          "atom_number": 6,
+          "literal_coordinates": [
+            "0.000",
+            "0.000",
+            "-1.785"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            0.0,
+            -1.785
+          ]
+        },
+        {
+          "label": "O7",
+          "element": "O",
+          "atom_number": 7,
+          "literal_coordinates": [
+            "0.000",
+            "0.000",
+            "2.306"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            0.0,
+            2.306
+          ]
+        },
+        {
+          "label": "H8",
+          "element": "H",
+          "atom_number": 8,
+          "literal_coordinates": [
+            "0.000",
+            "2.165",
+            "0.858"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            2.165,
+            0.858
+          ]
+        },
+        {
+          "label": "H9",
+          "element": "H",
+          "atom_number": 9,
+          "literal_coordinates": [
+            "0.000",
+            "-2.165",
+            "0.858"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            -2.165,
+            0.858
+          ]
+        },
+        {
+          "label": "H10",
+          "element": "H",
+          "atom_number": 10,
+          "literal_coordinates": [
+            "0.000",
+            "2.158",
+            "-1.646"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            2.158,
+            -1.646
+          ]
+        },
+        {
+          "label": "H11",
+          "element": "H",
+          "atom_number": 11,
+          "literal_coordinates": [
+            "0.000",
+            "-2.158",
+            "-1.646"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            -2.158,
+            -1.646
+          ]
+        },
+        {
+          "label": "H12",
+          "element": "H",
+          "atom_number": 12,
+          "literal_coordinates": [
+            "0.000",
+            "0.000",
+            "-2.872"
+          ],
+          "coordinates_angstrom": [
+            0.0,
+            0.0,
+            -2.872
+          ]
+        }
+      ],
+      "element_counts": {
+        "C": 6,
+        "O": 1,
+        "H": 5
+      },
+      "expected_element_counts_match": true,
+      "minimum_pair_distance_angstrom": 1.0854717868281976,
+      "units": "angstrom as explicitly headed in source table",
+      "precision": "Literal printed decimals retained; no extra accuracy implied or coordinate fitting performed."
+    }
+  ],
+  "formal_case": false,
+  "gaussian_started": false,
+  "accepted_reference_geometry": false
+}

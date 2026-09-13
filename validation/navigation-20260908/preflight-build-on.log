@@ -1,0 +1,3 @@
+{"stage": "configure", "exit": 0, "wall_seconds": 2.5, "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\build-preflight-on-1788840607791978600\\configure\\launcher.log"}
+{"stage": "build", "exit": 0, "wall_seconds": 2.014999999984866, "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\build-preflight-on-1788840607791978600\\build\\launcher.log"}
+{"build_complete": true, "directory": "F:\\Dev\\cov-general-fixes-20260906-build"}

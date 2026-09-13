@@ -1,0 +1,103 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "frozen_round_identity": "0c5279ee3b6c582b6c561b960c515c856089f09a9ef29a2702186122b505aed8",
+  "artifacts": [
+    {
+      "file": "full273-adjudication.json",
+      "sha256": "a54d14b9d07fcfd5a7283ef053846df7fce0eab7ccea54b77ac61eac2e2b7a42",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-adjudication.json"
+    },
+    {
+      "file": "fixed40-adjudication.json",
+      "sha256": "764e436379f6b7ee47f8cd72799ce91020c25d17480fdfcad592048abba71bb4",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-precheck-adjudication.json"
+    },
+    {
+      "file": "complete-local-controls.json",
+      "sha256": "65e97f9467e0b9be6349a2126e902fc7339dd9988157cebb30b796e09ebb5de9",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-complete-local-controls.json"
+    },
+    {
+      "file": "g-controls-adjudication.json",
+      "sha256": "22760c2783babe64541e3bbd701d460b78548eccea7ca0c066effb8932cd0a7f",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-g-control-adjudication.json"
+    },
+    {
+      "file": "workflow-gate.json",
+      "sha256": "1b868f97bc3c2053ed1b63763557b2b14ac6c53f5b9bea7a9630225c425444b0",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-workflow-gate.json"
+    },
+    {
+      "file": "candidate-plan-frozen.json",
+      "sha256": "38b0a4729725efc751d3676dfa61ad9f4d7a7c30173bf337e5d14cda06a09b3e",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-launch\\candidate-plan-frozen.json"
+    },
+    {
+      "file": "full273-start.json",
+      "sha256": "428105ae1419dec6a408be3044869cd43edced671ad884edbefdabb06a40a3d6",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-start.json"
+    },
+    {
+      "file": "full273-visual-review.json",
+      "sha256": "ecbaf0539d7f2690399ab14e85440d1775854d20981dc50f652e18d50c76438a",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-visual-review\\review.json"
+    },
+    {
+      "file": "fixed40-visual-review.json",
+      "sha256": "0d92513dd97a22028f74a61acd69aa83aca2d5e16016c61d8cbd8e32ed43a806",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-visual-review\\review.json"
+    },
+    {
+      "file": "availability-visual-review.json",
+      "sha256": "e9ada8e402d8aab7d76dd1fdc1a89108d0da4217ba62ed9757b456f27afddefa",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\availability-ui-1789211532102031600\\review-v2\\visual-review.json"
+    },
+    {
+      "file": "dedicated-controls-review.json",
+      "sha256": "a8986739923e6124eb3255627f9cad7f436777e39cf36ccf6a232fbabb054770",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\review-1789211531499047000\\summary.json"
+    },
+    {
+      "file": "viewport-visual-review.json",
+      "sha256": "089c957c076e155ba3e034ededdf2ee70ea8b8607dbb44317a6e0f336c9f0c96",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\review.json"
+    },
+    {
+      "file": "ordinary-interaction-review.json",
+      "sha256": "6feac8c6bbc944f13737763b519536a74147b80cfe4666f066f5baf590aced6d",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\ordinary-ui-attempt-003\\review.json"
+    },
+    {
+      "file": "ordinary-delivery-review.json",
+      "sha256": "0e88fb71d074f5c6f7f473cf18c034baa8e1ae68802be5f365675fd9c34c7ac5",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\ordinary-delivery-ui\\review.json"
+    },
+    {
+      "file": "build-identity-preflight.json",
+      "sha256": "55954eca4c4753b17e6bb120ff495553b0224f5d5fc53fbee68a0e64d16ca0b9",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\build-identity-preflight.json"
+    },
+    {
+      "file": "prior-D-invalid-identity.json",
+      "sha256": "8ca31a2794e73d3dadf68a6315107f0061a6b9fb20670ee22d63941be525c646",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\common008d-precheck-invalid-identity.json"
+    },
+    {
+      "file": "prior-C-full273-adjudication.json",
+      "sha256": "cf8b6326b1e6745ab9295d51df1e297dba2c39987e96b3253953b99d748826c5",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-original-adjudication.json"
+    },
+    {
+      "file": "programs.json",
+      "sha256": "fd2070b7e9da57545cbae189e905f7a992dc000518551ea6c35998a047f78ade",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\delivery\\COV-3752f8a-Windows-20260912\\programs.json"
+    },
+    {
+      "file": "delivery-receipt.json",
+      "sha256": "fcac85251aac4bbe0f08e1d3dcd8c5e4f127f2b1b99bebe22d43c4b17490dcc7",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\delivery-receipt.json"
+    }
+  ],
+  "raw_evidence_location": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-original",
+  "scope": "Small exact receipts; raw evidence and failed rounds remain at their original local paths."
+}

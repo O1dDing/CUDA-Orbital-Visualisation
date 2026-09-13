@@ -1,0 +1,16 @@
+{
+  "created_epoch": 1788856312.9955027,
+  "round_identity": "8d8a5dbf5ad12c4eed4f923a30a29fe0445881dfd70f130265806166b5f47016",
+  "helpers": {
+    "run_numeric_collection.py": "47bdcb2d1d7cb705d325b257838fdcd94d3d9d5b35a391aabaaf322a8c58606e",
+    "run_numeric_review_batch.py": "88074032468af4da1733a79cee4b12cd01cd9d53e5ba7a89daa337dc04049058",
+    "run_view_snapshot_review.py": "9d4f3fbfad27c50b85380e898f57313a713ce2b7723544f761252f9e0129e159",
+    "continue_frozen_round.py": "73da65f8570f806a107db530d084939a9d20089b0be05504940c01359308fc3e",
+    "summarize_numeric_review.py": "98065496b5e55aba1ee07b27f30ac51c5d8399432d711a5fc8de952b618d3886",
+    "numeric_round_extrema.py": "e10ce6d60f979f852f7af54e5a061d3e95b4c42a40d727c95d0a246be6806c36",
+    "summarize_view_snapshot_round.py": "680b8da577de3c494c6c0ce91fd852d4b9b7b3c42b660818cec3e1701d268100",
+    "summarize_collection_navigation_gaps.py": "daad8155f58226c5138806f8aec958822e664ef284b34517880ce986c9010144",
+    "freeze_numeric_round.py": "18b4cc6eb74fad61a4962b0bdca2dac80d75babd64a90bb334c4beb1f394ac81",
+    "freeze_round_orchestration.py": "7d9b3e97b7af157cc93bb0867d553ee9f269be1b8c15eafe86d2cf5924b20c49"
+  }
+}

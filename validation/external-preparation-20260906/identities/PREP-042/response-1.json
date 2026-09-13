@@ -1,0 +1,13 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 123143,
+        "MolecularFormula": "C6H5O",
+        "ConnectivitySMILES": "C1=CC=C(C=C1)[O]",
+        "InChIKey": "KHUXNRRPPZOJPT-UHFFFAOYSA-N",
+        "Charge": 0
+      }
+    ]
+  }
+}

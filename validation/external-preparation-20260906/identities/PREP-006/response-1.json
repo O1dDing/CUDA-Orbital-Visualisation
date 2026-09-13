@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24555,
+        "MolecularFormula": "F4S",
+        "ConnectivitySMILES": "FS(F)(F)F",
+        "InChIKey": "QHMQWEPBXSHHLH-UHFFFAOYSA-N",
+        "IUPACName": "tetrafluoro-lambda4-sulfane",
+        "Charge": 0
+      }
+    ]
+  }
+}

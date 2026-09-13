@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 31275,
+        "MolecularFormula": "C4H8O2",
+        "ConnectivitySMILES": "C1COCCO1",
+        "InChIKey": "RYHBNJHYFVUHQT-UHFFFAOYSA-N",
+        "IUPACName": "1,4-dioxane",
+        "Charge": 0
+      }
+    ]
+  }
+}

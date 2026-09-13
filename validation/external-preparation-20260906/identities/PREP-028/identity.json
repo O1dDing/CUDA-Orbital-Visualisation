@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-028",
+  "query": "pyrene",
+  "expected_formula": "C16H10",
+  "expected_charge": 0,
+  "family": "稠合芳环",
+  "purpose": "多环 π 网络",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709678.3075476,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 31423,
+      "MolecularFormula": "C16H10",
+      "ConnectivitySMILES": "C1=CC2=C3C(=C1)C=CC4=CC=CC(=C43)C=C2",
+      "InChIKey": "BBEAQIROQSPTKN-UHFFFAOYSA-N",
+      "IUPACName": "pyrene",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/31423"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709678.3075476,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-028\\response-1.json",
+      "sha256": "c4758b0edec59c21878f8b72f9ee731c49f8223d38179049d2f1e171b64d507a",
+      "bytes": 303,
+      "elapsed_seconds": 1.2982206344604492
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pyrene/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

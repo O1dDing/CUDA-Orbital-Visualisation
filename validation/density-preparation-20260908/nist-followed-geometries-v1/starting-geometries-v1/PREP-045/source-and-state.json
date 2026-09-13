@@ -1,0 +1,112 @@
+{
+  "candidate_id": "PREP-045",
+  "name": "methylperoxy radical",
+  "charge": 0,
+  "multiplicity": 2,
+  "state": "2 A \"",
+  "source_reported_point_group": "Cs",
+  "inchikey": "WTFNSXYULBQCQV-UHFFFAOYSA-N",
+  "element_counts": {
+    "C": 1,
+    "H": 3,
+    "O": 2
+  },
+  "atom_count": 6,
+  "source_url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0",
+  "session_identity_url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+  "raw_source_sha256": "0a8c7da665170869121bee9eb86dd4ba2700079e58e756d758d45bd071111d18",
+  "coordinate_method": "B3LYP/6-31G*",
+  "model_chemistry_page": "G3B3",
+  "units": "angstrom",
+  "source": "Public NIST page literal xyzmodel payload, checked against the same page internal-coordinate table",
+  "extraction": "Decoded JSON-compatible quoted string literals and concatenation only; no JavaScript execution or coordinate fitting.",
+  "actual_literal_coordinates": [
+    {
+      "element": "C",
+      "literal_coordinates": [
+        "1.001572",
+        "-0.474482",
+        "0"
+      ],
+      "xyz_angstrom": [
+        1.001572,
+        -0.474482,
+        0.0
+      ]
+    },
+    {
+      "element": "O",
+      "literal_coordinates": [
+        "0",
+        "0.56987",
+        "0"
+      ],
+      "xyz_angstrom": [
+        0.0,
+        0.56987,
+        0.0
+      ]
+    },
+    {
+      "element": "O",
+      "literal_coordinates": [
+        "-1.217689",
+        "0.052118",
+        "0"
+      ],
+      "xyz_angstrom": [
+        -1.217689,
+        0.052118,
+        0.0
+      ]
+    },
+    {
+      "element": "H",
+      "literal_coordinates": [
+        "1.963285",
+        "0.042996",
+        "0"
+      ],
+      "xyz_angstrom": [
+        1.963285,
+        0.042996,
+        0.0
+      ]
+    },
+    {
+      "element": "H",
+      "literal_coordinates": [
+        "0.884396",
+        "-1.086002",
+        "0.898023"
+      ],
+      "xyz_angstrom": [
+        0.884396,
+        -1.086002,
+        0.898023
+      ]
+    },
+    {
+      "element": "H",
+      "literal_coordinates": [
+        "0.884396",
+        "-1.086002",
+        "-0.898023"
+      ],
+      "xyz_angstrom": [
+        0.884396,
+        -1.086002,
+        -0.898023
+      ]
+    }
+  ],
+  "maximum_difference_from_four_decimal_table_angstrom": "0.00003",
+  "xyz_file": "PREP-045\\starting.xyz",
+  "xyz_sha256": "bc5b3eee20b0d0b04a0e72c99328a7c653b825d22679eb8286c7ed527d88f876",
+  "status": "literal-starting-geometry-prepared",
+  "minimum_frequency_and_stability_not_verified": true,
+  "formal_case": false,
+  "accepted_quality_reference": false,
+  "gaussian_started": false,
+  "cov_executed": false
+}

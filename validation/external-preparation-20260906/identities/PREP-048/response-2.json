@@ -1,0 +1,30 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 6327451,
+        "MolecularFormula": "C12H40NiP4+4",
+        "ConnectivitySMILES": "C[PH+](C)C.C[PH+](C)C.C[PH+](C)C.C[PH+](C)C.[Ni]",
+        "InChIKey": "XAUOZDGLUCTZKM-UHFFFAOYSA-R",
+        "IUPACName": "nickel;tetrakis(trimethylphosphanium)",
+        "Charge": 4
+      },
+      {
+        "CID": 50931122,
+        "MolecularFormula": "C12H40NiP4+4",
+        "ConnectivitySMILES": "C[PH+](C)C.C[PH+](C)C.C[PH+](C)C.C[PH+](C)C.[Ni]",
+        "InChIKey": "XAUOZDGLUCTZKM-UHFFFAOYSA-R",
+        "IUPACName": "nickel;tetrakis(trimethylphosphanium)",
+        "Charge": 4
+      },
+      {
+        "CID": 12656973,
+        "MolecularFormula": "C12H36NiP4",
+        "ConnectivitySMILES": "CP(C)C.CP(C)C.CP(C)C.CP(C)C.[Ni]",
+        "InChIKey": "XAUOZDGLUCTZKM-UHFFFAOYSA-N",
+        "IUPACName": "nickel;tetrakis(trimethylphosphane)",
+        "Charge": 0
+      }
+    ]
+  }
+}

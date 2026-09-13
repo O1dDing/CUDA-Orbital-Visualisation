@@ -1,0 +1,31 @@
+{
+  "sources": [
+    {
+      "candidate_id": "PREP-007",
+      "initial_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+      "followed_link": {
+        "href": "geom3x.asp?method=64&basis=0",
+        "text": "1.735",
+        "preceding_text": "r more information. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 1.683 PM3 1.672 PM6 1.668 composite G3B3",
+        "url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0"
+      },
+      "source_link_receipt_sha256": "61ea33e2eaa2e0efdaf7e70ee196cfe5cc3807a04fd7bb8c541846a155bf39b2"
+    },
+    {
+      "candidate_id": "PREP-045",
+      "initial_url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+      "followed_link": {
+        "href": "geom3x.asp?method=64&basis=0",
+        "text": "geom",
+        "preceding_text": "ation. For a comparison of experimental versus calculated see section IV.D.1 Compare bonds, angles, or dihedrals Methods with predefined basis sets semi-empirical AM1 geom PM3 geom PM6 geom composite G2 geom G3 geom G3B3",
+        "url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0"
+      },
+      "source_link_receipt_sha256": "76f2a6d696cb9b6add75350ac170d6edc1f3d80f791251b85bde6901fb77f9fb"
+    }
+  ],
+  "request_timeout_seconds": 20,
+  "retries": 0,
+  "selection": "Observed G3B3 geometry link for both molecules; actual geometry method and conformation must be reviewed in payload.",
+  "formal_external_cases": 0,
+  "gaussian_started": false
+}

@@ -47,6 +47,14 @@ struct GpuShell {
     std::uint16_t pad;
 };
 
+float pack_gpu_scalar(const double value, const char* field) {
+    const float packed=static_cast<float>(value);
+    if (!std::isfinite(value) || !std::isfinite(packed)) {
+        throw std::runtime_error(std::string("Nonfinite or overflowing GPU input: ")+field);
+    }
+    return packed;
+}
+
 void cuda_check(const cudaError_t status, const char* what) {
     if (status != cudaSuccess) {
         throw std::runtime_error(std::string(what) + ": " + cudaGetErrorString(status));
@@ -306,9 +314,9 @@ struct CudaOrbitalEvaluator::Impl {
         for (const Shell& shell : wavefunction.shells) {
             const Atom& atom = wavefunction.atoms.at(shell.atom_index);
             GpuShell gpu{};
-            gpu.cx = static_cast<float>(atom.x);
-            gpu.cy = static_cast<float>(atom.y);
-            gpu.cz = static_cast<float>(atom.z);
+            gpu.cx = pack_gpu_scalar(atom.x,"atom x");
+            gpu.cy = pack_gpu_scalar(atom.y,"atom y");
+            gpu.cz = pack_gpu_scalar(atom.z,"atom z");
             gpu.primitive_offset = shell.primitive_offset;
             gpu.primitive_count = shell.primitive_count;
             gpu.basis_offset = shell.basis_offset;
@@ -320,7 +328,8 @@ struct CudaOrbitalEvaluator::Impl {
         std::vector<GpuPrimitive> primitives;
         primitives.reserve(wavefunction.primitives.size());
         for (const Primitive& p : wavefunction.primitives) {
-            primitives.push_back({p.exponent, p.coefficient});
+            primitives.push_back({pack_gpu_scalar(p.exponent,"primitive exponent"),
+                                  pack_gpu_scalar(p.coefficient,"contraction coefficient")});
         }
 
         cuda_check(cudaMalloc(&d_shells, shells.size() * sizeof(GpuShell)),
@@ -395,7 +404,17 @@ void CudaOrbitalEvaluator::evaluate(const std::size_t mo_index,
     }
 
     const auto& mo = impl_->wf->orbitals[mo_index];
-    cuda_check(cudaMemcpy(impl_->d_coefficients, mo.coefficients.data(),
+    if (mo.coefficients.size()!=impl_->wf->basis_count) {
+        throw std::runtime_error("MO coefficient dimension does not match GPU basis");
+    }
+    // Scientific host data remain double. The production float evaluator has
+    // an explicit upload representation, validated against its actual texture.
+    std::vector<float> gpu_coefficients;
+    gpu_coefficients.reserve(mo.coefficients.size());
+    for (const double value:mo.coefficients) {
+        gpu_coefficients.push_back(pack_gpu_scalar(value,"MO coefficient"));
+    }
+    cuda_check(cudaMemcpy(impl_->d_coefficients, gpu_coefficients.data(),
                           impl_->wf->basis_count * sizeof(float),
                           cudaMemcpyHostToDevice),
                "cudaMemcpy MO coefficients");

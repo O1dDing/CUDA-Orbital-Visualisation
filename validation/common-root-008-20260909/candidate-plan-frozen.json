@@ -1,0 +1,491 @@
+{
+  "schema": 1,
+  "candidate_id": "COMMON-ROOT-008",
+  "state": "ready",
+  "repository": "F:\\Dev\\cov-native-validation-20260905",
+  "candidate_commit": "8e206e188ef84a5e63129ee20e5b95c2f5ad498b",
+  "previous_round": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-original",
+  "previous_round_adjudicated": true,
+  "previous_adjudication": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-007C-original\\unified-adjudication-v1\\adjudication.json",
+    "sha256": "b2510c6c0c6a703ccfcb9feeae5118fddc98e7f4d3c2b4b5b682e655446cd22a"
+  },
+  "pending_batch_fixes": 0,
+  "root_cause_batches": [
+    {
+      "root_cause_id": "metric-local-symmetry-scope",
+      "issues": [
+        "SYM-004",
+        "SYM-005"
+      ],
+      "status": "local_checks_passed",
+      "local_check_evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788947021024904100\\review-1788947125425668900\\summary.json",
+          "sha256": "17d8f5e2fd460c8236c2ba51db6bfe522f129672169ed42b6b45a9612a58b104"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\ui-controls-1788947394181579000\\review-1788947424678144800\\summary.json",
+          "sha256": "4e8b8309929f3fcd97c95d899d3c3008c846bd4a54e6817b9abaea128485c94d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-local-controls.json",
+          "sha256": "0140cfc8994d1d750bab98a6c6da73d6ae6f241e98ebee142d8e14f037feefc6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-precheck-adjudication.json",
+          "sha256": "6b8b6dc565519ddce0e0e55f8eb68d4bc92b06d9661d13850c2c71cd548356c5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-local-controls.json",
+          "sha256": "55f545915e3ad4565c320a62dfbb5927e17047da9f6e9804dce630b08808dcca"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-control-adjudication.json",
+          "sha256": "f9ac7469f8d12290c39654cbf56081f9c1ddccc560b282db0480a077e28e1903"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-precheck-adjudication.json",
+          "sha256": "8963b4d12657db3573e66559b17abd1b32bc9ad7765255b6e920178be097cb54"
+        }
+      ],
+      "remaining": []
+    },
+    {
+      "root_cause_id": "pi-topology-skeletal-witness",
+      "issues": [
+        "TOPO-001"
+      ],
+      "status": "local_checks_passed",
+      "local_check_evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788947021024904100\\review-1788947125425668900\\summary.json",
+          "sha256": "17d8f5e2fd460c8236c2ba51db6bfe522f129672169ed42b6b45a9612a58b104"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\ui-controls-1788947394181579000\\review-1788947424678144800\\summary.json",
+          "sha256": "4e8b8309929f3fcd97c95d899d3c3008c846bd4a54e6817b9abaea128485c94d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-local-controls.json",
+          "sha256": "0140cfc8994d1d750bab98a6c6da73d6ae6f241e98ebee142d8e14f037feefc6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-precheck-adjudication.json",
+          "sha256": "6b8b6dc565519ddce0e0e55f8eb68d4bc92b06d9661d13850c2c71cd548356c5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-local-controls.json",
+          "sha256": "55f545915e3ad4565c320a62dfbb5927e17047da9f6e9804dce630b08808dcca"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-precheck-adjudication.json",
+          "sha256": "8963b4d12657db3573e66559b17abd1b32bc9ad7765255b6e920178be097cb54"
+        }
+      ],
+      "remaining": []
+    },
+    {
+      "root_cause_id": "typed-gaps-and-orbital-evidence",
+      "issues": [
+        "POL-001",
+        "POL-002"
+      ],
+      "status": "local_checks_passed",
+      "local_check_evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788947021024904100\\review-1788947125425668900\\summary.json",
+          "sha256": "17d8f5e2fd460c8236c2ba51db6bfe522f129672169ed42b6b45a9612a58b104"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\ui-controls-1788947394181579000\\review-1788947424678144800\\summary.json",
+          "sha256": "4e8b8309929f3fcd97c95d899d3c3008c846bd4a54e6817b9abaea128485c94d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-local-controls.json",
+          "sha256": "0140cfc8994d1d750bab98a6c6da73d6ae6f241e98ebee142d8e14f037feefc6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-precheck-adjudication.json",
+          "sha256": "6b8b6dc565519ddce0e0e55f8eb68d4bc92b06d9661d13850c2c71cd548356c5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-local-controls.json",
+          "sha256": "55f545915e3ad4565c320a62dfbb5927e17047da9f6e9804dce630b08808dcca"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-precheck-adjudication.json",
+          "sha256": "8963b4d12657db3573e66559b17abd1b32bc9ad7765255b6e920178be097cb54"
+        }
+      ],
+      "remaining": []
+    },
+    {
+      "root_cause_id": "scene-viewport-aspect",
+      "issues": [
+        "viewport geometry/display evidence"
+      ],
+      "status": "local_checks_passed",
+      "local_check_evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788947021024904100\\review-1788947125425668900\\summary.json",
+          "sha256": "17d8f5e2fd460c8236c2ba51db6bfe522f129672169ed42b6b45a9612a58b104"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\ui-controls-1788947394181579000\\review-1788947424678144800\\summary.json",
+          "sha256": "4e8b8309929f3fcd97c95d899d3c3008c846bd4a54e6817b9abaea128485c94d"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\ordinary-ui-20260909\\review.json",
+          "sha256": "5567d4334c1c0512955bfc3137c5e8c0d76a45661db544d5a52f5037ca085dda"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-local-controls.json",
+          "sha256": "0140cfc8994d1d750bab98a6c6da73d6ae6f241e98ebee142d8e14f037feefc6"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-precheck-adjudication.json",
+          "sha256": "6b8b6dc565519ddce0e0e55f8eb68d4bc92b06d9661d13850c2c71cd548356c5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-local-controls.json",
+          "sha256": "55f545915e3ad4565c320a62dfbb5927e17047da9f6e9804dce630b08808dcca"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-precheck-adjudication.json",
+          "sha256": "8963b4d12657db3573e66559b17abd1b32bc9ad7765255b6e920178be097cb54"
+        }
+      ],
+      "remaining": []
+    }
+  ],
+  "program_paths": {
+    "cov_validation.exe": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\programs\\cov_validation.exe",
+    "cov_scientific_audit_dump.exe": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\programs\\cov_scientific_audit_dump.exe",
+    "cov.exe": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\programs\\cov.exe",
+    "cov_scientific_audit_dump_off.exe": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\programs\\cov_scientific_audit_dump_off.exe"
+  },
+  "formal_case_ids": [
+    "OLD-001",
+    "OLD-002",
+    "OLD-003",
+    "OLD-004",
+    "OLD-005",
+    "OLD-006",
+    "OLD-007",
+    "OLD-008",
+    "OLD-009",
+    "OLD-010",
+    "OLD-011",
+    "OLD-012",
+    "OLD-013",
+    "OLD-014",
+    "OLD-015",
+    "OLD-016",
+    "OLD-017",
+    "OLD-018",
+    "OLD-019",
+    "OLD-020",
+    "OLD-021",
+    "OLD-022",
+    "OLD-023",
+    "OLD-024",
+    "OLD-025",
+    "OLD-026",
+    "OLD-027",
+    "OLD-028",
+    "OLD-029",
+    "OLD-030",
+    "OLD-031",
+    "OLD-032",
+    "OLD-033",
+    "OLD-034",
+    "OLD-035",
+    "OLD-036",
+    "OLD-037",
+    "OLD-038",
+    "OLD-039",
+    "OLD-040",
+    "OLD-041",
+    "OLD-042",
+    "OLD-043",
+    "OLD-044",
+    "OLD-045",
+    "OLD-046",
+    "OLD-047",
+    "OLD-048",
+    "OLD-049",
+    "OLD-050",
+    "OLD-051",
+    "OLD-052",
+    "OLD-053",
+    "OLD-054",
+    "OLD-055",
+    "OLD-056",
+    "OLD-057",
+    "OLD-058",
+    "OLD-059",
+    "OLD-060",
+    "OLD-061",
+    "OLD-062",
+    "OLD-063",
+    "OLD-064",
+    "OLD-065",
+    "OLD-066",
+    "OLD-067",
+    "OLD-068",
+    "OLD-069",
+    "OLD-070",
+    "OLD-071",
+    "OLD-072",
+    "OLD-073",
+    "OLD-074",
+    "OLD-075",
+    "OLD-076",
+    "OLD-077",
+    "OLD-078",
+    "OLD-079",
+    "OLD-080",
+    "OLD-081",
+    "OLD-082",
+    "OLD-083",
+    "OLD-084",
+    "OLD-085",
+    "OLD-086",
+    "OLD-087",
+    "OLD-088",
+    "OLD-089",
+    "OLD-090",
+    "OLD-091",
+    "OLD-092",
+    "OLD-093",
+    "OLD-094",
+    "OLD-095",
+    "OLD-096",
+    "OLD-097",
+    "OLD-098",
+    "OLD-099",
+    "OLD-100",
+    "OLD-101",
+    "OLD-102",
+    "OLD-103",
+    "OLD-104",
+    "OLD-105",
+    "OLD-106",
+    "OLD-107",
+    "OLD-108",
+    "OLD-109",
+    "OLD-110",
+    "OLD-111",
+    "OLD-112",
+    "OLD-113",
+    "OLD-114",
+    "OLD-115",
+    "OLD-116",
+    "OLD-117",
+    "OLD-118",
+    "OLD-119",
+    "OLD-120",
+    "OLD-121",
+    "OLD-122",
+    "OLD-123",
+    "OLD-124",
+    "OLD-125",
+    "OLD-126",
+    "OLD-127",
+    "OLD-128",
+    "OLD-129",
+    "OLD-130",
+    "OLD-131",
+    "OLD-132",
+    "OLD-133",
+    "OLD-134",
+    "OLD-135",
+    "OLD-136",
+    "OLD-137",
+    "OLD-138",
+    "OLD-139",
+    "OLD-140",
+    "OLD-141",
+    "OLD-142",
+    "OLD-143",
+    "OLD-144",
+    "OLD-145",
+    "OLD-146",
+    "OLD-147",
+    "OLD-148",
+    "OLD-149",
+    "OLD-150",
+    "OLD-151",
+    "OLD-152",
+    "OLD-153",
+    "OLD-154",
+    "OLD-155",
+    "OLD-156",
+    "OLD-157",
+    "OLD-158",
+    "OLD-159",
+    "OLD-160",
+    "OLD-161",
+    "OLD-162",
+    "OLD-163",
+    "OLD-164",
+    "OLD-165",
+    "OLD-166",
+    "OLD-167",
+    "OLD-168",
+    "OLD-169",
+    "OLD-170",
+    "OLD-171",
+    "OLD-172",
+    "OLD-173",
+    "OLD-174",
+    "OLD-175",
+    "OLD-176",
+    "OLD-177",
+    "OLD-178",
+    "OLD-179",
+    "OLD-180",
+    "OLD-181",
+    "OLD-182",
+    "OLD-183",
+    "OLD-184",
+    "OLD-185",
+    "OLD-186",
+    "OLD-187",
+    "OLD-188",
+    "OLD-189",
+    "OLD-190",
+    "OLD-191",
+    "OLD-192",
+    "OLD-193",
+    "OLD-194",
+    "OLD-195",
+    "OLD-196",
+    "OLD-197",
+    "OLD-198",
+    "OLD-199",
+    "OLD-200",
+    "OLD-201",
+    "OLD-202",
+    "OLD-203",
+    "OLD-204",
+    "OLD-205",
+    "OLD-206",
+    "OLD-207",
+    "OLD-208",
+    "OLD-209",
+    "OLD-210",
+    "OLD-211",
+    "OLD-212",
+    "OLD-213",
+    "OLD-214",
+    "OLD-215",
+    "OLD-216",
+    "OLD-217",
+    "OLD-218",
+    "OLD-219",
+    "OLD-220",
+    "OLD-221",
+    "OLD-222",
+    "OLD-223",
+    "OLD-224",
+    "OLD-225",
+    "OLD-226",
+    "OLD-227",
+    "OLD-228",
+    "OLD-229",
+    "OLD-230",
+    "OLD-231",
+    "OLD-232",
+    "OLD-233",
+    "OLD-234",
+    "OLD-235",
+    "OLD-236",
+    "OLD-237",
+    "OLD-238",
+    "OLD-239",
+    "OLD-240",
+    "OLD-241",
+    "OLD-242",
+    "OLD-243",
+    "OLD-244",
+    "OLD-245",
+    "OLD-246",
+    "OLD-247",
+    "OLD-248",
+    "OLD-249",
+    "OLD-250",
+    "OLD-251",
+    "OLD-252",
+    "OLD-253",
+    "OLD-254",
+    "OLD-255",
+    "OLD-256",
+    "OLD-257",
+    "OLD-258",
+    "OLD-259",
+    "OLD-260",
+    "OLD-261",
+    "OLD-262",
+    "OLD-263",
+    "OLD-264",
+    "OLD-265",
+    "OLD-266",
+    "OLD-267",
+    "OLD-268",
+    "OLD-269",
+    "OLD-270",
+    "OLD-271",
+    "OLD-272",
+    "OLD-273"
+  ],
+  "external_set_frozen": false,
+  "final_acceptance": false,
+  "raw_evidence_complete_for_changed_checks": false,
+  "precheck_set": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\work\\validation-efficiency-20260908-side\\precheck-set-v1.json",
+    "sha256": "d3343167a9066eac3029c504fd870fec8241bc9783170a98fe4f15204b989eb7"
+  },
+  "precheck_receipt": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-precheck-adjudication.json",
+    "sha256": "8963b4d12657db3573e66559b17abd1b32bc9ad7765255b6e920178be097cb54"
+  },
+  "template_only": false,
+  "created_epoch": 1788871158.9349382,
+  "source_draft": "F:\\Codex\\2026-09-05\\branch-15\\work\\pending-common-root-integration-v1",
+  "source_base_commit": "377cb7eef6e495f796f0c3a089b5c47b829bdbea",
+  "current_preparation": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909",
+  "readiness_note": "All updated fixed40 component checks and applicable controls passed; workflow_gate still must validate the receipt before full273.",
+  "dedicated_controls_required": [
+    "pure/cartesian g and lower angular components",
+    "rigid rotations/translations",
+    "source atom/MO reorder and overall sign",
+    "same-spin degenerate subspace basis",
+    "truncated/rank-deficient and missing data",
+    "real spiro and multi-channel non-spiro",
+    "local/global/group-member symmetry scope",
+    "density source regressions",
+    "typed crystal-field/pi partner records and prior contradictions"
+  ],
+  "unchanged_requirements": "Every new production candidate recollects actual COV evidence. No formal whole-library round before all planned fixes, dedicated controls and the fixed 40-case precheck.",
+  "production_source_commit": "8e206e188ef84a5e63129ee20e5b95c2f5ad498b",
+  "precheck_collection": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-precheck\\manifest.json",
+    "sha256": "8b5df3a434d0c3e79dbfd1887c59235dd35d761ebc0efe212c245f586762d1f6"
+  },
+  "updated_epoch": 1788958697.939008,
+  "previous_precheck_adjudication": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008b-precheck-adjudication.json",
+    "sha256": "6b8b6dc565519ddce0e0e55f8eb68d4bc92b06d9661d13850c2c71cd548356c5"
+  },
+  "workflow_gate_revision": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\workflow-gate-visual-update-v2.json",
+    "sha256": "11f116fddb54549b68351788f23a851065d6959da80920c97549c5005c828c0d"
+  },
+  "pending_dedicated_controls": [],
+  "complete_local_controls": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-complete-local-controls.json",
+    "sha256": "4b0354e0954a318e012ff64950c17f7db894a11ac8901308a3afeb8978c4054e"
+  }
+}

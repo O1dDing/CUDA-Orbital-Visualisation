@@ -1,0 +1,57 @@
+{
+  "candidate_id": "PREP-046",
+  "query": "hydroperoxyl radical",
+  "commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+  "local_candidate": {
+    "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\hoo.xyz",
+    "relative_path": "W4-11/hoo.xyz",
+    "sha256": "ec6ab66491123d4bfa0c6249d14695331a03fe8fab9188cd194c7ce6859acc85",
+    "atom_count": 3,
+    "charge": 0,
+    "multiplicity": 2,
+    "formula_counts": {
+      "H": 1,
+      "O": 2
+    },
+    "original_source_coordinates_verified": false
+  },
+  "source_directory": "W4-11/hoo",
+  "started_epoch": 1788843969.9849658,
+  "files": [
+    {
+      "name": ".CHRG",
+      "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/W4-11/hoo/.CHRG",
+      "git_blob_sha1": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "name": ".UHF",
+      "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/W4-11/hoo/.UHF",
+      "git_blob_sha1": "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "name": "coord",
+      "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/W4-11/hoo/coord",
+      "git_blob_sha1": "18fae10225844218ddd09a2921f134bb711577e7",
+      "sha256": "da9fd7bc0bf40eed98d1c86b5cffadaeab4ba77d5b4b125d2fdc133ea98e6a60",
+      "bytes": 277
+    }
+  ],
+  "formal_case": false,
+  "gaussian_started": false,
+  "accepted_reference_geometry": false,
+  "directory_url": "https://api.github.com/repos/grimme-lab/GMTKN55/contents/W4-11/hoo?ref=8d485b37a1ca8837e395042671ca5ba4e0714691",
+  "directory_sha256": "73970e2a6f756f08142e0c98f6432d192080306f3111725750f51ba0aae64a74",
+  "entry_names": [
+    ".CHRG",
+    ".UHF",
+    "PBEh-3c",
+    "coord",
+    "struc.xyz"
+  ],
+  "status": "primary-records-collected",
+  "finished_epoch": 1788843972.3241217
+}

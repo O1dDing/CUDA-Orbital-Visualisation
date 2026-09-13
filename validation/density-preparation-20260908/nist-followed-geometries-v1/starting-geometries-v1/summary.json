@@ -1,0 +1,207 @@
+{
+  "created_epoch": 1788848541.2889247,
+  "starting_geometries_prepared": 2,
+  "records": [
+    {
+      "candidate_id": "PREP-007",
+      "name": "chlorine trifluoride",
+      "charge": 0,
+      "multiplicity": 1,
+      "state": "1 A 1",
+      "source_reported_point_group": "C2v",
+      "inchikey": "JOHWNGGYGAVMGU-UHFFFAOYSA-N",
+      "element_counts": {
+        "Cl": 1,
+        "F": 3
+      },
+      "atom_count": 4,
+      "source_url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0",
+      "session_identity_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+      "raw_source_sha256": "2d1c5ab78a572983bf285ac6597e3f58f1ddd88f5868a4187cd171362119fd36",
+      "coordinate_method": "B3LYP/6-31G*",
+      "model_chemistry_page": "G3B3",
+      "units": "angstrom",
+      "source": "Public NIST page literal xyzmodel payload, checked against the same page internal-coordinate table",
+      "extraction": "Decoded JSON-compatible quoted string literals and concatenation only; no JavaScript execution or coordinate fitting.",
+      "actual_literal_coordinates": [
+        {
+          "element": "Cl",
+          "literal_coordinates": [
+            "0",
+            "0",
+            "0.372703"
+          ],
+          "xyz_angstrom": [
+            0.0,
+            0.0,
+            0.372703
+          ]
+        },
+        {
+          "element": "F",
+          "literal_coordinates": [
+            "0",
+            "0",
+            "-1.277772"
+          ],
+          "xyz_angstrom": [
+            0.0,
+            0.0,
+            -1.277772
+          ]
+        },
+        {
+          "element": "F",
+          "literal_coordinates": [
+            "0",
+            "1.72676",
+            "0.286889"
+          ],
+          "xyz_angstrom": [
+            0.0,
+            1.72676,
+            0.286889
+          ]
+        },
+        {
+          "element": "F",
+          "literal_coordinates": [
+            "0",
+            "-1.72676",
+            "0.286889"
+          ],
+          "xyz_angstrom": [
+            0.0,
+            -1.72676,
+            0.286889
+          ]
+        }
+      ],
+      "maximum_difference_from_four_decimal_table_angstrom": "0.00004",
+      "xyz_file": "PREP-007\\starting.xyz",
+      "xyz_sha256": "ab8e2e8a2fbe5dd9a6d7a3d1d585bcf5ed10dc94d8f87314d445ddeff84a41e3",
+      "status": "literal-starting-geometry-prepared",
+      "minimum_frequency_and_stability_not_verified": true,
+      "formal_case": false,
+      "accepted_quality_reference": false,
+      "gaussian_started": false,
+      "cov_executed": false
+    },
+    {
+      "candidate_id": "PREP-045",
+      "name": "methylperoxy radical",
+      "charge": 0,
+      "multiplicity": 2,
+      "state": "2 A \"",
+      "source_reported_point_group": "Cs",
+      "inchikey": "WTFNSXYULBQCQV-UHFFFAOYSA-N",
+      "element_counts": {
+        "C": 1,
+        "H": 3,
+        "O": 2
+      },
+      "atom_count": 6,
+      "source_url": "https://cccbdb.nist.gov/geom3x.asp?method=64&basis=0",
+      "session_identity_url": "https://cccbdb.nist.gov/exp2x.asp?casno=2143580&charge=0",
+      "raw_source_sha256": "0a8c7da665170869121bee9eb86dd4ba2700079e58e756d758d45bd071111d18",
+      "coordinate_method": "B3LYP/6-31G*",
+      "model_chemistry_page": "G3B3",
+      "units": "angstrom",
+      "source": "Public NIST page literal xyzmodel payload, checked against the same page internal-coordinate table",
+      "extraction": "Decoded JSON-compatible quoted string literals and concatenation only; no JavaScript execution or coordinate fitting.",
+      "actual_literal_coordinates": [
+        {
+          "element": "C",
+          "literal_coordinates": [
+            "1.001572",
+            "-0.474482",
+            "0"
+          ],
+          "xyz_angstrom": [
+            1.001572,
+            -0.474482,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "literal_coordinates": [
+            "0",
+            "0.56987",
+            "0"
+          ],
+          "xyz_angstrom": [
+            0.0,
+            0.56987,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "literal_coordinates": [
+            "-1.217689",
+            "0.052118",
+            "0"
+          ],
+          "xyz_angstrom": [
+            -1.217689,
+            0.052118,
+            0.0
+          ]
+        },
+        {
+          "element": "H",
+          "literal_coordinates": [
+            "1.963285",
+            "0.042996",
+            "0"
+          ],
+          "xyz_angstrom": [
+            1.963285,
+            0.042996,
+            0.0
+          ]
+        },
+        {
+          "element": "H",
+          "literal_coordinates": [
+            "0.884396",
+            "-1.086002",
+            "0.898023"
+          ],
+          "xyz_angstrom": [
+            0.884396,
+            -1.086002,
+            0.898023
+          ]
+        },
+        {
+          "element": "H",
+          "literal_coordinates": [
+            "0.884396",
+            "-1.086002",
+            "-0.898023"
+          ],
+          "xyz_angstrom": [
+            0.884396,
+            -1.086002,
+            -0.898023
+          ]
+        }
+      ],
+      "maximum_difference_from_four_decimal_table_angstrom": "0.00003",
+      "xyz_file": "PREP-045\\starting.xyz",
+      "xyz_sha256": "bc5b3eee20b0d0b04a0e72c99328a7c653b825d22679eb8286c7ed527d88f876",
+      "status": "literal-starting-geometry-prepared",
+      "minimum_frequency_and_stability_not_verified": true,
+      "formal_case": false,
+      "accepted_quality_reference": false,
+      "gaussian_started": false,
+      "cov_executed": false
+    }
+  ],
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "gaussian_started": false,
+  "cov_executed": false
+}

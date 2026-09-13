@@ -1,0 +1,28 @@
+%chk=job.chk
+%mem=24GB
+%nprocshared=4
+#p RPBE1PBE/Gen Force Units=Bohr 5D 7F EmpiricalDispersion=GD3BJ SCF=(VeryTight,XQC,MaxCycle=1024) Integral=SuperFineGrid NoSymm
+
+OLD-178 PBE0-D3BJ primary reference candidate
+
+0 1
+1 -6.99198666000000e-01 0.00000000000000e+00 0.00000000000000e+00
+1 6.99198666000000e-01 0.00000000000000e+00 0.00000000000000e+00
+
+H     0
+S    3   1.00
+     34.0613410              0.60251978D-02
+      5.1235746              0.45021094D-01
+      1.1646626              0.20189726
+S    1   1.00
+      0.32723041             1.0000000
+S    1   1.00
+      0.10307241             1.0000000
+P    1   1.00
+      1.40700000             1.0000000
+P    1   1.00
+      0.38800000             1.0000000
+D    1   1.00
+      1.05700000             1.0000000
+****
+
