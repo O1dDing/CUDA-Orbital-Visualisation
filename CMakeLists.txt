@@ -29,6 +29,7 @@ add_library(cov_parser
     src/parser/wavefunction_io.cpp
     src/parser/formchk.cpp
     src/parser/gaussian_log.cpp
+    src/parser/nbo.cpp
     src/analysis/density.cpp
     src/analysis/overlap.cpp
     src/analysis/overlap_basis.cpp
@@ -156,6 +157,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
 
     add_library(cov_ui STATIC
         src/ui/ui.cpp
+        src/ui/nbo_ui.cpp
         src/ui/ui_text_dispatch.cpp
         src/ui/orbital_ui_text.cpp
         src/ui/orbital_ui_v2.cpp
@@ -309,6 +311,12 @@ endif()
 if(COV_BUILD_TESTS)
     include(CTest)
     enable_testing()
+
+    add_executable(cov_nbo_probe tests/nbo_probe.cpp)
+    target_link_libraries(cov_nbo_probe PRIVATE cov_parser)
+    add_executable(cov_nbo_smoke tests/nbo_smoke.cpp)
+    target_link_libraries(cov_nbo_smoke PRIVATE cov_parser)
+    add_test(NAME nbo_smoke COMMAND cov_nbo_smoke)
 
     if(COV_ENABLE_CUDA)
         # External scientific reference; never counted as a passing test when

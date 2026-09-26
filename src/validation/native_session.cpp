@@ -30,6 +30,14 @@ std::vector<Command> commands;
 std::size_t next = 0, frame = 0, generation = 0, rendered_generation = 0;
 std::size_t volume_mo = 0, rendered_mo = 0;
 std::size_t drawn_ui_mo = 0, requested_mo = 0, diagram_generation = 0;
+std::string active_set="canonical", active_dataset, active_spin="alpha", active_association="not_attached";
+std::string active_coefficient_source="not_available";
+bool active_direct_fchk=false, active_density_verified=false;
+std::size_t active_source_index=std::numeric_limits<std::size_t>::max();
+std::string rendered_set="canonical", rendered_dataset, rendered_spin="alpha", rendered_association="not_attached";
+std::string rendered_coefficient_source="not_available";
+bool rendered_direct_fchk=false, rendered_density_verified=false;
+std::size_t rendered_source_index=std::numeric_limits<std::size_t>::max();
 int stage = 0, attempts = 0, failures = 0, cooldown = 0;
 bool complete_command = false;
 Clock::time_point started, command_started;
@@ -117,11 +125,28 @@ std::string state_json(std::size_t applied, const ui::OrbitalUIState& ui, const 
     std::ostringstream s; s << std::setprecision(17);
     s << "{\"schema\":1,\"frame\":" << frame << ",\"elapsed_seconds\":" << elapsed()
       << ",\"rendered_mo\":" << rendered_mo << ",\"applied_mo\":" << applied
+      << ",\"rendered_set\":" << quote(rendered_set)
+      << ",\"rendered_dataset\":" << quote(rendered_dataset)
+      << ",\"rendered_spin\":" << quote(rendered_spin)
+      << ",\"rendered_source_index\":";
+    if(rendered_source_index==std::numeric_limits<std::size_t>::max())s<<"null";else s<<rendered_source_index;
+    s << ",\"applied_set\":" << quote(active_set)
+      << ",\"applied_dataset\":" << quote(active_dataset)
+      << ",\"applied_spin\":" << quote(active_spin)
+      << ",\"applied_source_index\":";
+    if(active_source_index==std::numeric_limits<std::size_t>::max())s<<"null";else s<<active_source_index;
+    s << ",\"association\":" << quote(active_association)
+      << ",\"coefficient_source\":" << quote(active_coefficient_source)
+      << ",\"direct_fchk_coefficients\":" << (active_direct_fchk?"true":"false")
+      << ",\"density_verified\":" << (active_density_verified?"true":"false")
+      << ",\"rendered_coefficient_source\":" << quote(rendered_coefficient_source)
+      << ",\"rendered_direct_fchk_coefficients\":" << (rendered_direct_fchk?"true":"false")
+      << ",\"rendered_density_verified\":" << (rendered_density_verified?"true":"false")
       << ",\"drawn_ui_mo\":" << drawn_ui_mo << ",\"requested_mo\":" << requested_mo
       << ",\"scene_view\":" << scene_view_json
       << ",\"diagram_generation\":" << diagram_generation
       << ",\"rendered_generation\":" << rendered_generation << ",\"volume_generation\":" << generation
-      << ",\"scene_matches_applied\":" << (rendered_mo==applied?"true":"false")
+      << ",\"scene_matches_applied\":" << (rendered_mo==applied && rendered_set==active_set && rendered_dataset==active_dataset?"true":"false")
       << ",\"evaluation_reason\":" << quote(evaluation_reason) << ",\"kernel_ms\":" << kernel_ms
       << ",\"compact\":" << (ui.hide_ligand_centred_intermediates?"true":"false")
       << ",\"energy_unit\":" << static_cast<int>(ui.energy_unit)
@@ -129,8 +154,14 @@ std::string state_json(std::size_t applied, const ui::OrbitalUIState& ui, const 
       << ",\"filter\":" << static_cast<int>(ui.filter.mode);
     if (wf && applied<wf->orbitals.size()) {
         const auto& mo=wf->orbitals[applied];
-        s << ",\"energy_hartree\":" << mo.energy_hartree << ",\"occupation\":" << mo.occupation
-          << ",\"spin\":" << static_cast<int>(mo.spin);
+        s << ",\"energy_hartree\":";
+        if(std::isfinite(mo.energy_hartree) && active_set=="canonical")s<<mo.energy_hartree;
+        else s<<"null";
+        s << ",\"energy_semantics\":" << quote(active_set=="canonical"?"canonical eigenvalue":"not applicable; NBO diagonal Fock is separate")
+          << ",\"occupation\":" << mo.occupation
+          << ",\"spin\":";
+        if(active_set=="canonical")s<<static_cast<int>(mo.spin);else s<<"null";
+        s << ",\"spin_semantics\":" << quote(active_set=="canonical"?"canonical wavefunction spin":"NBO spin is applied_spin; renderer channel may differ");
     }
     s << '}'; return s.str();
 }
@@ -300,12 +331,30 @@ void evaluated(std::size_t mo,const char* reason,float milliseconds) {
     if(!enabled)return;
     ++generation;volume_mo=mo;evaluation_reason=reason;kernel_ms=milliseconds;
 }
+void orbital_identity(const std::string& set,const std::string& dataset,
+                      const std::string& spin,std::size_t source_index,
+                      const std::string& association,
+                      const std::string& coefficient_source,
+                      bool direct_fchk_coefficients,bool density_verified) {
+    if(!enabled)return;
+    active_set=set;active_dataset=dataset;active_spin=spin;
+    active_source_index=source_index;active_association=association;
+    active_coefficient_source=coefficient_source;
+    active_direct_fchk=direct_fchk_coefficients;
+    active_density_verified=density_verified;
+}
 void ui_frame(std::size_t drawn,std::size_t requested) {
     drawn_ui_mo=drawn;requested_mo=requested;
 }
 void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t mo) {
     if(!enabled)return;
     rendered_mo=mo;rendered_generation=generation;
+    rendered_set=active_set;rendered_dataset=active_dataset;
+    rendered_spin=active_spin;rendered_source_index=active_source_index;
+    rendered_association=active_association;
+    rendered_coefficient_source=active_coefficient_source;
+    rendered_direct_fchk=active_direct_fchk;
+    rendered_density_verified=active_density_verified;
     if(done() || !volume_command(commands[next]) || stage<4)return;
     const auto& c=commands[next];
     if(!c.value.empty() && std::stoull(c.value)!=mo) {finish("failed","selected MO does not match requested readback");return;}
@@ -329,6 +378,13 @@ void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t m
     std::sort(indices.begin(),indices.end());indices.erase(std::unique(indices.begin(),indices.end()),indices.end());
     std::ofstream out(output/(c.id+".volume.json"));out<<std::setprecision(17);
     out<<"{\"schema\":1,\"frame\":"<<frame<<",\"generation\":"<<generation<<",\"rendered_mo\":"<<mo
+       <<",\"orbital_set\":"<<quote(rendered_set)<<",\"dataset\":"<<quote(rendered_dataset)
+       <<",\"spin\":"<<quote(rendered_spin)<<",\"source_index\":";
+    if(rendered_source_index==std::numeric_limits<std::size_t>::max())out<<"null";else out<<rendered_source_index;
+    out<<",\"association\":"<<quote(rendered_association)
+       <<",\"coefficient_source\":"<<quote(rendered_coefficient_source)
+       <<",\"direct_fchk_coefficients\":"<<(rendered_direct_fchk?"true":"false")
+       <<",\"density_verified\":"<<(rendered_density_verified?"true":"false")
        <<",\"texture_id\":"<<renderer.volume_texture()<<",\"nx\":"<<nx<<",\"ny\":"<<ny<<",\"nz\":"<<nz
        <<",\"grid_box_bohr\":["<<box.min_x<<','<<box.min_y<<','<<box.min_z<<','<<box.max_x<<','<<box.max_y<<','<<box.max_z
        <<"],\"layout\":\"x fastest; coordinates use CUDA float interpolation i/(n-1)\"";
@@ -380,11 +436,13 @@ void record(const std::string& kind,const std::string& json) {
         return; // Full input evidence belongs to the load event, not per-frame traces.
     }
     if(enabled)trace.push_back("{\"kind\":"+quote(kind)+",\"data\":"+json+"}");
-    if(enabled && (kind=="export.actual" || kind=="input.numerical_diagnostics" ||
+    if(enabled && (kind=="export.actual" || kind=="nbo.export" ||
+                   kind=="nbo.attach" || kind=="nbo.attach.error" ||
+                   kind=="input.numerical_diagnostics" ||
                    (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {
         if(kind=="diagram.cache")++diagram_generation;
         events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";events.flush();
-        if(kind=="export.actual") {
+        if(kind=="export.actual" || kind=="nbo.export") {
             events<<"{\"frame\":"<<frame<<",\"kind\":\"export.frame-trace\",\"data\":[";
             bool first=true;
             for(const auto& entry:trace){if(!first)events<<',';first=false;events<<entry;}

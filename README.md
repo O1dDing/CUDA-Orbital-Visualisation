@@ -36,6 +36,7 @@ The [v0.3.0-pre.11 prerelease](https://github.com/O1dDing/CUDA-Orbital-Visualisa
 - [x] Gaussian FCHK/FCH parsing, source identities and independent numerical regression
 - [x] Local CHK → `formchk` integration (requires an installed converter; configure `COV_FORMCHK` when needed)
 - [x] Gaussian `.log/.out` companion enrichment with explicit source and missing/invalid metadata states
+- [x] Initial [NBO report/matrix attachment](docs/nbo-initial-integration.md), strict source association, separate localized-orbital GPU view, NPA/NAO/Wiberg/E2 and NBOMO export
 - [ ] Multi-MO fused CUDA evaluator
 - [ ] GPU Marching Cubes for mesh export
 - [ ] Cube export

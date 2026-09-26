@@ -7,6 +7,7 @@
 #include "cov/mo_diagram.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/molecule_style.hpp"
+#include "cov/nbo_ui.hpp"
 #include "cov/orbital_tracking.hpp"
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
@@ -26,6 +27,7 @@
 #include <cmath>
 #include <cstdio>
 #include <filesystem>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -261,6 +263,11 @@ int main(int argc, char** argv) {
         cov::OrbitCamera camera;
 
         std::optional<cov::Wavefunction> wavefunction;
+        std::optional<cov::Wavefunction> nbo_wavefunction;
+        cov::ui::NboUIState nbo_ui;
+        bool nbo_active = false;
+        std::size_t canonical_mo_index = 0;
+        std::size_t nbo_mo_index = 0;
         std::optional<cov::OrbitalTrackingResult> frame_tracking;
         std::unique_ptr<cov::CudaOrbitalEvaluator> evaluator;
         cov::GridBox grid_box;
@@ -284,8 +291,78 @@ int main(int argc, char** argv) {
         bool recompute = false;
         bool resize_and_recompute = false;
 
+        auto active_wavefunction = [&]() -> const cov::Wavefunction* {
+            return nbo_active && nbo_wavefunction ? &*nbo_wavefunction
+                                                   : wavefunction ? &*wavefunction : nullptr;
+        };
+
+        auto identity = [&]() {
+            const auto* active = active_wavefunction();
+            const auto* orbital = active && mo_index < active->orbitals.size()
+                                    ? &active->orbitals[mo_index] : nullptr;
+            const auto spin = nbo_active && nbo_ui.dataset &&
+                              mo_index<nbo_ui.dataset->orbitals.size()
+                ? nbo_ui.dataset->orbitals[mo_index].spin
+                : orbital && orbital->spin == cov::Spin::Beta
+                    ? cov::NboSpin::Beta : cov::NboSpin::Alpha;
+            const cov::NboCanonicalEvidence* evidence=nullptr;
+            if(nbo_ui.dataset)for(const auto& record:nbo_ui.dataset->association.canonical_evidence)
+                if(record.spin==spin || (spin==cov::NboSpin::Alpha && record.spin==cov::NboSpin::Total)){
+                    evidence=&record;break;
+                }
+            cov::validation::orbital_identity(
+                nbo_active ? "nbo" : "canonical",
+                nbo_active && nbo_ui.dataset ? nbo_ui.dataset->source.path
+                                             : path_to_utf8(current_file),
+                cov::nbo_spin_name(spin),
+                orbital ? orbital->source_orbital_index
+                        : std::numeric_limits<std::size_t>::max(),
+                nbo_ui.dataset ? nbo_ui.dataset->association.status : "not_attached",
+                evidence ? evidence->coefficient_source : "not_available",
+                evidence && evidence->direct_fchk_coefficients,
+                evidence && evidence->density_verified);
+        };
+
+        auto activate_set = [&](bool use_nbo) {
+            if (use_nbo == nbo_active) return;
+            if (use_nbo && !nbo_wavefunction) throw std::runtime_error("NBO coefficients are not available for rendering");
+            const cov::Wavefunction& target = use_nbo ? *nbo_wavefunction : *wavefunction;
+            if (target.orbitals.empty()) throw std::runtime_error("Selected orbital set is empty");
+            auto next_evaluator = std::make_unique<cov::CudaOrbitalEvaluator>(target);
+            const std::size_t next_index = std::min(use_nbo ? nbo_mo_index : canonical_mo_index,
+                                                    target.orbitals.size()-1);
+            if (evaluator) evaluator->detach_gl_texture();
+            const bool resized=resize_and_recompute || renderer.nx()!=resolution;
+            try {
+                if(resized)renderer.resize_volume(resolution,resolution,resolution);
+                next_evaluator->attach_gl_texture(renderer.volume_texture());
+                next_evaluator->evaluate(next_index, grid_box,
+                                         resolution, resolution, resolution);
+            } catch (...) {
+                next_evaluator->detach_gl_texture();
+                if (evaluator) {
+                    evaluator->attach_gl_texture(renderer.volume_texture());
+                    if(resized)evaluator->evaluate(mo_index,grid_box,
+                                                   resolution,resolution,resolution);
+                }
+                throw;
+            }
+            evaluator = std::move(next_evaluator);
+            nbo_active = use_nbo;
+            mo_index = next_index;
+            pending_mo_index.reset();
+            orbital_ui.browser_cache={};
+            orbital_ui.diagram_cache={};
+            renderer.invalidate_geometry_cache();
+            resize_and_recompute=false;
+            identity();
+            cov::validation::evaluated(mo_index,"set-switch",evaluator->last_kernel_ms());
+            recompute = false;
+        };
+
         auto evaluate_now = [&]() {
-            if (!wavefunction || !evaluator || wavefunction->orbitals.empty()) return;
+            const auto* active = active_wavefunction();
+            if (!active || !evaluator || active->orbitals.empty()) return;
             if (resize_and_recompute || renderer.nx() != resolution) {
                 evaluator->detach_gl_texture();
                 renderer.resize_volume(resolution, resolution, resolution);
@@ -294,6 +371,7 @@ int main(int argc, char** argv) {
             }
             evaluator->evaluate(mo_index, grid_box,
                                 resolution, resolution, resolution);
+            identity();
             cov::validation::evaluated(mo_index,"selection-or-grid",evaluator->last_kernel_ms());
             status = StatusKind::GridUpdated;
             status_detail = evaluator->device_name();
@@ -332,22 +410,30 @@ int main(int argc, char** argv) {
 
                 if (evaluator) evaluator->detach_gl_texture();
                 evaluator.reset();
+                nbo_active = false;
+                nbo_wavefunction.reset();
+                nbo_ui.dataset.reset();
+                nbo_ui.error.clear();
+                nbo_ui.export_status.clear();
                 wavefunction = std::move(wf);
                 frame_tracking = std::move(new_tracking);
                 renderer.invalidate_geometry_cache();
                 evaluator = std::make_unique<cov::CudaOrbitalEvaluator>(*wavefunction);
                 mo_index = new_mo;
+                canonical_mo_index = new_mo;
+                nbo_mo_index = 0;
                 pending_mo_index.reset();
                 orbital_ui.browser_cache={};
                 orbital_ui.diagram_cache={};
                 grid_box = new_box;
+                current_file = path;
 
                 renderer.resize_volume(resolution, resolution, resolution);
                 evaluator->attach_gl_texture(renderer.volume_texture());
                 evaluator->evaluate(mo_index, grid_box,
                                     resolution, resolution, resolution);
+                identity();
                 cov::validation::evaluated(mo_index,"input-load",evaluator->last_kernel_ms());
-                current_file = path;
                 copy_path_to_buffer(path, path_buffer);
                 push_recent(recent_files, path);
                 status = StatusKind::Loaded;
@@ -423,10 +509,12 @@ int main(int argc, char** argv) {
             glClearColor(0.025f, 0.031f, 0.043f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
-            if (wavefunction && viewport.width > 0 && viewport.height > 0) {
+            identity();
+            if (const auto* active = active_wavefunction();
+                active && viewport.width > 0 && viewport.height > 0) {
                 // Geometry and the actual orbital texture share one viewport,
                 // projection and depth buffer, outside the control panel.
-                renderer.render_geometry(*wavefunction, grid_box, viewport.width, viewport.height,
+                renderer.render_geometry(*active, grid_box, viewport.width, viewport.height,
                                          camera, molecule_render);
                 renderer.render_volume(viewport.width, viewport.height, isovalue, camera,
                                        molecule_render.orbital_opacity,
@@ -690,62 +778,99 @@ int main(int argc, char** argv) {
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
-            cov::validation::anchor("panel.browser");
-            cov::ui::begin_card("##orbital_browser_card", 620.0f * ui_scale);
-            cov::ui::section_title(cov::ui::tr(cov::ui::Text::OrbitalBrowser, language));
-            cov::ui::OrbitalUIActions orbital_actions;
-            if (wavefunction && evaluator && !wavefunction->orbitals.empty()) {
-                cov::ui::draw_orbital_browser(*wavefunction, mo_index, orbital_ui,
-                                              language, ui_scale, orbital_actions);
-            } else {
-                ImGui::TextDisabled("—");
-            }
-            cov::ui::end_card();
-            ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
-
-            cov::validation::anchor("panel.diagram");
-            cov::ui::begin_card("##energy_diagram_card", 430.0f * ui_scale);
-            cov::ui::section_title(cov::ui::tr(cov::ui::Text::EnergyDiagram, language));
-            cov::ui::OrbitalUIActions diagram_actions;
-            if (wavefunction && evaluator && !wavefunction->orbitals.empty()) {
-                cov::ui::draw_energy_diagram(*wavefunction, mo_index, orbital_ui,
-                                             language, ui_scale, diagram_actions);
-            } else {
-                ImGui::TextDisabled("—");
-            }
-            cov::ui::end_card();
-            ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
-
-            if (orbital_actions.select_orbital) pending_mo_index = orbital_actions.select_orbital;
-            if (diagram_actions.select_orbital) pending_mo_index = diagram_actions.select_orbital;
-            const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
-            if (export_requested && wavefunction) {
-                std::filesystem::path base = current_file.empty()
-                                                 ? std::filesystem::current_path() / "mo_diagram"
-                                                 : current_file;
-                base = cov::validation::export_base(base);
-                const auto snapshot=diagram_actions.drawn_diagram;
-                cov::MODiagramExportResult result;
-                if (snapshot) result=cov::export_mo_diagram_bundle(*snapshot,base);
-                else result.error="No current diagram view is available for export";
-#ifdef COV_ENABLE_VALIDATION
-                cov::validation::record("export.actual","{\"base\":"+cov::validation::quote(path_to_utf8(base))+
-                    ",\"snapshot_id\":"+(snapshot?cov::validation::quote(snapshot->data.view->id):"null")+
-                    ",\"mode\":"+(snapshot?std::to_string(static_cast<int>(snapshot->data.mode)):"null")+
-                    ",\"selected_index\":"+(snapshot && snapshot->data.view->inspected_orbital_index
-                        ?std::to_string(*snapshot->data.view->inspected_orbital_index):"null")+
-                    ",\"success\":"+((result.svg&&result.png&&result.json&&result.csv)?"true":"false")+"}");
-#endif
-                if (result.svg && result.png && result.json && result.csv) {
-                    status = StatusKind::Exported;
-                    status_detail = path_to_utf8(result.svg_path.parent_path() /
-                        result.svg_path.stem()) + ".{png,svg,json,csv}";
+            if (!nbo_active) {
+                cov::validation::anchor("panel.browser");
+                cov::ui::begin_card("##orbital_browser_card", 620.0f * ui_scale);
+                cov::ui::section_title(cov::ui::tr(cov::ui::Text::OrbitalBrowser, language));
+                cov::ui::OrbitalUIActions orbital_actions;
+                if (wavefunction && evaluator && !wavefunction->orbitals.empty()) {
+                    cov::ui::draw_orbital_browser(*wavefunction, mo_index, orbital_ui,
+                                                  language, ui_scale, orbital_actions);
                 } else {
-                    status = StatusKind::Error;
-                    status_detail = result.error.empty()
-                                        ? cov::ui::tr(cov::ui::Text::ExportFailed, language)
-                                        : result.error;
+                    ImGui::TextDisabled("—");
                 }
+                cov::ui::end_card();
+                ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
+
+                cov::validation::anchor("panel.diagram");
+                cov::ui::begin_card("##energy_diagram_card", 430.0f * ui_scale);
+                cov::ui::section_title(cov::ui::tr(cov::ui::Text::EnergyDiagram, language));
+                cov::ui::OrbitalUIActions diagram_actions;
+                if (wavefunction && evaluator && !wavefunction->orbitals.empty()) {
+                    cov::ui::draw_energy_diagram(*wavefunction, mo_index, orbital_ui,
+                                                 language, ui_scale, diagram_actions);
+                } else {
+                    ImGui::TextDisabled("—");
+                }
+                cov::ui::end_card();
+                ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
+
+                if (orbital_actions.select_orbital) pending_mo_index = orbital_actions.select_orbital;
+                if (diagram_actions.select_orbital) pending_mo_index = diagram_actions.select_orbital;
+                const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
+                if (export_requested && wavefunction) {
+                    std::filesystem::path base = current_file.empty()
+                                                     ? std::filesystem::current_path() / "mo_diagram"
+                                                     : current_file;
+                    base = cov::validation::export_base(base);
+                    const auto snapshot=diagram_actions.drawn_diagram;
+                    cov::MODiagramExportResult result;
+                    if (snapshot) result=cov::export_mo_diagram_bundle(*snapshot,base);
+                    else result.error="No current diagram view is available for export";
+    #ifdef COV_ENABLE_VALIDATION
+                    cov::validation::record("export.actual","{\"base\":"+cov::validation::quote(path_to_utf8(base))+
+                        ",\"snapshot_id\":"+(snapshot?cov::validation::quote(snapshot->data.view->id):"null")+
+                        ",\"mode\":"+(snapshot?std::to_string(static_cast<int>(snapshot->data.mode)):"null")+
+                        ",\"selected_index\":"+(snapshot && snapshot->data.view->inspected_orbital_index
+                            ?std::to_string(*snapshot->data.view->inspected_orbital_index):"null")+
+                        ",\"success\":"+((result.svg&&result.png&&result.json&&result.csv)?"true":"false")+"}");
+    #endif
+                    if (result.svg && result.png && result.json && result.csv) {
+                        status = StatusKind::Exported;
+                        status_detail = path_to_utf8(result.svg_path.parent_path() /
+                            result.svg_path.stem()) + ".{png,svg,json,csv}";
+                    } else {
+                        status = StatusKind::Error;
+                        status_detail = result.error.empty()
+                                            ? cov::ui::tr(cov::ui::Text::ExportFailed, language)
+                                            : result.error;
+                    }
+                }
+            }
+
+            cov::validation::anchor("panel.nbo");
+            cov::ui::begin_card("##nbo_card", 760.0f * ui_scale);
+            const auto nbo_actions = cov::ui::draw_nbo_panel(
+                nbo_ui, language, wavefunction.has_value(),
+                nbo_wavefunction.has_value(), nbo_active, ui_scale,
+                wavefunction ? &*wavefunction : nullptr, canonical_mo_index);
+            cov::ui::end_card();
+            ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
+            const bool attach_requested = nbo_actions.attach;
+            std::optional<bool> requested_set;
+            if (nbo_actions.canonical_set) requested_set=false;
+            if (nbo_actions.nbo_set) requested_set=true;
+            if (nbo_actions.selected_orbital && nbo_ui.dataset) {
+                nbo_ui.selected_orbital=*nbo_actions.selected_orbital;
+                nbo_mo_index=nbo_ui.selected_orbital;
+                if (nbo_active) pending_mo_index=nbo_mo_index;
+            }
+            if (nbo_actions.export_bundle && nbo_ui.dataset) {
+                try {
+                    auto base=nbo_ui.export_path[0]
+                        ? path_from_utf8(nbo_ui.export_path.data())
+                        : path_from_utf8(nbo_ui.dataset->source.path);
+                    base=cov::validation::export_base(base);
+                    cov::ui::export_nbo_bundle(*nbo_ui.dataset,nbo_ui.selected_orbital,base,
+                                               wavefunction ? &*wavefunction : nullptr,
+                                               canonical_mo_index,nbo_ui.contribution_threshold,
+                                               nbo_active,mo_index);
+                    nbo_ui.export_status=path_to_utf8(base)+".{nbo.json,npa.csv,nao.csv,nbo.csv,wiberg.csv,e2.csv,e2-sections.csv,view.json,view.svg,view.png}";
+                    cov::validation::record("nbo.export","{\"base\":"+
+                        cov::validation::quote(path_to_utf8(base))+
+                        ",\"selected_index\":"+std::to_string(nbo_ui.selected_orbital)+
+                        ",\"source\":"+cov::validation::quote(nbo_ui.dataset->source.path)+"}");
+                } catch (const std::exception& e) { nbo_ui.export_status=e.what(); }
             }
 
             cov::ui::begin_card("##render_card", 545.0f * ui_scale);
@@ -886,14 +1011,56 @@ int main(int argc, char** argv) {
             ImGui::EndChild();
             ImGui::End();
             cov::validation::field("language",std::to_string(static_cast<int>(language)));
+            identity();
             cov::validation::ui_frame(mo_index,pending_mo_index.value_or(mo_index));
 
+            ImGui::Render();
+            ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+            cov::validation::end_frame(fb_w,fb_h,mo_index,orbital_ui,active_wavefunction());
+
+            glfwSwapBuffers(window);
+            if (attach_requested) {
+                try {
+                    cov::NboReadOptions options;
+                    if (nbo_ui.analysis_segment >= 0)
+                        options.analysis_segment = static_cast<std::size_t>(nbo_ui.analysis_segment);
+                    if (nbo_ui.archive47[0]) options.archive47=path_from_utf8(nbo_ui.archive47.data());
+                    if (nbo_ui.aonbo[0]) options.aonbo=path_from_utf8(nbo_ui.aonbo.data());
+                    if (nbo_ui.nbomo[0]) options.nbomo=path_from_utf8(nbo_ui.nbomo.data());
+                    auto dataset=cov::read_nbo(path_from_utf8(nbo_ui.path.data()),options);
+                    cov::associate_nbo(dataset,*wavefunction);
+                    std::optional<cov::Wavefunction> prepared;
+                    std::string render_error;
+                    try { prepared=cov::make_nbo_wavefunction(dataset,*wavefunction); }
+                    catch (const std::exception& e) { render_error=e.what(); }
+                    nbo_wavefunction=std::move(prepared);
+                    nbo_ui.dataset=std::move(dataset);
+                    nbo_ui.selected_orbital=0;
+                    nbo_mo_index=0;
+                    nbo_ui.error=std::move(render_error);
+                    cov::validation::record("nbo.attach","{\"source\":"+
+                        cov::validation::quote(nbo_ui.dataset->source.path)+
+                        ",\"association\":"+cov::validation::quote(nbo_ui.dataset->association.status)+
+                        ",\"renderable\":"+(nbo_wavefunction?"true":"false")+"}");
+                } catch (const std::exception& e) {
+                    nbo_ui.error=e.what();
+                    cov::validation::record("nbo.attach.error","{\"reason\":"+
+                        cov::validation::quote(nbo_ui.error)+"}");
+                }
+            }
+
+            if (requested_set) {
+                try { activate_set(*requested_set); }
+                catch (const std::exception& e) { nbo_ui.error=e.what(); }
+            }
             // Selection debounce: at most the latest requested orbital is evaluated
             // once at the end of this frame. Browser hover/filtering never launches CUDA.
-            if (pending_mo_index && wavefunction &&
-                *pending_mo_index < wavefunction->orbitals.size()) {
+            if (pending_mo_index && active_wavefunction() &&
+                *pending_mo_index < active_wavefunction()->orbitals.size()) {
                 if (*pending_mo_index != mo_index) {
                     mo_index = *pending_mo_index;
+                    if (nbo_active) nbo_mo_index=mo_index;
+                    else canonical_mo_index=mo_index;
                     recompute = true;
                 }
                 pending_mo_index.reset();
@@ -909,11 +1076,6 @@ int main(int argc, char** argv) {
                 }
             }
 
-            ImGui::Render();
-            ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-            cov::validation::end_frame(fb_w,fb_h,mo_index,orbital_ui,wavefunction?&*wavefunction:nullptr);
-
-            glfwSwapBuffers(window);
             if (cov::validation::done()) {exit_code=cov::validation::result();break;}
         }
 

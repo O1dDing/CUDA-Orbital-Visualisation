@@ -18,6 +18,11 @@ int result();
 void begin_frame(OrbitCamera&, MoleculeRenderSettings&, float&, int&, bool&);
 void input_frame();
 void evaluated(std::size_t mo, const char* reason, float milliseconds);
+void orbital_identity(const std::string& orbital_set, const std::string& dataset,
+                      const std::string& spin, std::size_t source_index,
+                      const std::string& association,
+                      const std::string& coefficient_source,
+                      bool direct_fchk_coefficients, bool density_verified);
 void ui_frame(std::size_t drawn, std::size_t requested);
 void after_scene(const VolumeRenderer&, const GridBox&, std::size_t mo);
 void scene_view(const ViewerLayout&, const OrbitCamera&);
@@ -41,6 +46,9 @@ inline int result() { return 0; }
 inline void begin_frame(OrbitCamera&, MoleculeRenderSettings&, float&, int&, bool&) {}
 inline void input_frame() {}
 inline void evaluated(std::size_t, const char*, float) {}
+inline void orbital_identity(const std::string&, const std::string&,
+                             const std::string&, std::size_t,
+                             const std::string&, const std::string&, bool, bool) {}
 inline void ui_frame(std::size_t, std::size_t) {}
 inline void after_scene(const VolumeRenderer&, const GridBox&, std::size_t) {}
 inline void scene_view(const ViewerLayout&, const OrbitCamera&) {}

@@ -1,4 +1,5 @@
 #include "cov/ui.hpp"
+#include "cov/nbo_ui.hpp"
 #include "cov/orbital_ui_text.hpp"
 
 #include <imgui.h>
@@ -365,6 +366,10 @@ bool configure_fonts(const float pixel_size) {
     latin_builder.AddText(language_name(Language::French));
     latin_builder.AddText(supplemental_glyph_seed(Language::English));
     latin_builder.AddText(supplemental_glyph_seed(Language::French));
+    const auto nbo_en=nbo_glyph_seed(Language::English);
+    const auto nbo_fr=nbo_glyph_seed(Language::French);
+    latin_builder.AddText(nbo_en.c_str());
+    latin_builder.AddText(nbo_fr.c_str());
     latin_builder.AddText(scientific_glyph_seed());
     ImVector<ImWchar> latin_ranges;
     latin_builder.BuildRanges(&latin_ranges);
@@ -385,6 +390,10 @@ bool configure_fonts(const float pixel_size) {
     ja_builder.AddText(language_name(Language::Japanese));
     zh_builder.AddText(supplemental_glyph_seed(Language::ChineseSimplified));
     ja_builder.AddText(supplemental_glyph_seed(Language::Japanese));
+    const auto nbo_zh=nbo_glyph_seed(Language::ChineseSimplified);
+    const auto nbo_ja=nbo_glyph_seed(Language::Japanese);
+    zh_builder.AddText(nbo_zh.c_str());
+    ja_builder.AddText(nbo_ja.c_str());
     zh_builder.AddText(scientific_glyph_seed());
     ja_builder.AddText(scientific_glyph_seed());
     ImVector<ImWchar> zh_ranges;
