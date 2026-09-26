@@ -69,9 +69,13 @@ std::vector<NboMatrix> read_matrix_file(const std::filesystem::path& p,const std
     // block. Only the first NBAS*NBAS real values belong to the matrix.
     // OPEN files delimit their independent payloads with ALPHA/BETA SPIN.
     const std::regex numeric("^\\s*"+num+"(?:\\s+"+num+")*\\s*$");
-    const std::string heading=kind=="AONBO"?"NBOs in the AO basis:":"MOs in the NBO basis:";
+    const std::map<std::string,std::string> headings{{"AONBO","NBOs in the AO basis:"},{"NBOMO","MOs in the NBO basis:"},{"AONAO","NAOs in the AO basis:"},{"NAOMO","MOs in the NAO basis:"},{"NAONBO","NBOs in the NAO basis:"}};
+    const auto hi=headings.find(kind);if(hi==headings.end())throw std::runtime_error("Unsupported explicit NBO matrix kind");const auto& heading=hi->second;
     std::size_t header=ls.size();for(std::size_t i=0;i<ls.size();++i)if(ls[i].find(heading)!=ls[i].npos){if(header!=ls.size())throw std::runtime_error("Repeated matrix header");header=i;}
     if(header==ls.size())throw std::runtime_error("NBO matrix type header absent or mismatched: "+kind);
+    // NBO uses a shared NAO basis for both spins; AONAO can therefore have
+    // one explicitly unpolarized payload while NAOMO/NAONBO have two.
+    if(open&&kind=="AONAO"){bool spin_header=false;for(const auto& line:ls){const auto u=upper(trim(line));if(u=="ALPHA SPIN"||u=="BETA SPIN"||u=="BETA  SPIN")spin_header=true;}if(!spin_header)open=false;}
     std::vector<std::size_t> starts;if(open){for(std::size_t i=header+1;i<ls.size();++i){auto u=upper(trim(ls[i]));if(u=="ALPHA SPIN"||u=="BETA  SPIN"||u=="BETA SPIN")starts.push_back(i+1);}if(starts.size()!=2||upper(ls[starts[0]-1]).find("ALPHA")==std::string::npos||upper(ls[starts[1]-1]).find("BETA")==std::string::npos)throw std::runtime_error("OPEN matrix requires exactly one alpha and beta block");}else starts={header+1};
     const std::size_t count=n*n;std::vector<NboMatrix> out;
     for(std::size_t s=0;s<starts.size();++s){std::vector<double> values;std::size_t first=0,last=0;const auto end=s+1<starts.size()?starts[s+1]-1:ls.size();for(std::size_t i=starts[s];i<end&&values.size()<count;++i){if(!std::regex_match(ls[i],numeric)){if(!values.empty())throw std::runtime_error("Interrupted NBO matrix payload");continue;}if(ls[i].find_first_of(".EeDd")==std::string::npos){if(values.empty())continue;throw std::runtime_error("Integer metadata encountered before complete NBO matrix");}if(!first)first=i+1;auto row=numbers(ls[i]);if(values.size()+row.size()>count)throw std::runtime_error("NBO matrix payload boundary not aligned");values.insert(values.end(),row.begin(),row.end());last=i+1;}if(values.size()!=count)throw std::runtime_error(kind+" incomplete matrix payload");NboMatrix m;m.kind=kind;m.spin=open?(s==0?NboSpin::Alpha:NboSpin::Beta):NboSpin::Total;m.rows=m.columns=n;m.values.resize(count);m.source=source(p,kind,first);m.source.line_end=last;for(std::size_t j=0;j<n;++j)for(std::size_t i=0;i<n;++i)m.values[i*n+j]=values[j*n+i];out.push_back(std::move(m));}return out;
@@ -121,19 +125,144 @@ NboDataset read_nbo(const std::filesystem::path& path,const NboReadOptions& opti
     if(!options.archive47.empty())d.archive=read_nbo_archive(options.archive47);
     if(d.archive)for(auto& p:d.populations){if(p.atom==0||p.atom>d.archive->atoms.size())throw std::runtime_error("NPA atom outside archive");const auto& a=d.archive->atoms[p.atom-1];p.effective_core_electrons=(a.atomic_number-a.nuclear_charge)*(p.spin==NboSpin::Total?1.0:0.5);p.explicit_population=p.total-*p.effective_core_electrons;}
     std::size_t n=d.archive?d.archive->basis_count:0;bool open=d.archive?d.archive->open_shell:false;
-    if(!options.aonbo.empty()||!options.nbomo.empty()){if(!n)throw std::runtime_error("Complete matrix import requires .47 dimensions/spin metadata");for(auto& item:std::vector<std::pair<std::filesystem::path,std::string>>{{options.aonbo,"AONBO"},{options.nbomo,"NBOMO"}})if(!item.first.empty()){auto v=read_matrix_file(item.first,item.second,n,open);d.matrices.insert(d.matrices.end(),v.begin(),v.end());}}
+    for(const auto& item:std::vector<std::pair<std::filesystem::path,std::string>>{{options.aonbo,"AONBO"},{options.nbomo,"NBOMO"},{options.naomo,"NAOMO"},{options.aonao,"AONAO"},{options.naonbo,"NAONBO"}})if(!item.first.empty()){if(!n)throw std::runtime_error("Complete matrix import requires .47 dimensions/spin metadata");auto v=read_matrix_file(item.first,item.second,n,open);for(auto& mat:v){mat.source.producer_version=d.producer_version;mat.source.analysis_segment=seg;}d.matrices.insert(d.matrices.end(),v.begin(),v.end());}
     std::set<std::pair<NboSpin,std::size_t>> ids;for(auto& o:d.orbitals)if(!ids.insert({o.spin,o.id}).second)throw std::runtime_error("Ambiguous repeated NBO orbital identity in selected analysis");
     if(!d.cmo_summaries.empty())d.warnings.push_back("CMO printed percentages are thresholded summaries; complete decomposition requires NBOMO matrix");
     return d;
 }
 
+namespace {
+// These tolerances retain the complete-matrix contract of the initial importer.
+// Printed NAO populations have five decimal places; they are not display cutoffs.
+constexpr double transform_tolerance=2e-5, population_tolerance=4e-5;
+bool null_column(const NboMatrix& m,std::size_t j) {
+    for(std::size_t i=0;i<m.rows;++i)if(m.values[i*m.columns+j]!=0.0)return false;
+    return true; // producer null padding is exactly zero, not a small orbital
+}
+std::vector<double> transpose_multiply(const std::vector<double>& a,const std::vector<double>& b,std::size_t n) {
+    std::vector<double> c(n*n);for(std::size_t i=0;i<n;++i)for(std::size_t k=0;k<n;++k)for(std::size_t j=0;j<n;++j)c[i*n+j]+=a[k*n+i]*b[k*n+j];return c;
+}
+double max_difference(const std::vector<double>& a,const std::vector<double>& b) {
+    double e=0;for(std::size_t i=0;i<a.size();++i)e=std::max(e,std::abs(a[i]-b[i]));return e;
+}
+bool canonical_row_mapping(const NboMatrix& lc,const std::vector<const MolecularOrbital*>& mos,const std::vector<int>& centers,const std::vector<std::size_t>& gcenter,NboAssociation& r) {
+    const auto n=lc.rows;r.gaussian_row.resize(n);r.coefficient_scale.resize(n);
+    // First preserve the strict signed mapping used by the original importer.
+    // Only if necessary, use magnitudes to determine the SAME unique AO map,
+    // then solve row signs / independent MO phases. No rotations or MO swaps.
+    for(bool magnitudes:{false,true}){std::set<std::size_t> used;bool unique=true;
+        for(std::size_t i=0;i<n&&unique;++i){std::vector<std::pair<std::size_t,double>> candidates;
+            for(std::size_t g=0;g<n;++g){if(gcenter[g]!=static_cast<std::size_t>(centers[i]))continue;double xx=0,xy=0;
+                for(std::size_t j=0;j<n;++j)if(mos[j]){const double x=lc.values[i*n+j],y=mos[j]->gaussian_source_coefficients[g];xx+=x*x;xy+=magnitudes?std::abs(x*y):x*y;}
+                if(xx<1e-18)continue;const double scale=xy/xx;double error=0;
+                for(std::size_t j=0;j<n;++j)if(mos[j]){const double x=scale*lc.values[i*n+j],y=mos[j]->gaussian_source_coefficients[g];error=std::max(error,magnitudes?std::abs(std::abs(x)-std::abs(y)):std::abs(x-y));}
+                if(std::abs(scale)>.01&&std::abs(scale)<100&&error<3e-6)candidates.push_back({g,scale});
+            }
+            if(candidates.size()!=1||used.count(candidates.front().first)){unique=false;break;}r.gaussian_row[i]=candidates[0].first;r.coefficient_scale[i]=candidates[0].second;used.insert(candidates[0].first);
+        }
+        if(!unique)continue;if(!magnitudes)return true;
+        std::vector<int> row_sign(n),column_sign(n);
+        for(std::size_t seed=0;seed<n;++seed){if(row_sign[seed])continue;row_sign[seed]=1;bool changed=true;
+            while(changed){changed=false;for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)if(mos[j]){const double x=lc.values[i*n+j],y=mos[j]->gaussian_source_coefficients[r.gaussian_row[i]];if(std::abs(x)<1e-10||std::abs(y)<1e-10)continue;const int sign=x*y<0?-1:1;
+                if(row_sign[i]&&column_sign[j]){if(row_sign[i]*column_sign[j]!=sign)return false;}
+                else if(row_sign[i]){column_sign[j]=row_sign[i]*sign;changed=true;}
+                else if(column_sign[j]){row_sign[i]=column_sign[j]*sign;changed=true;}
+            }}
+        }
+        for(std::size_t i=0;i<n;++i)r.coefficient_scale[i]*=row_sign[i];return true;
+    }
+    return false;
+}
+void shell_label(const NboNao& row,std::optional<int>& principal,std::optional<int>& angular) {
+    // Use only the literal Type(AO) label (e.g. Val(3d)); Cartesian axis
+    // names are not principal shells. Unrecognised labels remain unclassified.
+    static const std::regex re(R"(^[A-Za-z]+\(\s*([1-9][0-9]*)\s*([spdfgh])\s*\)$)");
+    std::smatch m;if(!std::regex_match(row.type,m,re))return;
+    const std::string letters="spdfgh";const int l=static_cast<int>(letters.find(m[2].str()[0]));
+    if(row.angular.empty()||row.angular[0]!=m[2].str()[0])return;
+    const int n=std::stoi(m[1]);if(n<=l)return;principal=n;angular=l;
+}
+std::string check_nao_transforms(NboDataset& d,NboSpin spin,const NboMatrix& overlap,const NboMatrix& lc,const std::vector<double>& pn,bool direct,const Wavefunction& w) {
+    NboNaoValidation e;e.spin=spin;e.direct_fchk_coefficients=direct;
+    const auto n=lc.rows;
+    for(std::size_t j=0;j<n;++j){const bool zero=null_column(lc,j);e.column_status.push_back(zero?"null_padding":"active");if(!zero)++e.effective_mo_columns;}
+    const auto* a=matrix(d.matrices,"AONAO",spin);if(!a&&spin!=NboSpin::Total)a=matrix(d.matrices,"AONAO",NboSpin::Total);const auto* t=matrix(d.matrices,"NAOMO",spin);const auto* u=matrix(d.matrices,"NAONBO",spin);
+    auto finish=[&](std::string status,std::string detail,bool ok=false){e.status=std::move(status);e.detail=std::move(detail);e.available=ok;d.nao_validation.push_back(e);return ok?std::string():e.detail;};
+    if(!a&&!t&&!u){finish("missing_nao_transforms","Complete AONAO and NAOMO sidecars were not supplied");return {};}
+    if(!a||!t)return finish("incomplete_nao_transforms","Explicit AONAO and NAOMO are both required for NAO decomposition");
+    std::vector<const NboNao*> labels(n,nullptr);
+    for(const auto& row:d.naos)if(row.spin==spin){if(!row.id||row.id>n||labels[row.id-1])return finish("invalid_nao_identity","NAO row identity is repeated or outside the complete matrix");if(!row.atom||row.atom>d.archive->atoms.size())return finish("invalid_nao_identity","NAO atom identity is outside the source archive");labels[row.id-1]=&row;}
+    for(std::size_t k=0;k<n;++k)if(!labels[k])return finish("missing_nao_labels","Every NAOMO row requires its same-spin producer NAO label; spin rows cannot be substituted");
+    auto sa=multiply(overlap.values,a->values,n);auto gram=transpose_multiply(a->values,sa,n);
+    double orth=0;for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)orth=std::max(orth,std::abs(gram[i*n+j]-(i==j&&!null_column(*a,i)?1.0:0.0)));
+    e.orthogonality_error=orth;if(orth>transform_tolerance)return finish("invalid_aonao_metric","AONAO active columns are not orthonormal in the archive AO metric");
+    std::size_t nao_rank=0;for(std::size_t j=0;j<n;++j)if(!null_column(*a,j))++nao_rank;
+    if(nao_rank!=e.effective_mo_columns)return finish("incompatible_effective_rank","Active AONAO and LCAOMO column counts differ; zero padding cannot hide missing physical MO columns");
+    auto at=multiply(a->values,t->values,n);e.composition_error=max_difference(at,lc.values);
+    if(*e.composition_error>transform_tolerance)return finish("incompatible_naomo","AONAO * NAOMO differs from archive LCAOMO");
+    auto projected=transpose_multiply(a->values,multiply(overlap.values,lc.values,n),n);e.projection_error=max_difference(projected,t->values);
+    if(*e.projection_error>transform_tolerance)return finish("incompatible_naomo_projection","NAOMO differs from AONAO transpose * overlap * archive LCAOMO");
+    auto tg=transpose_multiply(t->values,t->values,n);double norm=0;
+    for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)norm=std::max(norm,std::abs(tg[i*n+j]-(i==j&&e.column_status[i]=="active"?1.0:0.0)));
+    e.normalization_error=norm;if(norm>transform_tolerance)return finish("invalid_naomo_normalization","Active NAOMO columns must be orthonormal; null padding must remain zero");
+    auto pnao=transpose_multiply(sa,multiply(pn,sa,n),n);double pop=0;
+    for(std::size_t k=0;k<n;++k)pop=std::max(pop,std::abs(pnao[k*n+k]-labels[k]->occupation));
+    e.nao_occupation_error=pop;if(pop>population_tolerance)return finish("incompatible_nao_population","Same-spin printed NAO occupations differ from the independent FCHK density in AONAO");
+    // Occupation-weighted contributions are enabled only after a full density
+    // closure. A shared FCHK alpha array in an OPEN archive must not contribute
+    // two electrons per alpha orbital just because its canonical UI is shared.
+    if(direct){std::vector<double> occ(n),reconstructed(n*n);bool complete=true;
+        for(std::size_t j=0;j<n;++j){if(e.column_status[j]=="null_padding")continue;
+            if(d.archive->open_shell&&w.orbital_occupation_model!=OrbitalOccupationModel::ExplicitSpin){occ[j]=j<(spin==NboSpin::Alpha?w.alpha_electrons:w.beta_electrons)?1.0:0.0;}
+            else{const MolecularOrbital* mo=nullptr;for(const auto& candidate:w.orbitals)if(candidate.source_orbital_index==j&&candidate.spin==(spin==NboSpin::Beta?Spin::Beta:Spin::Alpha))mo=&candidate;if(!mo||mo->occupation_provenance==DataProvenance::Unavailable||!std::isfinite(mo->occupation)){complete=false;break;}occ[j]=mo->occupation;}
+        }
+        if(complete){for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)for(std::size_t k=0;k<n;++k)reconstructed[i*n+j]+=t->values[i*n+k]*occ[k]*t->values[j*n+k];e.occupation_density_error=max_difference(reconstructed,pnao);if(*e.occupation_density_error<=transform_tolerance){e.occupation_density_verified=true;e.canonical_occupations=std::move(occ);}}
+    }
+    if(u){const auto* b=matrix(d.matrices,"AONBO",spin);if(!b)return finish("missing_aonbo_for_naonbo","NAONBO requires complete AONBO for the composition check");e.nao_nbo_composition_error=max_difference(multiply(a->values,u->values,n),b->values);if(*e.nao_nbo_composition_error>transform_tolerance)return finish("incompatible_naonbo","AONAO * NAONBO differs from AONBO");}
+    return finish(direct?"verified_direct_canonical":"verified_archive_only",direct?"Complete same-spin transforms, labels, canonical columns and density agree":"Transforms and density agree with archive; direct FCHK beta canonical columns remain unavailable",true);
+}
+void populate_decompositions(NboDataset& d,const Wavefunction& w) {
+    d.mo_decompositions.clear();
+    for(std::size_t index=0;index<w.orbitals.size();++index){const auto& mo=w.orbitals[index];NboMoDecomposition out;out.canonical_index=index;out.source_orbital_index=mo.source_orbital_index;
+        out.spin=d.archive&&d.archive->open_shell?(mo.spin==Spin::Beta?NboSpin::Beta:NboSpin::Alpha):NboSpin::Total;
+        auto done=[&](const std::string& status,const std::string& detail){out.status=status;out.detail=detail;d.mo_decompositions.push_back(std::move(out));};
+        if(!d.association.compatible){done("association_unavailable",d.association.detail);continue;}
+        const NboNaoValidation* e=nullptr;for(const auto& v:d.nao_validation)if(v.spin==out.spin)e=&v;
+        if(!e||!e->available){done(e?e->status:"missing_nao_transforms",e?e->detail:"No verified complete NAO transformation");continue;}
+        if(!e->direct_fchk_coefficients){done("canonical_coefficients_unavailable","Archive canonical columns cannot be substituted for unavailable FCHK coefficients");continue;}
+        const auto* t=matrix(d.matrices,"NAOMO",out.spin);const auto col=mo.source_orbital_index;
+        if(!t||col>=t->columns||e->column_status[col]!="active"){done("null_padding","Stored null padding is not a normalized physical MO");continue;}
+        out.matrix_source=t->source;
+        if(e->occupation_density_verified&&col<e->canonical_occupations.size())out.occupation=e->canonical_occupations[col];
+        double phase=1;for(const auto& ce:d.association.canonical_evidence)if(ce.spin==out.spin&&col<ce.archive_to_fchk_phase.size())phase=ce.archive_to_fchk_phase[col];
+        std::map<std::size_t,std::size_t> atom_groups;std::map<std::string,std::size_t> shell_groups;
+        double total=0;
+        for(std::size_t k=0;k<t->rows;++k){const NboNao* label=nullptr;for(const auto& row:d.naos)if(row.spin==out.spin&&row.id==k+1){label=&row;break;}
+            if(!label)throw std::runtime_error("Verified NAO row label disappeared");NboNaoContribution row;row.nao_id=label->id;row.atom=label->atom;row.symbol=label->symbol;row.type=label->type;row.angular=label->angular;row.source=label->source;shell_label(*label,row.principal_n,row.angular_l);row.coefficient=phase*t->values[k*t->columns+col];row.weight=row.coefficient*row.coefficient;if(out.occupation)row.electron_contribution=*out.occupation*row.weight;total+=row.weight;
+            auto add=[&](NboNaoGroupContribution& group){group.weight+=row.weight;if(row.electron_contribution)group.electron_contribution=group.electron_contribution.value_or(0)+*row.electron_contribution;group.nao_ids.push_back(row.nao_id);};
+            auto ai=atom_groups.find(row.atom);if(ai==atom_groups.end()){NboNaoGroupContribution g;g.atom=row.atom;g.symbol=row.symbol;g.label=row.symbol+" "+std::to_string(row.atom);atom_groups[row.atom]=out.atoms.size();out.atoms.push_back(g);}add(out.atoms[atom_groups[row.atom]]);
+            // Unknown shell labels remain explicit separate groups; no guessed n/l.
+            const std::string shell=row.principal_n?std::to_string(*row.principal_n)+"spdfgh"[*row.angular_l]:"unclassified: "+row.type+" "+row.angular;
+            const std::string key=std::to_string(row.atom)+":"+shell;auto si=shell_groups.find(key);if(si==shell_groups.end()){NboNaoGroupContribution g;g.atom=row.atom;g.symbol=row.symbol;g.principal_n=row.principal_n;g.angular_l=row.angular_l;g.label=row.symbol+" "+std::to_string(row.atom)+" "+shell;shell_groups[key]=out.shells.size();out.shells.push_back(g);}add(out.shells[shell_groups[key]]);out.rows.push_back(std::move(row));
+        }
+        out.available=true;out.weight_sum=total;out.normalization_error=std::abs(total-1);done("available","Raw squared complete NAOMO coefficients; no display threshold or renormalization");
+    }
+}
+}
+
+const NboMoDecomposition* nbo_mo_decomposition(const NboDataset& d,std::size_t canonical_index) noexcept {
+    for(const auto& x:d.mo_decompositions)if(x.canonical_index==canonical_index)return &x;return nullptr;
+}
+
 NboAssociation associate_nbo(NboDataset& d,const Wavefunction& w) {
     NboAssociation r;
-    auto fail=[&](const std::string& status,const std::string& why){r.status=status;r.detail=why;d.association=r;return r;};
+    d.nao_validation.clear();d.mo_decompositions.clear();
+    auto fail=[&](const std::string& status,const std::string& why){r.status=status;r.detail=why;d.association=r;populate_decompositions(d,w);return r;};
     if(!d.archive)return fail("missing_archive","Same-source .47 archive is required");const auto& a=*d.archive;const auto n=a.basis_count;
     if(!n||a.centers.size()!=n||a.labels.size()!=n||a.ncomp.size()!=a.nprim.size()||a.nprim.size()!=a.nptr.size()||std::accumulate(a.ncomp.begin(),a.ncomp.end(),0)!=static_cast<int>(n))return fail("invalid_archive","Archive basis metadata is incomplete");
     const std::array<const std::vector<NboMatrix>*,2> matrix_lists{{&a.matrices,&d.matrices}};
-    for(const auto* list:matrix_lists)for(const auto& m:*list)if(m.rows!=n||m.columns!=n||m.values.size()!=n*n||!std::all_of(m.values.begin(),m.values.end(),[](double x){return std::isfinite(x);}))return fail("invalid_matrix","Matrix dimensions or finite-value contract violated");
+    for(const auto* list:matrix_lists){std::set<std::pair<std::string,NboSpin>> unique;for(const auto& m:*list){if(!unique.insert({m.kind,m.spin}).second)return fail("ambiguous_matrix","Repeated matrix kind/spin identity");if(m.rows!=n||m.columns!=n||m.values.size()!=n*n||!std::all_of(m.values.begin(),m.values.end(),[](double x){return std::isfinite(x);}))return fail("invalid_matrix","Matrix dimensions or finite-value contract violated");}}
+    for(const auto& m:d.matrices){if(!a.open_shell&&m.spin!=NboSpin::Total)return fail("incompatible_matrix_spin","Closed-shell sidecars must use total spin");if(a.open_shell&&m.spin==NboSpin::Total&&m.kind!="AONAO")return fail("incompatible_matrix_spin","Only AONAO may be shared between spin blocks");}
     if(w.source!=WavefunctionSource::Fchk)return fail("unsupported_source","Strict association currently requires Gaussian FCHK source coefficients");
     if(w.basis_count!=n||w.atoms.size()!=a.atoms.size())return fail("incompatible_dimensions","Atom/basis count differs");
     if(w.gaussian_ao_transform.size()!=n||w.ao_overlap.size()!=n*n)return fail("missing_metric","FCHK Gaussian AO transform and complete AO overlap are required");
@@ -156,19 +285,19 @@ NboAssociation associate_nbo(NboDataset& d,const Wavefunction& w) {
     bool first=true;
     for(auto spin:spins){const auto* lc=matrix(a.matrices,"LCAOMO",spin);const auto* pd=matrix(a.matrices,"DENSITY",spin);if(!lc||!pd)return fail("missing_electronic_evidence","Complete .47 LCAOMO and DENSITY are required");
         std::vector<const MolecularOrbital*> mos(n,nullptr);for(auto& mo:w.orbitals)if((spin!=NboSpin::Beta&&mo.spin==Spin::Alpha)||(spin==NboSpin::Beta&&mo.spin==Spin::Beta)){if(mo.source_orbital_index>=n||mos[mo.source_orbital_index])return fail("ambiguous_canonical_identity","Canonical MO identity missing or repeated");mos[mo.source_orbital_index]=&mo;}
-        const bool direct_coefficients=std::all_of(mos.begin(),mos.end(),[&](const MolecularOrbital* mo){return mo&&mo->gaussian_source_coefficients.size()==n;});
+        for(const auto* mo:mos)if(mo&&mo->gaussian_source_coefficients.size()!=n)return fail("missing_canonical_coefficients","A present canonical column must contain its complete Gaussian source coefficients");
+        bool direct_coefficients=true;for(std::size_t j=0;j<n;++j)if(!null_column(*lc,j)&&(!mos[j]||mos[j]->gaussian_source_coefficients.size()!=n))direct_coefficients=false;
         const bool absent_coefficients=std::all_of(mos.begin(),mos.end(),[](const MolecularOrbital* mo){return !mo;});
         if(!direct_coefficients&&!(spin==NboSpin::Beta&&absent_coefficients&&density_supported_beta))return fail("missing_canonical_coefficients","All available canonical source MO columns are required; absent beta requires independent producer total/spin densities");
-        NboCanonicalEvidence evidence;evidence.spin=spin;evidence.direct_fchk_coefficients=direct_coefficients;evidence.coefficient_source=direct_coefficients?"FCHK and archive LCAOMO":"archive LCAOMO only; direct FCHK beta coefficients unavailable";
-        if(first){r.gaussian_row.resize(n);r.coefficient_scale.resize(n);std::set<std::size_t> used;
-            for(std::size_t i=0;i<n;++i){std::vector<std::pair<std::size_t,double>> candidates;for(std::size_t g=0;g<n;++g){if(gcenter[g]!=static_cast<std::size_t>(a.centers[i]))continue;double xx=0,xy=0;for(std::size_t j=0;j<n;++j){xx+=lc->values[i*n+j]*lc->values[i*n+j];xy+=lc->values[i*n+j]*mos[j]->gaussian_source_coefficients[g];}if(xx<1e-18)continue;double scale=xy/xx,error=0;for(std::size_t j=0;j<n;++j)error=std::max(error,std::abs(scale*lc->values[i*n+j]-mos[j]->gaussian_source_coefficients[g]));if(std::abs(scale)>0.01&&std::abs(scale)<100&&error<3e-6)candidates.push_back({g,scale});}if(candidates.size()!=1||used.count(candidates.front().first))return fail("ambiguous_ao_mapping","Full canonical coefficients do not establish a unique same-source AO row mapping");r.gaussian_row[i]=candidates[0].first;r.coefficient_scale[i]=candidates[0].second;used.insert(candidates[0].first);}first=false;
-        }
+        NboCanonicalEvidence evidence;evidence.spin=spin;evidence.direct_fchk_coefficients=direct_coefficients;evidence.coefficient_source=direct_coefficients?"FCHK and archive LCAOMO":"archive LCAOMO only; direct FCHK beta coefficients unavailable";if(direct_coefficients){evidence.archive_to_fchk_phase.resize(n);for(std::size_t j=0;j<n;++j)if(!null_column(*lc,j))evidence.archive_to_fchk_phase[j]=1;}
+        if(first){if(!canonical_row_mapping(*lc,mos,a.centers,gcenter,r))return fail("ambiguous_ao_mapping","Complete canonical coefficients do not establish a unique same-source AO row mapping, even allowing individual orbital phases");first=false;}
+        if(direct_coefficients)for(std::size_t j=0;j<n;++j)if(mos[j]&&!null_column(*lc,j)){double dot=0;for(std::size_t i=0;i<n;++i)dot+=r.coefficient_scale[i]*lc->values[i*n+j]*mos[j]->gaussian_source_coefficients[r.gaussian_row[i]];evidence.archive_to_fchk_phase[j]=dot<0?-1:1;}
         std::vector<double> pn(n*n);
         const bool use_producer_density=producer_total&&(spin==NboSpin::Total||producer_spin);
         for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j){const auto gi=r.gaussian_row[i],gj=r.gaussian_row[j];const auto si=r.coefficient_scale[i],sj=r.coefficient_scale[j];
             if(use_producer_density){const auto ii=src_to_internal[gi],jj=src_to_internal[gj];const auto hi=std::max(ii,jj),lo=std::min(ii,jj),k=hi*(hi+1)/2+lo;double p=w.total_density_packed[k];if(spin!=NboSpin::Total)p=(p+(spin==NboSpin::Alpha?1:-1)*w.spin_density_packed[k])*0.5;pn[i*n+j]=p/(w.gaussian_ao_transform[ii].coefficient_scale*w.gaussian_ao_transform[jj].coefficient_scale*si*sj);}
-            else for(std::size_t k=0;k<n;++k)pn[i*n+j]+=mos[k]->occupation*mos[k]->gaussian_source_coefficients[gi]*mos[k]->gaussian_source_coefficients[gj]/(si*sj);
-            r.overlap_max_error=std::max(r.overlap_max_error,std::abs(overlap->values[i*n+j]-sg[gi*n+gj]*si*sj));if(direct_coefficients)r.canonical_max_error=std::max(r.canonical_max_error,std::abs(si*lc->values[i*n+j]-mos[j]->gaussian_source_coefficients[gi]));}
+            else for(std::size_t k=0;k<n;++k)if(mos[k])pn[i*n+j]+=mos[k]->occupation*mos[k]->gaussian_source_coefficients[gi]*mos[k]->gaussian_source_coefficients[gj]/(si*sj);
+            r.overlap_max_error=std::max(r.overlap_max_error,std::abs(overlap->values[i*n+j]-sg[gi*n+gj]*si*sj));if(direct_coefficients&&mos[j])r.canonical_max_error=std::max(r.canonical_max_error,std::abs(si*lc->values[i*n+j]*evidence.archive_to_fchk_phase[j]-mos[j]->gaussian_source_coefficients[gi]));}
         if(r.overlap_max_error>1e-5||r.canonical_max_error>3e-6)return fail("incompatible_ao_convention","Full canonical coefficients/metric disagree after established AO mapping");
         auto expected=a.density_is_bond_order?pn:multiply(multiply(overlap->values,pn,n),overlap->values,n);for(std::size_t i=0;i<n*n;++i)r.density_max_error=std::max(r.density_max_error,std::abs(expected[i]-pd->values[i]));if(r.density_max_error>2e-5)return fail("incompatible_density","Archive density does not reproduce FCHK canonical electron state");
         double electrons=0;for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)electrons+=pn[i*n+j]*overlap->values[j*n+i];const double ne=spin==NboSpin::Alpha?w.alpha_electrons:spin==NboSpin::Beta?w.beta_electrons:w.alpha_electrons+w.beta_electrons;if(std::abs(electrons-ne)>2e-4)return fail("incompatible_electrons","Explicit electron trace differs");
@@ -178,8 +307,9 @@ NboAssociation associate_nbo(NboDataset& d,const Wavefunction& w) {
             auto psb=multiply(pn,sb,n);std::size_t count=0;for(auto& o:d.orbitals)if(o.spin==spin){if(o.id==0||o.id>n)return fail("invalid_nbo_identity","NBO column index outside matrix");double occ=0;for(std::size_t k=0;k<n;++k)occ+=sb[k*n+o.id-1]*psb[k*n+o.id-1];if(std::abs(occ-o.occupation)>4e-5)return fail("incompatible_nbo_output","Printed NBO occupation does not match complete AONBO/source density");++count;}if(count!=n)return fail("incomplete_nbo_output","One orbital record per full AONBO column is required");
             if(t){auto bt=multiply(b->values,t->values,n);double err=0;for(std::size_t i=0;i<n*n;++i)err=std::max(err,std::abs(bt[i]-lc->values[i]));if(err>2e-5)return fail("incompatible_nbomo","AONBO * NBOMO differs from archive canonical coefficients");}
         }else if(t)return fail("missing_aonbo","NBOMO alone cannot establish the NBO/source basis identity");
+        const auto nao_error=check_nao_transforms(d,spin,*overlap,*lc,pn,direct_coefficients,w);if(!nao_error.empty())return fail(d.nao_validation.back().status,nao_error);
     }
-    r.compatible=true;r.status=density_supported_beta?"strict_same_source_density_supported_beta":"strict_same_source";r.detail="Ordered atoms/effective charges/geometry, primitive basis, unique AO mapping, available complete canonical coefficients, overlap and explicit-spin density agree";if(density_supported_beta)r.detail+="; direct FCHK beta canonical coefficient verification is unavailable (archive beta canonical columns only)";d.association=r;return r;
+    r.compatible=true;r.status=density_supported_beta?"strict_same_source_density_supported_beta":"strict_same_source";r.detail="Ordered atoms/effective charges/geometry, primitive basis, unique AO mapping, available complete canonical coefficients, overlap and explicit-spin density agree";if(density_supported_beta)r.detail+="; direct FCHK beta canonical coefficient verification is unavailable (archive beta canonical columns only)";d.association=r;populate_decompositions(d,w);return r;
 }
 
 Wavefunction make_nbo_wavefunction(const NboDataset& d,const Wavefunction& canonical) {
@@ -202,7 +332,19 @@ std::string serialize_nbo_json(const NboDataset& d) {
     o<<",\"e2_sections\":";array(o,d.e2_sections,[&](const NboE2Section& x){o<<"{\"spin\":"<<quote(nbo_spin_name(x.spin))<<",\"printing_threshold\":";optional_number(o,x.printing_threshold);o<<",\"units\":"<<quote(x.units)<<",\"missing_reason\":"<<quote(x.missing_reason)<<",\"source\":";json_source(o,x.source);o<<'}';});
     o<<",\"e2\":";array(o,d.e2,[&](const NboE2& x){o<<"{\"donor\":"<<x.donor<<",\"acceptor\":"<<x.acceptor<<",\"spin\":"<<quote(nbo_spin_name(x.spin))<<",\"value\":"<<x.value<<",\"units\":"<<quote(x.units)<<",\"energy_gap_hartree\":"<<x.energy_gap_hartree<<",\"fock_hartree\":"<<x.fock_hartree<<",\"printing_threshold\":";optional_number(o,x.printing_threshold);o<<",\"source\":";json_source(o,x.source);o<<'}';});
     o<<",\"wiberg\":";array(o,d.wiberg,[&](const NboWiberg& x){o<<"{\"atom_a\":"<<x.atom_a<<",\"atom_b\":"<<x.atom_b<<",\"spin\":"<<quote(nbo_spin_name(x.spin))<<",\"value\":"<<x.value<<",\"source\":";json_source(o,x.source);o<<'}';});
-    auto jm=[&](const NboMatrix& x){o<<"{\"kind\":"<<quote(x.kind)<<",\"spin\":"<<quote(nbo_spin_name(x.spin))<<",\"rows\":"<<x.rows<<",\"columns\":"<<x.columns<<",\"layout\":\"row-major\",\"values\":";array(o,x.values,[&](double v){o<<v;});o<<",\"source\":";json_source(o,x.source);o<<'}';};
+    o<<",\"producer_step_identity_status\":"<<quote(d.association.provenance_status);
+    o<<",\"canonical_phase_alignment\":";array(o,d.association.canonical_evidence,[&](const NboCanonicalEvidence& e){o<<"{\"spin\":"<<quote(nbo_spin_name(e.spin))<<",\"archive_to_fchk_phase\":";array(o,e.archive_to_fchk_phase,[&](double x){o<<x;});o<<'}';});
+    o<<",\"nao_validation\":";array(o,d.nao_validation,[&](const NboNaoValidation& e){
+        o<<"{\"spin\":"<<quote(nbo_spin_name(e.spin))<<",\"available\":"<<(e.available?"true":"false")<<",\"direct_fchk_coefficients\":"<<(e.direct_fchk_coefficients?"true":"false")<<",\"status\":"<<quote(e.status)<<",\"detail\":"<<quote(e.detail)<<",\"effective_mo_columns\":"<<e.effective_mo_columns<<",\"column_status\":";array(o,e.column_status,[&](const std::string& s){o<<quote(s);});
+        o<<",\"orthogonality_error\":";optional_number(o,e.orthogonality_error);o<<",\"composition_error\":";optional_number(o,e.composition_error);o<<",\"projection_error\":";optional_number(o,e.projection_error);o<<",\"normalization_error\":";optional_number(o,e.normalization_error);o<<",\"nao_occupation_error\":";optional_number(o,e.nao_occupation_error);o<<",\"nao_nbo_composition_error\":";optional_number(o,e.nao_nbo_composition_error);o<<",\"occupation_density_verified\":"<<(e.occupation_density_verified?"true":"false")<<",\"occupation_density_error\":";optional_number(o,e.occupation_density_error);o<<",\"canonical_occupations\":";array(o,e.canonical_occupations,[&](double x){o<<x;});o<<'}';});
+    auto optional_int=[&](const std::optional<int>& v){if(v)o<<*v;else o<<"null";};
+    auto group_json=[&](const NboNaoGroupContribution& g){o<<"{\"atom\":"<<g.atom<<",\"symbol\":"<<quote(g.symbol)<<",\"label\":"<<quote(g.label)<<",\"principal_n\":";optional_int(g.principal_n);o<<",\"angular_l\":";optional_int(g.angular_l);o<<",\"weight\":"<<g.weight<<",\"electron_contribution\":";optional_number(o,g.electron_contribution);o<<",\"nao_ids\":";array(o,g.nao_ids,[&](std::size_t id){o<<id;});o<<'}';};
+    o<<",\"decomposition_semantics\":{\"basis\":\"orthonormal NAO\",\"weights\":\"raw squared coefficients; no renormalization or display cutoff\",\"electron_contributions\":\"one canonical orbital times its declared occupation; not a correlated density reconstruction\",\"transform_max_element_tolerance\":"<<transform_tolerance<<",\"printed_nao_occupation_tolerance\":"<<population_tolerance<<",\"null_padding\":\"exactly zero archive LCAOMO storage columns are not physical MOs\"}";
+    o<<",\"mo_decompositions\":";array(o,d.mo_decompositions,[&](const NboMoDecomposition& m){
+        o<<"{\"canonical_index\":"<<m.canonical_index<<",\"source_orbital_index\":"<<m.source_orbital_index<<",\"spin\":"<<quote(nbo_spin_name(m.spin))<<",\"available\":"<<(m.available?"true":"false")<<",\"status\":"<<quote(m.status)<<",\"detail\":"<<quote(m.detail)<<",\"occupation\":";optional_number(o,m.occupation);o<<",\"weight_sum\":";optional_number(o,m.weight_sum);o<<",\"normalization_error\":";optional_number(o,m.normalization_error);o<<",\"matrix_source\":";json_source(o,m.matrix_source);
+        o<<",\"rows\":";array(o,m.rows,[&](const NboNaoContribution& r){o<<"{\"nao_id\":"<<r.nao_id<<",\"atom\":"<<r.atom<<",\"symbol\":"<<quote(r.symbol)<<",\"type\":"<<quote(r.type)<<",\"angular\":"<<quote(r.angular)<<",\"principal_n\":";optional_int(r.principal_n);o<<",\"angular_l\":";optional_int(r.angular_l);o<<",\"coefficient\":"<<r.coefficient<<",\"weight\":"<<r.weight<<",\"electron_contribution\":";optional_number(o,r.electron_contribution);o<<",\"source\":";json_source(o,r.source);o<<'}';});
+        o<<",\"atoms\":";array(o,m.atoms,group_json);o<<",\"shells\":";array(o,m.shells,group_json);o<<'}';});
+    auto jm=[&](const NboMatrix& x){const std::string row_basis=(x.kind=="NAOMO"||x.kind=="NAONBO")?"NAO":x.kind=="NBOMO"?"NBO":"AO";const std::string column_basis=(x.kind=="LCAOMO"||x.kind=="NAOMO"||x.kind=="NBOMO")?"MO":(x.kind=="AONBO"||x.kind=="NAONBO")?"NBO":x.kind=="AONAO"?"NAO":"AO";o<<"{\"kind\":"<<quote(x.kind)<<",\"spin\":"<<quote(nbo_spin_name(x.spin))<<",\"rows\":"<<x.rows<<",\"columns\":"<<x.columns<<",\"row_basis\":"<<quote(row_basis)<<",\"column_basis\":"<<quote(column_basis)<<",\"layout\":\"row-major\",\"values\":";array(o,x.values,[&](double v){o<<v;});o<<",\"source\":";json_source(o,x.source);o<<'}';};
     o<<",\"matrices\":";array(o,d.matrices,jm);o<<",\"archive\":";if(d.archive){const auto& a=*d.archive;o<<"{\"basis_count\":"<<a.basis_count<<",\"open_shell\":"<<(a.open_shell?"true":"false")<<",\"density_is_bond_order\":"<<(a.density_is_bond_order?"true":"false")<<",\"atoms\":";array(o,a.atoms,[&](const Atom& x){o<<"{\"atomic_number\":"<<x.atomic_number<<",\"effective_nuclear_charge\":"<<x.nuclear_charge<<",\"x_bohr\":"<<x.x<<",\"y_bohr\":"<<x.y<<",\"z_bohr\":"<<x.z<<'}';});o<<",\"source\":";json_source(o,a.source);o<<",\"centers\":";array(o,a.centers,[&](int v){o<<v;});o<<",\"labels\":";array(o,a.labels,[&](int v){o<<v;});o<<",\"ncomp\":";array(o,a.ncomp,[&](int v){o<<v;});o<<",\"nprim\":";array(o,a.nprim,[&](int v){o<<v;});o<<",\"nptr\":";array(o,a.nptr,[&](int v){o<<v;});o<<",\"exponents\":";array(o,a.exponents,[&](double v){o<<v;});o<<",\"contractions\":{\"s\":";array(o,a.cs,[&](double v){o<<v;});o<<",\"p\":";array(o,a.cp,[&](double v){o<<v;});o<<",\"d\":";array(o,a.cd,[&](double v){o<<v;});o<<",\"f\":";array(o,a.cf,[&](double v){o<<v;});o<<",\"g\":";array(o,a.cg,[&](double v){o<<v;});o<<"},\"matrices\":";array(o,a.matrices,jm);o<<'}';}else o<<"null";
     o<<",\"cmo_summaries\":";array(o,d.cmo_summaries,[&](const NboSource& x){json_source(o,x);});o<<",\"warnings\":";array(o,d.warnings,[&](const std::string& x){o<<quote(x);});o<<'}';return o.str();
 }

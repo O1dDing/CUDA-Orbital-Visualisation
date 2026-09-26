@@ -89,10 +89,52 @@ struct NboCanonicalEvidence {
     std::string coefficient_source;
     bool direct_fchk_coefficients=false, density_verified=false;
     std::string detail;
+    std::vector<double> archive_to_fchk_phase; // per stored MO column; null columns have 0
+};
+struct NboNaoValidation {
+    NboSpin spin=NboSpin::Total;
+    bool available=false, direct_fchk_coefficients=false;
+    std::string status="unavailable", detail;
+    std::size_t effective_mo_columns=0;
+    std::vector<std::string> column_status; // active or null_padding; never physical zero MOs
+    std::optional<double> orthogonality_error, composition_error, projection_error;
+    std::optional<double> normalization_error, nao_occupation_error, nao_nbo_composition_error;
+    bool occupation_density_verified=false;
+    std::optional<double> occupation_density_error;
+    std::vector<double> canonical_occupations; // only populated after T f T^T density verification
+};
+struct NboNaoContribution {
+    std::size_t nao_id=0, atom=0; // producer one-based identities
+    std::string symbol, type, angular;
+    std::optional<int> principal_n, angular_l; // literal producer shell label, never inferred
+    double coefficient=0, weight=0;
+    std::optional<double> electron_contribution;
+    NboSource source;
+};
+struct NboNaoGroupContribution {
+    std::size_t atom=0;
+    std::string symbol, label;
+    std::optional<int> principal_n, angular_l;
+    double weight=0;
+    std::optional<double> electron_contribution;
+    std::vector<std::size_t> nao_ids;
+};
+struct NboMoDecomposition {
+    std::size_t canonical_index=0, source_orbital_index=0; // zero-based; distinct identities
+    NboSpin spin=NboSpin::Total;
+    bool available=false;
+    std::string status="unavailable", detail;
+    std::optional<double> occupation, weight_sum, normalization_error;
+    NboSource matrix_source;
+    std::vector<NboNaoContribution> rows;
+    std::vector<NboNaoGroupContribution> atoms, shells;
 };
 struct NboAssociation {
     bool compatible=false;
     std::string status="not_checked", detail;
+    // Numerical equivalence cannot prove a producer job/step identity. External
+    // production manifests supply that evidence; filenames never do.
+    std::string provenance_status="producer_step_unverified";
     double geometry_max_error_bohr=0, overlap_max_error=0, density_max_error=0, canonical_max_error=0;
     // NBO AO row -> literal Gaussian AO row, with C_G = scale * C_NBO.
     std::vector<std::size_t> gaussian_row;
@@ -112,16 +154,19 @@ struct NboDataset {
     std::vector<std::string> warnings;
     std::optional<NboArchive> archive;
     NboAssociation association;
+    std::vector<NboNaoValidation> nao_validation;
+    std::vector<NboMoDecomposition> mo_decompositions;
     NboSource source;
 };
 struct NboReadOptions {
     std::optional<std::size_t> analysis_segment; // zero-based; multiple analyses require explicit selection
-    std::filesystem::path archive47, aonbo, nbomo;
+    std::filesystem::path archive47, aonbo, nbomo, naomo, aonao, naonbo;
 };
 NboDataset read_nbo(const std::filesystem::path& output, const NboReadOptions& options={});
 NboArchive read_nbo_archive(const std::filesystem::path& path);
 NboAssociation associate_nbo(NboDataset& dataset, const Wavefunction& canonical);
 Wavefunction make_nbo_wavefunction(const NboDataset& dataset, const Wavefunction& canonical);
 std::string serialize_nbo_json(const NboDataset& dataset);
+const NboMoDecomposition* nbo_mo_decomposition(const NboDataset& dataset, std::size_t canonical_index) noexcept;
 const char* nbo_spin_name(NboSpin spin) noexcept;
 } // namespace cov

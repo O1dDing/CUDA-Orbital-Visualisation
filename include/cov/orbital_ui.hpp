@@ -12,6 +12,7 @@
 #include <vector>
 
 namespace cov::ui {
+struct NboUIState;
 
 struct OrbitalUIDiagramCache {
     const Wavefunction* wavefunction = nullptr;
@@ -35,6 +36,7 @@ struct OrbitalUIBrowserCache {
 };
 
 struct OrbitalUIState {
+    NboUIState* nbo_ui = nullptr; // owned by the application; same lifetime as this UI state
     EnergyUnit energy_unit = EnergyUnit::Hartree;
     EnergyAxisMode energy_axis_mode = EnergyAxisMode::NonlinearFocus;
     DegeneracySettings degeneracy{};

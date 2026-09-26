@@ -317,6 +317,9 @@ if(COV_BUILD_TESTS)
     add_executable(cov_nbo_smoke tests/nbo_smoke.cpp)
     target_link_libraries(cov_nbo_smoke PRIVATE cov_parser)
     add_test(NAME nbo_smoke COMMAND cov_nbo_smoke)
+    add_executable(cov_nbo_focus_core_smoke tests/nbo_focus_core_smoke.cpp)
+    target_link_libraries(cov_nbo_focus_core_smoke PRIVATE cov_parser)
+    add_test(NAME nbo_focus_core_smoke COMMAND cov_nbo_focus_core_smoke)
 
     if(COV_ENABLE_CUDA)
         # External scientific reference; never counted as a passing test when

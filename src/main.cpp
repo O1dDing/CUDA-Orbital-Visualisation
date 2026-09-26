@@ -274,6 +274,7 @@ int main(int argc, char** argv) {
 
         cov::ui::Language language = cov::ui::Language::English;
         cov::ui::OrbitalUIState orbital_ui;
+        orbital_ui.nbo_ui = &nbo_ui;
         cov::MoleculeRenderSettings molecule_render;
         cov::OrbitalMaterial orbital_material = cov::OrbitalMaterial::Standard;
         cov::OrbitalSurfaceMode orbital_surface_mode = cov::OrbitalSurfaceMode::Solid;
@@ -413,6 +414,7 @@ int main(int argc, char** argv) {
                 nbo_active = false;
                 nbo_wavefunction.reset();
                 nbo_ui.dataset.reset();
+                nbo_ui.focus = {};
                 nbo_ui.error.clear();
                 nbo_ui.export_status.clear();
                 wavefunction = std::move(wf);
@@ -807,6 +809,10 @@ int main(int argc, char** argv) {
 
                 if (orbital_actions.select_orbital) pending_mo_index = orbital_actions.select_orbital;
                 if (diagram_actions.select_orbital) pending_mo_index = diagram_actions.select_orbital;
+                if (nbo_ui.focus.pending_canonical_selection) {
+                    pending_mo_index = nbo_ui.focus.pending_canonical_selection;
+                    nbo_ui.focus.pending_canonical_selection.reset();
+                }
                 const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
                 if (export_requested && wavefunction) {
                     std::filesystem::path base = current_file.empty()
@@ -843,7 +849,8 @@ int main(int argc, char** argv) {
             const auto nbo_actions = cov::ui::draw_nbo_panel(
                 nbo_ui, language, wavefunction.has_value(),
                 nbo_wavefunction.has_value(), nbo_active, ui_scale,
-                wavefunction ? &*wavefunction : nullptr, canonical_mo_index);
+                wavefunction ? &*wavefunction : nullptr, canonical_mo_index,
+                orbital_ui.diagram_cache.snapshot.get());
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
             const bool attach_requested = nbo_actions.attach;
@@ -864,8 +871,9 @@ int main(int argc, char** argv) {
                     cov::ui::export_nbo_bundle(*nbo_ui.dataset,nbo_ui.selected_orbital,base,
                                                wavefunction ? &*wavefunction : nullptr,
                                                canonical_mo_index,nbo_ui.contribution_threshold,
-                                               nbo_active,mo_index);
-                    nbo_ui.export_status=path_to_utf8(base)+".{nbo.json,npa.csv,nao.csv,nbo.csv,wiberg.csv,e2.csv,e2-sections.csv,view.json,view.svg,view.png}";
+                                               nbo_active,mo_index,
+                                               orbital_ui.diagram_cache.snapshot.get(),&nbo_ui.focus);
+                    nbo_ui.export_status=path_to_utf8(base)+".{nbo.json,npa.csv,nao.csv,nbo.csv,wiberg.csv,e2.csv,e2-sections.csv,view.json,view.svg,view.png,focus.json,focus.csv,focus.groups.csv,focus.svg,focus.png}";
                     cov::validation::record("nbo.export","{\"base\":"+
                         cov::validation::quote(path_to_utf8(base))+
                         ",\"selected_index\":"+std::to_string(nbo_ui.selected_orbital)+
@@ -1027,6 +1035,9 @@ int main(int argc, char** argv) {
                     if (nbo_ui.archive47[0]) options.archive47=path_from_utf8(nbo_ui.archive47.data());
                     if (nbo_ui.aonbo[0]) options.aonbo=path_from_utf8(nbo_ui.aonbo.data());
                     if (nbo_ui.nbomo[0]) options.nbomo=path_from_utf8(nbo_ui.nbomo.data());
+                    if (nbo_ui.naomo[0]) options.naomo=path_from_utf8(nbo_ui.naomo.data());
+                    if (nbo_ui.aonao[0]) options.aonao=path_from_utf8(nbo_ui.aonao.data());
+                    if (nbo_ui.naonbo[0]) options.naonbo=path_from_utf8(nbo_ui.naonbo.data());
                     auto dataset=cov::read_nbo(path_from_utf8(nbo_ui.path.data()),options);
                     cov::associate_nbo(dataset,*wavefunction);
                     std::optional<cov::Wavefunction> prepared;
@@ -1035,6 +1046,7 @@ int main(int argc, char** argv) {
                     catch (const std::exception& e) { render_error=e.what(); }
                     nbo_wavefunction=std::move(prepared);
                     nbo_ui.dataset=std::move(dataset);
+                    nbo_ui.focus = {};
                     nbo_ui.selected_orbital=0;
                     nbo_mo_index=0;
                     nbo_ui.error=std::move(render_error);

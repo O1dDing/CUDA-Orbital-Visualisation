@@ -1,4 +1,5 @@
 #include "cov/orbital_ui.hpp"
+#include "cov/nbo_ui.hpp"
 #include "cov/validation.hpp"
 
 #include "cov/mo_diagram.hpp"
@@ -1504,6 +1505,9 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     if(ImGui::Button(orbital_tr(OrbitalText::OrbitalDetails,language),ImVec2(-1.0f,0.0f)))
         state.show_diagram_details=true;
     cov::validation::item("diagram.details");
+    if(state.nbo_ui && state.nbo_ui->dataset)
+        draw_nbo_focus_view(state.nbo_ui->focus,*state.nbo_ui->dataset,
+                            wavefunction,snapshot,language,ui_scale);
     if(state.show_diagram_details) {
         const auto* viewport=ImGui::GetMainViewport();
         const ImVec2 work=viewport->WorkSize;
