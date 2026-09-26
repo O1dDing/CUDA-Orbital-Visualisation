@@ -1,10 +1,12 @@
 #pragma once
 
 #include "cov/nbo.hpp"
+#include "cov/nbo_aomo_ui.hpp"
 #include "cov/mo_diagram.hpp"
 #include "cov/ui.hpp"
 #include <array>
 #include <filesystem>
+#include <limits>
 #include <optional>
 #include <string>
 #include <set>
@@ -46,9 +48,25 @@ struct NboUIState {
     std::array<char, 2048> naonbo{};
     std::array<char, 2048> export_path{};
     std::optional<NboDataset> dataset;
+    const NboIntegration* integration = nullptr; // main-owned, clear on reload
+    std::optional<NboInputDiscovery> input_discovery;
+    std::optional<std::size_t> pending_candidate;
+    std::string input_status;
+    bool show_advanced_inputs = false;
+    NboAomoUIState aomo;
+    std::set<std::size_t> selected_atoms; // zero-based canonical atoms
+    std::optional<std::size_t> selected_structure; // integration.structure index
+    std::optional<NboOrbitalRef> inspected_nlmo;
+    std::optional<NboOrbitalRef> inspected_nho;
+    std::optional<NboOrbitalRef> nho_sum_owner;
+    std::set<std::size_t> nho_sum_nao_indices; // selected zero-based NAO columns
+    std::string inspected_dataset_id;
+    int atom_colour_mode = 0; // 0 element, 1 NPA charge, 2 spin density
+    bool show_bond_indices = false;
+    bool show_e2 = false;
     std::string error;
     std::string export_status;
-    std::size_t selected_orbital = 0;
+    std::size_t selected_orbital = std::numeric_limits<std::size_t>::max();
     int analysis_segment = -1;
     double contribution_threshold = 0.01;
     NboFocusUIState focus;

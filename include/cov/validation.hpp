@@ -17,6 +17,7 @@ bool done();
 int result();
 void begin_frame(OrbitCamera&, MoleculeRenderSettings&, float&, int&, bool&);
 void input_frame();
+std::vector<std::filesystem::path> take_dropped_paths();
 void evaluated(std::size_t mo, const char* reason, float milliseconds);
 void orbital_identity(const std::string& orbital_set, const std::string& dataset,
                       const std::string& spin, std::size_t source_index,
@@ -24,7 +25,7 @@ void orbital_identity(const std::string& orbital_set, const std::string& dataset
                       const std::string& coefficient_source,
                       bool direct_fchk_coefficients, bool density_verified);
 void ui_frame(std::size_t drawn, std::size_t requested);
-void after_scene(const VolumeRenderer&, const GridBox&, std::size_t mo);
+void after_scene(const VolumeRenderer&, const GridBox&, std::size_t mo, std::size_t field_index=0);
 void scene_view(const ViewerLayout&, const OrbitCamera&);
 void end_frame(int width, int height, std::size_t applied,
                const ui::OrbitalUIState&, const Wavefunction*);
@@ -45,12 +46,13 @@ inline bool done() { return false; }
 inline int result() { return 0; }
 inline void begin_frame(OrbitCamera&, MoleculeRenderSettings&, float&, int&, bool&) {}
 inline void input_frame() {}
+inline std::vector<std::filesystem::path> take_dropped_paths() {return {};}
 inline void evaluated(std::size_t, const char*, float) {}
 inline void orbital_identity(const std::string&, const std::string&,
                              const std::string&, std::size_t,
                              const std::string&, const std::string&, bool, bool) {}
 inline void ui_frame(std::size_t, std::size_t) {}
-inline void after_scene(const VolumeRenderer&, const GridBox&, std::size_t) {}
+inline void after_scene(const VolumeRenderer&, const GridBox&, std::size_t, std::size_t=0) {}
 inline void scene_view(const ViewerLayout&, const OrbitCamera&) {}
 inline void end_frame(int, int, std::size_t, const ui::OrbitalUIState&, const Wavefunction*) {}
 inline void item(const std::string&) {}

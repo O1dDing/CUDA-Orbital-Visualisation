@@ -68,6 +68,15 @@ struct NboWiberg {
     double value=0;
     NboSource source;
 };
+struct NboNlmo {
+    std::size_t id=0;
+    NboSpin spin=NboSpin::Total;
+    double occupation=0, parent_percent=0;
+    std::string parent_label;
+    std::optional<std::size_t> parent_nbo; // matched by literal label, never by ordinal
+    std::vector<NboLocalComponent> components;
+    NboSource source;
+};
 struct NboMatrix {
     std::string kind; // AONBO: AO rows / NBO columns; NBOMO: NBO rows / MO columns
     NboSpin spin=NboSpin::Total;
@@ -125,6 +134,7 @@ struct NboMoDecomposition {
     bool available=false;
     std::string status="unavailable", detail;
     std::optional<double> occupation, weight_sum, normalization_error;
+    std::optional<double> projection_residual_norm; // AO-metric norm of canonical minus local projection
     NboSource matrix_source;
     std::vector<NboNaoContribution> rows;
     std::vector<NboNaoGroupContribution> atoms, shells;
@@ -149,6 +159,7 @@ struct NboDataset {
     std::vector<NboE2> e2;
     std::vector<NboE2Section> e2_sections;
     std::vector<NboWiberg> wiberg;
+    std::vector<NboNlmo> nlmos;
     std::vector<NboMatrix> matrices;
     std::vector<NboSource> cmo_summaries; // thresholded text is never a complete matrix
     std::vector<std::string> warnings;
@@ -164,6 +175,9 @@ struct NboReadOptions {
 };
 NboDataset read_nbo(const std::filesystem::path& output, const NboReadOptions& options={});
 NboArchive read_nbo_archive(const std::filesystem::path& path);
+// Explicit complete W-format matrix reader used by capability-isolated import.
+std::vector<NboMatrix> read_nbo_matrix(const std::filesystem::path& path,const std::string& kind,std::size_t basis_count,bool open_shell);
+std::vector<NboMatrix> read_nbo_matrix_rectangular(const std::filesystem::path& path,const std::string& kind,std::size_t rows,std::size_t columns,bool open_shell);
 NboAssociation associate_nbo(NboDataset& dataset, const Wavefunction& canonical);
 Wavefunction make_nbo_wavefunction(const NboDataset& dataset, const Wavefunction& canonical);
 std::string serialize_nbo_json(const NboDataset& dataset);

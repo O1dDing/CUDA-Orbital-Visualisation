@@ -3,7 +3,9 @@
 #include <imgui.h>
 
 #include <cstring>
+#include <initializer_list>
 #include <iostream>
+#include <string_view>
 
 namespace {
 
@@ -20,6 +22,36 @@ bool expect_glyphs(const ImFont* font,
             std::cerr << "font atlas missing " << description
                       << " codepoint U+" << std::hex
                       << static_cast<unsigned int>(codepoints[i]) << std::dec << '\n';
+            return false;
+        }
+    }
+    return true;
+}
+
+bool expect_utf8_text(const ImFont* font,const char* seed,const char* text,
+                      const char* description,bool check_atlas) {
+    const std::string_view available(seed);
+    const auto* p=reinterpret_cast<const unsigned char*>(text);
+    while(*p) {
+        const auto* start=p;
+        unsigned int codepoint=0;
+        std::size_t bytes=0;
+        if(*p<0x80){codepoint=*p;bytes=1;}
+        else if((*p&0xe0)==0xc0){codepoint=*p&0x1f;bytes=2;}
+        else if((*p&0xf0)==0xe0){codepoint=*p&0x0f;bytes=3;}
+        else if((*p&0xf8)==0xf0){codepoint=*p&0x07;bytes=4;}
+        else return false;
+        for(std::size_t i=1;i<bytes;++i) {
+            if((p[i]&0xc0)!=0x80)return false;
+            codepoint=(codepoint<<6)|(p[i]&0x3f);
+        }
+        p+=bytes;
+        if(available.find(std::string_view(reinterpret_cast<const char*>(start),bytes))==
+           std::string_view::npos ||
+           (check_atlas && (codepoint>0xffff || !font_contains(font,
+               static_cast<ImWchar>(codepoint))))) {
+            std::cerr<<"font seed or atlas missing "<<description<<" codepoint U+"
+                     <<std::hex<<codepoint<<std::dec<<'\n';
             return false;
         }
     }
@@ -129,6 +161,10 @@ int main() {
         0x03C0, // π
         0x03B4, // δ
         0x03C6, // φ
+        0x2212, // −: signed phase legend
+        0x2192, // →: NPA colour legend
+        0x2013, // –: AO/NAO–MO title
+        0x00B2, // ²: numerical component weight
     };
     if (!expect_glyphs(primary, scientific_glyphs,
                        sizeof(scientific_glyphs) / sizeof(scientific_glyphs[0]),
@@ -160,6 +196,7 @@ int main() {
         0x6A19, 0x6E96,                                             // 標準
         0x30BD, 0x30D5, 0x30C8, 0x81EA, 0x52D5, 0x7167, 0x660E,   // ソフト自動照明
         0x8A73, 0x7D30, 0x9589,                                  // 詳細・閉じる
+        0x8A2D,                                                   // 設: MO 図の設定
     };
     if (std::strstr(cov::ui::font_status(), "JA fallback missing") == nullptr &&
         !expect_glyphs(primary, japanese_glyphs,
@@ -167,6 +204,31 @@ int main() {
                        "Japanese UI")) {
         ImGui::DestroyContext();
         return 11;
+    }
+
+    // These strings are drawn by the integration graph and scene toolbar,
+    // outside kStrings. Verify both exact seed membership and real atlas glyphs.
+    const bool have_zh=std::strstr(cov::ui::font_status(),"ZH fallback missing")==nullptr;
+    for(const char* phrase:{"相位：红 + / 蓝 −","完整带符号系数",
+                            "轨道不透明度（降低可看清原子与键）",
+                            "灰色点划线：连接证据存在，整数键型未确定；点选查看轨道详情和键级指数。",
+                            "整体 AO/NAO–MO 图","全部带符号 NAO–NHO 系数",
+                            "MO 图设置","正则 MO 能量参考图",
+                            "波函数文件或计算目录（FCHK 优先；自动关联 NBO）"})
+        if(!expect_utf8_text(primary,zh_seed,phrase,"Chinese integration",have_zh)){
+            ImGui::DestroyContext();return 12;
+        }
+    const bool have_ja=std::strstr(cov::ui::font_status(),"JA fallback missing")==nullptr;
+    for(const char* phrase:{"位相：赤 + / 青 −","軌道の不透明度（下げると原子と結合が見えます）",
+                            "全体 AO/NAO–MO 図","すべての符号付き NAO–NHO 係数",
+                            "MO 図の設定","正準 MO エネルギー参照図",
+                            "波動関数ファイルまたは計算フォルダー（FCHK 優先・NBO 自動関連付け）"})
+        if(!expect_utf8_text(primary,ja_seed,phrase,"Japanese integration",have_ja)){
+            ImGui::DestroyContext();return 13;
+        }
+    if((have_zh && !expect_utf8_text(primary,zh_seed,zh_seed,"Chinese atlas seed",true)) ||
+       (have_ja && !expect_utf8_text(primary,ja_seed,ja_seed,"Japanese atlas seed",true))) {
+        ImGui::DestroyContext();return 14;
     }
 
     ImGui::DestroyContext();

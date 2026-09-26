@@ -37,6 +37,8 @@ The [v0.3.0-pre.11 prerelease](https://github.com/O1dDing/CUDA-Orbital-Visualisa
 - [x] Local CHK → `formchk` integration (requires an installed converter; configure `COV_FORMCHK` when needed)
 - [x] Gaussian `.log/.out` companion enrichment with explicit source and missing/invalid metadata states
 - [x] Initial [NBO report/matrix attachment](docs/nbo-initial-integration.md), strict source association, separate localized-orbital GPU view, NPA/NAO/Wiberg/E2 and NBOMO export
+- [x] [Integrated AO–MO / NBO interaction](docs/AOMO_NBO.md): directory/multiple-file discovery, whole clickable AO/NAO–fragment–MO graph, signed components and reconstruction, and shared molecular picking
+- [x] NPA/spin atom colours, evidence-based bond multiplicity and coordination/multicentre styles, directional NHO components, E(2) orbital pairs and NLMO main/tail fields
 - [ ] Multi-MO fused CUDA evaluator
 - [ ] GPU Marching Cubes for mesh export
 - [ ] Cube export

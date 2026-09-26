@@ -8,17 +8,17 @@ const char* tr(Text key, Language language) noexcept {
     switch (key) {
         case Text::MoldenPath:
             switch (language) {
-                case Language::ChineseSimplified: return "波函数文件（FCHK 优先；Molden 兼容）";
-                case Language::Japanese: return "波動関数ファイル（FCHK 優先・Molden 互換）";
-                case Language::French: return "Fichier de fonction d’onde (FCHK prioritaire ; Molden compatible)";
-                default: return "Wavefunction file (FCHK preferred; Molden compatible)";
+                case Language::ChineseSimplified: return "波函数文件或计算目录（FCHK 优先；自动关联 NBO）";
+                case Language::Japanese: return "波動関数ファイルまたは計算フォルダー（FCHK 優先・NBO 自動関連付け）";
+                case Language::French: return "Fichier de fonction d’onde ou dossier de calcul (FCHK prioritaire ; association NBO automatique)";
+                default: return "Wavefunction file or calculation folder (FCHK preferred; automatic NBO association)";
             }
         case Text::IdleHint:
             switch (language) {
-                case Language::ChineseSimplified: return "可拖入 .fchk/.fch/.chk 或兼容的 .molden 文件，也可直接输入路径。";
-                case Language::Japanese: return ".fchk/.fch/.chk または互換 .molden ファイルをドロップするか、パスを入力してください。";
-                case Language::French: return "Déposez un fichier .fchk/.fch/.chk ou .molden compatible, ou saisissez son chemin.";
-                default: return "Drop a .fchk/.fch/.chk or compatible .molden file, or enter a path.";
+                case Language::ChineseSimplified: return "可同时拖入波函数与 NBO 文件，或拖入计算目录；也可直接输入文件或目录路径。兼容 .fchk/.fch/.chk 和 .molden。";
+                case Language::Japanese: return "波動関数と NBO ファイルをまとめて、または計算フォルダーをドロップできます。ファイルやフォルダーのパス入力も可能です。.fchk/.fch/.chk・.molden に対応。";
+                case Language::French: return "Déposez ensemble les fichiers de fonction d’onde et NBO, ou un dossier de calcul ; vous pouvez aussi saisir leur chemin. Formats .fchk/.fch/.chk et .molden compatibles.";
+                default: return "Drop wavefunction and NBO files together, or a calculation folder; you can also enter a file or folder path. Supported: .fchk/.fch/.chk and .molden.";
             }
         case Text::MoldenMO:
             switch (language) {

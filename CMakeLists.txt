@@ -30,6 +30,7 @@ add_library(cov_parser
     src/parser/formchk.cpp
     src/parser/gaussian_log.cpp
     src/parser/nbo.cpp
+    src/parser/nbo_integration.cpp
     src/analysis/density.cpp
     src/analysis/overlap.cpp
     src/analysis/overlap_basis.cpp
@@ -70,6 +71,7 @@ target_include_directories(cov_parser SYSTEM PRIVATE ${cov_eigen_SOURCE_DIR})
 target_compile_definitions(cov_parser PRIVATE EIGEN_MPL2_ONLY)
 
 add_library(cov_orbitals
+    src/analysis/nbo_channels.cpp
     src/analysis/local_orbital_symmetry.cpp
     src/analysis/local_geometry.cpp
     src/analysis/orbital_tracking.cpp
@@ -102,6 +104,7 @@ target_compile_features(cov_orbitals PUBLIC cxx_std_20)
 add_library(cov_molecule
     src/analysis/interaction_graph.cpp
     src/render/molecule_style.cpp
+    src/render/nbo_molecular_overlay.cpp
 )
 target_include_directories(cov_molecule PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -158,6 +161,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
     add_library(cov_ui STATIC
         src/ui/ui.cpp
         src/ui/nbo_ui.cpp
+        src/ui/nbo_aomo_ui.cpp
         src/ui/ui_text_dispatch.cpp
         src/ui/orbital_ui_text.cpp
         src/ui/orbital_ui_v2.cpp
@@ -309,6 +313,11 @@ if(COV_ENABLE_CUDA)
 endif()
 
 if(COV_BUILD_TESTS)
+    add_executable(cov_aomo_core_probe tests/aomo_core_probe.cpp)
+    target_link_libraries(cov_aomo_core_probe PRIVATE cov_parser)
+    add_executable(cov_nbo_integration_core_smoke tests/nbo_integration_core_smoke.cpp)
+    target_link_libraries(cov_nbo_integration_core_smoke PRIVATE cov_parser cov_orbitals)
+    add_test(NAME nbo_integration_core_smoke COMMAND cov_nbo_integration_core_smoke)
     include(CTest)
     enable_testing()
 

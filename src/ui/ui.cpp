@@ -183,6 +183,42 @@ constexpr const char* kSupplementalJapanese =
     "MO 寄与は重なり密度由来、Mayer は全密度の原子対指数。 "
     "UND / 最小原子価参照外 CUDA デバイス";
 
+// Exact non-ASCII characters used by the four-language integration controls
+// in main.cpp, nbo_aomo_ui.cpp and nbo_ui.cpp. The range builder deduplicates
+// these source-derived characters instead of loading a full CJK range.
+constexpr const char* kIntegrationChineseGlyphs =
+    "²–…→−、。一三上下不与且两严个中为主义互些交仅仍代件会位低体作使保候值元先入全关内再出击分划"
+    "则删别到前力加动勾化印原及取变叠只可右号合同后和器图在场均型域基堡声壳处复多央失始子存完定实导尾"
+    "局层居展属左已布带幅平并度开弱归当待微德恢情成或截所手打拖择指按据接控描放数整文断新方旋无明是显"
+    "暗有未杂权来构析架查标核格检正此段母比没注测浏消清源滚灰点片独瓣用电留白百的相看真着确示离称移空"
+    "立符等简算类系素紫累红级纳线组结绘续维绿缩缺置而联能自色节荷蓝藏行表要视览角计证该详说请调负轨轮"
+    "输这连述适选透逐道部配里重量金键间阈降除随隐集零面项题验骨高（），：；";
+constexpr const char* kIntegrationJapaneseGlyphs =
+    "²–…→−、。あいえかがきくげこさしすせただちつてでとなにねのはびぶべまみむもらりるれわをんァア"
+    "イクグスセタッテデトドピフブプホメラリルロン・ー一上下不中主乗二互交付以位体作係保個候値元入全典"
+    "内出分列別利削割力加動化区印原厳去可右号各合含和図在基場変外大央子字存定実密小局展属左布幅底度従"
+    "復微成所手択拠拡持指振描損操数整新明書未析査格検構機欠次正残殻注消淡混済準濃灰点独用画異白的目直"
+    "相着確示移積空立符等算系素紫累細結続緑線縮群能色荷行表補複見規覧親角解計証詳認説調負赤軌追退透造"
+    "連運道選部配重量金開間関除際隠集零電青非面項骨（）：；";
+constexpr const char* kIntegrationLatinGlyphs = "²Éèéê–’";
+
+// Direct labels introduced in orbital_ui_v2.cpp and ui_text_dispatch.cpp
+// bypass the orbital browser's own localisation table.
+constexpr const char* kOrbitalDiagramChineseGlyphs =
+    "MO 图设置 正则 MO 能量参考图 "
+    "波函数文件或计算目录（FCHK 优先；自动关联 NBO） "
+    "可同时拖入波函数与 NBO 文件，或拖入计算目录；也可直接输入文件或目录路径。兼容 .fchk/.fch/.chk 和 .molden。 "
+    "源文件 MO（从 1 开始） 源 MO";
+constexpr const char* kOrbitalDiagramJapaneseGlyphs =
+    "MO 図の設定 正準 MO エネルギー参照図 "
+    "波動関数ファイルまたは計算フォルダー（FCHK 優先・NBO 自動関連付け） "
+    "波動関数と NBO ファイルをまとめて、または計算フォルダーをドロップできます。ファイルやフォルダーのパス入力も可能です。.fchk/.fch/.chk・.molden に対応。 "
+    "入力 MO（1 始まり） 入力 MO";
+constexpr const char* kOrbitalDiagramLatinGlyphs =
+    "Réglages du diagramme OM Référence énergétique des OM canoniques "
+    "Fichier de fonction d’onde ou dossier de calcul (FCHK prioritaire ; association NBO automatique) "
+    "Déposez ensemble les fichiers de fonction d’onde et NBO, ou un dossier de calcul ; vous pouvez aussi saisir leur chemin. Formats .fchk/.fch/.chk et .molden compatibles.";
+
 // Keep all symbols produced by MO labels/annotations in the primary font.
 // Π⁵₆ is included as an exact sequence as well as through the complete digit
 // sets, which protects both the large-pi family label and future N-centre
@@ -253,8 +289,10 @@ const char* language_name(const Language language) noexcept {
 const char* supplemental_glyph_seed(const Language language) noexcept {
     static const std::string english=orbital_ui_glyph_seed(Language::English);
     static const std::string chinese=std::string(kSupplementalChinese)+" "+
+        kIntegrationChineseGlyphs+" "+kOrbitalDiagramChineseGlyphs+" "+
         orbital_ui_glyph_seed(Language::ChineseSimplified);
     static const std::string japanese=std::string(kSupplementalJapanese)+" "+
+        kIntegrationJapaneseGlyphs+" "+kOrbitalDiagramJapaneseGlyphs+" "+
         orbital_ui_glyph_seed(Language::Japanese);
     static const std::string french=orbital_ui_glyph_seed(Language::French);
     switch (language) {
@@ -371,6 +409,8 @@ bool configure_fonts(const float pixel_size) {
     latin_builder.AddText(nbo_en.c_str());
     latin_builder.AddText(nbo_fr.c_str());
     latin_builder.AddText(scientific_glyph_seed());
+    latin_builder.AddText(kIntegrationLatinGlyphs);
+    latin_builder.AddText(kOrbitalDiagramLatinGlyphs);
     ImVector<ImWchar> latin_ranges;
     latin_builder.BuildRanges(&latin_ranges);
 

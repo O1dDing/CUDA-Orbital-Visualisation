@@ -1131,7 +1131,6 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
         ImGui::TextDisabled("%s", tr(Text::NoOrbitals, language));
         return;
     }
-
     state.degeneracy.tolerance_hartree = std::clamp(state.degeneracy.tolerance_hartree, 1.0e-9, 1.0e-2);
     state.filter.virtual_window_hartree = std::clamp(state.filter.virtual_window_hartree, 0.01, 20.0);
     if (!browser_cache_matches(state.browser_cache,wavefunction,
@@ -1266,7 +1265,16 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         ImGui::TextDisabled("%s", tr(Text::NoOrbitals, language));
         return;
     }
+    const bool aomo_ready=state.nbo_ui && state.nbo_ui->integration &&
+        nbo_capability(*state.nbo_ui->integration,"aomo") &&
+        nbo_capability(*state.nbo_ui->integration,"aomo")->available();
 
+    const char* mo_settings=language==Language::ChineseSimplified?
+        "MO 图设置##cov.diagram.settings":language==Language::Japanese?
+        "MO 図の設定##cov.diagram.settings":language==Language::French?
+        "Réglages du diagramme OM##cov.diagram.settings":
+        "MO diagram settings##cov.diagram.settings";
+    if(!aomo_ready || ImGui::CollapsingHeader(mo_settings)) {
     ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
     ImGui::SameLine();
     if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language), state.energy_axis_mode == EnergyAxisMode::Linear)) {
@@ -1288,6 +1296,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     cov::validation::item("diagram.compact");
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("%s",intermediate_toggle_tooltip(language));
+    }
     }
 
     MODiagramOptions options;
@@ -1344,11 +1353,32 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         ",\"row_count\":"+std::to_string(data.levels.size())+"}");
 #endif
 
-    ImGui::TextDisabled("%s", tr(Text::EnergyDiagram, language));
+    if(!aomo_ready)ImGui::TextDisabled("%s", tr(Text::EnergyDiagram, language));
     const std::string selection_summary=
         localised_diagram_selection_summary(data,language);
-    ImGui::TextDisabled("%s",selection_summary.c_str());
+    if(!aomo_ready)ImGui::TextDisabled("%s",selection_summary.c_str());
     cov::validation::field("selection_summary",selection_summary);
+    bool integrated_aomo=false;
+    if(state.nbo_ui && state.nbo_ui->integration) {
+        integrated_aomo=draw_nbo_aomo_diagram(state.nbo_ui->aomo,
+            *state.nbo_ui->integration,wavefunction,snapshot,language,ui_scale);
+        if(!integrated_aomo) {
+            ImGui::TextWrapped("AO/NAO–MO: %s. Gaussian canonical MO diagram remains available below.",
+                state.nbo_ui->aomo.status.c_str());
+            cov::validation::field("aomo.fallback",state.nbo_ui->aomo.status);
+        }
+    }
+    if(integrated_aomo) {
+        const char* reference=language==Language::ChineseSimplified?
+            "正则 MO 能量参考图##aomo.energy.reference":
+            language==Language::Japanese?
+            "正準 MO エネルギー参照図##aomo.energy.reference":
+            language==Language::French?
+            "Référence énergétique des OM canoniques##aomo.energy.reference":
+            "Canonical MO energy reference##aomo.energy.reference";
+        if(!ImGui::CollapsingHeader(reference))return;
+        cov::validation::item("aomo.energy.reference");
+    }
     const float height = 430.0f * ui_scale;
     const float left_padding=124.0f*ui_scale;
     const float right_padding=46.0f*ui_scale;
@@ -1505,7 +1535,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     if(ImGui::Button(orbital_tr(OrbitalText::OrbitalDetails,language),ImVec2(-1.0f,0.0f)))
         state.show_diagram_details=true;
     cov::validation::item("diagram.details");
-    if(state.nbo_ui && state.nbo_ui->dataset)
+    if(!integrated_aomo && state.nbo_ui && state.nbo_ui->dataset)
         draw_nbo_focus_view(state.nbo_ui->focus,*state.nbo_ui->dataset,
                             wavefunction,snapshot,language,ui_scale);
     if(state.show_diagram_details) {

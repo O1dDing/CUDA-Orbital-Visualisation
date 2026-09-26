@@ -1,4 +1,5 @@
 #include "cov/mo_diagram.hpp"
+#include "cov/nbo_aomo_ui.hpp"
 #include "cov/orbital_ui.hpp"
 
 #include <imgui.h>
@@ -140,6 +141,76 @@ int main() {
     state.energy_unit=cov::EnergyUnit::ElectronVolt; frame(7);
     require(actions.drawn_diagram->options.energy_unit==cov::EnergyUnit::ElectronVolt,
         "energy-unit change must produce a matching export snapshot");
+
+    // Open-shell alpha/beta rows may have the same producer AO/NAO number.
+    // The live graph and its exports must show distinct, legible spin labels.
+    wf.atoms[0].symbol="Cr";wf.atoms[0].atomic_number=24;
+    cov::NboIntegration integration;
+    integration.id="open-shell-heavy-atom-display-fixture";
+    integration.capabilities.push_back({"aomo",cov::NboCapabilityState::Available,
+        "Display contract fixture"});
+    for(const auto kind:{cov::NboOrbitalKind::NAO,cov::NboOrbitalKind::GaussianAO})
+        for(const auto spin:{cov::NboSpin::Alpha,cov::NboSpin::Beta}) {
+            cov::NboOrbitalDescriptor orbital;
+            orbital.ref={kind,spin,0};
+            orbital.id=std::string(cov::nbo_orbital_kind_name(kind))+":"+
+                cov::nbo_spin_name(spin)+":0";
+            orbital.label="Cr1 3d Val";
+            orbital.atoms={0};
+            integration.orbitals.push_back(orbital);
+            cov::NboMoLink link;
+            link.orbital=orbital.ref;
+            link.canonical_index=spin==cov::NboSpin::Alpha?0:2;
+            link.coefficient=0.5;
+            integration.links.push_back(link);
+        }
+    for(const auto spin:{cov::NboSpin::Alpha,cov::NboSpin::Beta}) {
+        cov::NboNao nao;
+        nao.id=1;nao.atom=1;nao.symbol="Cr";nao.angular="dxy";nao.spin=spin;
+        integration.dataset.naos.push_back(nao);
+    }
+    cov::ui::NboAomoUIState aomo_state;
+    auto aomo_frame=[&](cov::NboOrbitalKind kind) {
+        aomo_state.basis_kind=kind;
+        ImGui::NewFrame();
+        ImGui::SetNextWindowPos({10,10},ImGuiCond_Always);
+        ImGui::SetNextWindowSize({1200,1700},ImGuiCond_Always);
+        ImGui::Begin("open-shell labels",nullptr,ImGuiWindowFlags_NoSavedSettings);
+        const bool drawn=cov::ui::draw_nbo_aomo_diagram(aomo_state,integration,wf,snapshot,
+            cov::ui::Language::English,1.0f);
+        ImGui::End();ImGui::Render();
+        require(drawn && aomo_state.drawn_snapshot,
+            "display fixture must draw the whole AO/NAO graph");
+        const auto& view=*aomo_state.drawn_snapshot;
+        const std::string stem=kind==cov::NboOrbitalKind::NAO?"Cr1 dxy / NAO 1":"Cr1 / AO 1";
+        bool found_header=false;
+        for(const auto& node:view.nodes)
+            if(node.group_header && node.id=="atom:0" && node.label=="Cr1")found_header=true;
+        require(found_header,"heavy-atom graph header must use the canonical element symbol");
+        for(const auto spin:{cov::NboSpin::Alpha,cov::NboSpin::Beta}) {
+            const auto label=stem+" ["+cov::nbo_spin_name(spin)+"]";
+            bool found=false;
+            for(const auto& node:view.nodes)
+                if(node.orbital && node.orbital->kind==kind && node.orbital->spin==spin &&
+                   node.label==label)found=true;
+            require(found,"live open-shell AO/NAO node must identify its spin");
+        }
+        const auto base=root/(kind==cov::NboOrbitalKind::NAO?"nao-spin":"ao-spin");
+        const auto exported=cov::ui::export_nbo_aomo_bundle(view,integration,base);
+        require(exported.json && exported.svg && exported.png,
+            "open-shell AO/NAO graph export failed");
+        const auto json=read(exported.json_path),svg=read(exported.svg_path);
+        require(json.find(stem+" [alpha]")!=std::string::npos &&
+            json.find(stem+" [beta]")!=std::string::npos &&
+            svg.find(stem+" [alpha]")!=std::string::npos &&
+            svg.find(stem+" [beta]")!=std::string::npos &&
+            json.find("\"label\":\"Cr1\"")!=std::string::npos &&
+            svg.find(">Cr1</text>")!=std::string::npos &&
+            json.find("Z241")==std::string::npos && svg.find("Z241")==std::string::npos,
+            "JSON and SVG must preserve the heavy-atom symbol and both visible spin labels");
+    };
+    aomo_frame(cov::NboOrbitalKind::NAO);
+    aomo_frame(cov::NboOrbitalKind::GaussianAO);
     ImGui::DestroyContext();
     // Only this uniquely created test directory is removed.
     std::filesystem::remove_all(root);

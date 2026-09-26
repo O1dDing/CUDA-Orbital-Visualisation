@@ -20,7 +20,8 @@ namespace cov::validation {
 namespace {
 using Clock = std::chrono::steady_clock;
 struct Target { ImVec2 lo, hi; ImGuiWindow* window; ImRect clip; };
-struct Command { std::string op, id, value; std::vector<float> args; };
+struct Command { std::string op, id, value; std::vector<float> args; std::vector<std::string> paths; };
+std::vector<std::filesystem::path> dropped_paths;
 bool enabled = false;
 bool hidden_window = false;
 int requested_window_width = 2100, requested_window_height = 1250;
@@ -195,7 +196,8 @@ bool configure(int argc, char** argv) {
     while(std::getline(in,line)) {
         if(line.empty() || line[0]=='#') continue;
         std::istringstream r(line); Command c; r>>c.op;
-        if(c.op=="scene") {float x;while(r>>x)c.args.push_back(x);if(c.args.size()!=6)throw std::runtime_error("scene requires opacity yaw pitch distance iso resolution");}
+        if(c.op=="drop") {std::string path;while(r>>std::quoted(path))c.paths.push_back(path);if(c.paths.empty())throw std::runtime_error("drop requires one or more quoted paths");}
+        else if(c.op=="scene") {float x;while(r>>x)c.args.push_back(x);if(c.args.size()!=6)throw std::runtime_error("scene requires opacity yaw pitch distance iso resolution");}
         else if(c.op=="window") {
             float width=0,height=0; std::string extra;
             if(!(r>>width>>height) || (r>>extra) || !std::isfinite(width) || !std::isfinite(height) ||
@@ -215,7 +217,7 @@ bool configure(int argc, char** argv) {
                 c.args={x,y};
             }
         }
-        if(c.op!="scene"&&c.op!="window"&&c.op!="drag"&&c.op!="wheel"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name") throw std::runtime_error("unknown plan command");
+        if(c.op!="drop"&&c.op!="scene"&&c.op!="window"&&c.op!="drag"&&c.op!="wheel"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name") throw std::runtime_error("unknown plan command");
         if(c.op=="export-name" && (c.id.empty() || c.id.find_first_not_of(
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")!=std::string::npos)) {
             throw std::runtime_error("export-name requires a plain artifact name");
@@ -257,6 +259,9 @@ void begin_frame(OrbitCamera& camera, MoleculeRenderSettings& settings, float& i
         complete_command=true;
     }
 }
+std::vector<std::filesystem::path> take_dropped_paths(){
+    auto out=std::move(dropped_paths);dropped_paths.clear();return out;
+}
 void input_frame() {
     if(!enabled||done())return;
     auto& c=commands[next]; auto& io=ImGui::GetIO();
@@ -266,6 +271,11 @@ void input_frame() {
     io.ClearEventsQueue();
     io.AddFocusEvent(true);
     io.AddMousePosEvent(injected_mouse.x,injected_mouse.y);
+    if(c.op=="drop") {
+        if(stage==0)for(const auto& p:c.paths)dropped_paths.push_back(std::filesystem::u8path(p));
+        if(++stage>=5)complete_command=true;
+        return;
+    }
     if(c.op=="scene")return;
     if(c.op=="window") {if(++stage>=4)complete_command=true;return;}
     // Destination naming alone; the following real button click still owns
@@ -346,7 +356,7 @@ void orbital_identity(const std::string& set,const std::string& dataset,
 void ui_frame(std::size_t drawn,std::size_t requested) {
     drawn_ui_mo=drawn;requested_mo=requested;
 }
-void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t mo) {
+void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t mo,std::size_t field_index) {
     if(!enabled)return;
     rendered_mo=mo;rendered_generation=generation;
     rendered_set=active_set;rendered_dataset=active_dataset;
@@ -371,13 +381,15 @@ void after_scene(const VolumeRenderer& renderer,const GridBox& box,std::size_t m
     // Full-grid evidence is an opt-in extension of the existing v1 plan. It
     // stores the same texture just rendered, including its original float bits.
     const bool full=c.op=="volume_full";
-    const std::string binary_name=c.id+".volume.f32";
+    const std::string field_suffix=field_index?"-field"+std::to_string(field_index):"";
+    const std::string binary_name=c.id+field_suffix+".volume.f32";
     if(full)write_volume_binary(output/binary_name,volume);
     std::mt19937 rng(20260905);std::vector<std::uint32_t> indices;
     for(int i=0;i<8192;++i)indices.push_back(rng()%static_cast<std::uint32_t>(volume.size()));
     std::sort(indices.begin(),indices.end());indices.erase(std::unique(indices.begin(),indices.end()),indices.end());
-    std::ofstream out(output/(c.id+".volume.json"));out<<std::setprecision(17);
+    std::ofstream out(output/(c.id+field_suffix+".volume.json"));out<<std::setprecision(17);
     out<<"{\"schema\":1,\"frame\":"<<frame<<",\"generation\":"<<generation<<",\"rendered_mo\":"<<mo
+       <<",\"field_index\":"<<field_index
        <<",\"orbital_set\":"<<quote(rendered_set)<<",\"dataset\":"<<quote(rendered_dataset)
        <<",\"spin\":"<<quote(rendered_spin)<<",\"source_index\":";
     if(rendered_source_index==std::numeric_limits<std::size_t>::max())out<<"null";else out<<rendered_source_index;
@@ -430,6 +442,13 @@ void anchor(const std::string& id) {
     if(!enabled)return;const auto p=ImGui::GetCursorScreenPos();hit(id,p,ImVec2(p.x+20,p.y+4));
 }
 void record(const std::string& kind,const std::string& json) {
+    if(enabled && (kind=="nbo.integration" || kind=="aomo.selection")){
+        const auto name=(kind=="nbo.integration"?"integration-":"selection-")+std::to_string(frame)+".json";
+        std::ofstream file(output/name);file<<json;
+        if(!file)throw std::runtime_error("Cannot preserve integrated orbital evidence");
+        events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"file\":"<<quote(name)<<"}\n";
+        events.flush();return;
+    }
     if(enabled && (kind=="input.density_evidence" || kind=="input.pi_topology_evidence")) {
         events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";
         events.flush();
@@ -437,7 +456,8 @@ void record(const std::string& kind,const std::string& json) {
     }
     if(enabled)trace.push_back("{\"kind\":"+quote(kind)+",\"data\":"+json+"}");
     if(enabled && (kind=="export.actual" || kind=="nbo.export" ||
-                   kind=="nbo.attach" || kind=="nbo.attach.error" ||
+                   kind=="nbo.attach" || kind=="nbo.attach.error" || kind=="scene.pick" ||
+                   kind=="aomo.selection.error" || kind=="input.package.error" ||
                    kind=="input.numerical_diagnostics" ||
                    (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {
         if(kind=="diagram.cache")++diagram_generation;
