@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(CUDAOrbitalVisualisation VERSION 0.3.0 LANGUAGES CXX)
+project(CUDAOrbitalVisualisation VERSION 0.4.0 LANGUAGES CXX)
 
 option(COV_ENABLE_CUDA "Build the CUDA/OpenGL viewer" ON)
 option(COV_BUILD_TESTS "Build parser, orbital, diagram, molecule and UI smoke tests" ON)

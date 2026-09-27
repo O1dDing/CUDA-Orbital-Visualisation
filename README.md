@@ -8,7 +8,9 @@ The viewer parses Gaussian FCHK/FCH and Molden wavefunctions on the CPU, uploads
 
 ## Download
 
-The [v0.3.0-pre.11 prerelease](https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/v0.3.0-pre.11) includes ordinary and native-validation Windows programs, validation evidence and source archives. Read the [release notes](docs/releases/v0.3.0-pre.11.md) for tested scope, program identities and remaining scientific limits.
+The first stable release is [v0.3.0](https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/v0.3.0), preserving the merged PR #3 FCHK implementation. [Stable release notes](docs/releases/v0.3.0.md) identify its exact source and CI binary.
+
+This branch develops the subsequent **NBO/NAO/NHO/NLMO/SALC integration**. [v0.4.0-pre.1](https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/v0.4.0-pre.1) packages the current R16 results. Read the [NBO release notes](docs/releases/v0.4.0-pre.1.md) and [16-item acceptance record](validation/nbo-r16-20260927/ACCEPTANCE-16.zh.md) for capability routing, tested scope, binary identities and remaining scientific limits.
 
 ## Current scope
 

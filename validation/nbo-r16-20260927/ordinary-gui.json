@@ -1,0 +1,70 @@
+{
+  "schema": "cov.r16.ordinary-gui.v1",
+  "passed": true,
+  "recorded_at_utc": "2026-09-27T22:43:20.422568+00:00",
+  "program": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\outputs\\COV-AOMO-r16-20260927\\program\\cov.exe",
+  "program_sha256": "e3968c0845e6a21be4d74aff773224180ede55967e097052d3a6d2ebf234d268",
+  "method": "Actual ordinary OFF executable; observed and controlled using Sky Windows app capture. Separate from validation replay.",
+  "cases": [
+    {
+      "case": "O2-RO",
+      "pid": 36332,
+      "passed": true,
+      "actions": [
+        "Opened saved example and maximized",
+        "Observed paired occupied valence spatial orbitals and real singly occupied frontier members",
+        "Clicked NPA charge: zero palette and atom1 +0.000000",
+        "Selected actual alpha NBO4 from typed orbital list and observed localized 3D field",
+        "Clicked NBO orbitals: actual NBO4/alpha label and same local field, no association rejection",
+        "Returned canonical: 1pi_g MO8/total and original field restored",
+        "Clicked spin: atom1 +1.000000, distinct from total charge"
+      ],
+      "note": "Before a local NBO is selected, the old NBO set button asks to select one. This is an explicit selection requirement, not an association failure."
+    },
+    {
+      "case": "XeF2",
+      "pid": 34800,
+      "passed": true,
+      "actions": [
+        "Opened saved example and maximized",
+        "Clicked Fit graph",
+        "Observed single right SALC column, no former horizontal overflow",
+        "Amber adaptive energy ticks and raw values visible",
+        "Left 5p three-member stack and right pi two-member stacks centered on shared symmetric column anchors"
+      ]
+    },
+    {
+      "case": "TiF6",
+      "pid": 28128,
+      "passed": true,
+      "actions": [
+        "Opened saved example and maximized",
+        "Expanded browser and selected MO25-a",
+        "Observed MO25-a/b/c each occupation2.00, energy -0.03450 Ha, 1t2g",
+        "Observed 3D identity 1t2g / MO25 / total",
+        "Expanded Selected MO chemistry below unified diagram",
+        "Observed validated NAO projection route, 343 actual projected local relations",
+        "Observed bonding_mixing / ligand_to_centre / 3 coupled dimensions",
+        "Observed cross-Fock full interval -0.12423..-0.12423 Ha, 16.4/83.6 partition support",
+        "Observed retained norm1.000000, AO-metric residual3.03e-9, four F2p contributions20.89% and Ti3d16.42%"
+      ]
+    }
+  ],
+  "images": {
+    "ordinary-O2-RO-canonical.png": "f39c2b0149a8b0d566584b0f04163c2517760954b9dce3fc67b09f650c08c550",
+    "ordinary-O2-RO-NBO.png": "95bf4183d682384f049acc13ef28af2667cd4274ae3d69b4446fe51d32ebe1b4",
+    "ordinary-O2-RO-NPA-zero.png": "757aab880c765a03aab16fa0cb2cbd4e686dca2412d5fcd165e78bd0ed90cad7",
+    "ordinary-O2-RO-returned.png": "ea156883c5623c825f65ce3819e68fd6b4385e011e1cb409b718629499d590fe",
+    "ordinary-O2-RO-spin.png": "e7811dfa43daa7242ddca99e174eae78c2cd42c80ce3a0200eb6447d45a6e35e",
+    "ordinary-TiF6-chemistry.png": "a33383f35a754425119440754398b827e56bf81dd37c0db40eb68e83c93c6543",
+    "ordinary-TiF6-low-t2g.png": "cf95b5f51ffc2f9be94ecd399560fc0650f8a60b0518fbebb8424179b4b9fa71",
+    "ordinary-XeF2-final.png": "9e2e310adbd57be134a99e00f6fdbf131a3231050802c146ce9d811fbca43f46"
+  },
+  "summary": "O₂ 限制性开壳层的总 NPA 电荷为零，自旋布居为每个 O 约 1；实际局域 NBO 显示、NBO 轨道集和返回正则轨道均成功。XeF₂ 在适配窗口后保留单列 SALC、琥珀色非线性刻度和两侧居中叠放。TiF₆ 实际选择 MO25，完整三重组的占据均为 2，详情显示真实 NAO 组成、完整范数和 3.03e-9 重构残差，以及有证据的配体向金属 π 混合。",
+  "limits": "Representative ordinary visual/interaction checks for three saved examples. Exhaustive typed identity/export/signed sampled-field checks are separately recorded in final native evidence; screenshots alone do not certify the science.",
+  "ordinary_window_left_open": {
+    "pid": 28128,
+    "case": "TiF6",
+    "view": "MO25 chemistry details"
+  }
+}
