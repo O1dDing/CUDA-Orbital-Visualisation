@@ -1,4 +1,5 @@
 #include "cov/nbo.hpp"
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -45,6 +46,32 @@ int main(){try{
     for(auto spin:{cov::NboSpin::Alpha,cov::NboSpin::Beta}){op.d.archive->matrices.push_back(mat("LCAOMO",{a,b,b,-a},spin));op.d.archive->matrices.push_back(mat("DENSITY",{.8,.4,.4,.2},spin));for(const auto& kind:{"AONBO","NAONBO"})op.d.matrices.push_back(mat(kind,{1,0,0,1},spin));for(const auto& kind:{"NBOMO","NAOMO"})op.d.matrices.push_back(mat(kind,{a,b,b,-a},spin));for(std::size_t i=0;i<2;++i){cov::NboNao n;n.id=n.atom=i+1;n.symbol="H";n.angular="s";n.type="Val(1s)";n.occupation=i?.2:.8;n.spin=spin;op.d.naos.push_back(n);cov::NboOrbital o;o.id=i+1;o.occupation=n.occupation;o.spin=spin;op.d.orbitals.push_back(o);}}
     op.d.matrices.push_back(mat("AONAO",{1,0,0,1}));op.w.total_density_packed={1.6,.8,.4};op.w.spin_density_packed={0,0,0};op.w.total_density_provenance=op.w.spin_density_provenance=cov::DataProvenance::Producer;
     require(cov::associate_nbo(op.d,op.w).compatible,"OPEN shared AONAO");v=cov::nbo_mo_decomposition(op.d,0);require(v&&v->available&&v->occupation==1,"alpha spin occupation confused with shared canonical occupation");near(*v->rows[0].electron_contribution,.8,"alpha electron decomposition");require(op.d.nao_validation.size()==2&&op.d.nao_validation[1].available&&!op.d.nao_validation[1].direct_fchk_coefficients,"beta archive-only boundary");require(op.d.mo_decompositions.size()==2,"guessed beta canonical columns created");
+    auto unrelated_naomo=op.d;
+    for(auto& matrix:unrelated_naomo.matrices)
+        if(matrix.kind=="NAOMO"&&matrix.spin==cov::NboSpin::Alpha){matrix.values[0]+=.1;break;}
+    auto independently_checked=unrelated_naomo;
+    require(!cov::associate_nbo(independently_checked,op.w).compatible,
+            "invalid NAOMO unexpectedly passed its independent full transform check");
+    require(cov::make_nbo_wavefunction(unrelated_naomo,op.w).orbitals.size()==4,
+            "rejected NAOMO incorrectly suppressed independently validated AONBO rendering");
+    auto independent=op.d;
+    independent.matrices.push_back(mat("AOPNAO",{1,0,0,1})); // shared RO sidecar unrelated to NBO rendering
+    const auto nbo_view=cov::make_nbo_wavefunction(independent,op.w);
+    require(nbo_view.orbitals.size()==4 &&
+            std::count_if(nbo_view.orbitals.begin(),nbo_view.orbitals.end(),
+                [](const auto& mo){return mo.spin==cov::Spin::Alpha;})==2 &&
+            std::count_if(nbo_view.orbitals.begin(),nbo_view.orbitals.end(),
+                [](const auto& mo){return mo.spin==cov::Spin::Beta;})==2,
+            "independently rejected NAOMO/shared AOPNAO suppressed verified RO AONBO rendering");
+    auto damaged=independent;
+    for(auto& matrix:damaged.matrices)
+        if(matrix.kind=="AONBO"&&matrix.spin==cov::NboSpin::Alpha){matrix.values[0]+=.1;break;}
+    bool rejected_aonbo=false;
+    try{(void)cov::make_nbo_wavefunction(damaged,op.w);}
+    catch(const std::runtime_error& error){
+        rejected_aonbo=std::string(error.what()).find("invalid_aonbo_metric")!=std::string::npos;
+    }
+    require(rejected_aonbo,"damaged actual AONBO coefficients passed render-time strict recheck");
     const auto json=cov::serialize_nbo_json(op.d);require(json.find("\"mo_decompositions\"")!=std::string::npos&&json.find("verified_archive_only")!=std::string::npos,"decomposition JSON omissions");
     std::cout<<"NBO focus core: passed full contributions, literal shells, spin/density closure, missing data and rejection contracts\n";return 0;
 }catch(const std::exception& e){std::cerr<<"NBO focus core failed: "<<e.what()<<'\n';return 1;}}

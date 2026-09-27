@@ -46,9 +46,23 @@ struct NboOrbitalRef {
 bool operator==(const NboOrbitalRef& a,const NboOrbitalRef& b) noexcept;
 const char* nbo_orbital_kind_name(NboOrbitalKind kind) noexcept;
 const char* nbo_capability_state_name(NboCapabilityState state) noexcept;
+// Centre-conditioned angular projections are independent evidence on each
+// end of a local axis. Their fractions must never be summed as populations.
+struct NboChannelEvidence {
+    std::string status="insufficient_evidence", channel="unassigned", method, reason;
+    NboSpin spin=NboSpin::Total;
+    std::vector<std::size_t> axis_atoms;
+    std::array<double,2> centre_fractions{};
+    std::array<std::array<double,5>,2> conditional_angular_fractions{};
+    double classification_threshold=0;
+    double centre_threshold=0;
+    NboSource source;
+};
 struct NboOrbitalDescriptor {
     NboOrbitalRef ref;
     std::string id, label, detail, energy_semantics;
+    std::string display_label; // producer label remains unchanged in label
+    std::vector<NboChannelEvidence> channels;
     std::vector<std::size_t> atoms; // ZERO-based canonical atom identities (raw dataset retains producer IDs)
     std::optional<double> occupation, energy_hartree;
     double metric_norm2=0;
@@ -67,6 +81,7 @@ enum class NboSelectionMode { Orbital, WeightedComponent, PartialSum, Combinatio
 struct NboOrbitalTerm { NboOrbitalRef orbital; double coefficient=1; };
 struct NboOrbitalSelection {
     std::string dataset_id, label;
+    std::string semantic_kind, group_id, source_id;
     NboSelectionMode mode=NboSelectionMode::Orbital;
     std::vector<NboOrbitalTerm> terms;
     std::optional<std::size_t> target_canonical_index;
@@ -80,6 +95,7 @@ struct NboStructureEvidence {
     std::optional<double> wiberg, value;
     std::optional<double> wiberg_alpha, wiberg_beta;
     std::string units, channel="unassigned"; // never infer sigma/pi/delta from ordinal
+    std::vector<NboChannelEvidence> channels; // multiple associated local channels
     std::optional<unsigned> lewis_bond_count; // actual BD records; never rounded WBI
     NboSource source;
 };
@@ -96,6 +112,7 @@ struct NboIntegration {
 // without destroying canonical data or other independently verified capabilities.
 NboIntegration integrate_nbo(const Wavefunction& canonical, const NboDataset& dataset);
 NboIntegration read_nbo_integration(const Wavefunction& canonical, const NboInputCandidate& candidate);
+std::string nbo_canonical_fingerprint(const Wavefunction& canonical);
 const NboCapability* nbo_capability(const NboIntegration& data,const std::string& key) noexcept;
 const NboOrbitalDescriptor* nbo_orbital(const NboIntegration& data,const NboOrbitalRef& ref) noexcept;
 std::vector<NboMoLink> nbo_links_for_orbital(const NboIntegration& data,const NboOrbitalRef& ref);

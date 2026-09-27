@@ -31,6 +31,8 @@ add_library(cov_parser
     src/parser/gaussian_log.cpp
     src/parser/nbo.cpp
     src/parser/nbo_integration.cpp
+    src/analysis/nbo_salc.cpp
+    src/analysis/pi_coupling.cpp
     src/analysis/density.cpp
     src/analysis/overlap.cpp
     src/analysis/overlap_basis.cpp
@@ -102,6 +104,7 @@ target_link_libraries(cov_orbitals PUBLIC cov_parser)
 target_compile_features(cov_orbitals PUBLIC cxx_std_20)
 
 add_library(cov_molecule
+    src/analysis/chemistry_route.cpp
     src/analysis/interaction_graph.cpp
     src/render/molecule_style.cpp
     src/render/nbo_molecular_overlay.cpp
@@ -162,6 +165,9 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
         src/ui/ui.cpp
         src/ui/nbo_ui.cpp
         src/ui/nbo_aomo_ui.cpp
+        src/ui/nbo_aomo_labels.cpp
+        src/ui/nbo_aomo_hover.cpp
+        src/ui/nbo_aomo_text.cpp
         src/ui/ui_text_dispatch.cpp
         src/ui/orbital_ui_text.cpp
         src/ui/orbital_ui_v2.cpp
@@ -313,6 +319,19 @@ if(COV_ENABLE_CUDA)
 endif()
 
 if(COV_BUILD_TESTS)
+    add_executable(cov_chemistry_route_smoke tests/chemistry_route_smoke.cpp)
+    target_link_libraries(cov_chemistry_route_smoke PRIVATE cov_molecule cov_orbitals cov_parser)
+    add_test(NAME chemistry_route_smoke COMMAND cov_chemistry_route_smoke)
+    add_executable(cov_chemistry_route_probe tests/chemistry_route_probe.cpp)
+    target_link_libraries(cov_chemistry_route_probe PRIVATE cov_molecule cov_orbitals cov_parser)
+    add_executable(cov_unified_aomo_probe tests/unified_aomo_probe.cpp)
+    target_link_libraries(cov_unified_aomo_probe PRIVATE cov_parser)
+    add_executable(cov_nbo_salc_smoke tests/test_nbo_salc.cpp)
+    target_link_libraries(cov_nbo_salc_smoke PRIVATE cov_parser)
+    add_test(NAME nbo_salc_smoke COMMAND cov_nbo_salc_smoke)
+    add_executable(cov_nbo_salc_invariance tests/nbo_salc_invariance.cpp)
+    target_link_libraries(cov_nbo_salc_invariance PRIVATE cov_parser)
+    target_include_directories(cov_nbo_salc_invariance SYSTEM PRIVATE ${cov_eigen_SOURCE_DIR})
     add_executable(cov_aomo_core_probe tests/aomo_core_probe.cpp)
     target_link_libraries(cov_aomo_core_probe PRIVATE cov_parser)
     add_executable(cov_nbo_integration_core_smoke tests/nbo_integration_core_smoke.cpp)
@@ -509,6 +528,16 @@ if(COV_BUILD_TESTS)
     add_executable(cov_mo_diagram_snapshot_smoke tests/mo_diagram_snapshot_smoke.cpp)
     target_link_libraries(cov_mo_diagram_snapshot_smoke PRIVATE cov_ui)
     add_test(NAME mo_diagram_snapshot_smoke COMMAND cov_mo_diagram_snapshot_smoke)
+    add_executable(cov_nbo_aomo_labels_smoke tests/nbo_aomo_labels_smoke.cpp)
+    target_link_libraries(cov_nbo_aomo_labels_smoke PRIVATE cov_ui)
+    target_compile_options(cov_nbo_aomo_labels_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
+    add_test(NAME nbo_aomo_labels_smoke COMMAND cov_nbo_aomo_labels_smoke)
+    add_executable(cov_nbo_aomo_hover_smoke tests/nbo_aomo_hover_smoke.cpp)
+    target_link_libraries(cov_nbo_aomo_hover_smoke PRIVATE cov_ui)
+    target_compile_options(cov_nbo_aomo_hover_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
+    add_test(NAME nbo_aomo_hover_smoke COMMAND cov_nbo_aomo_hover_smoke)
     add_executable(cov_mo_diagram_layout_smoke tests/mo_diagram_layout_smoke.cpp)
     target_link_libraries(cov_mo_diagram_layout_smoke PRIVATE cov_ui)
     add_test(NAME mo_diagram_layout_smoke COMMAND cov_mo_diagram_layout_smoke)

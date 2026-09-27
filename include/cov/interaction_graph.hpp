@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -44,6 +45,9 @@ struct InteractionEdge {
     double mayer_order = 0.0;
     double confidence = 0.0;
     DataProvenance electronic_provenance = DataProvenance::Unavailable;
+    // Distinct validated NBO observable; never substituted for Mayer order.
+    std::optional<double> wiberg_index;
+    std::string wiberg_source_path;
 };
 
 // A multicentre assignment is a hyperedge. Pairwise MulticentreSupport edges

@@ -28,12 +28,12 @@ def check(package: Path, evidence: Path, expected=None):
         columns[spin]={'canonical':reference['canonical'][spin], 'GaussianAO':np.eye(n)}
         for kind,spins in reference['families'].items():columns[spin][kind]=spins[spin]
     alpha_count=next(iter(reference['canonical'].values())).shape[1]
-    selections = sorted((int(p.stem.split('-')[1]), json.loads(p.read_text()))
+    selections = sorted((int(p.stem.split('-')[1]), json.loads(p.read_text(encoding='utf-8')))
                         for p in evidence.glob('selection-*.json'))
     results = []
     grid_cache={}
     for path in sorted(evidence.glob('*.volume.json')):
-        actual = json.loads(path.read_text())
+        actual = json.loads(path.read_text(encoding='utf-8'))
         prior = [x for frame, x in selections if frame < actual['frame']]
         if not prior:
             results.append(dict(file=path.name, passed=False, reason='no applied typed selection'))
@@ -83,9 +83,9 @@ def check(package: Path, evidence: Path, expected=None):
                             requested_identity=intended, request_matches=request_matches,
                             passed=nrms < 1e-4 and relative_max < 1e-3 and request_matches
                                 and max(weight_errors, default=0.0)<1e-6))
-    errors = [json.loads(line) for line in (evidence/'events.jsonl').read_text().splitlines()
+    errors = [json.loads(line) for line in (evidence/'events.jsonl').read_text(encoding='utf-8').splitlines()
               if json.loads(line).get('kind') == 'aomo.selection.error']
-    session = json.loads((evidence/'session.json').read_text())
+    session = json.loads((evidence/'session.json').read_text(encoding='utf-8'))
     report = dict(passed=bool(results) and all(x['passed'] for x in results)
                     and not errors and session['failed_commands'] == 0,
                   numerical_reference='original FCHK canonical + raw AONAO/AONBO/AONHO/AONLMO/AOPNAO; independent LABEL/CONTRACT AO map; GBasis',
@@ -103,6 +103,6 @@ if __name__ == '__main__':
     parser.add_argument('--expected', type=Path)
     args = parser.parse_args()
     result = check(args.package, args.evidence,
-                   json.loads(args.expected.read_text()) if args.expected else None)
+                   json.loads(args.expected.read_text(encoding='utf-8')) if args.expected else None)
     print(json.dumps(result, ensure_ascii=False))
     raise SystemExit(0 if result['passed'] else 2)

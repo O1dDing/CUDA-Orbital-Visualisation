@@ -45,7 +45,7 @@ void annotate_nbo_bond_channels(NboIntegration& data,const Wavefunction& canonic
     using Key=std::tuple<std::size_t,std::size_t,std::size_t>;
     std::map<Key,std::unique_ptr<LocalAngularProjectionWorkspace>> workspaces;
     constexpr const char* names[]={"sigma","pi","delta","phi","gamma"};
-    std::map<std::tuple<int,std::size_t>,std::string> channels;
+    std::map<std::tuple<int,std::size_t>,NboChannelEvidence> channels;
     for(std::size_t i=0;i<descriptors.size();++i){auto& o=data.orbitals[descriptors[i]];
         if(o.atoms.size()!=2 || o.atoms[0]>=view.atoms.size() || o.atoms[1]>=view.atoms.size())continue;
         const auto pair=std::minmax(o.atoms[0],o.atoms[1]);
@@ -58,6 +58,22 @@ void annotate_nbo_bond_channels(NboIntegration& data,const Wavefunction& canonic
         }
         const bool assigned=error.empty() && parts[0].m>=0 && parts[0].m==parts[1].m;
         const std::string label=assigned?names[parts[0].m]:"mixed/unresolved";
+        NboChannelEvidence evidence;
+        evidence.status=assigned?"available":"insufficient_evidence";
+        evidence.channel=assigned?label:"unassigned";
+        evidence.method="S-metric centre-conditioned bond-axis angular projection";
+        evidence.reason=assigned?"Both centres support the same angular channel":
+            error.empty()?"No common angular channel passes both centre thresholds":error;
+        evidence.spin=o.ref.spin;
+        evidence.axis_atoms={pair.first,pair.second};
+        evidence.classification_threshold=OrbitalChemistryOptions{}.determined_fraction;
+        evidence.centre_threshold=OrbitalChemistryOptions{}.pair_atom_weight_floor;
+        evidence.source=o.source;
+        for(std::size_t side=0;side<2;++side){
+            evidence.centre_fractions[side]=parts[side].centre;
+            evidence.conditional_angular_fractions[side]=parts[side].fractions;
+        }
+        o.channels.push_back(evidence);
         std::ostringstream detail;detail<<std::setprecision(6)<<"Derived local bond-axis channel: "<<label
             <<". Axis atoms "<<pair.first+1<<"-"<<pair.second+1<<". Separate S-metric centre projections:";
         for(std::size_t side=0;side<2;++side){detail<<" atom "<<(side?pair.second:pair.first)+1<<" centre="<<parts[side].centre<<"; conditional |m| fractions=";
@@ -66,13 +82,16 @@ void annotate_nbo_bond_channels(NboIntegration& data,const Wavefunction& canonic
             <<"; required centre fraction="<<OrbitalChemistryOptions{}.pair_atom_weight_floor
             <<". Centre projections are not added as orthogonal populations. "<<error;
         o.detail+=(o.detail.empty()?"":"\n")+detail.str();
-        if(assigned){o.label+=" ["+label+"; derived]";channels[{static_cast<int>(o.ref.spin),o.ref.index}]=label;}
+        if(assigned){o.display_label=o.label+" ["+label+"; derived]";
+            channels[{static_cast<int>(o.ref.spin),o.ref.index}]=evidence;}
     }
     for(auto& evidence:data.structure){if(evidence.kind!="bond")continue;
         std::map<std::string,unsigned> counts;
         for(const auto& r:evidence.orbitals){if(r.kind!=NboOrbitalKind::NBO)continue;
             // Show per-orbital labels in the UI; aggregation never changes Lewis multiplicity.
-            const auto found=channels.find({static_cast<int>(r.spin),r.index});if(found!=channels.end())++counts[found->second];}
+            const auto found=channels.find({static_cast<int>(r.spin),r.index});if(found!=channels.end()){
+                ++counts[found->second.channel];evidence.channels.push_back(found->second);
+            }}
         if(!counts.empty()){std::string explanation="Derived channel labels on associated orbitals: ";
             for(const auto& [name,count]:counts)explanation+=name+" ("+std::to_string(count)+") ";
             evidence.detail+="\n"+explanation;}

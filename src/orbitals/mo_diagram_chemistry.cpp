@@ -1,4 +1,5 @@
 #include "cov/mo_diagram.hpp"
+#include "cov/chemistry_route.hpp"
 #include "cov/ligand_field.hpp"
 #include "cov/local_geometry.hpp"
 #include "cov/local_orbital_symmetry.hpp"
@@ -1930,6 +1931,44 @@ DiagramSelectionPlan build_valence_selection_plan(
                 :"complete multicentre active space only");
         return plan;
     }
+    if(options.routed &&
+       options.routed->canonical_fingerprint==nbo_canonical_fingerprint(wavefunction) &&
+       std::any_of(options.routed->mo_composition.begin(),
+                   options.routed->mo_composition.end(),[](const auto& result){
+                       return result.available()&&result.provider==RoutedProvider::Nbo;
+                   })){
+        const auto frontier=find_frontier_orbitals(
+            wavefunction.orbitals,options.filter.occupation_threshold);
+        const auto labels=build_orbital_labels(wavefunction.orbitals,
+            point_group_limited_degeneracy(wavefunction,options.degeneracy));
+        std::size_t core_hidden=0,unresolved_occupied=0;
+        for(std::size_t i=0;i<wavefunction.orbitals.size();++i){
+            const auto& mo=wavefunction.orbitals[i];
+            const bool occ=occupied(mo,options.filter.occupation_threshold);
+            const auto balance=routed_mo_shell_balance(*options.routed,i);
+            const bool deep_core=balance&&balance->complete&&occ&&
+                balance->core>=0.70&&balance->core>=balance->valence+0.10;
+            if(deep_core){++core_hidden;continue;}
+            const bool frontier_virtual=(frontier.alpha_lumo&&*frontier.alpha_lumo==i)||
+                (frontier.beta_lumo&&*frontier.beta_lumo==i);
+            const bool valence_virtual=balance&&balance->valence>=0.05;
+            if(occ||frontier_virtual||valence_virtual){
+                plan.included_indices.push_back(i);
+                if(occ){++plan.valence_occupied_count;if(!balance)++unresolved_occupied;}
+                else ++plan.frontier_virtual_count;
+            }
+        }
+        plan.included_indices=expand_degenerate(std::move(plan.included_indices),labels);
+        plan.hidden_count=metadata.size()>plan.included_indices.size()?metadata.size()-
+            plan.included_indices.size():0;
+        std::ostringstream summary;
+        summary<<"validated NAO Cor/Val/Ryd valence scope; "
+               <<plan.included_indices.size()<<'/'<<metadata.size()
+               <<" canonical MOs; complete deep-core hidden="<<core_hidden
+               <<"; unresolved occupied retained="<<unresolved_occupied
+               <<"; complete degeneracy groups retained";
+        plan.summary=summary.str();return plan;
+    }
     const LigandFieldEnvironment ligand_field=
         analyse_ligand_field_environment(wavefunction);
     const LigandScope ligand_scope=make_ligand_scope(
@@ -2061,6 +2100,18 @@ MODiagramData build_mo_diagram_data(
     data.metadata=build_orbital_metadata(
         wavefunction,options.selected_index,
         options.degeneracy,options.filter);
+    if(options.routed &&
+       options.routed->canonical_fingerprint==nbo_canonical_fingerprint(wavefunction))
+        for(std::size_t i=0;i<data.metadata.size();++i)
+            if(const auto balance=routed_mo_shell_balance(*options.routed,i)){
+                const bool occ=occupied(wavefunction.orbitals[i],
+                                        options.filter.occupation_threshold);
+                if(balance->complete&&occ&&balance->core>=0.70&&
+                   balance->core>=balance->valence+0.10)
+                    data.metadata[i].region=OrbitalRegion::Core;
+                else if(occ||balance->valence>=0.05)
+                    data.metadata[i].region=OrbitalRegion::Valence;
+            }
 
     const LigandFieldEnvironment ligand_field=
         analyse_ligand_field_environment(wavefunction);

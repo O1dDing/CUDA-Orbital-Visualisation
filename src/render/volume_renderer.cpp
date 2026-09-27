@@ -561,6 +561,7 @@ VolumeRenderer::~VolumeRenderer() {
 
 void VolumeRenderer::invalidate_geometry_cache() noexcept {
     geometry_cache_wavefunction_ = nullptr;
+    geometry_graph_source_ = nullptr;
     geometry_bonds_.clear();
     geometry_bond_indices_.clear();
     geometry_interactions_ = {};
@@ -659,7 +660,8 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
                                      const int framebuffer_height,
                                      const OrbitCamera& camera,
                                      const MoleculeRenderSettings& settings,
-                                     const MoleculeOverlay* overlay) {
+                                     const MoleculeOverlay* overlay,
+                                     const InteractionGraph* routed_graph) {
     geometry_targets_.clear();
     geometry_width_=std::max(1,framebuffer_width);
     geometry_height_=std::max(1,framebuffer_height);
@@ -673,11 +675,12 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
     std::vector<Vec3> points;
     points.reserve(wavefunction.atoms.size());
     for (const Atom& atom : wavefunction.atoms) points.push_back(to_texture(atom, box));
-    if (geometry_cache_wavefunction_ != &wavefunction) {
+    if (geometry_cache_wavefunction_ != &wavefunction ||
+        geometry_graph_source_ != routed_graph) {
         auto bonds = analyse_bonds(wavefunction);
-        auto interactions = build_interaction_graph(wavefunction);
+        auto routed_interactions = routed_graph?*routed_graph:build_interaction_graph(wavefunction);
         geometry_bonds_ = std::move(bonds);
-        geometry_interactions_ = std::move(interactions);
+        geometry_interactions_ = std::move(routed_interactions);
         geometry_bond_indices_.clear();
         for (std::size_t index=0;index<geometry_bonds_.size();++index) {
             const auto& bond=geometry_bonds_[index];
@@ -685,6 +688,7 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
                 bond.atom_a,bond.atom_b)]=index;
         }
         geometry_cache_wavefunction_ = &wavefunction;
+        geometry_graph_source_ = routed_graph;
     }
     const auto& bonds = geometry_bonds_;
     const auto& interactions = geometry_interactions_;

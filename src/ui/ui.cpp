@@ -1,5 +1,7 @@
 #include "cov/ui.hpp"
 #include "cov/nbo_ui.hpp"
+#include "cov/nbo_aomo_ui.hpp"
+#include "cov/validation.hpp"
 #include "cov/orbital_ui_text.hpp"
 
 #include <imgui.h>
@@ -408,6 +410,10 @@ bool configure_fonts(const float pixel_size) {
     const auto nbo_fr=nbo_glyph_seed(Language::French);
     latin_builder.AddText(nbo_en.c_str());
     latin_builder.AddText(nbo_fr.c_str());
+    const auto aomo_en=nbo_aomo_glyph_seed(Language::English);
+    const auto aomo_fr=nbo_aomo_glyph_seed(Language::French);
+    latin_builder.AddText(aomo_en.c_str());
+    latin_builder.AddText(aomo_fr.c_str());
     latin_builder.AddText(scientific_glyph_seed());
     latin_builder.AddText(kIntegrationLatinGlyphs);
     latin_builder.AddText(kOrbitalDiagramLatinGlyphs);
@@ -434,6 +440,10 @@ bool configure_fonts(const float pixel_size) {
     const auto nbo_ja=nbo_glyph_seed(Language::Japanese);
     zh_builder.AddText(nbo_zh.c_str());
     ja_builder.AddText(nbo_ja.c_str());
+    const auto aomo_zh=nbo_aomo_glyph_seed(Language::ChineseSimplified);
+    const auto aomo_ja=nbo_aomo_glyph_seed(Language::Japanese);
+    zh_builder.AddText(aomo_zh.c_str());
+    ja_builder.AddText(aomo_ja.c_str());
     zh_builder.AddText(scientific_glyph_seed());
     ja_builder.AddText(scientific_glyph_seed());
     ImVector<ImWchar> zh_ranges;
@@ -466,7 +476,14 @@ void begin_card(const char* id, const float height) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 11.0f));
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.082f, 0.108f, 0.145f, 0.94f));
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.18f, 0.23f, 0.30f, 0.90f));
-    ImGui::BeginChild(id, ImVec2(0.0f, height), true, ImGuiWindowFlags_None);
+    if(height<=0)
+        ImGui::BeginChild(id, ImVec2(0,0),
+            ImGuiChildFlags_Border|ImGuiChildFlags_AutoResizeY|ImGuiChildFlags_AlwaysAutoResize,
+            ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoScrollWithMouse);
+    else
+        ImGui::BeginChild(id, ImVec2(0.0f, height), true, ImGuiWindowFlags_None);
+    if(height<=0)cov::validation::field(std::string("layout.card.")+id+".scroll_max_y",
+        std::to_string(ImGui::GetScrollMaxY()));
     ImGui::PushTextWrapPos(0.0f);
 }
 

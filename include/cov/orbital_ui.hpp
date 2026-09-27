@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace cov::ui {
@@ -33,6 +34,7 @@ struct OrbitalUIBrowserCache {
     std::optional<OrbitalFilterSettings> filter;
     std::optional<FrontierOrbitals> frontier;
     std::vector<OrbitalMetadata> metadata;
+    std::string routed_identity;
 };
 
 struct OrbitalUIState {
@@ -42,6 +44,8 @@ struct OrbitalUIState {
     DegeneracySettings degeneracy{};
     OrbitalFilterSettings filter{};
     bool grouped_labels = true;
+    // Chemical subsets are an explicit choice, independent of compact layout.
+    MODiagramMode diagram_mode = MODiagramMode::ValenceCentral;
     bool hide_ligand_centred_intermediates = true;
     bool show_diagram_details = false;
     // Last drawn details rectangle (x, y, width, height), in ImGui coordinates.

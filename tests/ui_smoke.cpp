@@ -1,4 +1,5 @@
 #include "cov/ui.hpp"
+#include "cov/nbo_aomo_ui.hpp"
 
 #include <imgui.h>
 
@@ -229,6 +230,18 @@ int main() {
     if((have_zh && !expect_utf8_text(primary,zh_seed,zh_seed,"Chinese atlas seed",true)) ||
        (have_ja && !expect_utf8_text(primary,ja_seed,ja_seed,"Japanese atlas seed",true))) {
         ImGui::DestroyContext();return 14;
+    }
+
+    // The unified diagram owns its evolving labels. Exercise actual merged
+    // font glyphs so a new preset or scientific symbol cannot become a '?' UI.
+    for(const auto language:languages) {
+        const auto seed=cov::ui::nbo_aomo_glyph_seed(language);
+        const bool available=language==cov::ui::Language::ChineseSimplified?have_zh:
+            language==cov::ui::Language::Japanese?have_ja:true;
+        if(available&&!expect_utf8_text(primary,seed.c_str(),seed.c_str(),
+                                       "unified orbital diagram",true)) {
+            ImGui::DestroyContext();return 15;
+        }
     }
 
     ImGui::DestroyContext();

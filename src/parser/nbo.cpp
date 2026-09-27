@@ -45,6 +45,8 @@ NboArchive read_nbo_archive(const std::filesystem::path& path) {
     if(!std::regex_search(gen,m,std::regex(R"(NATOMS\s*=\s*(\d+))")))throw std::runtime_error("Missing NATOMS");auto nat=std::stoul(m[1]);
     a.open_shell=std::regex_search(gen,std::regex(R"(\bOPEN\b)"));a.density_is_bond_order=std::regex_search(gen,std::regex(R"(\bBODM\b)"));bool packed=std::regex_search(gen,std::regex(R"(\bUPPER\b)"));
     bool bohr=std::regex_search(gen,std::regex(R"(\bBOHR\b)"));
+    const bool fock_ev=std::regex_search(gen,std::regex(R"(\bEV\b)"));
+    a.fock_input_units=fock_ev?"eV":"hartree";
     std::istringstream coords(required("COORD"));std::string row;
     const std::regex cr("^\\s*(\\d+)\\s+("+num+")\\s+("+num+")\\s+("+num+")\\s+("+num+")\\s*$");
     while(std::getline(coords,row))if(std::regex_match(row,m,cr)){Atom at;at.atomic_number=std::stoi(m[1]);at.nuclear_charge=number(m[2]);const double u=bohr?1:kAngstromToBohr;at.x=number(m[3])*u;at.y=number(m[4])*u;at.z=number(m[5])*u;a.atoms.push_back(at);}
@@ -57,6 +59,7 @@ NboArchive read_nbo_archive(const std::filesystem::path& path) {
     for(std::size_t i=0;i<a.nprim.size();++i)if(a.nprim[i]<=0||a.nptr[i]<=0||static_cast<std::size_t>(a.nptr[i]-1+a.nprim[i])>a.exponents.size())throw std::runtime_error(".47 primitive pointer outside exponent array");
     for(auto& k:{"OVERLAP","DENSITY","FOCK","LCAOMO"}) { auto it=blocks.find(k);if(it==blocks.end())continue; auto v=numbers(it->second);const std::size_t n=a.basis_count, count=(packed&&std::string(k)!="LCAOMO")?n*(n+1)/2:n*n;const std::size_t spins=a.open_shell&&std::string(k)!="OVERLAP"?2:1;
         if(v.size()!=count*spins)throw std::runtime_error(std::string(".47 matrix size mismatch: ")+k);
+        if(fock_ev&&std::string(k)=="FOCK")for(auto& value:v)value/=27.211386245981;
         for(std::size_t s=0;s<spins;++s){NboMatrix mat;mat.kind=k;mat.spin=spins==1?NboSpin::Total:s==0?NboSpin::Alpha:NboSpin::Beta;mat.rows=mat.columns=n;mat.values.resize(n*n);mat.source=source(path,k,starts[k]);mat.source.line_end=ends[k];std::size_t p=s*count;for(std::size_t j=0;j<n;++j)for(std::size_t i=0;i<(count==n*n?n:j+1);++i){mat.values[i*n+j]=v[p++];if(count!=n*n)mat.values[j*n+i]=mat.values[i*n+j];}a.matrices.push_back(std::move(mat));}
     }
     return a;
@@ -329,9 +332,17 @@ NboAssociation associate_nbo(NboDataset& d,const Wavefunction& w) {
 
 Wavefunction make_nbo_wavefunction(const NboDataset& d,const Wavefunction& canonical) {
     if(!d.association.compatible||!d.archive)throw std::runtime_error("NBO rendering requires successful strict same-source association");
-    // Recheck against the supplied canonical object: association is not a reusable
-    // permission token for a subsequently changed wavefunction or dataset.
-    NboDataset checked=d;if(!associate_nbo(checked,canonical).compatible)throw std::runtime_error("NBO association no longer matches canonical wavefunction");
+    // Recheck the exact evidence family used by the independently routed NBO
+    // capability. Other sidecars (NAOMO, AOPNAO, etc.) support separate
+    // capabilities and must not invalidate already verified AONBO rendering.
+    // The archive, canonical coefficients, AO mapping, density and every
+    // printed NBO occupation are still checked by associate_nbo below.
+    NboDataset checked=d;
+    checked.matrices.erase(std::remove_if(checked.matrices.begin(),checked.matrices.end(),
+        [](const NboMatrix& matrix){return matrix.kind!="AONBO";}),checked.matrices.end());
+    const auto association=associate_nbo(checked,canonical);
+    if(!association.compatible)
+        throw std::runtime_error("NBO rendering association failed ("+association.status+"): "+association.detail);
     Wavefunction out;out.atoms=canonical.atoms;out.primitives=canonical.primitives;out.shells=canonical.shells;out.basis_count=canonical.basis_count;out.pure_d=canonical.pure_d;out.pure_f=canonical.pure_f;out.pure_g=canonical.pure_g;out.source_title="NBO localized orbitals (independent dataset)";out.ao_overlap=canonical.ao_overlap;out.ao_overlap_provenance=canonical.ao_overlap_provenance;
     const auto n=out.basis_count;std::vector<std::size_t> gaussian_to_internal(n);for(std::size_t i=0;i<n;++i)gaussian_to_internal[canonical.gaussian_ao_transform[i].source_index]=i;
     for(auto& x:d.orbitals){const auto* m=matrix(d.matrices,"AONBO",x.spin);if(!m||m->rows!=n||m->columns!=n||x.id==0||x.id>n)throw std::runtime_error("Complete AONBO matrix for every orbital/spin is required");MolecularOrbital mo;mo.energy_hartree=std::numeric_limits<double>::quiet_NaN();mo.occupation=x.occupation;mo.occupation_provenance=DataProvenance::Producer;mo.spin=x.spin==NboSpin::Beta?Spin::Beta:Spin::Alpha;mo.spin_provenance=DataProvenance::Producer;mo.spin_source_text=nbo_spin_name(x.spin);mo.source_orbital_index=x.id-1;mo.coefficients.resize(n);for(std::size_t i=0;i<n;++i){const auto internal=gaussian_to_internal[checked.association.gaussian_row[i]];mo.coefficients[internal]=m->values[i*n+x.id-1]*checked.association.coefficient_scale[i]*canonical.gaussian_ao_transform[internal].coefficient_scale;}out.orbitals.push_back(std::move(mo));}

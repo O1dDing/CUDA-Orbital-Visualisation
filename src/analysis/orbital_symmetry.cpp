@@ -621,6 +621,27 @@ std::vector<std::vector<std::size_t>> energy_groups(const Wavefunction& wf, cons
 
 } // namespace
 
+std::vector<double> apply_orbital_symmetry_operation(const Wavefunction& wf,
+    const SymmetryOperation& operation, const std::vector<double>& coefficients,
+    const std::size_t columns) {
+    if (!columns || coefficients.size()!=std::size_t(wf.basis_count)*columns) return {};
+    for (const auto& shell:wf.shells) if (shell.angular_momentum>4) return {};
+    const auto map=prepare_operation(wf,operation);
+    if (!map.valid) return {};
+    std::vector<double> out(coefficients.size(),0.0);
+    for (std::size_t s=0;s<wf.shells.size();++s) {
+        const auto& source=wf.shells[s];
+        const auto& target=wf.shells[map.target_shell[s]];
+        const auto n=shell_basis_count(source);
+        for (std::size_t j=0;j<n;++j) for (std::size_t i=0;i<n;++i) {
+            const double t=map.local[s][j*n+i];
+            for (std::size_t k=0;k<columns;++k)
+                out[(target.basis_offset+j)*columns+k]+=t*coefficients[(source.basis_offset+i)*columns+k];
+        }
+    }
+    return out;
+}
+
 OrbitalSymmetryResult derive_orbital_symmetry(Wavefunction& wavefunction,
                                                const OrbitalSymmetryOptions& options) {
     OrbitalSymmetryResult result;

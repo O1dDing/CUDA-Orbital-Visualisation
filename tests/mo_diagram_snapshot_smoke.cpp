@@ -5,12 +5,17 @@
 #include <imgui.h>
 
 #include <chrono>
+#include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <limits>
+#include <set>
 #include <string>
+#include <vector>
 
 namespace {
 void require(bool ok, const char* message) {
@@ -118,8 +123,11 @@ int main() {
         ImGui::SetNextWindowSize({1200,1700},ImGuiCond_Always);
         ImGui::Begin("snapshot controls",nullptr,ImGuiWindowFlags_NoSavedSettings);
         const auto start=ImGui::GetCursorScreenPos();
+        // The scope combo occupies one actual ImGui control row before the
+        // energy radios. Derive its vertical advance from the current style.
         linear_target={start.x+ImGui::CalcTextSize(cov::ui::tr(cov::ui::Text::EnergyScale,
-            cov::ui::Language::English)).x+ImGui::GetStyle().ItemSpacing.x+8,start.y+8};
+            cov::ui::Language::English)).x+ImGui::GetStyle().ItemSpacing.x+8,
+            start.y+ImGui::GetFrameHeightWithSpacing()+ImGui::GetFrameHeight()*0.5f};
         cov::ui::draw_energy_diagram(wf,selected,state,cov::ui::Language::English,1.0f,actions);
         ImGui::End(); ImGui::Render();
         require(actions.drawn_diagram!=nullptr,"live UI must provide its drawn snapshot");
@@ -155,7 +163,9 @@ int main() {
             orbital.ref={kind,spin,0};
             orbital.id=std::string(cov::nbo_orbital_kind_name(kind))+":"+
                 cov::nbo_spin_name(spin)+":0";
-            orbital.label="Cr1 3d Val";
+            // The visible element must come from wf, not this opaque producer
+            // label (nor an atomic-number placeholder such as Z241).
+            orbital.label="3d Val";
             orbital.atoms={0};
             integration.orbitals.push_back(orbital);
             cov::NboMoLink link;
@@ -170,23 +180,25 @@ int main() {
         integration.dataset.naos.push_back(nao);
     }
     cov::ui::NboAomoUIState aomo_state;
-    auto aomo_frame=[&](cov::NboOrbitalKind kind) {
+    auto draw_aomo=[&](cov::NboOrbitalKind kind,const cov::MODiagramViewSnapshot& graph) {
         aomo_state.basis_kind=kind;
         ImGui::NewFrame();
         ImGui::SetNextWindowPos({10,10},ImGuiCond_Always);
         ImGui::SetNextWindowSize({1200,1700},ImGuiCond_Always);
         ImGui::Begin("open-shell labels",nullptr,ImGuiWindowFlags_NoSavedSettings);
-        const bool drawn=cov::ui::draw_nbo_aomo_diagram(aomo_state,integration,wf,snapshot,
+        const bool drawn=cov::ui::draw_nbo_aomo_diagram(aomo_state,integration,wf,graph,
             cov::ui::Language::English,1.0f);
         ImGui::End();ImGui::Render();
         require(drawn && aomo_state.drawn_snapshot,
             "display fixture must draw the whole AO/NAO graph");
-        const auto& view=*aomo_state.drawn_snapshot;
+        return aomo_state.drawn_snapshot;
+    };
+    auto aomo_frame=[&](cov::NboOrbitalKind kind) {
+        const auto drawn=draw_aomo(kind,snapshot);
+        const auto& view=*drawn;
         const std::string stem=kind==cov::NboOrbitalKind::NAO?"Cr1 dxy / NAO 1":"Cr1 / AO 1";
-        bool found_header=false;
-        for(const auto& node:view.nodes)
-            if(node.group_header && node.id=="atom:0" && node.label=="Cr1")found_header=true;
-        require(found_header,"heavy-atom graph header must use the canonical element symbol");
+        // Expanded orbitals carry their atom labels themselves. An atom
+        // disclosure header belongs only to the folded state of the new graph.
         for(const auto spin:{cov::NboSpin::Alpha,cov::NboSpin::Beta}) {
             const auto label=stem+" ["+cov::nbo_spin_name(spin)+"]";
             bool found=false;
@@ -204,13 +216,380 @@ int main() {
             json.find(stem+" [beta]")!=std::string::npos &&
             svg.find(stem+" [alpha]")!=std::string::npos &&
             svg.find(stem+" [beta]")!=std::string::npos &&
-            json.find("\"label\":\"Cr1\"")!=std::string::npos &&
-            svg.find(">Cr1</text>")!=std::string::npos &&
             json.find("Z241")==std::string::npos && svg.find("Z241")==std::string::npos,
             "JSON and SVG must preserve the heavy-atom symbol and both visible spin labels");
     };
     aomo_frame(cov::NboOrbitalKind::NAO);
     aomo_frame(cov::NboOrbitalKind::GaussianAO);
+    aomo_state.collapsed_atoms.insert(0);
+    const auto folded_atom=draw_aomo(cov::NboOrbitalKind::NAO,snapshot);
+    bool found_header=false;
+    for(const auto& node:folded_atom->nodes)
+        if(node.group_header && node.id=="atom:0" && node.label=="+ Cr1 (2)")found_header=true;
+    require(found_header,"folded heavy-atom header must retain the canonical element symbol and real count");
+    const auto folded_export=cov::ui::export_nbo_aomo_bundle(*folded_atom,integration,root/"folded-heavy-atom");
+    require(folded_export.json && folded_export.svg &&
+        read(folded_export.json_path).find("+ Cr1 (2)")!=std::string::npos &&
+        read(folded_export.svg_path).find("+ Cr1 (2)")!=std::string::npos,
+        "folded header must remain visible in JSON and SVG");
+    aomo_state.collapsed_atoms.clear();
+
+    // Exercise the public live-UI path with actual MODiagram snapshots whose
+    // unmatched spin slots use the producer's sentinel. Valid counterparts
+    // must survive, a one-member row must not turn into a fictitious set, and
+    // the exported attention list must equal the real visible canonical set.
+    const auto no_counterpart=std::numeric_limits<std::size_t>::max();
+    auto sentinel_data=snapshot.data;
+    auto single=level;single.metadata=sentinel_data.metadata[0];
+    single.member_indices={0};single.member_spin_counterparts={no_counterpart};
+    auto pair=level;pair.metadata=sentinel_data.metadata[1];
+    pair.member_indices={1,2};pair.member_spin_counterparts={no_counterpart,no_counterpart};
+    auto matched=level;matched.metadata=sentinel_data.metadata[3];
+    matched.member_indices={3};matched.member_spin_counterparts={4};
+    wf.orbitals[3].occupation=1.0;
+    auto invalid_row=level;invalid_row.member_indices={wf.orbitals.size()};
+    invalid_row.member_spin_counterparts={no_counterpart};
+    sentinel_data.levels={single,pair,matched,invalid_row};
+    sentinel_data.selection.included_indices={0,1,2,3,4};
+    const auto sentinel_snapshot=cov::make_mo_diagram_view_snapshot(
+        sentinel_data,snapshot.options,3,"unmatched-spin-display");
+    const auto sentinel_view=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    const std::vector<std::size_t> expected_attention{0,1,2,3,4};
+    require(sentinel_view->central_mo_indices==expected_attention,
+        "unmatched or invalid indices must not enter attention, while every real counterpart remains");
+    for(const auto& tick:sentinel_view->energy_ticks) {
+        const auto label=cov::format_energy(tick.energy_hartree,sentinel_view->energy_unit,3);
+        const float tick_right=8.0f+ImGui::GetFont()->CalcTextSizeA(
+            sentinel_view->label_font_size,10000.0f,0.0f,label.c_str()).x;
+        require(sentinel_view->lane_x[0]>=tick_right+16.0f,
+            "native energy tick text must leave a measured gutter before orbital bars and masks");
+    }
+    std::set<std::size_t> shown_canonical;
+    std::size_t group_count=0;
+    for(const auto& node:sentinel_view->nodes) {
+        if(node.canonical_index)shown_canonical.insert(*node.canonical_index);
+        if(node.lane!=cov::ui::NboAomoLane::Centre || !node.group_header)continue;
+        ++group_count;
+    }
+    require(group_count==0 && shown_canonical==std::set<std::size_t>({0,1,2,3,4}),
+        "all five real canonical members must remain visible without Set buttons");
+    const auto central_geometry=[&](std::size_t index)->const cov::ui::NboAomoNode& {
+        for(const auto& node:sentinel_view->nodes)
+            if(node.canonical_index==index)return node;
+        std::cerr<<"missing central member "<<index<<'\n';std::exit(1);
+    };
+    const auto& centre_pair_a=central_geometry(1);
+    const auto& centre_pair_b=central_geometry(2);
+    const float centre_mid=sentinel_view->canvas_width*0.5f;
+    require(std::abs((std::min(centre_pair_a.x,centre_pair_b.x)+
+            std::max(centre_pair_a.x+centre_pair_a.width,
+                     centre_pair_b.x+centre_pair_b.width))*0.5f-centre_mid)<0.08f,
+        "a degenerate canonical row bar envelope must centre on MO lane");
+    auto isolated_data=sentinel_snapshot.data;
+    isolated_data.levels={single};isolated_data.selection.included_indices={0};
+    const auto isolated_graph=cov::make_mo_diagram_view_snapshot(
+        isolated_data,sentinel_snapshot.options,0,"isolated-central-fixture");
+    const auto isolated_view=draw_aomo(cov::NboOrbitalKind::NAO,isolated_graph);
+    const auto isolated=std::find_if(isolated_view->nodes.begin(),isolated_view->nodes.end(),
+        [](const auto& node){return node.canonical_index==0;});
+    require(isolated!=isolated_view->nodes.end() &&
+        std::abs(isolated->x+isolated->width*0.5f-
+                 isolated_view->canvas_width*0.5f)<0.08f,
+        "an isolated canonical bar must centre on the full canvas");
+    // The real wavefunction, not the older display metadata or NBO links,
+    // owns canonical spin: index 4 is beta, while indices 0-3 are alpha.
+    // Indices 0 and 4 also share an energy and must remain legible side by side.
+    for(const auto& node:sentinel_view->nodes) {
+        if(!node.canonical_index)continue;
+        const auto index=*node.canonical_index;
+        require(node.individual_label==std::string("?")+
+            (index==4?" [beta]":" [alpha]") &&
+            node.id=="canonical_mo:"+std::to_string(index) &&
+            node.detail.find("original MO "+std::to_string(index+1))!=std::string::npos &&
+            !node.symmetry_name_verified,
+            "missing physical symmetry evidence must remain unknown while preserving each actual spin");
+        const float right=std::max(node.label_x+node.label_width,
+            node.occupation_x+node.occupation_width);
+        for(const auto& other:sentinel_view->nodes) {
+            if(!other.canonical_index || *other.canonical_index<=index)continue;
+            const bool vertical_overlap=node.label_y<other.label_y+other.label_height &&
+                other.label_y<node.label_y+node.label_height;
+            const float other_right=std::max(other.label_x+other.label_width,
+                other.occupation_x+other.occupation_width);
+            require(!vertical_overlap || right<=other.label_x || other_right<=node.label_x,
+                "expanded alpha/beta canonical labels and occupations must not overlap");
+        }
+    }
+    const auto central_node=[&](std::size_t index)->const cov::ui::NboAomoNode& {
+        for(const auto& node:sentinel_view->nodes)if(node.canonical_index==index)return node;
+        std::abort();
+    };
+    const auto& mean_a=central_node(1);const auto& mean_b=central_node(2);
+    require(mean_a.energy_hartree==wf.orbitals[1].energy_hartree &&
+        mean_b.energy_hartree==wf.orbitals[2].energy_hartree &&
+        std::abs(*mean_a.display_energy_hartree-
+            (wf.orbitals[1].energy_hartree+wf.orbitals[2].energy_hartree)*0.5)<1e-12 &&
+        mean_a.display_energy_hartree==mean_b.display_energy_hartree && mean_a.y==mean_b.y,
+        "same-spin degenerate members must share a display mean without modifying either raw eigenvalue");
+    require(central_node(3).spatial_pair_id==central_node(4).spatial_pair_id &&
+        !central_node(3).spatial_pair_id.empty() &&
+        central_node(3).spatial_pair_label.find("↑↓")!=std::string::npos &&
+        central_node(3).x==central_node(4).x,
+        "matched alpha/beta canonical members must form one readable spatial pair with separate bars");
+    require(central_node(3).display_energy_hartree==central_node(3).energy_hartree &&
+        central_node(4).display_energy_hartree==central_node(4).energy_hartree &&
+        central_node(3).display_group_id!=central_node(4).display_group_id,
+        "a matched opposite-spin spatial counterpart is not an energy-degenerate partner");
+    for(const auto& node:sentinel_view->nodes)if(node.canonical_index && node.occupation && *node.occupation>0) {
+        const float line=node.y+node.height*0.5f;
+        require(node.occupation_on_bar && node.occupation_y<line &&
+            node.occupation_y+node.occupation_height>line && node.occupation_x>=node.x &&
+            node.occupation_x+node.occupation_width<=node.x+node.width,
+            "occupied canonical electron arrows must cross their own orbital bar");
+    }
+    const auto sentinel_export=cov::ui::export_nbo_aomo_bundle(*sentinel_view,integration,root/"unmatched-spin");
+    require(sentinel_export.json && sentinel_export.svg && sentinel_export.png,
+        "unmatched-spin display export failed");
+    const auto sentinel_json=read(sentinel_export.json_path);
+    const auto sentinel_svg=read(sentinel_export.svg_path);
+    require(sentinel_json.find(std::to_string(no_counterpart))==std::string::npos &&
+        sentinel_json.find("\"central_mo_indices\":[0,1,2,3,4]")!=std::string::npos &&
+        sentinel_svg.find("degenerate:")==std::string::npos &&
+        sentinel_svg.find("id=\"canonical_mo:4\"")!=std::string::npos,
+        "exports must exclude sentinel/false-group identities without losing the valid spin counterpart");
+    require(sentinel_json.find("? [alpha]")!=std::string::npos &&
+        sentinel_json.find("? [beta]")!=std::string::npos &&
+        sentinel_svg.find("data-individual-label=\"? [alpha]\"")!=std::string::npos &&
+        sentinel_svg.find("data-individual-label=\"? [beta]\"")!=std::string::npos &&
+        sentinel_svg.find("id=\"canonical_mo:4\"")!=std::string::npos,
+        "JSON and SVG must preserve unknown symmetry, spin and exact canonical identity");
+    require(sentinel_json.find("spatial_pair_id")!=std::string::npos &&
+        sentinel_svg.find("? α/β")!=std::string::npos,
+        "exports must preserve the shared pair cue and both individual member identities");
+    for(auto& orbital:wf.orbitals)orbital.spin=cov::Spin::Alpha;
+    aomo_state.names.reset(); // The fixture mutates an otherwise immutable attachment.
+    ++aomo_state.revision;
+    const auto closed_shell=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    for(const auto& node:closed_shell->nodes)
+        if(node.canonical_index)require(node.label=="?" &&
+            node.id=="canonical_mo:"+std::to_string(*node.canonical_index),
+            "a canonical set without beta orbitals must retain unknown symmetry and true member identity");
+    // A fixed local-shell fixture with a deliberately Rydberg-dominated virtual
+    // MO exercises the filter boundary, compact stack, and raw/display split.
+    auto shell_model=std::make_shared<cov::NboSalcModel>();
+    shell_model->available=true;shell_model->dataset_id=integration.id;
+    shell_model->fragments.push_back({"atom:0","Cr1",{0},0});
+    for(std::size_t i=0;i<5;++i) {
+        cov::NboSalcOrbital orbital;
+        orbital.id="fixture-shell-"+std::to_string(i);orbital.fragment_id="atom:0";
+        orbital.type=i==4?"Ryd(4f)":"Val(3p)";
+        orbital.angular=i==0?"px":i==1?"py":"pz";
+        orbital.spin=i==3?cov::NboSpin::Beta:cov::NboSpin::Alpha;
+        orbital.label="raw member "+std::to_string(i);
+        orbital.subspace_id=i==4?"extra":i==3?"beta-p":"alpha-p";
+        orbital.atoms={0};orbital.energy_hartree=-0.3-0.1*static_cast<double>(i);
+        orbital.occupation=i==0?0.03:i==1?1.2:1.0;
+        orbital.terms.push_back({{cov::NboOrbitalKind::NAO,orbital.spin,i},1.0});
+        shell_model->orbitals.push_back(orbital);
+        shell_model->links.push_back({i,2,i==4?0.99:0.02,i==4?0.9801:0.0004});
+    }
+    aomo_state.salc_model=shell_model;aomo_state.show_rydberg=false;
+    aomo_state.focused_canonical_index=2;
+    aomo_state.last_inspected=sentinel_snapshot.data.view->inspected_orbital_index;
+    ++aomo_state.revision;
+    const auto shell_view=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    require(shell_view->focused_canonical_index==2 && !shell_view->auto_rydberg_expanded &&
+        !shell_view->show_rydberg,"virtual inspection must preserve the user's Rydberg filter");
+    std::vector<const cov::ui::NboAomoNode*> alpha_p;
+    for(const auto& node:shell_view->nodes)if(node.salc_index) {
+        require(*node.salc_index!=4,"Rydberg-dominated virtual MO must not reveal a hidden higher shell");
+        if(*node.salc_index<3)alpha_p.push_back(&node);
+        if(*node.salc_index<2)require(node.occupation_label.empty() && !node.occupation_on_bar,
+            "fractional side occupations must not be rounded into electron arrows");
+        if(*node.salc_index==3)require(node.shell_member_count==1 &&
+            node.display_energy_hartree==node.energy_hartree,
+            "opposite-spin atomic shells must not be averaged together");
+    }
+    require(alpha_p.size()==3,"all three real p members must remain independently represented");
+    std::size_t shared_labels=0;double offset_sum=0;
+    for(const auto* node:alpha_p) {
+        shared_labels+=!node->label.empty();offset_sum+=node->display_offset_y;
+        require(node->x==alpha_p.front()->x && node->shell_member_count==3 &&
+            std::abs(*node->display_energy_hartree+0.4)<1e-12 &&
+            node->energy_hartree==shell_model->orbitals[*node->salc_index].energy_hartree &&
+            std::abs((node->y-node->display_offset_y)-
+                (alpha_p.front()->y-alpha_p.front()->display_offset_y))<1e-4,
+            "p members must share x and mean-energy anchor while retaining their individual raw energy");
+    }
+    require(shared_labels==1 && alpha_p.front()->label=="Cr1 3p [alpha]" &&
+        std::abs(offset_sum)<1e-6 && alpha_p[0]->y<alpha_p[1]->y && alpha_p[1]->y<alpha_p[2]->y,
+        "atomic shell must show one shared shell label and a symmetric ordered compact stack");
+    const auto shell_export=cov::ui::export_nbo_aomo_bundle(*shell_view,integration,root/"shell-display");
+    require(shell_export.json && shell_export.csv && shell_export.svg && shell_export.png &&
+        read(shell_export.json_path).find("\"display_energy_hartree\"")!=std::string::npos &&
+        read(shell_export.csv_path).find("source_display_energy_hartree")!=std::string::npos &&
+        read(shell_export.svg_path).find("data-display-group=")!=std::string::npos &&
+        read(shell_export.svg_path).find("class=\"electron-arrows\"")!=std::string::npos &&
+        read(shell_export.svg_path).find("stroke-dasharray=\"5 5\"")!=std::string::npos,
+        "all export formats must carry the mean/stack snapshot and on-bar arrow rendering");
+    // Crowded but distinct side expectations must reserve vertical typography
+    // on the shared reversible axis. Identical energies keep independent
+    // centred columns; neither case changes producer energies or coefficients.
+    auto right_atom=wf.atoms.front();right_atom.symbol="F";right_atom.atomic_number=9;
+    wf.atoms.push_back(right_atom);
+    auto crowded=std::make_shared<cov::NboSalcModel>(*shell_model);
+    crowded->fragments.push_back({"right-fixture","right",{1},1});
+    const auto append_side=[&](const char* fragment,const char* type,
+                               const char* angular,double energy) {
+        auto orbital=crowded->orbitals.front();
+        orbital.id="crowded-"+std::to_string(crowded->orbitals.size());
+        orbital.fragment_id=fragment;orbital.subspace_id=orbital.id;
+        if(orbital.fragment_id=="right-fixture")orbital.atoms={1};
+        orbital.type=type;orbital.angular=angular;orbital.energy_hartree=energy;
+        orbital.spin=cov::NboSpin::Alpha;orbital.occupation=1.0;
+        crowded->orbitals.push_back(orbital);
+        return crowded->orbitals.size()-1;
+    };
+    const auto left_near=append_side("atom:0","Val(4s)","4s",-0.3995);
+    const auto right_a=append_side("right-fixture","Val(2p)","px",-0.4000);
+    const auto right_b=append_side("right-fixture","Val(2p)","py",-0.3998);
+    const auto right_c=append_side("right-fixture","Val(2s)","2s",-0.3992);
+    const auto right_same=append_side("right-fixture","Val(4s)","4s",-0.3992);
+    const auto right_next=append_side("right-fixture","Val(3s)","3s",-0.399199);
+    auto adaptive_options=sentinel_snapshot.options;
+    adaptive_options.energy_axis_mode=cov::EnergyAxisMode::NonlinearFocus;
+    const auto adaptive_graph=cov::make_mo_diagram_view_snapshot(
+        sentinel_snapshot.data,adaptive_options,3,"adaptive-side-fixture");
+    aomo_state.salc_model=crowded;aomo_state.names.reset();++aomo_state.revision;
+    const auto crowded_view=draw_aomo(cov::NboOrbitalKind::NAO,adaptive_graph);
+    const auto side_node=[&](std::size_t index)->const cov::ui::NboAomoNode& {
+        for(const auto& node:crowded_view->nodes)
+            if(node.salc_index==index)return node;
+        std::cerr<<"missing crowded side node "<<index<<'\n';std::exit(1);
+    };
+    const auto& p_a=side_node(right_a);
+    const auto& p_b=side_node(right_b);
+    const auto& s_c=side_node(right_c);
+    const auto& s_same=side_node(right_same);
+    const auto& s_next=side_node(right_next);
+    const auto& left=side_node(left_near);
+    require(p_a.x==p_b.x && p_a.shell_member_count==2 &&
+        std::abs((p_a.y-p_a.display_offset_y)-
+                 (p_b.y-p_b.display_offset_y))<1e-4,
+        "verified same-shell side members retain one aligned symmetric stack");
+    require(s_c.x!=s_same.x && s_c.display_energy_hartree==s_same.display_energy_hartree,
+        "coincident independent side groups retain separate centred fallback columns");
+    const float p_top=std::min(p_a.y,p_b.y);
+    const float p_bottom=std::max(p_a.y,p_b.y)+22.0f;
+    const float p_c_gap=std::max(p_top-(s_c.y+22.0f),s_c.y-p_bottom);
+    if(p_c_gap<2.9f)
+        std::cerr<<"p/c physical rows: p_top="<<p_top<<" p_bottom="<<p_bottom
+            <<" c_top="<<s_c.y<<" c_bottom="<<s_c.y+22.0f
+            <<" gap="<<p_c_gap<<" next_top="<<s_next.y<<'\n';
+    require(p_c_gap>=2.9f,
+        "crowded distinct side bar envelopes must retain readable separation");
+    const float bar=crowded_view->orbital_bar_width;
+    const float right_row_centre=(std::min(s_c.x,s_same.x)+
+        std::max(s_c.x,s_same.x)+bar)*0.5f;
+    const float physical_row_gap=std::abs(s_next.y-s_c.y)-22.0f;
+    require(physical_row_gap>0.0f && physical_row_gap<11.0f &&
+        std::abs((s_next.x+bar*0.5f)-right_row_centre)<0.08f,
+        "distinct side bar rows with a narrow visible gap must share a centred anchor");
+    const float mo_mid=crowded_view->lane_x[1]+crowded_view->lane_width[1]*0.5f;
+    require(std::abs(side_node(0).x-left.x)<0.08f &&
+        std::abs(right_row_centre-(p_a.x+bar*0.5f))<0.08f &&
+        std::abs(((left.x+bar*0.5f)+(p_a.x+bar*0.5f))*0.5f-mo_mid)<0.08f &&
+        std::abs(crowded_view->canvas_width*0.5f-mo_mid)<0.08f &&
+        crowded_view->lane_width[0]==crowded_view->lane_width[2],
+        "physical side bar rows and reserved envelopes must mirror about the MO centre");
+    require(left.energy_hartree==crowded->orbitals[left_near].energy_hartree &&
+        s_c.energy_hartree==crowded->orbitals[right_c].energy_hartree &&
+        p_a.energy_hartree==crowded->orbitals[right_a].energy_hartree,
+        "adaptive layout must not change any raw side expectation");
+    const auto& knots=crowded_view->energy_transform.knots;
+    for(std::size_t i=1;i<knots.size();++i)
+        require(knots[i].energy_hartree>knots[i-1].energy_hartree &&
+            knots[i].coordinate>knots[i-1].coordinate,
+            "adaptive shared transform must be strictly monotone");
+    for(const auto& node:crowded_view->nodes)if(node.quantitative_energy && node.energy_hartree) {
+        const auto coordinate=cov::energy_display_coordinate(*node.energy_hartree,
+            crowded_view->energy_transform);
+        require(std::abs(cov::energy_from_display_coordinate(coordinate,
+            crowded_view->energy_transform)-*node.energy_hartree)<1e-9,
+            "adaptive shared transform must invert every raw node energy");
+    }
+    require(crowded_view->energy_tick_semantics=="adaptive-nonlinear-amber" &&
+        crowded_view->energy_tick_screen_rgb!=
+            std::array<std::uint8_t,3>{139,157,178},
+        "nonlinear numeric ticks must declare a distinct amber palette");
+    const auto crowded_export=cov::ui::export_nbo_aomo_bundle(*crowded_view,integration,
+        root/"adaptive-crowded");
+    require(crowded_export.json && crowded_export.svg && crowded_export.png &&
+        read(crowded_export.json_path).find("adaptive-nonlinear-amber")!=std::string::npos &&
+        read(crowded_export.svg_path).find("#e1ad59")!=std::string::npos,
+        "frozen nonlinear tick color and semantics must reach exported artifacts");
+    adaptive_options.energy_axis_mode=cov::EnergyAxisMode::Linear;
+    const auto linear_graph=cov::make_mo_diagram_view_snapshot(
+        sentinel_snapshot.data,adaptive_options,3,"linear-side-fixture");
+    ++aomo_state.revision;
+    const auto linear_side=draw_aomo(cov::NboOrbitalKind::NAO,linear_graph);
+    require(linear_side->energy_tick_semantics=="linear-neutral" &&
+        linear_side->energy_tick_screen_rgb==
+            std::array<std::uint8_t,3>{139,157,178} &&
+        linear_side->nodes.size()==crowded_view->nodes.size(),
+        "explicit linear mode must retain neutral ticks and the same real nodes");
+    for(std::size_t i=0;i<linear_side->nodes.size();++i)
+        require(linear_side->nodes[i].id==crowded_view->nodes[i].id &&
+            linear_side->nodes[i].energy_hartree==crowded_view->nodes[i].energy_hartree,
+            "axis mode must not alter node identity or raw energy");
+    wf.atoms.pop_back();
+    aomo_state.salc_model=shell_model;aomo_state.names.reset();++aomo_state.revision;
+    aomo_state.show_rydberg=true;++aomo_state.revision;
+    const auto explicit_extra=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    bool found_extra=false;
+    for(const auto& node:explicit_extra->nodes)if(node.salc_index==4)found_extra=true;
+    require(found_extra && explicit_extra->central_mo_indices==shell_view->central_mo_indices,
+        "an explicit extra-shell toggle may reveal Rydberg without changing canonical attention");
+    // An evidenced nd/(n+1)s frame retains only its matching (n+1)p Ryd
+    // shell in the default graph. The producer's Ryd class stays unchanged.
+    auto metal_model=std::make_shared<cov::NboSalcModel>(*shell_model);
+    for(const auto& [id,type]:std::vector<std::pair<std::size_t,std::string>>{
+        {5,"Ryd(4p)"},{6,"Ryd(5p)"}}) {
+        auto orbital=metal_model->orbitals.front();
+        orbital.id="frame-test-"+std::to_string(id);
+        orbital.type=type;orbital.subspace_id=orbital.id;
+        orbital.terms={{{cov::NboOrbitalKind::NAO,cov::NboSpin::Alpha,id},1.0}};
+        metal_model->orbitals.push_back(orbital);
+    }
+    for(const auto& type:{"Val(3d)","Val(4s)"}) {
+        cov::NboNao nao;nao.id=integration.dataset.naos.size()+1;
+        nao.atom=1;nao.spin=cov::NboSpin::Alpha;nao.type=type;
+        integration.dataset.naos.push_back(nao);
+    }
+    aomo_state.salc_model=metal_model;aomo_state.names.reset();
+    aomo_state.show_rydberg=false;++aomo_state.revision;
+    const auto frame_view=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    bool shown_4p=false,shown_5p=false;
+    for(const auto& node:frame_view->nodes)if(node.salc_index) {
+        shown_4p|=*node.salc_index==5;
+        shown_5p|=*node.salc_index==6;
+    }
+    require(shown_4p && !shown_5p && !frame_view->show_rydberg &&
+        metal_model->orbitals[5].type=="Ryd(4p)",
+        "default metal frame must keep evidenced Ryd 4p without opening other Ryd shells");
+    wf.atoms[0].atomic_number=1;
+    aomo_state.hide_h_orbitals=true;++aomo_state.revision;
+    const auto hidden_h=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    require(hidden_h->hidden_h_count>0 &&
+        std::none_of(hidden_h->nodes.begin(),hidden_h->nodes.end(),
+            [](const auto& node){return node.salc_index.has_value();}) &&
+        hidden_h->central_mo_indices==frame_view->central_mo_indices,
+        "H display toggle must hide pure-H side orbitals without changing central identities");
+    aomo_state.hide_h_orbitals=false;++aomo_state.revision;
+    const auto restored_h=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    require(std::any_of(restored_h->nodes.begin(),restored_h->nodes.end(),
+        [](const auto& node){return node.salc_index.has_value();}),
+        "clearing the H toggle must restore the same underlying side orbitals");
     ImGui::DestroyContext();
     // Only this uniquely created test directory is removed.
     std::filesystem::remove_all(root);

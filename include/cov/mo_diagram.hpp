@@ -14,6 +14,7 @@
 #include <vector>
 
 namespace cov {
+struct RoutedAnalysis;
 
 enum class MODiagramMode {
     ValenceCentral = 0,
@@ -176,6 +177,8 @@ struct DiagramSelectionPlan {
 };
 
 struct MODiagramOptions {
+    const RoutedAnalysis* routed = nullptr; // immutable, same canonical fingerprint
+    std::string routed_identity; // cache generation; changes on every reattachment
     MODiagramMode mode = MODiagramMode::ValenceCentral;
     EnergyUnit energy_unit = EnergyUnit::Hartree;
     EnergyAxisMode energy_axis_mode = EnergyAxisMode::NonlinearFocus;

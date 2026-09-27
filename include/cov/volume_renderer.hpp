@@ -64,7 +64,8 @@ public:
                          int framebuffer_height,
                          const OrbitCamera& camera,
                          const MoleculeRenderSettings& settings = {},
-                         const MoleculeOverlay* overlay = nullptr);
+                         const MoleculeOverlay* overlay = nullptr,
+                         const InteractionGraph* interactions = nullptr);
 
     [[nodiscard]] const std::vector<GeometryTarget>& geometry_targets() const noexcept { return geometry_targets_; }
     [[nodiscard]] std::optional<GeometryTarget> pick_geometry(float x, float y) const;
@@ -76,6 +77,7 @@ private:
     int ny_ = 0;
     int nz_ = 0;
     const Wavefunction* geometry_cache_wavefunction_ = nullptr;
+    const InteractionGraph* geometry_graph_source_ = nullptr;
     std::vector<BondVisual> geometry_bonds_;
     std::map<std::pair<std::size_t,std::size_t>,std::size_t>
         geometry_bond_indices_;

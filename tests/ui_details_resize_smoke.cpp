@@ -1,4 +1,5 @@
 #include "cov/orbital_ui.hpp"
+#include "cov/orbital_ui_text.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -7,6 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 namespace {
 void require(bool value, const char* message) {
@@ -135,6 +137,11 @@ int main() {
         ImGui::SetNextWindowSize({width,1200},ImGuiCond_Always);
         ImGui::Begin("chemistry wrap test",nullptr,ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushTextWrapPos(0);
+        // The ordinary sidebar now starts collapsed; this regression measures
+        // wrapping after the user opens the same real chemistry section.
+        const std::string chemistry_header=std::string(cov::ui::orbital_tr(
+            cov::ui::OrbitalText::SelectedMOChemistry,language))+"##diagram.chemistry";
+        ImGui::GetStateStorage()->SetInt(ImGui::GetID(chemistry_header.c_str()),1);
         cov::ui::draw_energy_diagram(wf,7,state,language,1,actions);
         const float height = ImGui::GetCursorPosY();
         ImGui::PopTextWrapPos(); ImGui::End(); ImGui::Render();

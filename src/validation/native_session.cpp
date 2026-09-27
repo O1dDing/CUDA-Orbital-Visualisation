@@ -456,6 +456,7 @@ void record(const std::string& kind,const std::string& json) {
     }
     if(enabled)trace.push_back("{\"kind\":"+quote(kind)+",\"data\":"+json+"}");
     if(enabled && (kind=="export.actual" || kind=="nbo.export" ||
+                   kind=="browser.copy" ||
                    kind=="nbo.attach" || kind=="nbo.attach.error" || kind=="scene.pick" ||
                    kind=="aomo.selection.error" || kind=="input.package.error" ||
                    kind=="input.numerical_diagnostics" ||

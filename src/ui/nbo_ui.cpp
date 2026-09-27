@@ -36,6 +36,31 @@ const char* nbo_local(Language language,const char* en,const char* zh,
         case Language::Japanese:return ja;case Language::French:return fr;
         default:return en;}
 }
+void same_line_if_fits(const char* next_label) {
+    const auto& style=ImGui::GetStyle();
+    const float next_width=ImGui::GetFrameHeight()+style.ItemInnerSpacing.x+
+        ImGui::CalcTextSize(next_label).x;
+    const float right=ImGui::GetCursorScreenPos().x+ImGui::GetContentRegionAvail().x;
+    if(ImGui::GetItemRectMax().x+style.ItemSpacing.x+next_width<=right)
+        ImGui::SameLine();
+}
+const char* nbo_spin_ui(Language language,NboSpin spin) {
+    switch(spin) {
+        case NboSpin::Alpha:return "α";
+        case NboSpin::Beta:return "β";
+        default:return nbo_local(language,"total","总计","全体","total");
+    }
+}
+const char* structure_kind_ui(Language language,const std::string& kind) {
+    if(kind=="atomic_charge")return nbo_local(language,"NPA charge","NPA 电荷","NPA 電荷","Charge NPA");
+    if(kind=="atomic_spin")return nbo_local(language,"Spin density","自旋密度","スピン密度","Densité de spin");
+    if(kind=="bond")return nbo_local(language,"Bond","化学键","結合","Liaison");
+    if(kind=="lone_pair")return nbo_local(language,"Lone pair","孤对电子","孤立電子対","Doublet libre");
+    if(kind=="multicentre")return nbo_local(language,"Multicentre","多中心","多中心","Multicentrique");
+    if(kind=="donor_acceptor"||kind=="e2"||kind=="interaction")return "E(2)";
+    if(kind=="localization_relation")return "NBO → NLMO";
+    return nbo_local(language,"Orbital link","轨道关联","軌道の関連","Lien orbital");
+}
 struct ReportText {
     const char *atom,*charge,*core,*valence,*rydberg,*total,*occupation,*fock,
                *component,*coefficient,*source_evidence,*contributions,
@@ -274,11 +299,16 @@ FocusView make_focus_view(const NboDataset& dataset,
     } else {v.status="available";v.reason="Choose atoms and shells from the validated NAO decomposition.";}
     return v;
 }
-std::string focus_mo_label(const MODiagramViewSnapshot& diagram,std::size_t index) {
+std::string focus_mo_label(const MODiagramViewSnapshot& diagram,std::size_t index,
+                           Language language) {
     for(const auto& level:diagram.data.levels)if(mo_diagram_level_covers_orbital(level,index)) {
         std::string label="MO "+std::to_string(index+1)+" "+level.annotation.family;
-        if(level.annotation.bonding_class==BondingClass::Nonbonding)label+=" / nonbonding";
-        if(level.annotation.multicentre.available)label+=" / multicentre";
+        if(level.annotation.bonding_class==BondingClass::Nonbonding)
+            label+=std::string(" / ")+nbo_local(language,"nonbonding","非成键",
+                "非結合","non liante");
+        if(level.annotation.multicentre.available)
+            label+=std::string(" / ")+nbo_local(language,"multicentre","多中心",
+                "多中心","multicentrique");
         return label;
     }
     return "MO "+std::to_string(index+1);
@@ -341,6 +371,25 @@ std::string nbo_glyph_seed(Language language) {
            "Composants NAO des OM centraux Choisir les atomes à afficher Groupe d'atomes ligand explicite "
            "Enregistrer un groupe ligand Effacer la sélection Effacer tous les groupes Supprimer Rétablir toutes les couches "
            "Inclure Core Inclure Rydberg Par atome Par couche Ligands par s/p/d Voir cette OM en 3D";
+    out += "非成键 多中心 选择 MO 此 MO 的 NAO 视图不可用 正则 MO 标识不可用 选择原子以绘图 已选 完整 "
+           "中央 MO 关联 已检测到 NBO 输入 步骤 正则轨道文件 NBO 文件 "
+           "NPA 电荷不可用 原子自旋密度不可用 键级指数不可用 E(2) 相互作用不可用 "
+           "选择化学键或相互作用 选择轨道 NLMO 视图 显示主轨道 NHO 视图 选择 NAO 成分 "
+           "非結合 多中心 MO を選択 この MO の NAO 表示は利用できません 正準 MO の識別情報を利用できません "
+           "グラフに表示する原子を選択してください 選択 全体 中央 MO の関連 NBO 入力を検出 "
+           "ステップ 正準軌道ファイル NBO ファイル NPA 電荷を利用できません "
+           "原子スピン密度を利用できません 結合指数を利用できません E(2) 相互作用を利用できません "
+           "結合または相互作用を選択 軌道を選択 NLMO 表示 主軌道を表示 NHO 表示 NAO 成分を選択 "
+           "Vue NAO indisponible pour cette OM Identité de l'OM canonique indisponible "
+           "Choisissez les atomes à afficher Sélection Total Liens avec les OM centrales "
+           "Fichiers NBO détectés étape Fichier canonique Fichier NBO Charges NPA indisponibles "
+           "Densité de spin atomique indisponible Indices de liaison indisponibles "
+           "Interactions E(2) indisponibles Choisir une liaison ou interaction Choisir une orbitale "
+           "Vues NLMO Afficher l'orbitale principale Vues NHO Choisir des composantes NAO";
+    out += "α β · → 化学键 孤对电子 自旋密度 轨道关联 三维结构与轨道 总计 "
+           "結合 孤立電子対 スピン密度 軌道の関連 3D 構造と軌道 全体 "
+           "Bond Lone pair Spin density Orbital link Liaison Doublet libre Densité de spin "
+           "Lien orbital Structure et orbitales 3D Multicentrique Charge NPA";
     return out;
 }
 
@@ -368,7 +417,6 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
         focus.last_inspected=current;
         view=make_focus_view(dataset,&diagram,&focus);
     }
-    ImGui::TextDisabled("Central snapshot: %s",view.snapshot_id.c_str());
     validation::field("nbo.focus.snapshot",view.snapshot_id);
     if(current && !eligible(*current)) {
         ImGui::TextWrapped("%s",zh?"当前检查的 MO 不在中央图集合中；中央图不会为检查而加行。":
@@ -377,10 +425,12 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
             "The inspected MO is outside the central diagram set; inspection does not add a central row.");
     }
     if(!view.eligible.empty()) {
-        const std::string preview=focus.canonical_index?focus_mo_label(diagram,*focus.canonical_index):"Choose MO";
+        const std::string preview=focus.canonical_index?
+            focus_mo_label(diagram,*focus.canonical_index,language):
+            nbo_local(language,"Choose MO","选择 MO","MO を選択","Choisir une OM");
         if(ImGui::BeginCombo("##nbo.focus.mo",preview.c_str())) {
             for(const auto index:view.eligible) {
-                const auto label=focus_mo_label(diagram,index);
+                const auto label=focus_mo_label(diagram,index,language);
                 if(ImGui::Selectable(label.c_str(),focus.canonical_index==index))focus.canonical_index=index;
             }
             ImGui::EndCombo();
@@ -389,12 +439,18 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
         view=make_focus_view(dataset,&diagram,&focus);
     }
     if(view.status!="available") {
-        ImGui::TextWrapped("%s: %s",view.status.c_str(),view.reason.c_str());
+        ImGui::TextWrapped("%s",nbo_local(language,
+            "NAO view unavailable for this MO.","此 MO 的 NAO 视图不可用。",
+            "この MO の NAO 表示は利用できません。",
+            "Vue NAO indisponible pour cette OM."));
         validation::field("nbo.focus.status",view.status+": "+view.reason);
         return;
     }
     if(!view.index || *view.index>=canonical.orbitals.size()) {
-        ImGui::TextWrapped("Canonical MO identity is unavailable in the current wavefunction.");
+        ImGui::TextWrapped("%s",nbo_local(language,
+            "Canonical MO identity is unavailable.","正则 MO 标识不可用。",
+            "正準 MO の識別情報を利用できません。",
+            "Identité de l'OM canonique indisponible."));
         validation::field("nbo.focus.status","canonical_mo_identity_unavailable");
         return;
     }
@@ -408,10 +464,6 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
             focus.pending_canonical_selection=view.index;
         validation::item("nbo.focus.inspect_3d");
     }
-    ImGui::TextWrapped("%s",zh?"权重为正交 NAO 基中的 |系数|²；不是原始 AO 系数平方。":
-        ja?"重みは直交 NAO 基底での |係数|² であり、元の AO 係数の二乗ではありません。":
-        fr?"Les poids sont |coefficient|² dans la base NAO orthogonale, pas les carrés des coefficients AO bruts.":
-        "Weights are |coefficient|² in the orthogonal NAO basis, not squared raw AO coefficients.");
     ImGui::TextWrapped("%s",atom_title);
     std::map<std::size_t,std::string> atoms;
     for(const auto& shell:view.shells)atoms.emplace(shell.atom,shell.symbol);
@@ -433,9 +485,10 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
     }
     ImGui::NewLine();
     ImGui::TextWrapped("%s",ligand_title);
-    ImGui::TextDisabled("%s",zh?"先勾选原子，再保存为 L1、L2…；已分组原子不能重复归属。":
-        ja?"原子を選び L1、L2… として保存します。原子の重複所属はできません。":
-        fr?"Choisissez les atomes, puis enregistrez L1, L2… ; chaque atome appartient à un seul groupe.":
+    if(ImGui::IsItemHovered())ImGui::SetTooltip("%s",zh?
+        "先勾选原子，再保存为 L1、L2…；已分组原子不能重复归属。":ja?
+        "原子を選び L1、L2… として保存します。原子の重複所属はできません。":fr?
+        "Choisissez les atomes, puis enregistrez L1, L2… ; chaque atome appartient à un seul groupe.":
         "Choose atoms, then save L1, L2…; an atom belongs to at most one group.");
     const auto assigned=grouped_atoms(focus);
     atom_slot=0;
@@ -478,15 +531,16 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
             continue;
         }
         validation::item("nbo.focus.group.delete."+std::to_string(group.id));
-        const auto weights=angular_weights(view,focus,group);
-        for(const auto& [l,w]:weights)
-            ImGui::Text("  %s: %s full=%.9g; selected-shell subtotal=%.9g",
-                        name.c_str(),shell_letter(l),w.full,w.selected);
         ++i;
     }
     if(ImGui::Button(zh?"恢复全部壳层":ja?"全殻を復元":fr?"Rétablir toutes les couches":"Restore all shells"))
         focus.hidden_shells.clear();
     validation::item("nbo.focus.restore_shells");
+    if(ImGui::IsItemHovered())ImGui::SetTooltip("%s",zh?
+        "取消壳层勾选可隐藏图中的成分；不会删除数值。":ja?
+        "殻の選択を外すと図で非表示になり、数値は残ります。":fr?
+        "Décochez une couche pour la masquer du graphe ; les valeurs numériques restent.":
+        "Uncheck a shell to hide it from the graph; its numeric value remains.");
     bool core=focus.show_core;
     if(ImGui::Checkbox(zh?"纳入 Core":ja?"Core を含む":fr?"Inclure Core":"Include Core",&core))focus.show_core=core;
     validation::item("nbo.focus.include_core");ImGui::SameLine();
@@ -504,15 +558,10 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
                        &focus.group_ligands_by_l)){}
     validation::item("nbo.focus.group.mode.ligand_l");
     if(focus.visible_atoms.empty()) {
-        ImGui::TextDisabled("%s",zh?"选择原子后绘图；完整数值仍可展开查看。":
-            ja?"原子を選ぶと描画します。全数値は詳細で確認できます。":
-            fr?"Choisissez des atomes pour tracer ; les valeurs complètes restent disponibles.":
-            "Select atoms to draw; complete numeric data remains available below.");
+        ImGui::TextDisabled("%s",nbo_local(language,"Choose atoms to draw the graph.",
+            "选择原子以绘图。","グラフに表示する原子を選択してください。",
+            "Choisissez les atomes à afficher."));
     } else {
-        ImGui::TextWrapped("%s",zh?"取消壳层勾选可隐藏图中的成分；不会删除数值。":
-            ja?"殻の選択を外すと図で非表示になり、数値は残ります。":
-            fr?"Décochez une couche pour la masquer du graphe ; les valeurs numériques restent.":
-            "Uncheck a shell to hide it from the graph; its numeric value remains.");
         std::map<std::size_t,double> atom_weights;
         for(const auto& shell:view.shells)if(focus.visible_atoms.contains(shell.atom) &&
             shell_enabled(shell,focus))atom_weights[shell.atom]+=shell.weight;
@@ -534,10 +583,7 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
             }
         }
         if(focus.group_by_atom)for(const auto& [atom,weight]:atom_weights) {
-            double full=0;
-            for(const auto& group:view.decomposition->atoms)if(group.atom==atom)full+=group.weight;
-            ImGui::Text("%s%zu selected-shell subtotal %.9g / full atom %.9g",
-                        atoms[atom].c_str(),atom,weight,full);ImGui::SameLine();
+            ImGui::Text("%s%zu",atoms[atom].c_str(),atom);ImGui::SameLine();
             const auto fraction=static_cast<float>(std::clamp(weight,0.0,1.0));
             ImGui::ProgressBar(fraction,ImVec2(-1.0f,0.0f),fmt(weight).c_str());
         }
@@ -556,7 +602,7 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
                     weights.at(l).selected,weights.at(l).full});
             }
         } else if(focus.group_by_atom)for(const auto& [atom,weight]:atom_weights)
-            graph_nodes.push_back({atoms[atom]+std::to_string(atom)+" selected shells",weight,{}});
+            graph_nodes.push_back({atoms[atom]+std::to_string(atom),weight,{}});
         else for(const auto* shell:graph_shells)
             graph_nodes.push_back({shell->symbol+std::to_string(shell->atom)+" "+shell->label+" "+shell->type,shell->weight,{}});
         if(!graph_nodes.empty()) {
@@ -590,31 +636,13 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
                 draw->AddText(ImGui::GetFont(),ImGui::GetFontSize(),
                               ImVec2(tx,y-24.0f*scale),IM_COL32(220,231,245,255),
                               node.label.c_str(),nullptr,wrap);
-                const std::string selected_text="selected="+fmt(node.selected);
+                const std::string selected_text=std::string(nbo_local(language,
+                    "Selected ","已选 ","選択 ","Sélection "))+fmt(node.selected);
                 draw->AddText(ImVec2(tx,y-4.0f*scale),IM_COL32(150,215,250,255),selected_text.c_str());
-                if(node.full){const auto full_text="full l="+fmt(*node.full);
+                if(node.full){const auto full_text=std::string(nbo_local(language,
+                    "Full ","完整 ","全体 ","Total "))+fmt(*node.full);
                     draw->AddText(ImVec2(tx,y+16.0f*scale),IM_COL32(170,188,210,255),full_text.c_str());}
             }
-        }
-    }
-    bool details=focus.show_full_details;
-    if(ImGui::Checkbox(zh?"显示全部 NAO 数值与来源":ja?"全 NAO 数値と出典":
-                       fr?"Afficher toutes les valeurs NAO et sources":"Show all NAO values and sources",&details))
-        focus.show_full_details=details;
-    validation::item("nbo.focus.details");
-    if(focus.show_full_details && view.decomposition) {
-        ImGui::Text("MO %zu | %s | %s",*view.index+1,view.decomposition->status.c_str(),
-                    view.decomposition->detail.c_str());
-        ImGui::Text("NAO weight sum = %s; normalization error = %s",
-                    shown_opt(view.decomposition->weight_sum).c_str(),
-                    shown_opt(view.decomposition->normalization_error).c_str());
-        for(const auto& row:view.decomposition->rows) {
-            ImGui::TextWrapped("NAO %zu %s%zu %s %s n=%s l=%s c=%.9g |c|²=%.9g e=%s | %s",
-                row.nao_id,row.symbol.c_str(),row.atom,row.type.c_str(),row.angular.c_str(),
-                row.principal_n?std::to_string(*row.principal_n).c_str():"?",
-                row.angular_l?std::to_string(*row.angular_l).c_str():"?",
-                row.coefficient,row.weight,shown_opt(row.electron_contribution).c_str(),
-                source_label(row.source).c_str());
         }
     }
     validation::field("nbo.focus.status",view.status+";mo="+std::to_string(*view.index)+
@@ -639,11 +667,7 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
         "原子：","Atomes : "))+atoms);
     if(s.selected_structure&&*s.selected_structure<integration.structure.size()) {
         const auto& evidence=integration.structure[*s.selected_structure];
-        note(evidence.label+" ["+evidence.kind+"]");
-        note(evidence.detail);
-        if(evidence.wiberg)note("Wiberg="+fmt(*evidence.wiberg));
-        if(evidence.value)note("Value="+fmt(*evidence.value)+" "+evidence.units);
-        note(source_label(evidence.source));
+        note(evidence.label);
         for(const auto& ref:evidence.orbitals) {
             const auto* orbital=nbo_orbital(integration,ref);
             if(!orbital||orbital->coefficients.empty())continue;
@@ -660,6 +684,7 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
                     "##nbo.context.overlay").c_str())) {
                 NboOrbitalSelection selection;selection.dataset_id=integration.id;
                 selection.label=evidence.label;selection.mode=NboSelectionMode::Overlay;
+                selection.semantic_kind="structure_overlay";selection.group_id=evidence.id;
                 for(const auto& ref:evidence.orbitals)selection.terms.push_back({ref,1});
                 s.aomo.pending_selection=std::move(selection);
             }
@@ -669,7 +694,7 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
     const bool show=ImGui::CollapsingHeader((std::string(nbo_local(language,
         "Related real orbitals and central MOs","相关真实轨道与中央 MO",
         "関連する実軌道と中央 MO","Orbitales réelles et OM centrales liées"))+
-        "##nbo.context.related").c_str(),ImGuiTreeNodeFlags_DefaultOpen);
+        "##nbo.context.related").c_str());
     validation::item("nbo.context.related");
     if(!show)return;
     ImGui::BeginChild("##nbo.context.list",ImVec2(0,235),ImGuiChildFlags_Border);
@@ -682,13 +707,16 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
             [&](std::size_t atom){return s.selected_atoms.contains(atom);});
         if(!touches)continue;
         ++related;
-        const auto label=orbital.label+" ["+nbo_orbital_kind_name(orbital.ref.kind)+
+        const auto label=(orbital.display_label.empty()?orbital.label:orbital.display_label)+
+            " ["+nbo_orbital_kind_name(orbital.ref.kind)+
             "]##nbo.context.typed."+orbital.id;
         if(ImGui::Selectable(label.c_str())) {
             s.aomo.pending_selection=nbo_single_selection(integration,orbital.ref);
             if(orbital.ref.kind==NboOrbitalKind::NHO)s.inspected_nho=orbital.ref;
             if(orbital.ref.kind==NboOrbitalKind::NLMO)s.inspected_nlmo=orbital.ref;
         }
+        if(ImGui::IsItemHovered() && !orbital.display_label.empty())
+            ImGui::SetTooltip("Producer: %s",orbital.label.c_str());
         validation::item("nbo.context.typed."+orbital.id);
     }
     if(!related)note(nbo_local(language,"No verified local orbital coefficients cover these atoms.",
@@ -702,7 +730,9 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
             else central.insert(level.member_indices.begin(),level.member_indices.end());
             central.insert(level.member_spin_counterparts.begin(),level.member_spin_counterparts.end());
         }
-        if(!central.empty())ImGui::SeparatorText("Central MO links through selected NAOs");
+        if(!central.empty())ImGui::SeparatorText(nbo_local(language,
+            "Central MO links","中央 MO 关联","中央 MO の関連",
+            "Liens avec les OM centrales"));
         for(auto index:central) {
             double weight=0;bool has=false;
             for(const auto& link:integration.links) {
@@ -719,8 +749,7 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
             const auto descriptor=std::find_if(integration.orbitals.begin(),integration.orbitals.end(),
                 [&](const auto& orbital){return orbital.ref.kind==NboOrbitalKind::Canonical &&
                     orbital.ref.index==index;});
-            const auto label="MO "+std::to_string(index+1)+"  selected-atom NAO |c|²="+
-                fmt(weight)+"##nbo.context.mo."+std::to_string(index);
+            const auto label="MO "+std::to_string(index+1)+"##nbo.context.mo."+std::to_string(index);
             if(ImGui::Selectable(label.c_str())&&descriptor!=integration.orbitals.end())
                 s.aomo.pending_selection=nbo_single_selection(integration,descriptor->ref);
             validation::item("nbo.context.mo."+std::to_string(index));
@@ -731,16 +760,17 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
 
 NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                             bool canonical_loaded, bool renderable,
-                            bool active, float scale,
+                            ActiveOrbitalKind active_kind, float scale,
                             const Wavefunction* canonical, std::size_t canonical_index,
                             const MODiagramViewSnapshot* diagram) {
-    (void)diagram;
+    (void)diagram;(void)canonical_index;
     NboUIActions actions;
     const auto words=report_text(language);
     ImGui::Spacing();
     section_title(trn(language,Title));
     if(s.input_discovery) {
-        note(s.input_status.empty()?"Detected NBO inputs":s.input_status);
+        note(nbo_local(language,"NBO inputs detected","已检测到 NBO 输入",
+            "NBO 入力を検出","Fichiers NBO détectés"));
         validation::field("nbo.input.status",s.input_status);
         const auto& discovery=*s.input_discovery;
         if(discovery.selection_required || discovery.candidates.size()>1) {
@@ -754,20 +784,22 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
             for(std::size_t i=0;i<discovery.candidates.size();++i) {
                 const auto& c=discovery.candidates[i];
                 std::string label=c.label.empty()?c.id:c.label;
-                if(c.analysis_segment)label+=" [step "+std::to_string(*c.analysis_segment)+"]";
+                if(c.analysis_segment)label+=" ["+std::string(nbo_local(language,
+                    "step ","步骤 ","ステップ ","étape "))+
+                    std::to_string(*c.analysis_segment)+"]";
                 label+="##nbo.candidate."+std::to_string(i);
                 if(ImGui::Selectable(label.c_str()))s.pending_candidate=i;
                 validation::item("nbo.candidate."+std::to_string(i));
                 if(ImGui::IsItemHovered()) {
                     ImGui::BeginTooltip();
-                    ImGui::Text("Canonical: %s",c.canonical.string().c_str());
-                    ImGui::Text("NBO report: %s",c.report.string().c_str());
-                    for(const auto& reason:c.diagnostics)ImGui::TextWrapped("%s",reason.c_str());
+                    ImGui::Text("%s: %s",nbo_local(language,"Canonical file","正则轨道文件",
+                        "正準軌道ファイル","Fichier canonique"),c.canonical.string().c_str());
+                    ImGui::Text("%s: %s",nbo_local(language,"NBO file","NBO 文件",
+                        "NBO ファイル","Fichier NBO"),c.report.string().c_str());
                     ImGui::EndTooltip();
                 }
             }
         }
-        for(const auto& diagnostic:discovery.diagnostics)note(diagnostic);
         const char* advanced=language==Language::ChineseSimplified?"高级：手动指定输入":
             language==Language::Japanese?"詳細：入力を手動指定":
             language==Language::French?"Avancé : saisir les fichiers":"Advanced: enter input paths manually";
@@ -786,7 +818,7 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
     ImGui::SetNextItemWidth(100.0f*scale);
     ImGui::InputInt("##nbo.segment",&s.analysis_segment);
     validation::item("nbo.segment");
-    ImGui::BeginDisabled(!canonical_loaded || active);
+    ImGui::BeginDisabled(!canonical_loaded || active_kind==ActiveOrbitalKind::NboSet);
     actions.attach=ImGui::Button(trn(language,Attach),ImVec2(-1.0f,0));
     ImGui::EndDisabled();validation::item("nbo.attach");
     }
@@ -795,20 +827,6 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
     const auto& d=*s.dataset;
     if(s.integration)draw_selected_nbo_context(s,*s.integration,canonical,diagram,language);
     validation::field("nbo.association",d.association.status+": "+d.association.detail);
-    const bool show_source_details=!s.integration || ImGui::CollapsingHeader(
-        (std::string(nbo_local(language,"Source validation details","来源核验详情",
-            "出典検証の詳細","Détails de validation de la source"))+
-            "##nbo.source.validation").c_str());
-    validation::item("nbo.source.validation");
-    if(show_source_details) {
-    note(std::string(trn(language,Association))+": "+d.association.status+" — "+d.association.detail);
-    for(const auto& evidence:d.association.canonical_evidence){
-        note(std::string(words.canonical_evidence)+" ["+nbo_spin_name(evidence.spin)+"] "+
-             evidence.coefficient_source+"; "+words.direct_fchk+"="+
-             (evidence.direct_fchk_coefficients?"1":"0")+"; "+words.density_verified+"="+
-             (evidence.density_verified?"1":"0"));
-    }
-    }
     if(s.integration) {
         const auto& integrated=*s.integration;
         if(s.inspected_dataset_id!=integrated.id) {
@@ -816,76 +834,103 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
             s.inspected_nho.reset();s.inspected_nlmo.reset();
             s.nho_sum_owner.reset();s.nho_sum_nao_indices.clear();
         }
-        ImGui::TextWrapped("%s",nbo_local(language,
-            "Verified capabilities and 3D controls are available below.",
-            "下方可使用已验证的能力与三维控件。",
-            "検証済み機能と3D操作は以下にあります。",
-            "Les fonctions vérifiées et commandes 3D figurent ci-dessous."));
-        const bool show_capabilities=ImGui::CollapsingHeader(
-            (std::string(nbo_local(language,"Data capability details","数据能力详情",
-                "データ機能の詳細","Détails des capacités des données"))+
-                "##nbo.capabilities").c_str());
-        validation::item("nbo.capabilities");
         for(const char* key:{"source_association","report","aomo","aomo_full","nao","pnao","nho","nbo","nlmo",
                               "charges","wiberg","interactions","structure"}) {
             if(const auto* capability=nbo_capability(integrated,key)) {
-                if(show_capabilities)note(std::string(key)+" — "+nbo_capability_state_name(capability->state)+
-                    (capability->detail.empty()?"":": "+capability->detail));
                 validation::field(std::string("nbo.capability.")+key,
                     std::string(nbo_capability_state_name(capability->state))+": "+capability->detail);
             }
         }
-        ImGui::SeparatorText(nbo_local(language,"3D structure and orbital evidence",
-            "三维结构与轨道证据","3D 構造と軌道の証拠","Preuves 3D de structure et d'orbitales"));
+        ImGui::SeparatorText(nbo_local(language,"3D structure and orbitals",
+            "三维结构与轨道","3D 構造と軌道","Structure et orbitales 3D"));
         const auto* charges_cap=nbo_capability(integrated,"charges");
         const auto* wiberg_cap=nbo_capability(integrated,"wiberg");
         const auto* e2_cap=nbo_capability(integrated,"interactions");
-        const bool charges_available=charges_cap&&charges_cap->available();
-        const bool spin_available=std::any_of(d.populations.begin(),d.populations.end(),
-            [](const auto& row){return row.spin_density.has_value();});
+        const bool charges_available=charges_cap&&charges_cap->available() && s.routed &&
+            s.routed->total_atomic_charge.available() &&
+            s.routed->total_atomic_charge.provider==RoutedProvider::Nbo;
+        const bool spin_available=s.routed && s.routed->atomic_spin.available() &&
+            s.routed->atomic_spin.provider==RoutedProvider::Nbo;
+        if(s.routed) {
+            validation::field("nbo.route.charge",
+                std::string(routed_status_name(s.routed->total_atomic_charge.status))+": "+
+                routed_provider_name(s.routed->total_atomic_charge.provider)+": "+
+                s.routed->total_atomic_charge.reason);
+            validation::field("nbo.route.spin",
+                std::string(routed_status_name(s.routed->atomic_spin.status))+": "+
+                routed_provider_name(s.routed->atomic_spin.provider)+": "+
+                s.routed->atomic_spin.reason);
+        }
         if((s.atom_colour_mode==1&&!charges_available) ||
            (s.atom_colour_mode==2&&!spin_available))s.atom_colour_mode=0;
-        ImGui::RadioButton((std::string(nbo_local(language,"Element","元素","元素","Élément"))+
-            "##nbo.atom.color.element").c_str(),&s.atom_colour_mode,0);
-        validation::item("nbo.atom.color.element");ImGui::SameLine();
+        const std::string element_label=std::string(nbo_local(language,"Element","元素","元素","Élément"))+
+            "##nbo.atom.color.element";
+        const std::string charge_label=std::string(nbo_local(language,"NPA charge","NPA 电荷","NPA 電荷","Charge NPA"))+
+            "##nbo.atom.color.charge";
+        const std::string spin_label=std::string(nbo_local(language,"Spin","自旋","スピン","Spin"))+
+            "##nbo.atom.color.spin";
+        ImGui::RadioButton(element_label.c_str(),&s.atom_colour_mode,0);
+        validation::item("nbo.atom.color.element");same_line_if_fits(charge_label.c_str());
         ImGui::BeginDisabled(!charges_available);
-        ImGui::RadioButton((std::string(nbo_local(language,"NPA charge","NPA 电荷","NPA 電荷","Charge NPA"))+
-            "##nbo.atom.color.charge").c_str(),&s.atom_colour_mode,1);
+        ImGui::RadioButton(charge_label.c_str(),&s.atom_colour_mode,1);
         validation::item("nbo.atom.color.charge");
         if(!charges_available&&ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-            ImGui::SetTooltip("%s",charges_cap?charges_cap->detail.c_str():"NPA charges unavailable");
-        ImGui::EndDisabled();ImGui::SameLine();
+            ImGui::SetTooltip("%s",nbo_local(language,"NPA charges unavailable",
+                "NPA 电荷不可用","NPA 電荷を利用できません","Charges NPA indisponibles"));
+        ImGui::EndDisabled();same_line_if_fits(spin_label.c_str());
         ImGui::BeginDisabled(!spin_available);
-        ImGui::RadioButton((std::string(nbo_local(language,"Spin","自旋","スピン","Spin"))+
-            "##nbo.atom.color.spin").c_str(),&s.atom_colour_mode,2);
+        ImGui::RadioButton(spin_label.c_str(),&s.atom_colour_mode,2);
         validation::item("nbo.atom.color.spin");
         if(!spin_available&&ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-            ImGui::SetTooltip("No verified atom spin density is available");
+            ImGui::SetTooltip("%s",nbo_local(language,"Atom spin density unavailable",
+                "原子自旋密度不可用","原子スピン密度を利用できません",
+                "Densité de spin atomique indisponible"));
         ImGui::EndDisabled();
+        const std::string bond_label=std::string(nbo_local(language,"Bond indices","键级指数","結合指数","Indices de liaison"))+
+            "##nbo.overlay.bond";
+        const std::string e2_label=std::string(nbo_local(language,"E(2) interactions","E(2) 相互作用",
+            "E(2) 相互作用","Interactions E(2)"))+"##nbo.overlay.e2";
         ImGui::BeginDisabled(!wiberg_cap||!wiberg_cap->available());
-        ImGui::Checkbox((std::string(nbo_local(language,"Bond indices","键级指数","結合指数","Indices de liaison"))+
-            "##nbo.overlay.bond").c_str(),&s.show_bond_indices);
+        ImGui::Checkbox(bond_label.c_str(),&s.show_bond_indices);
         validation::item("nbo.overlay.wiberg");
         if(ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) &&
            (!wiberg_cap||!wiberg_cap->available()))
-            ImGui::SetTooltip("%s",wiberg_cap?wiberg_cap->detail.c_str():"Wiberg indices unavailable");
+            ImGui::SetTooltip("%s",nbo_local(language,"Bond indices unavailable",
+                "键级指数不可用","結合指数を利用できません",
+                "Indices de liaison indisponibles"));
         ImGui::EndDisabled();
-        ImGui::SameLine();
+        same_line_if_fits(e2_label.c_str());
         ImGui::BeginDisabled(!e2_cap||!e2_cap->available());
-        ImGui::Checkbox((std::string(nbo_local(language,"E(2) interactions","E(2) 相互作用",
-            "E(2) 相互作用","Interactions E(2)"))+"##nbo.overlay.e2").c_str(),&s.show_e2);
+        ImGui::Checkbox(e2_label.c_str(),&s.show_e2);
         validation::item("nbo.overlay.e2");
         if(ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) &&
            (!e2_cap||!e2_cap->available()))
-            ImGui::SetTooltip("%s",e2_cap?e2_cap->detail.c_str():"E(2) interactions unavailable");
+            ImGui::SetTooltip("%s",nbo_local(language,"E(2) interactions unavailable",
+                "E(2) 相互作用不可用","E(2) 相互作用を利用できません",
+                "Interactions E(2) indisponibles"));
         ImGui::EndDisabled();
-        const bool structure_open=ImGui::CollapsingHeader((std::string(nbo_local(language,"Structure evidence",
-            "结构证据","構造の証拠","Preuves structurales"))+"##nbo.structure").c_str());
-        validation::item("nbo.structure");
+        ImGui::SetNextItemWidth(-1.0f);
+        const bool structure_open=ImGui::BeginCombo("##nbo.structure.pick",
+            nbo_local(language,"Choose bond or interaction","选择化学键或相互作用",
+                "結合または相互作用を選択","Choisir une liaison ou interaction"));
+        validation::item("nbo.structure.pick");
         if(structure_open) {
             for(std::size_t i=0;i<integrated.structure.size();++i) {
                 const auto& evidence=integrated.structure[i];
-                const auto label=evidence.label+" ["+evidence.kind+"]##nbo.structure."+std::to_string(i);
+                std::string label=structure_kind_ui(language,evidence.kind);
+                for(std::size_t j=0;j<evidence.atoms.size();++j) {
+                    const auto atom=evidence.atoms[j];
+                    label+=(j?", ":" · ");
+                    if(canonical&&atom<canonical->atoms.size())label+=canonical->atoms[atom].symbol;
+                    else label+="#";
+                    label+=std::to_string(atom+1);
+                }
+                for(std::size_t j=0;j<evidence.orbitals.size();++j) {
+                    const auto& ref=evidence.orbitals[j];
+                    label+=(j?" → ":" · ");
+                    label+=nbo_orbital_kind_name(ref.kind)+std::to_string(ref.index+1);
+                }
+                label+="##nbo.structure."+std::to_string(i);
                 if(ImGui::Selectable(label.c_str(),s.selected_structure==i)) {
                     s.selected_structure=i;
                     s.selected_atoms.clear();
@@ -898,6 +943,8 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                         selection.dataset_id=integrated.id;
                         selection.label=evidence.label;
                         selection.mode=NboSelectionMode::Overlay;
+                        selection.semantic_kind="directed_relation_overlay";
+                        selection.group_id=evidence.id;
                         for(const auto& ref:evidence.orbitals)selection.terms.push_back({ref,1});
                         s.aomo.pending_selection=std::move(selection);
                     } else if(!evidence.orbitals.empty() &&
@@ -907,11 +954,14 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                         s.aomo.pending_selection=nbo_single_selection(integrated,evidence.orbitals[0]);
                 }
                 validation::item("nbo.structure."+std::to_string(i));
-                if(ImGui::IsItemHovered())ImGui::SetTooltip("%s\n%s",evidence.detail.c_str(),
-                    source_label(evidence.source).c_str());
             }
+            ImGui::EndCombo();
         }
-        for(const auto kind:{NboOrbitalKind::NAO,NboOrbitalKind::PNAO,
+        ImGui::SetNextItemWidth(-1.0f);
+        const bool orbitals_open=ImGui::BeginCombo("##nbo.orbital.pick",
+            nbo_local(language,"Choose orbital","选择轨道","軌道を選択","Choisir une orbitale"));
+        validation::item("nbo.orbital.pick");
+        if(orbitals_open)for(const auto kind:{NboOrbitalKind::NAO,NboOrbitalKind::PNAO,
                              NboOrbitalKind::NHO,NboOrbitalKind::NBO,NboOrbitalKind::NLMO}) {
             const std::string key=nbo_orbital_kind_name(kind);
             std::string capability_key=key;
@@ -919,26 +969,12 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                 [](unsigned char c){return static_cast<char>(std::tolower(c));});
             const auto* family_cap=nbo_capability(integrated,capability_key);
             const bool family_available=family_cap&&family_cap->available();
-            ImGui::BeginDisabled(!family_available);
-            const bool family_open=ImGui::CollapsingHeader((key+" "+nbo_local(language,"actual orbitals",
-                "真实轨道","実軌道","orbitales réelles")+"##nbo.family."+key).c_str());
-            validation::item("nbo.family."+key);
-            if(!family_available&&ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                ImGui::SetTooltip("%s",family_cap?family_cap->detail.c_str():
-                    "No verified coefficients for this orbital family");
-            ImGui::EndDisabled();
-            if(!family_available) {
-                ImGui::TextDisabled("%s",family_cap?family_cap->detail.c_str():
-                    "No verified coefficients for this orbital family");
-                continue;
-            }
-            if(!family_open)continue;
-            std::size_t shown=0;
+            if(!family_available)continue;
+            ImGui::SeparatorText(key.c_str());
             for(const auto& orbital:integrated.orbitals) {
                 if(orbital.ref.kind!=kind || orbital.coefficients.empty())continue;
-                ++shown;
-                const std::string label=orbital.label+" ["+nbo_spin_name(orbital.ref.spin)+"]"+
-                    (orbital.occupation?" occ="+fmt(*orbital.occupation):"")+
+                const std::string label=(orbital.display_label.empty()?orbital.label:orbital.display_label)+
+                    " ["+nbo_spin_ui(language,orbital.ref.spin)+"]"+
                     "##nbo.typed."+orbital.id;
                 const bool selected=s.aomo.selection && s.aomo.selection->terms.size()==1 &&
                     s.aomo.selection->terms.front().orbital==orbital.ref;
@@ -949,30 +985,30 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                     s.selected_structure.reset();
                     if(kind==NboOrbitalKind::NLMO)s.inspected_nlmo=orbital.ref;
                     if(kind==NboOrbitalKind::NHO)s.inspected_nho=orbital.ref;
+                    if(kind==NboOrbitalKind::NBO)
+                        for(std::size_t i=0;i<d.orbitals.size();++i)
+                            if(d.orbitals[i].id==orbital.ref.index+1 &&
+                               d.orbitals[i].spin==orbital.ref.spin) {
+                                actions.selected_orbital=i;break;
+                            }
                 }
+                if(ImGui::IsItemHovered() && !orbital.display_label.empty())
+                    ImGui::SetTooltip("Producer: %s",orbital.label.c_str());
                 validation::item("nbo.typed."+orbital.id);
-                if(ImGui::IsItemHovered())ImGui::SetTooltip("%s\n%s\n%s",
-                    orbital.detail.c_str(),orbital.energy_semantics.c_str(),
-                    source_label(orbital.source).c_str());
             }
-            if(!shown)note(nbo_local(language,
-                "No verified real-space coefficients for this family.",
-                "该轨道类没有已验证的真实空间系数。",
-                "この軌道系列には検証済み実空間係数がありません。",
-                "Aucun coefficient spatial vérifié pour cette famille."));
         }
+        if(orbitals_open)ImGui::EndCombo();
         if(s.inspected_nlmo && nbo_orbital(integrated,*s.inspected_nlmo)) {
             const auto ref=*s.inspected_nlmo;
             const auto components=nbo_nlmo_components(integrated,ref);
             const auto parent=nbo_nlmo_parent(integrated,ref);
             const bool nlmo_details_open=ImGui::CollapsingHeader((std::string(nbo_local(language,
-                    "NLMO main part and delocalization tail",
-                    "NLMO 主成分与离域尾部","NLMO 主成分と非局在化テール",
-                    "Composante principale et queue délocalisée NLMO"))+
-                    "##nbo.nlmo.components").c_str(),ImGuiTreeNodeFlags_DefaultOpen);
+                    "NLMO views",
+                    "NLMO 视图","NLMO 表示",
+                    "Vues NLMO"))+
+                    "##nbo.nlmo.components").c_str());
             validation::item("nbo.nlmo.components");
             if(nlmo_details_open) {
-                ImGui::Text("NLMO %zu [%s]",ref.index+1,nbo_spin_name(ref.spin));
                 if(!parent)note(nbo_local(language,
                     "No printed and verified parent NBO: main/tail assignment unavailable.",
                     "没有已打印并核验的母 NBO：主成分/尾部划分不可用。",
@@ -985,13 +1021,16 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                     const auto main=std::find_if(components.begin(),components.end(),
                         [&](const auto& component){return component.orbital==*parent;});
                     if(main!=components.end()) {
-                        const auto* parent_orbital=nbo_orbital(integrated,*parent);
-                        const std::string label=(parent_orbital?parent_orbital->label:"Parent NBO")+
-                            "  c="+fmt(main->coefficient)+"##nbo.nlmo.main";
+                        const std::string label=std::string(nbo_local(language,
+                            "Show main orbital","显示主轨道","主軌道を表示",
+                            "Afficher l'orbitale principale"))+"##nbo.nlmo.main";
                         if(ImGui::Button(label.c_str())) {
                             NboOrbitalSelection selection;selection.dataset_id=integrated.id;
                             selection.label="Verified NLMO main component";
                             selection.mode=NboSelectionMode::WeightedComponent;
+                            selection.semantic_kind="nlmo_parent_component";
+                            selection.group_id="nlmo:"+std::string(nbo_spin_name(ref.spin))+":"+
+                                std::to_string(ref.index);
                             selection.terms={*main};
                             s.aomo.pending_selection=std::move(selection);
                         }
@@ -1006,20 +1045,14 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                             NboOrbitalSelection selection;selection.dataset_id=integrated.id;
                             selection.label="NLMO delocalization tail (validated NBO terms)";
                             selection.mode=NboSelectionMode::PartialSum;
+                            selection.semantic_kind="nlmo_tail";
+                            selection.group_id="nlmo:"+std::string(nbo_spin_name(ref.spin))+":"+
+                                std::to_string(ref.index);
                             selection.terms=tail;
                             s.aomo.pending_selection=std::move(selection);
                         }
                         validation::item("nbo.nlmo.tail");
                     }
-                }
-                note(nbo_local(language,"All signed NBONLMO coefficients:",
-                    "全部带符号 NBONLMO 系数：","すべての符号付き NBONLMO 係数：",
-                    "Tous les coefficients NBONLMO signés :"));
-                for(const auto& term:components) {
-                    const auto* orbital=nbo_orbital(integrated,term.orbital);
-                    note((orbital?orbital->label:std::string("NBO ")+std::to_string(term.orbital.index+1))+
-                        "  c="+fmt(term.coefficient)+
-                        (parent && term.orbital==*parent?" [verified parent]":""));
                 }
             }
         }
@@ -1030,10 +1063,10 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                 s.nho_sum_nao_indices.clear();
             }
             const bool nho_details_open=ImGui::CollapsingHeader((std::string(nbo_local(language,
-                    "NHO hybrid components and 3D lobe",
-                    "NHO 杂化成分与三维瓣","NHO 混成成分と 3D ローブ",
-                    "Composantes hybrides NHO et lobe 3D"))+
-                    "##nbo.nho.components").c_str(),ImGuiTreeNodeFlags_DefaultOpen);
+                    "NHO views",
+                    "NHO 视图","NHO 表示",
+                    "Vues NHO"))+
+                    "##nbo.nho.components").c_str());
             validation::item("nbo.nho.components");
             if(nho_details_open) {
                 const auto terms=nbo_nho_components(integrated,ref);
@@ -1045,10 +1078,8 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                 else {
                     std::map<char,double> angular_weights;
                     std::map<char,std::vector<NboOrbitalTerm>> angular_terms;
-                    double unknown=0,total=0;
                     for(const auto& term:terms) {
                         const double weight=term.coefficient*term.coefficient;
-                        total+=weight;
                         const auto row=std::find_if(d.naos.begin(),d.naos.end(),
                             [&](const NboNao& nao){return nao.id==term.orbital.index+1 &&
                                 nao.spin==term.orbital.spin;});
@@ -1057,39 +1088,26 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                             if(std::isalpha(c)){angular=static_cast<char>(std::tolower(c));break;}
                         if(angular=='s'||angular=='p'||angular=='d'||angular=='f'||angular=='g')
                             {angular_weights[angular]+=weight;angular_terms[angular].push_back(term);}
-                        else unknown+=weight;
                     }
-                    ImGui::Text("NHO %zu [%s]  NAO sum |c|²=%s",
-                        ref.index+1,nbo_spin_name(ref.spin),fmt(total).c_str());
-                    for(const auto& [angular,weight]:angular_weights)
-                        ImGui::Text("%c  |c|²=%s  (%s%% of this verified NHO)",
-                            angular,fmt(weight).c_str(),fmt(total>0?100*weight/total:0).c_str());
-                    if(unknown>0)ImGui::Text("?  |c|²=%s (NAO angular label unavailable)",fmt(unknown).c_str());
-                    ImGui::TextWrapped("%s",nbo_local(language,
-                        "Angular selections and accumulated terms are unnormalized signed NAO partial sums; percentages above describe the complete verified NHO.",
-                        "角动量分组及累加项均为保留原始符号且未归一化的 NAO 部分和；上方百分比描述完整已验证 NHO。",
-                        "角運動量群と累積項は符号を保ち、正規化しない NAO 部分和です。上の割合は検証済み NHO 全体を示します。",
-                        "Les groupes angulaires et termes cumulés sont des sommes partielles NAO signées, sans normalisation ; les pourcentages décrivent le NHO vérifié complet."));
                     for(const auto angular:{'s','p','d','f','g'}) {
                         const auto group=angular_terms.find(angular);
                         if(group==angular_terms.end() || angular_weights[angular]<=0)continue;
                         const std::string label=std::string(1,angular)+" "+nbo_local(language,
-                            "partial","部分和","部分和","somme partielle")+"  |c|²="+
-                            fmt(angular_weights[angular])+"##nbo.nho.angular."+angular;
+                             "partial","部分和","部分和","somme partielle")+
+                             "##nbo.nho.angular."+angular;
                         if(ImGui::SmallButton(label.c_str())) {
                             NboOrbitalSelection selection;selection.dataset_id=integrated.id;
                             selection.label="NHO "+std::to_string(ref.index+1)+" signed "+angular+
                                 " NAO partial sum";
                             selection.mode=NboSelectionMode::PartialSum;
+                            selection.semantic_kind="nho_angular_partial_sum";
+                            selection.group_id="nho:"+std::string(nbo_spin_name(ref.spin))+":"+
+                                std::to_string(ref.index)+":"+angular;
                             selection.terms=group->second;
                             s.aomo.pending_selection=std::move(selection);
                         }
                         validation::item(std::string("nbo.nho.angular.")+angular);
                     }
-                    ImGui::Text("%s: %zu / %zu",nbo_local(language,
-                        "Selected signed NAO terms","已选带符号 NAO 项",
-                        "選択した符号付き NAO 項","Termes NAO signés sélectionnés"),
-                        s.nho_sum_nao_indices.size(),terms.size());
                     if(ImGui::SmallButton((std::string(nbo_local(language,
                         "Select all","全选","すべて選択","Tout sélectionner"))+"##nbo.nho.sum.all").c_str()))
                         for(const auto& term:terms)s.nho_sum_nao_indices.insert(term.orbital.index);
@@ -1110,6 +1128,9 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                         selection.label="NHO "+std::to_string(ref.index+1)+
                             " selected signed NAO partial sum";
                         selection.mode=NboSelectionMode::PartialSum;
+                        selection.semantic_kind="nho_partial_sum";
+                        selection.group_id="nho:"+std::string(nbo_spin_name(ref.spin))+":"+
+                            std::to_string(ref.index);
                         selection.terms=selected_terms;
                         s.aomo.pending_selection=std::move(selection);
                     }
@@ -1122,6 +1143,9 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                         selection.label="NHO "+std::to_string(ref.index+1)+
                             " separate signed NAO components";
                         selection.mode=NboSelectionMode::Overlay;
+                        selection.semantic_kind="nho_component_overlay";
+                        selection.group_id="nho:"+std::string(nbo_spin_name(ref.spin))+":"+
+                            std::to_string(ref.index);
                         selection.terms=selected_terms;
                         s.aomo.pending_selection=std::move(selection);
                     }
@@ -1133,8 +1157,8 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                         s.aomo.pending_selection=nbo_single_selection(integrated,ref);
                     validation::item("nbo.nho.sum.full");
                     const bool all_nho_terms=ImGui::TreeNode((std::string(nbo_local(language,
-                        "Every signed NAO–NHO coefficient","全部带符号 NAO–NHO 系数",
-                        "すべての符号付き NAO–NHO 係数","Tous les coefficients NAO–NHO signés"))+
+                        "Choose NAO parts","选择 NAO 成分",
+                        "NAO 成分を選択","Choisir des composantes NAO"))+
                         "##nbo.nho.all").c_str());
                     validation::item("nbo.nho.all");
                     if(all_nho_terms) {
@@ -1149,13 +1173,16 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                             validation::item("nbo.nho.sum.item."+
                                 std::to_string(term.orbital.index));
                             ImGui::SameLine();
-                            const std::string label=(orbital?orbital->label:std::string("NAO ")+
-                                std::to_string(term.orbital.index+1))+"  c="+fmt(term.coefficient)+
+                             const std::string label=(orbital?orbital->label:std::string("NAO ")+
+                                 std::to_string(term.orbital.index+1))+
                                 "##nbo.nho.nao."+std::to_string(term.orbital.index);
                             if(ImGui::Selectable(label.c_str())) {
                                 NboOrbitalSelection selection;selection.dataset_id=integrated.id;
                                 selection.label="NAO component of verified NHO";
                                 selection.mode=NboSelectionMode::WeightedComponent;
+                                selection.semantic_kind="nho_nao_component";
+                                selection.group_id="nho:"+std::string(nbo_spin_name(ref.spin))+":"+
+                                    std::to_string(ref.index);
                                 selection.terms={term};
                                 s.aomo.pending_selection=std::move(selection);
                             }
@@ -1167,151 +1194,17 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
             }
         }
     } else note(renderable?trn(language,Renderable):trn(language,ReportsOnly));
-    note(std::string(trn(language,Source))+": "+source_label(d.source));
     const bool fchk_has_beta=canonical && std::any_of(canonical->orbitals.begin(),canonical->orbitals.end(),
         [](const MolecularOrbital& mo){return mo.spin==Spin::Beta;});
     if(d.association.compatible && d.archive && d.archive->open_shell && !fchk_has_beta)
         note(words.beta_archive_notice);
-    ImGui::BeginDisabled(!active);
+    ImGui::BeginDisabled(active_kind==ActiveOrbitalKind::Canonical);
     actions.canonical_set=ImGui::Button(trn(language,Canonical),ImVec2((ImGui::GetContentRegionAvail().x-ImGui::GetStyle().ItemSpacing.x)/2,0));
     ImGui::EndDisabled();validation::item("nbo.set.canonical");
-    ImGui::SameLine();ImGui::BeginDisabled(!renderable || !canonical_loaded || active);
+    ImGui::SameLine();ImGui::BeginDisabled(!renderable || !canonical_loaded ||
+                                           active_kind==ActiveOrbitalKind::NboSet);
     actions.nbo_set=ImGui::Button(trn(language,NboSet),ImVec2(-1,0));
     ImGui::EndDisabled();validation::item("nbo.set.nbo");
-    note(trn(language,EnergyNote));
-    note(trn(language,FocusNote));
-    if(ImGui::CollapsingHeader(words.contributions)){
-        note("Complete NBO-to-MO matrix report; canonical MO/NAO focus uses the central diagram above.");
-        if(!canonical || canonical_index>=canonical->orbitals.size() || !d.association.compatible){
-            note(words.mapping_error);
-        } else {
-            const auto& mo=canonical->orbitals[canonical_index];
-            const auto target_spin=mo.spin==Spin::Beta?NboSpin::Beta:NboSpin::Alpha;
-            const auto evidence=std::find_if(d.association.canonical_evidence.begin(),
-                d.association.canonical_evidence.end(),[&](const NboCanonicalEvidence& x){return x.spin==target_spin || (target_spin==NboSpin::Alpha && x.spin==NboSpin::Total);});
-            const bool direct=evidence==d.association.canonical_evidence.end() || evidence->direct_fchk_coefficients;
-            const auto source_index=mo.source_orbital_index;
-            note(std::string(words.selected_canonical)+": "+
-                 (source_index==std::numeric_limits<std::size_t>::max()?"?":std::to_string(source_index+1))+" ["+
-                 (target_spin==NboSpin::Beta?"beta":"alpha")+"]");
-            const NboMatrix* matrix=nullptr;
-            auto accept=[&](const NboMatrix& m){
-                std::string kind=m.kind;
-                std::transform(kind.begin(),kind.end(),kind.begin(),[](unsigned char c){return static_cast<char>(std::toupper(c));});
-                return kind=="NBOMO";
-            };
-            for(const auto& m:d.matrices)if(accept(m) && m.spin==target_spin){matrix=&m;break;}
-            if(!matrix && target_spin==NboSpin::Alpha)
-                for(const auto& m:d.matrices)if(accept(m) && m.spin==NboSpin::Total){matrix=&m;break;}
-            if(!matrix && d.archive){
-                for(const auto& m:d.archive->matrices)if(accept(m) && m.spin==target_spin){matrix=&m;break;}
-                if(!matrix && target_spin==NboSpin::Alpha)
-                    for(const auto& m:d.archive->matrices)if(accept(m) && m.spin==NboSpin::Total){matrix=&m;break;}
-            }
-            if(!direct){note(words.mapping_error);}else if(!matrix){note(words.no_matrix);}else{
-                std::vector<std::size_t> row_to_orbital;
-                for(std::size_t i=0;i<d.orbitals.size();++i)
-                    if(d.orbitals[i].spin==matrix->spin)row_to_orbital.push_back(i);
-                if(source_index==std::numeric_limits<std::size_t>::max() ||
-                   source_index>=matrix->columns || row_to_orbital.size()!=matrix->rows ||
-                   matrix->values.size()!=matrix->rows*matrix->columns){
-                    note(words.mapping_error);
-                }else{
-                    struct Contribution {std::size_t orbital;double weight;};
-                    std::vector<Contribution> entries;
-                    double total=0,shown=0;
-                    for(std::size_t row=0;row<matrix->rows;++row){
-                        const double t=matrix->values[row*matrix->columns+source_index];
-                        const double weight=t*t;
-                        total+=weight;
-                        entries.push_back({row_to_orbital[row],weight});
-                    }
-                    std::stable_sort(entries.begin(),entries.end(),[](const auto& a,const auto& b){return a.weight>b.weight;});
-                    for(const auto& entry:entries){
-                        const auto& orbital=d.orbitals[entry.orbital];
-                        const std::string label="#"+std::to_string(orbital.id)+
-                            " ["+nbo_spin_name(orbital.spin)+"] |T|²="+fmt(entry.weight);
-                        ImGui::PushID(static_cast<int>(entry.orbital));
-                        if(ImGui::Selectable(label.c_str(),s.selected_orbital==entry.orbital))
-                            actions.selected_orbital=entry.orbital;
-                        validation::item("nbo.contribution."+std::to_string(entry.orbital));
-                        if(ImGui::IsItemHovered())ImGui::SetTooltip("%s",orbital.label.c_str());
-                        ImGui::PopID();
-                        shown+=entry.weight;
-                    }
-                    note(std::string(words.shown)+": "+fmt(shown)+"; "+words.remainder+": "+fmt(total-shown)+
-                         "; Σ|T|²="+fmt(total));
-                    note(std::string(words.source_evidence)+": "+source_label(matrix->source));
-                    validation::field("nbo.nbomo", "spin="+std::string(nbo_spin_name(matrix->spin))+
-                        ";canonical_source_index="+std::to_string(source_index)+
-                        ";shown="+fmt(shown)+";remaining="+fmt(total-shown));
-                }
-            }
-        }
-    }
-    if(ImGui::CollapsingHeader(trn(language,Populations),ImGuiTreeNodeFlags_DefaultOpen)){
-        if(d.populations.empty())note(trn(language,NoData));
-        for(const auto& p:d.populations){
-            const auto label=std::string(words.atom)+" "+std::to_string(p.atom)+" "+p.symbol+" ["+nbo_spin_name(p.spin)+"]  "+words.charge+"="+fmt(p.charge)+" "+words.core+"="+fmt(p.core)+" "+words.valence+"="+fmt(p.valence)+" "+words.rydberg+"="+fmt(p.rydberg)+" "+words.total+"="+fmt(p.total)+" "+words.effective_core+"="+shown_opt(p.effective_core_electrons)+" "+words.explicit_pop+"="+shown_opt(p.explicit_population)+" "+words.spin_density+"="+shown_opt(p.spin_density);
-            if(ImGui::Selectable((label+"##nbo.npa."+std::to_string(p.atom)+nbo_spin_name(p.spin)).c_str(),
-                p.atom>0 && s.selected_atoms.contains(p.atom-1))) {
-                s.selected_atoms.clear();if(p.atom>0)s.selected_atoms.insert(p.atom-1);
-                s.selected_structure.reset();
-            }
-            validation::item("nbo.npa.atom."+std::to_string(p.atom));
-        }
-    }
-    if(ImGui::CollapsingHeader(trn(language,Naos))){
-        if(d.naos.empty())note(trn(language,NoData));
-        for(const auto& n:d.naos){
-            note(std::to_string(n.id)+" "+words.atom+" "+std::to_string(n.atom)+" "+n.symbol+" "+n.angular+" "+n.type+" ["+nbo_spin_name(n.spin)+"] "+words.occupation+"="+fmt(n.occupation)+" "+words.fock+"="+shown_opt(n.energy_hartree)+" "+words.spin_density+"="+shown_opt(n.spin_density));
-        }
-    }
-    if(ImGui::CollapsingHeader(trn(language,Orbitals),ImGuiTreeNodeFlags_DefaultOpen)){
-        if(d.orbitals.empty())note(trn(language,NoData));
-        for(std::size_t i=0;i<d.orbitals.size();++i){
-            const auto& o=d.orbitals[i];ImGui::PushID(static_cast<int>(i));
-            const std::string label="#"+std::to_string(o.id)+" ["+nbo_spin_name(o.spin)+"] "+words.occupation+"="+fmt(o.occupation);
-            if(ImGui::Selectable(label.c_str(),s.selected_orbital==i))actions.selected_orbital=i;
-            validation::item("nbo.orbital."+std::to_string(i));
-            if(ImGui::IsItemClicked() && s.integration) {
-                const NboOrbitalRef ref{NboOrbitalKind::NBO,o.spin,o.id>0?o.id-1:0};
-                if(o.id>0 && nbo_orbital(*s.integration,ref))
-                    s.aomo.pending_selection=nbo_single_selection(*s.integration,ref);
-            }
-            if(ImGui::IsItemHovered())ImGui::SetTooltip("%s %s",o.kind.c_str(),o.label.c_str());
-            if(s.selected_orbital==i){
-                note(o.kind+" "+o.label);
-                note(std::string(words.fock)+": "+(o.diagonal_fock_hartree?fmt(*o.diagonal_fock_hartree):"null"));
-                for(const auto& c:o.components)note(std::string(words.component)+" "+words.atom+" "+std::to_string(c.atom)+"  "+fmt(c.percent)+"%  "+words.coefficient+"="+fmt(c.coefficient)+"  "+c.hybrid);
-            }
-            ImGui::PopID();
-        }
-    }
-    if(ImGui::CollapsingHeader(trn(language,Wiberg))){
-        if(d.wiberg.empty())note(trn(language,NoData));
-        for(const auto& w:d.wiberg)note(std::to_string(w.atom_a)+"–"+std::to_string(w.atom_b)+" ["+nbo_spin_name(w.spin)+"] = "+fmt(w.value));
-    }
-    if(ImGui::CollapsingHeader(trn(language,E2))){
-        for(const auto& section:d.e2_sections)note(std::string(trn(language,Threshold))+": "+shown_opt(section.printing_threshold)+" "+section.units+" ["+nbo_spin_name(section.spin)+"] "+section.missing_reason);
-        if(d.e2.empty())note(trn(language,NoData));
-        for(const auto& e:d.e2)note(std::to_string(e.donor)+" → "+std::to_string(e.acceptor)+" ["+nbo_spin_name(e.spin)+"] E(2)="+fmt(e.value)+" "+e.units+" Δε="+fmt(e.energy_gap_hartree)+" Ha F="+fmt(e.fock_hartree)+" Ha  "+words.threshold+"="+shown_opt(e.printing_threshold));
-    }
-    if(ImGui::CollapsingHeader(trn(language,Matrices))){
-        for(const auto& m:d.matrices)note(m.kind+" ["+nbo_spin_name(m.spin)+"] "+std::to_string(m.rows)+"×"+std::to_string(m.columns));
-        if(d.archive)for(const auto& m:d.archive->matrices)note("ARCHIVE "+m.kind+" ["+nbo_spin_name(m.spin)+"] "+std::to_string(m.rows)+"×"+std::to_string(m.columns));
-        for(const auto& c:d.cmo_summaries)note("CMO summary: "+c.block);
-    }
-    if(ImGui::CollapsingHeader(words.source_evidence)){
-        note(source_label(d.source));
-        for(const auto& m:d.matrices)note(source_label(m.source));
-        if(d.archive)note(source_label(d.archive->source));
-        for(const auto& c:d.cmo_summaries)note(source_label(c));
-        if(s.selected_orbital<d.orbitals.size())note(source_label(d.orbitals[s.selected_orbital].source));
-        if(s.selected_orbital<d.orbitals.size() && d.orbitals[s.selected_orbital].energy_source)
-            note(source_label(*d.orbitals[s.selected_orbital].energy_source));
-        for(const auto& section:d.e2_sections)note(source_label(section.source));
-    }
     input_path(trn(language,ExportPath),"##nbo.export.path",s.export_path);
     actions.export_bundle=ImGui::Button(trn(language,Export),ImVec2(-1,0));
     validation::item("nbo.export");
@@ -1563,14 +1456,17 @@ void export_nbo_focus_bundle(const NboDataset& d,const std::filesystem::path& ba
 
 void export_nbo_bundle(const NboDataset& d,std::size_t selected,const std::filesystem::path& base,
                        const Wavefunction* canonical,std::size_t canonical_index,
-                       double contribution_threshold,bool nbo_active,
-                       std::size_t rendered_orbital_index,
+                       double contribution_threshold,const ActiveOrbitalView& active_view,
+                       const NboIntegration* integration,
                        const MODiagramViewSnapshot* diagram,
                        const NboFocusUIState* focus){
     (void)contribution_threshold;
     auto path=base;path.replace_extension();
     if(!path.parent_path().empty())std::filesystem::create_directories(path.parent_path());
     const auto file=[&](const char* suffix){auto p=path;p+=suffix;return p;};
+    // The caller writes the shared integration companion for every export
+    // entrypoint from the same active routed analysis snapshot.
+    (void)integration;
     {std::ofstream out(file(".nbo.json"),std::ios::binary);if(!out)throw std::runtime_error("Cannot write NBO JSON");out<<serialize_nbo_json(d);if(!out)throw std::runtime_error("NBO JSON write failed");}
     {auto out=output_csv(file(".npa.csv"));out<<"atom,symbol,spin,charge,core,valence,rydberg,printed_total_population,effective_core_electrons,explicit_population,spin_density,source_path,source_line,analysis_segment\n";
      for(const auto& p:d.populations)out<<p.atom<<','<<csv(p.symbol)<<','<<csv(nbo_spin_name(p.spin))<<','<<p.charge<<','<<p.core<<','<<p.valence<<','<<p.rydberg<<','<<p.total<<','<<opt(p.effective_core_electrons)<<','<<opt(p.explicit_population)<<','<<opt(p.spin_density)<<','<<csv(p.source.path)<<','<<p.source.line_begin<<','<<p.source.analysis_segment<<'\n';}
@@ -1585,8 +1481,11 @@ void export_nbo_bundle(const NboDataset& d,std::size_t selected,const std::files
         std::ofstream out(file(".view.json"),std::ios::binary);
         if(!out)throw std::runtime_error("Cannot write NBO view snapshot");
         out<<std::setprecision(17);
-        out<<"{\"schema\":1,\"export_dataset\":\"nbo\",\"rendered_set\":"<<json(nbo_active?"nbo":"canonical")
-           <<",\"rendered_orbital_index\":"<<rendered_orbital_index
+        out<<"{\"schema\":1,\"export_dataset\":\"nbo\",\"rendered_set\":"<<json(active_orbital_kind_name(active_view.kind))
+           <<",\"active_view\":"<<serialize_active_orbital_view_json(active_view)
+           <<",\"rendered_orbital_index\":";
+        if(active_view.rendered_index)out<<*active_view.rendered_index;else out<<"null";
+        out
            <<",\"dataset_source\":"<<json(d.source.path)
            <<",\"association\":"<<json(d.association.status)
            <<",\"selected_nbo_index\":";
@@ -1669,8 +1568,11 @@ void export_nbo_bundle(const NboDataset& d,std::size_t selected,const std::files
     const std::size_t start=d.orbitals.empty()?0:std::min(selected,d.orbitals.size()-1);
     const std::size_t count=std::min<std::size_t>(12,d.orbitals.size()-start);
     const std::string title="NBO OCCUPATION (ELECTRONS)";
-    const std::string scene="SCENE: "+std::string(nbo_active?"NBO":"CANONICAL")+
-        " ORBITAL INDEX "+std::to_string(rendered_orbital_index);
+    const std::string scene="SCENE: "+std::string(active_orbital_kind_name(active_view.kind))+
+        " / "+(active_view.semantic_kind.empty()?active_view.label:active_view.semantic_kind+
+            " "+active_view.label)+" / "+nbo_spin_name(active_view.spin)+
+        " / "+(active_view.rendered_index?
+            "ORBITAL INDEX "+std::to_string(*active_view.rendered_index):"NO RENDERED INDEX");
     const std::string source="SOURCE: "+source_label(d.source);
     const std::string selected_text=d.orbitals.empty()?"SELECTED: NONE":
         "SELECTED: NBO "+std::to_string(d.orbitals[start].id)+" "+nbo_spin_name(d.orbitals[start].spin)+

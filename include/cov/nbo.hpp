@@ -88,6 +88,7 @@ struct NboArchive {
     std::vector<Atom> atoms;
     std::size_t basis_count=0;
     bool open_shell=false, density_is_bond_order=false;
+    std::string fock_input_units="hartree"; // matrices are converted to hartree on read
     std::vector<int> centers, labels, ncomp, nprim, nptr;
     std::vector<double> exponents, cs, cp, cd, cf, cg;
     std::vector<NboMatrix> matrices;

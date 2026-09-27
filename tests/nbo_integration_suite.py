@@ -115,9 +115,13 @@ def case_check(case, build, out, native=True, languages=False):
     for target, file in [('path', 'analysis.log'), ('archive47', 'FILE.47'),
                           ('aonbo', 'FILE.37'), ('nbomo', 'FILE.49')]:
         plan.append(command('text', 'nbo.'+target, (a/file).as_posix()))
-    plan += ['click "nbo.attach"', 'capture "attached"', 'click "nbo.set.nbo"', 'seek "panel.nbo"']
+    plan += ['click "nbo.attach"', 'capture "attached"', 'click "nbo.set.nbo"',
+             'seek "panel.nbo"']
     for i in selected:
-        plan += [command('click', 'nbo.orbital.'+str(i)), command('volume', f'nbo-{i:03}', i)]
+        orbital = dataset['orbitals'][i]
+        typed_id = f"nbo.typed.NBO:{orbital['spin']}:{orbital['id']-1}"
+        plan += ['seek "nbo.orbital.pick"', 'click "nbo.orbital.pick"',
+                 command('click', typed_id), command('volume', f'nbo-{i:03}', i)]
         if dataset['orbitals'][i]['kind'] in ('LP', '3C'):
             plan += ['hover "scene.viewport"', command('capture', f'local-{i:03}')]
     plan += ['hover "scene.viewport"', 'capture "nbo-selected"',

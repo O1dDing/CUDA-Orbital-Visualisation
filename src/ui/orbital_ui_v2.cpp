@@ -1,4 +1,5 @@
 #include "cov/orbital_ui.hpp"
+#include "cov/nbo_aomo_text.hpp"
 #include "cov/nbo_ui.hpp"
 #include "cov/validation.hpp"
 
@@ -12,6 +13,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <cstring>
 #include <iomanip>
 #include <map>
 #include <optional>
@@ -1029,7 +1031,8 @@ void draw_arrow(ImDrawList* draw, const ImVec2 start, const bool up, const ImU32
                             ImVec2(tip.x + 3.5f, tip.y + head), colour);
 }
 
-std::string compact_metadata(const OrbitalMetadata& item, const EnergyUnit unit) {
+std::string compact_metadata(const OrbitalMetadata& item, const EnergyUnit unit,
+                             const NboAomoName* verified) {
     std::ostringstream out;
     out << "label=" << item.display_label << "; raw_mo=" << item.raw_mo_number
         << "; internal_index=" << item.orbital_index
@@ -1038,7 +1041,12 @@ std::string compact_metadata(const OrbitalMetadata& item, const EnergyUnit unit)
         << ' ' << energy_unit_symbol(unit)
         << "; occupation=" << item.occupation << "; source symmetry=" << item.symmetry
         << "; view symmetry=" << orbital_symmetry_compact_text(item.symmetry_view)
-        << "; symmetry evidence=" << orbital_symmetry_json(item.symmetry_view);
+        << "; symmetry evidence=" << orbital_symmetry_json(item.symmetry_view)
+        << "; current display symmetry="
+        << (verified?verified->label:
+            (item.symmetry_view.label.empty()?"?":item.symmetry_view.label))
+        << "; display evidence="
+        << (verified?verified->detail:"no verified NBO/SALC display name");
     return out.str();
 }
 
@@ -1060,7 +1068,8 @@ bool same_filter_settings(const OrbitalFilterSettings& left,
 
 bool same_diagram_options(const MODiagramOptions& left,
                           const MODiagramOptions& right) noexcept {
-    return left.mode==right.mode &&
+    return left.routed_identity==right.routed_identity &&
+        left.mode==right.mode &&
         left.energy_unit==right.energy_unit &&
         left.energy_axis_mode==right.energy_axis_mode &&
         same_degeneracy_settings(left.degeneracy,right.degeneracy) &&
@@ -1119,6 +1128,57 @@ bool browser_cache_matches(const OrbitalUIBrowserCache& cache,
         same_filter_settings(*cache.filter,filter);
 }
 
+void draw_diagram_details_window(const MODiagramData& data,
+    const Wavefunction& wavefunction,const std::size_t selected_index,
+    OrbitalUIState& state,const Language language,const float ui_scale) {
+    if(!state.show_diagram_details)return;
+    const auto* viewport=ImGui::GetMainViewport();
+    const ImVec2 work=viewport->WorkSize;
+    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x+work.x*.5f,viewport->WorkPos.y+work.y*.5f),
+        ImGuiCond_Appearing,ImVec2(.5f,.5f));
+    ImGui::SetNextWindowSize(ImVec2(std::min(720.0f*ui_scale,work.x*.8f),work.y*.7f),ImGuiCond_FirstUseEver);
+    const ImVec2 margin(std::min(12.0f,work.x*.1f),std::min(12.0f,work.y*.1f));
+    const ImVec2 maximum(std::max(1.0f,work.x-2*margin.x),std::max(1.0f,work.y-2*margin.y));
+    const ImVec2 minimum(std::min(180.0f,maximum.x),std::min(120.0f,maximum.y));
+    ImGui::SetNextWindowSizeConstraints(minimum,maximum);
+    if(state.diagram_details_bounds) {
+        const auto& bounds=*state.diagram_details_bounds;
+        const ImVec2 size(std::clamp(bounds[2],minimum.x,maximum.x),
+                          std::clamp(bounds[3],minimum.y,maximum.y));
+        const ImVec2 lower(viewport->WorkPos.x+margin.x,viewport->WorkPos.y+margin.y);
+        const ImVec2 position(std::clamp(bounds[0],lower.x,lower.x+maximum.x-size.x),
+                              std::clamp(bounds[1],lower.y,lower.y+maximum.y-size.y));
+        if(position.x!=bounds[0] || position.y!=bounds[1])
+            ImGui::SetNextWindowPos(position,ImGuiCond_Always);
+    }
+    const std::string details_title=std::string(orbital_tr(OrbitalText::OrbitalDetails,language))+"###cov.orbital.details";
+    const bool visible=ImGui::Begin(details_title.c_str(),
+        &state.show_diagram_details,ImGuiWindowFlags_HorizontalScrollbar);
+    const auto details_pos=ImGui::GetWindowPos(),details_size=ImGui::GetWindowSize();
+    state.diagram_details_bounds=std::array<float,4>{details_pos.x,details_pos.y,details_size.x,details_size.y};
+    if(visible) {
+        if(ImGui::Button(orbital_tr(OrbitalText::CloseOrbitalDetails,language)))state.show_diagram_details=false;
+        cov::validation::item("diagram.details.close");
+        ImGui::Separator();
+        ImGui::PushTextWrapPos(0.0f);
+        const auto row=mo_diagram_row_for_orbital(data,selected_index);
+        if(row && *row<data.levels.size()) {
+            draw_level_details(data,data.levels[*row],wavefunction,state,language,selected_index);
+        } else if(selected_index<wavefunction.orbitals.size()) {
+            ImGui::Text("MO %zu",selected_index+1);
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsOutsideDiagram,language));
+        }
+        ImGui::Separator();
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsDataScope,language));
+        cov::validation::item("diagram.details.scope");
+        const std::string close_bottom=std::string(orbital_tr(OrbitalText::CloseOrbitalDetails,language))+"##bottom";
+        if(ImGui::Button(close_bottom.c_str()))state.show_diagram_details=false;
+        cov::validation::item("diagram.details.close.bottom");
+        ImGui::PopTextWrapPos();
+    }
+    ImGui::End();
+}
+
 } // namespace
 
 void draw_orbital_browser(const Wavefunction& wavefunction,
@@ -1126,21 +1186,26 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                           OrbitalUIState& state,
                           const Language language,
                           const float ui_scale,
-                          OrbitalUIActions& actions) {
+    OrbitalUIActions& actions) {
     if (wavefunction.orbitals.empty()) {
         ImGui::TextDisabled("%s", tr(Text::NoOrbitals, language));
         return;
     }
     state.degeneracy.tolerance_hartree = std::clamp(state.degeneracy.tolerance_hartree, 1.0e-9, 1.0e-2);
     state.filter.virtual_window_hartree = std::clamp(state.filter.virtual_window_hartree, 0.01, 20.0);
+    const auto* routed=state.nbo_ui?state.nbo_ui->routed:nullptr;
+    const std::string route_identity=routed?
+        routed->canonical_fingerprint+":"+routed->integration_id:"";
     if (!browser_cache_matches(state.browser_cache,wavefunction,
-                               state.degeneracy,state.filter)) {
+                               state.degeneracy,state.filter) ||
+        state.browser_cache.routed_identity!=route_identity) {
         state.browser_cache.wavefunction=&wavefunction;
         state.browser_cache.orbital_data=wavefunction.orbitals.data();
         state.browser_cache.atom_count=wavefunction.atoms.size();
         state.browser_cache.orbital_count=wavefunction.orbitals.size();
         state.browser_cache.degeneracy=state.degeneracy;
         state.browser_cache.filter=state.filter;
+        state.browser_cache.routed_identity=route_identity;
         state.browser_cache.frontier=find_frontier_orbitals(
             wavefunction.orbitals,state.filter.occupation_threshold);
         // Selection is a transient 3-D inspection state.  None of the table
@@ -1150,9 +1215,45 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
         state.browser_cache.metadata=build_orbital_metadata(
             wavefunction,wavefunction.orbitals.size(),
             state.degeneracy,state.filter);
+        if(routed && routed->canonical_fingerprint==nbo_canonical_fingerprint(wavefunction)){
+            auto& metadata=state.browser_cache.metadata;
+            for(std::size_t i=0;i<metadata.size();++i)
+                if(const auto balance=routed_mo_shell_balance(*routed,i)){
+                    const bool occupied=wavefunction.orbitals[i].occupation>
+                        state.filter.occupation_threshold;
+                    const bool core=balance->complete&&occupied&&balance->core>=0.70&&
+                        balance->core>=balance->valence+0.10;
+                    metadata[i].region=core?OrbitalRegion::Core:
+                        occupied||balance->valence>=0.05?OrbitalRegion::Valence:
+                        OrbitalRegion::Virtual;
+                    if(state.filter.mode==OrbitalFilterMode::AutoReasonable||
+                       state.filter.mode==OrbitalFilterMode::Valence)
+                        metadata[i].visible=!core&&(occupied||balance->valence>=0.05||
+                            metadata[i].visible);
+                    else if(state.filter.mode==OrbitalFilterMode::Core)
+                        metadata[i].visible=core;
+                }
+            const auto labels=build_orbital_labels(wavefunction.orbitals,
+                point_group_limited_degeneracy(wavefunction,state.degeneracy));
+            for(std::size_t i=0;i<labels.size();){
+                const auto end=std::min(labels.size(),i+std::max<std::size_t>(1,labels[i].group_size));
+                bool any=false;for(auto j=i;j<end;++j)any=any||metadata[j].visible;
+                if(any)for(auto j=i;j<end;++j)metadata[j].visible=true;
+                i=end;
+            }
+        }
     }
     const FrontierOrbitals& frontier=*state.browser_cache.frontier;
     const auto& metadata=state.browser_cache.metadata;
+    const NboAomoNames* aomo_names=nullptr;
+    if(state.nbo_ui && state.nbo_ui->integration &&
+       prepare_nbo_aomo_state(state.nbo_ui->aomo,*state.nbo_ui->integration,wavefunction))
+        aomo_names=state.nbo_ui->aomo.names.get();
+    const auto verified_name=[&](std::size_t index)->const NboAomoName* {
+        if(!aomo_names || index>=aomo_names->canonical.size())return nullptr;
+        const auto& name=aomo_names->canonical[index];
+        return name.verified?&name:nullptr;
+    };
     const Spin selected_spin = selected_index < wavefunction.orbitals.size()
         ? wavefunction.orbitals[selected_index].spin : Spin::Alpha;
     const auto homo = frontier_for_selected_spin(frontier, selected_spin, false);
@@ -1183,6 +1284,10 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
         ImGui::EndTable();
     }
 
+    const bool advanced_filters=ImGui::CollapsingHeader(
+        (std::string(aomo_text(language,"Filter and grouping settings"))+"###browser.settings").c_str());
+    cov::validation::item("browser.settings");
+    if(advanced_filters) {
     if (state.filter.mode == OrbitalFilterMode::AutoReasonable) {
         float window = static_cast<float>(state.filter.virtual_window_hartree);
         ImGui::TextDisabled("%s (Ha)", tr(Text::HighVirtualWindow, language));
@@ -1199,19 +1304,22 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
         state.degeneracy.tolerance_hartree = std::clamp(tolerance, 1.0e-9, 1.0e-2);
     }
     ImGui::Checkbox(tr(Text::GroupedLabels, language), &state.grouped_labels);
+    }
 
     std::vector<std::size_t> candidates;
     for (std::size_t i = 0; i < metadata.size(); ++i) {
-        if (metadata[i].visible && search_matches(metadata[i], state.search.data())) candidates.push_back(i);
+        const auto* name=verified_name(i);
+        const bool name_match=name && lower_ascii(name->label).find(lower_ascii(state.search.data()))!=std::string::npos;
+        if (metadata[i].visible && (search_matches(metadata[i], state.search.data()) || name_match)) candidates.push_back(i);
     }
-    ImGui::SameLine();
     ImGui::TextDisabled("%s: %zu / %zu", tr(Text::VisibleOrbitals, language), candidates.size(), metadata.size());
 
     cov::validation::anchor("browser.table");
+    const bool table_scroll=candidates.size()>12;
     if (ImGui::BeginTable("##orbital_table", 4,
                           ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerH |
-                          ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchProp |
-                          ImGuiTableFlags_NoSavedSettings, ImVec2(0.0f, 270.0f * ui_scale))) {
+                          (table_scroll?ImGuiTableFlags_ScrollY:0) | ImGuiTableFlags_SizingStretchProp |
+                          ImGuiTableFlags_NoSavedSettings, ImVec2(0.0f, table_scroll?270.0f*ui_scale:0))) {
         ImGui::TableSetupScrollFreeze(0, 1);
         ImGui::TableSetupColumn("MO", ImGuiTableColumnFlags_WidthFixed, 76.0f * ui_scale);
         ImGui::TableSetupColumn(tr(Text::Energy, language), ImGuiTableColumnFlags_WidthStretch);
@@ -1226,7 +1334,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                 const auto& item = metadata[index];
                 const std::string label = state.grouped_labels ? item.display_label : std::to_string(item.raw_mo_number);
                 ImGui::PushID(static_cast<int>(index));
-                ImGui::TableNextRow(0,2.2f*ImGui::GetTextLineHeightWithSpacing()); ImGui::TableNextColumn();
+                ImGui::TableNextRow(0,1.3f*ImGui::GetTextLineHeightWithSpacing()); ImGui::TableNextColumn();
                 if (ImGui::Selectable(label.c_str(), index == selected_index,
                                       ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap)) {
                     actions.select_orbital = index;
@@ -1237,11 +1345,12 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                                    format_energy(item.energy_hartree, state.energy_unit, 5).c_str());
                 ImGui::TableNextColumn();
                 ImGui::TextColored(text_colour(kNumericColour), "%.2f", item.occupation);
-                ImGui::TableNextColumn(); draw_rich_symmetry(
-                    item.symmetry_view.label.empty()?"N/A":item.symmetry_view.label,kSymmetryColour);
+                const auto* name=verified_name(index);
+                const std::string symmetry=name?name->label:
+                    (item.symmetry_view.label.empty()?"?":item.symmetry_view.label);
+                ImGui::TableNextColumn(); draw_rich_symmetry(symmetry,kSymmetryColour);
                 cov::validation::item("browser.symmetry."+std::to_string(index)+".label");
-                ImGui::TextDisabled("%s",symmetry_scope_tag(item.symmetry_view,language));
-                cov::validation::item("browser.symmetry."+std::to_string(index)+".scope");
+                cov::validation::field("browser.symmetry."+std::to_string(index),symmetry);
                 ImGui::PopID();
             }
         }
@@ -1249,9 +1358,12 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     }
 
     if (selected_index < metadata.size() && ImGui::Button(tr(Text::CopyMetadata, language))) {
-        const std::string text = compact_metadata(metadata[selected_index], state.energy_unit);
+        const std::string text = compact_metadata(metadata[selected_index], state.energy_unit,
+                                                  verified_name(selected_index));
         ImGui::SetClipboardText(text.c_str());
+        validation::record("browser.copy","{\"text\":"+validation::quote(text)+"}");
     }
+    validation::item("browser.copy");
 }
 
 void draw_energy_diagram(const Wavefunction& wavefunction,
@@ -1274,7 +1386,40 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         "MO 図の設定##cov.diagram.settings":language==Language::French?
         "Réglages du diagramme OM##cov.diagram.settings":
         "MO diagram settings##cov.diagram.settings";
-    if(!aomo_ready || ImGui::CollapsingHeader(mo_settings)) {
+    bool show_mo_settings=!aomo_ready;
+    if(aomo_ready) {
+        show_mo_settings=ImGui::CollapsingHeader(mo_settings);
+        validation::item("diagram.settings");
+    }
+    if(show_mo_settings) {
+    const char* subset_label=language==Language::ChineseSimplified?"轨道范围":
+        language==Language::Japanese?"軌道の範囲":
+        language==Language::French?"Ensemble orbital":"Orbital scope";
+    const char* subset_names=language==Language::ChineseSimplified?
+        "价层轨道（σ 与 π）\0仅离域 π 子集\0仅多中心活性空间\0":
+        language==Language::Japanese?
+        "価電子軌道（σ と π）\0非局在 π 部分集合のみ\0多中心活性空間のみ\0":
+        language==Language::French?
+        "Orbitales de valence (σ et π)\0Sous-ensemble π délocalisé\0Espace actif multicentrique\0":
+        "Valence orbitals (σ and π)\0Delocalised π subset only\0Multicentre active space only\0";
+    int subset=state.diagram_mode==MODiagramMode::DelocalisedPiFamilyOnly?1:
+        state.diagram_mode==MODiagramMode::MulticentreActiveSpaceOnly?2:0;
+    ImGui::SetNextItemWidth(265.0f*ui_scale);
+    const char* subset_items[3]={subset_names,nullptr,nullptr};
+    subset_items[1]=subset_items[0]+std::strlen(subset_items[0])+1;
+    subset_items[2]=subset_items[1]+std::strlen(subset_items[1])+1;
+    const bool scope_open=ImGui::BeginCombo(subset_label,subset_items[subset]);
+    cov::validation::item("diagram.scope");
+    if(scope_open) {
+        for(int i=0;i<3;++i) {
+            if(ImGui::Selectable(subset_items[i],i==subset))
+                state.diagram_mode=i==1?MODiagramMode::DelocalisedPiFamilyOnly:
+                    i==2?MODiagramMode::MulticentreActiveSpaceOnly:MODiagramMode::ValenceCentral;
+            cov::validation::item("diagram.scope."+std::to_string(i));
+            if(i==subset)ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
     ImGui::TextDisabled("%s", tr(Text::EnergyScale, language));
     ImGui::SameLine();
     if (ImGui::RadioButton(tr(Text::LinearEnergyScale, language), state.energy_axis_mode == EnergyAxisMode::Linear)) {
@@ -1301,12 +1446,10 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
 
     MODiagramOptions options;
     const bool compact=state.hide_ligand_centred_intermediates;
-    if (diagram_cache_wavefunction_matches(state.diagram_cache,wavefunction) &&
-        state.diagram_cache.options->hide_ligand_centred_intermediates==compact) {
-        options.mode=state.diagram_cache.options->mode;
-    } else {
-        options.mode=preferred_compact_mo_diagram_mode(wavefunction,compact);
-    }
+    options.mode=state.diagram_mode;
+    options.routed=state.nbo_ui?state.nbo_ui->routed:nullptr;
+    if(options.routed)options.routed_identity=options.routed->canonical_fingerprint+
+        ":"+options.routed->integration_id;
     options.energy_unit = state.energy_unit;
     options.energy_axis_mode = state.energy_axis_mode;
     options.degeneracy = state.degeneracy;
@@ -1363,21 +1506,19 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         integrated_aomo=draw_nbo_aomo_diagram(state.nbo_ui->aomo,
             *state.nbo_ui->integration,wavefunction,snapshot,language,ui_scale);
         if(!integrated_aomo) {
-            ImGui::TextWrapped("AO/NAO–MO: %s. Gaussian canonical MO diagram remains available below.",
-                state.nbo_ui->aomo.status.c_str());
+            ImGui::TextWrapped("%s",aomo_text(language,
+                "AO/NAO decomposition unavailable; showing the canonical MO diagram."));
             cov::validation::field("aomo.fallback",state.nbo_ui->aomo.status);
         }
     }
-    if(integrated_aomo) {
-        const char* reference=language==Language::ChineseSimplified?
-            "正则 MO 能量参考图##aomo.energy.reference":
-            language==Language::Japanese?
-            "正準 MO エネルギー参照図##aomo.energy.reference":
-            language==Language::French?
-            "Référence énergétique des OM canoniques##aomo.energy.reference":
-            "Canonical MO energy reference##aomo.energy.reference";
-        if(!ImGui::CollapsingHeader(reference))return;
-        cov::validation::item("aomo.energy.reference");
+    if(integrated_aomo){
+        // The same canonical details remain reachable from the unified canvas;
+        // its levels are already drawn there and must not be drawn a second time.
+        if(ImGui::Button(orbital_tr(OrbitalText::OrbitalDetails,language),ImVec2(-1.0f,0.0f)))
+            state.show_diagram_details=true;
+        cov::validation::item("diagram.details");
+        draw_diagram_details_window(data,wavefunction,selected_index,state,language,ui_scale);
+        return;
     }
     const float height = 430.0f * ui_scale;
     const float left_padding=124.0f*ui_scale;
@@ -1538,56 +1679,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     if(!integrated_aomo && state.nbo_ui && state.nbo_ui->dataset)
         draw_nbo_focus_view(state.nbo_ui->focus,*state.nbo_ui->dataset,
                             wavefunction,snapshot,language,ui_scale);
-    if(state.show_diagram_details) {
-        const auto* viewport=ImGui::GetMainViewport();
-        const ImVec2 work=viewport->WorkSize;
-        ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x+work.x*.5f,viewport->WorkPos.y+work.y*.5f),
-            ImGuiCond_Appearing,ImVec2(.5f,.5f));
-        ImGui::SetNextWindowSize(ImVec2(std::min(720.0f*ui_scale,work.x*.8f),work.y*.7f),ImGuiCond_FirstUseEver);
-        const ImVec2 margin(std::min(12.0f,work.x*.1f),std::min(12.0f,work.y*.1f));
-        const ImVec2 maximum(std::max(1.0f,work.x-2*margin.x),std::max(1.0f,work.y-2*margin.y));
-        const ImVec2 minimum(std::min(180.0f,maximum.x),std::min(120.0f,maximum.y));
-        ImGui::SetNextWindowSizeConstraints(minimum,maximum);
-        if(state.diagram_details_bounds) {
-            const auto& bounds=*state.diagram_details_bounds;
-            const ImVec2 size(std::clamp(bounds[2],minimum.x,maximum.x),
-                              std::clamp(bounds[3],minimum.y,maximum.y));
-            const ImVec2 lower(viewport->WorkPos.x+margin.x,viewport->WorkPos.y+margin.y);
-            const ImVec2 position(std::clamp(bounds[0],lower.x,lower.x+maximum.x-size.x),
-                                  std::clamp(bounds[1],lower.y,lower.y+maximum.y-size.y));
-            // Size constraints alone leave ImGui's title-grab sliver visible
-            // after a restore. Keep the whole window reachable, before Begin
-            // computes clipping, without resetting a valid user placement.
-            if(position.x!=bounds[0] || position.y!=bounds[1])
-                ImGui::SetNextWindowPos(position,ImGuiCond_Always);
-        }
-        const std::string details_title=std::string(orbital_tr(OrbitalText::OrbitalDetails,language))+"###cov.orbital.details";
-        const bool visible=ImGui::Begin(details_title.c_str(),
-            &state.show_diagram_details,ImGuiWindowFlags_HorizontalScrollbar);
-        const auto details_pos=ImGui::GetWindowPos(),details_size=ImGui::GetWindowSize();
-        state.diagram_details_bounds=std::array<float,4>{details_pos.x,details_pos.y,details_size.x,details_size.y};
-        if(visible) {
-            if(ImGui::Button(orbital_tr(OrbitalText::CloseOrbitalDetails,language)))state.show_diagram_details=false;
-            cov::validation::item("diagram.details.close");
-            ImGui::Separator();
-            ImGui::PushTextWrapPos(0.0f);
-            const auto row=mo_diagram_row_for_orbital(data,selected_index);
-            if(row && *row<data.levels.size()) {
-                draw_level_details(data,data.levels[*row],wavefunction,state,language,selected_index);
-            } else if(selected_index<wavefunction.orbitals.size()) {
-                ImGui::Text("MO %zu",selected_index+1);
-                ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsOutsideDiagram,language));
-            }
-            ImGui::Separator();
-            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsDataScope,language));
-            cov::validation::item("diagram.details.scope");
-            const std::string close_bottom=std::string(orbital_tr(OrbitalText::CloseOrbitalDetails,language))+"##bottom";
-            if(ImGui::Button(close_bottom.c_str()))state.show_diagram_details=false;
-            cov::validation::item("diagram.details.close.bottom");
-            ImGui::PopTextWrapPos();
-        }
-        ImGui::End();
-    }
+    draw_diagram_details_window(data,wavefunction,selected_index,state,language,ui_scale);
 }
 
 } // namespace cov::ui

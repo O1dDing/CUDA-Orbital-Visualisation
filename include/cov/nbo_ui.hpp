@@ -2,6 +2,7 @@
 
 #include "cov/nbo.hpp"
 #include "cov/nbo_aomo_ui.hpp"
+#include "cov/chemistry_route.hpp"
 #include "cov/mo_diagram.hpp"
 #include "cov/ui.hpp"
 #include <array>
@@ -49,6 +50,7 @@ struct NboUIState {
     std::array<char, 2048> export_path{};
     std::optional<NboDataset> dataset;
     const NboIntegration* integration = nullptr; // main-owned, clear on reload
+    const RoutedAnalysis* routed = nullptr; // main-owned, rebuilt on reload/reattach
     std::optional<NboInputDiscovery> input_discovery;
     std::optional<std::size_t> pending_candidate;
     std::string input_status;
@@ -82,7 +84,7 @@ struct NboUIActions {
 
 NboUIActions draw_nbo_panel(NboUIState& state, Language language,
                             bool canonical_loaded, bool nbo_renderable,
-                            bool nbo_active, float scale,
+                            ActiveOrbitalKind active_kind, float scale,
                             const Wavefunction* canonical, std::size_t canonical_index,
                             const MODiagramViewSnapshot* diagram);
 std::string nbo_glyph_seed(Language language);
@@ -97,8 +99,9 @@ void draw_nbo_focus_view(NboFocusUIState& focus, const NboDataset& dataset,
 void export_nbo_bundle(const NboDataset& dataset, std::size_t selected_orbital,
                        const std::filesystem::path& base,
                        const Wavefunction* canonical, std::size_t canonical_index,
-                       double contribution_threshold, bool nbo_active,
-                       std::size_t rendered_orbital_index,
+                       double contribution_threshold,
+                       const ActiveOrbitalView& active_view,
+                       const NboIntegration* integration,
                        const MODiagramViewSnapshot* diagram,
                        const NboFocusUIState* focus);
 

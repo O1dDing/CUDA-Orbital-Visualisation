@@ -1,0 +1,231 @@
+#include "cov/nbo_salc.hpp"
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+#include <algorithm>
+#include <cmath>
+#include <cctype>
+#include <iomanip>
+#include <limits>
+#include <map>
+#include <numeric>
+#include <set>
+#include <sstream>
+
+namespace cov { namespace {
+using M=Eigen::MatrixXd;
+using V=Eigen::VectorXd;
+using RM=Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor>;
+double err(const M& a){return a.size()?a.cwiseAbs().maxCoeff():0;}
+M matrix(const NboMatrix& a){return Eigen::Map<const RM>(a.values.data(),a.rows,a.columns);}
+const NboMatrix* find(const std::vector<NboMatrix>& a,const char* kind,NboSpin spin){
+    const NboMatrix* p=nullptr;for(const auto& x:a)if(x.kind==kind&&x.spin==spin){if(p)return nullptr;p=&x;}return p;
+}
+bool complete(const NboMatrix* a,std::size_t n){return a&&a->rows==n&&a->columns==n&&a->values.size()==n*n&&std::all_of(a->values.begin(),a->values.end(),[](double v){return std::isfinite(v);});}
+std::string compact(std::string s){s.erase(std::remove_if(s.begin(),s.end(),[](unsigned char c){return std::isspace(c);}),s.end());return s;}
+std::string atoms_label(const Wavefunction& w,const std::vector<std::size_t>& a){std::ostringstream s;for(auto i:a){if(s.tellp()>0)s<<", ";s<<w.atoms[i].symbol<<i+1;}return s.str();}
+std::string key_atoms(const std::vector<std::size_t>& a){std::string s;for(auto i:a)s+=":"+std::to_string(i);return s;}
+std::vector<double> flat(const M& a){RM r=a;return {r.data(),r.data()+r.size()};}
+std::array<double,9> product(const std::array<double,9>& a,const std::array<double,9>& b){std::array<double,9> c{};for(int i=0;i<3;++i)for(int j=0;j<3;++j)for(int k=0;k<3;++k)c[3*i+j]+=a[3*i+k]*b[3*k+j];return c;}
+SymmetryOperation product(const SymmetryOperation& a,const SymmetryOperation& b){SymmetryOperation c;c.matrix=product(a.matrix,b.matrix);c.atom_permutation.resize(b.atom_permutation.size());for(std::size_t i=0;i<c.atom_permutation.size();++i)c.atom_permutation[i]=a.atom_permutation[b.atom_permutation[i]];return c;}
+double op_error(const SymmetryOperation& a,const SymmetryOperation& b){if(a.atom_permutation!=b.atom_permutation)return 1;double e=0;for(int i=0;i<9;++i)e=std::max(e,std::abs(a.matrix[i]-b.matrix[i]));return e;}
+struct Group {std::vector<SymmetryOperation> ops, generators;std::vector<std::size_t> parent, step, table;std::vector<std::vector<std::size_t>> classes;bool valid=false;double error=0;std::string detail;};
+std::size_t lookup(const std::vector<SymmetryOperation>& ops,const SymmetryOperation& p){for(std::size_t i=0;i<ops.size();++i)if(op_error(ops[i],p)<2e-5)return i;return ops.size();}
+Group make_group(const Wavefunction& w,const MolecularSymmetry& symmetry,const NboSalcOptions& options){
+    Group out;SymmetryOperation identity;identity.atom_permutation.resize(w.atoms.size());std::iota(identity.atom_permutation.begin(),identity.atom_permutation.end(),0);
+    out.ops={identity};out.parent={0};out.step={0};
+    auto candidates=symmetry.operations;
+    // Linear geometry supplies only E/i. Add a finite, explicitly recorded
+    // sampling subgroup which resolves angular momenta through the actual lmax.
+    if(symmetry.linear&&w.atoms.size()>1){
+        Eigen::Vector3d axis(w.atoms.back().x-w.atoms.front().x,w.atoms.back().y-w.atoms.front().y,w.atoms.back().z-w.atoms.front().z);
+        if(axis.norm()>1e-10){axis.normalize();unsigned lmax=0;for(const auto& s:w.shells)lmax=std::max(lmax,unsigned(s.angular_momentum));const int n=std::max(3,int(2*lmax+1));
+            Eigen::Matrix3d rot=Eigen::AngleAxisd(2*3.14159265358979323846/n,axis).toRotationMatrix();
+            Eigen::Vector3d seed=std::abs(axis.x())<.8?Eigen::Vector3d::UnitX():Eigen::Vector3d::UnitY();Eigen::Vector3d normal=axis.cross(seed).normalized();
+            Eigen::Matrix3d reflect=Eigen::Matrix3d::Identity()-2*normal*normal.transpose();
+            for(const auto& m:std::vector<Eigen::Matrix3d>{rot,reflect}){auto op=identity;for(int i=0;i<3;++i)for(int j=0;j<3;++j)op.matrix[3*i+j]=m(i,j);candidates.push_back(op);}
+        }
+    }
+    for(const auto& candidate:candidates){
+        if(candidate.atom_permutation.size()!=w.atoms.size())continue;
+        bool legal=true;for(std::size_t i=0;i<w.atoms.size();++i){const auto j=candidate.atom_permutation[i];if(j>=w.atoms.size()||w.atoms[i].atomic_number!=w.atoms[j].atomic_number||std::abs(w.atoms[i].nuclear_charge-w.atoms[j].nuclear_charge)>1e-8){legal=false;break;}}
+        if(!legal){out.detail="Symmetry exchanges inequivalent nuclei/ECP centres";return out;}
+        if(lookup(out.ops,candidate)<out.ops.size())continue;
+        out.generators.push_back(candidate);
+        for(std::size_t i=0;i<out.ops.size();++i)for(std::size_t j=0;j<out.generators.size();++j){auto p=product(out.ops[i],out.generators[j]);if(lookup(out.ops,p)==out.ops.size()){
+            if(out.ops.size()>=options.maximum_group_order){out.detail="Operation set does not close within finite-group capacity";return out;}
+            double geom_error=0;for(std::size_t a=0;a<w.atoms.size();++a){const auto& from=w.atoms[a];const auto& to=w.atoms[p.atom_permutation[a]];double x[3]={from.x-symmetry.centre_bohr[0],from.y-symmetry.centre_bohr[1],from.z-symmetry.centre_bohr[2]};double y[3]={to.x-symmetry.centre_bohr[0],to.y-symmetry.centre_bohr[1],to.z-symmetry.centre_bohr[2]};double e=0;for(int r=0;r<3;++r){double d=-y[r];for(int k=0;k<3;++k)d+=p.matrix[3*r+k]*x[k];e+=d*d;}geom_error=std::max(geom_error,std::sqrt(e));}
+            if(geom_error>symmetry.tolerance_bohr){out.detail="Products of approximate geometry operations fail atom mapping";return out;}
+            p.max_mapping_error_bohr=geom_error;out.ops.push_back(p);out.parent.push_back(i);out.step.push_back(j);
+        }}
+    }
+    const auto n=out.ops.size();out.table.resize(n*n);std::vector<std::size_t> inverse(n);
+    for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j){auto p=product(out.ops[i],out.ops[j]);auto k=lookup(out.ops,p);if(k==n){out.detail="Finite group multiplication did not close";return out;}out.table[i*n+j]=k;out.error=std::max(out.error,op_error(out.ops[k],p));if(k==0)inverse[i]=j;}
+    std::vector<bool> used(n);for(std::size_t i=0;i<n;++i)if(!used[i]){std::set<std::size_t> c;for(std::size_t h=0;h<n;++h)c.insert(out.table[out.table[h*n+i]*n+inverse[h]]);out.classes.emplace_back(c.begin(),c.end());for(auto j:c)used[j]=true;}
+    out.valid=true;out.detail=symmetry.linear?"Validated finite sampling subgroup of linear point group":"Validated complete finite group";return out;
+}
+M deterministic_basis(const M& eigvectors,double tolerance){
+    // Stable projector-column gauge, independent of eigenvector signs and
+    // rotations within a repeated eigenvalue. Phase is a coordinate convention.
+    M projector=eigvectors*eigvectors.transpose(),q=M::Zero(projector.rows(),eigvectors.cols());
+    for(Eigen::Index k=0;k<q.cols();++k){
+        V best;double largest=-1;
+        for(Eigen::Index i=0;i<projector.cols();++i){V v=projector.col(i);for(int pass=0;pass<2;++pass)for(Eigen::Index j=0;j<k;++j)v-=q.col(j).dot(v)*q.col(j);const double norm=v.squaredNorm();if(norm>largest+1e-14){largest=norm;best=std::move(v);}}
+        // A rank-d orthogonal projector always has a substantial remaining
+        // column. Never normalize a tiny early column and amplify roundoff.
+        if(largest<tolerance*tolerance)return {};
+        best/=std::sqrt(largest);Eigen::Index pivot;best.cwiseAbs().maxCoeff(&pivot);if(best[pivot]<0)best=-best;q.col(k)=best;
+    }
+    if(err(q*q.transpose()-projector)>1e-10||err(q.transpose()*q-M::Identity(q.cols(),q.cols()))>1e-10)return {};
+    return q;
+}
+std::vector<M> merge_group_connected_spaces(std::vector<M> spaces,const std::vector<M>& reps,double tolerance){
+    // An approximate class sum can split a repeated eigenvalue. Its numerical
+    // eigenvectors are not separate symmetry spaces when the actual group
+    // mixes them. Repair the partition, never the underlying AO operations.
+    // Frobenius block norms and normalized characters are invariant under
+    // arbitrary orthogonal changes of gauge within each candidate block.
+    const auto n=spaces.size();if(n<2)return spaces;
+    std::vector<std::size_t> parent(n);std::iota(parent.begin(),parent.end(),0);
+    auto root=[&](std::size_t i){while(parent[i]!=i)i=parent[i];return i;};
+    for(std::size_t i=0;i<n;++i)for(std::size_t j=i+1;j<n;++j){double coupling=0;for(const auto& r:reps)coupling=std::max(coupling,(spaces[i].transpose()*r*spaces[j]).norm());if(coupling>tolerance)parent[root(j)]=root(i);}
+    auto collect=[&](){std::map<std::size_t,std::vector<std::size_t>> components;for(std::size_t i=0;i<n;++i)components[root(i)].push_back(i);std::vector<M> result;for(const auto& [key,indices]:components){Eigen::Index count=0;for(auto i:indices)count+=spaces[i].cols();M joined(spaces.front().rows(),count);Eigen::Index offset=0;for(auto i:indices){joined.middleCols(offset,spaces[i].cols())=spaces[i];offset+=spaces[i].cols();}auto q=deterministic_basis(joined,1e-9);if(q.size()==0)return std::vector<M>{};result.push_back(std::move(q));}return result;};
+    spaces=collect();if(spaces.empty())return spaces;
+    // Copies of the same one-dimensional irrep can remain individually
+    // invariant despite numerical splitting. Restore the whole isotypic
+    // projector using its full operation-character signature.
+    std::vector<V> characters;std::vector<bool> invariant;
+    for(const auto& q:spaces){V chars(reps.size());bool valid=true;for(std::size_t g=0;g<reps.size();++g){M local=q.transpose()*reps[g]*q;chars[g]=local.trace()/double(q.cols());if(err(reps[g]*q-q*local)>tolerance)valid=false;}characters.push_back(std::move(chars));invariant.push_back(valid);}
+    const auto m=spaces.size();parent.resize(m);std::iota(parent.begin(),parent.end(),0);
+    for(std::size_t i=0;i<m;++i)for(std::size_t j=i+1;j<m;++j)if(invariant[i]&&invariant[j]&&(characters[i]-characters[j]).cwiseAbs().maxCoeff()<=tolerance)parent[root(j)]=root(i);
+    std::map<std::size_t,std::vector<std::size_t>> components;for(std::size_t i=0;i<m;++i)components[root(i)].push_back(i);std::vector<M> result;
+    for(const auto& [key,indices]:components){Eigen::Index count=0;for(auto i:indices)count+=spaces[i].cols();M joined(spaces.front().rows(),count);Eigen::Index offset=0;for(auto i:indices){joined.middleCols(offset,spaces[i].cols())=spaces[i];offset+=spaces[i].cols();}auto q=deterministic_basis(joined,1e-9);if(q.size()==0)return {};result.push_back(std::move(q));}return result;
+}
+struct Energy {NboSalcEnergyEvidence evidence;M fock;};
+Energy check_energy(const Wavefunction& w,const NboIntegration& data,NboSpin spin,const M& a,const NboSalcOptions& options){
+    Energy e;e.evidence.spin=spin;const auto& d=data.dataset;const auto n=std::size_t(w.basis_count);if(!d.archive){e.evidence.detail="No same-source archive";return e;}
+    e.evidence.input_units=d.archive->fock_input_units;const auto* f=find(d.archive->matrices,"FOCK",spin);const auto* s=find(d.archive->matrices,"OVERLAP",NboSpin::Total);
+    if(!complete(f,n)||!complete(s,n)){e.evidence.detail="Missing complete same-spin Fock/overlap";return e;}e.evidence.source=f->source;
+    const auto& assoc=d.association;const NboCanonicalEvidence* ev=nullptr;for(const auto& x:assoc.canonical_evidence)if(x.spin==spin)ev=&x;
+    if(!ev||!ev->direct_fchk_coefficients){e.evidence.detail="No direct same-spin canonical coefficient identity";return e;}
+    if(assoc.gaussian_row.size()!=n||assoc.coefficient_scale.size()!=n||w.gaussian_ao_transform.size()!=n){e.evidence.detail="Missing AO convention mapping";return e;}
+    std::vector<std::size_t> inv(n,n);for(std::size_t i=0;i<n;++i)if(w.gaussian_ao_transform[i].source_index<n)inv[w.gaussian_ao_transform[i].source_index]=i;
+    auto archive_coefficients=[&](const M& x){M y(n,x.cols());for(std::size_t k=0;k<n;++k){if(assoc.gaussian_row[k]>=n||inv[assoc.gaussian_row[k]]>=n)return M{};const auto i=inv[assoc.gaussian_row[k]];const double scale=assoc.coefficient_scale[k]*w.gaussian_ao_transform[i].coefficient_scale;if(!std::isfinite(scale)||std::abs(scale)<1e-20)return M{};y.row(k)=x.row(i)/scale;}return y;};
+    std::vector<std::size_t> indices;for(std::size_t i=0;i<w.orbitals.size();++i)if((spin==NboSpin::Beta)==(w.orbitals[i].spin==Spin::Beta))indices.push_back(i);
+    if(indices.empty()){e.evidence.detail="No canonical columns for spin";return e;}
+    M c(n,indices.size());V eps(indices.size());for(std::size_t j=0;j<indices.size();++j){const auto& mo=w.orbitals[indices[j]];if(mo.coefficients.size()!=n||!std::isfinite(mo.energy_hartree)){e.evidence.detail="Invalid canonical energy or coefficient dimensions";return e;}c.col(j)=Eigen::Map<const V>(mo.coefficients.data(),n);eps[j]=mo.energy_hartree;}
+    c=archive_coefficients(c);const M an=archive_coefficients(a);if(c.size()==0||an.size()==0){e.evidence.detail="Invalid AO convention scale";return e;}
+    const M fock=matrix(*f),overlap=matrix(*s);e.evidence.hermiticity_error=err(fock-fock.transpose());const M fc=fock*c,sc=overlap*c,residual=fc-sc*eps.asDiagonal();
+    e.evidence.canonical_residual=err(residual);e.evidence.projected_residual=err(c.transpose()*residual);e.evidence.eigenvalue_error_hartree=err(c.transpose()*fc-eps.asDiagonal().toDenseMatrix());e.evidence.canonical_columns_checked=indices.size();
+    Eigen::SelfAdjointEigenSolver<M> se(overlap);if(se.info()!=Eigen::Success){e.evidence.detail="Overlap spectral decomposition failed";return e;}
+    // Numerical overlap rank is not the producer's retained canonical rank.
+    // In particular, Gaussian can discard finite positive overlap directions.
+    e.evidence.overlap_rank_threshold=std::max(1e-12,se.eigenvalues().maxCoeff()*1e-9);
+    for(Eigen::Index i=0;i<se.eigenvalues().size();++i)if(se.eigenvalues()[i]>e.evidence.overlap_rank_threshold)++e.evidence.overlap_numerical_rank;
+    const M gram=c.transpose()*sc;
+    if(err(gram-M::Identity(c.cols(),c.cols()))>options.metric_tolerance){e.evidence.status="rejected_canonical_metric";e.evidence.detail="Canonical retained columns are not an orthonormal independent effective space";return e;}
+    e.evidence.canonical_effective_rank=indices.size();e.evidence.effective_rank=indices.size();
+    e.evidence.canonical_null_directions=n-indices.size();
+    const auto solver=gram.ldlt();const M external=an-c*solver.solve(c.transpose()*overlap*an);
+    const M external_metric=external.transpose()*overlap*external;
+    e.evidence.outside_canonical_nao_norm=std::sqrt(std::max(0.0,external_metric.diagonal().maxCoeff()));
+    e.evidence.outside_canonical_fock_coupling=err(c.transpose()*fock*external);
+    e.evidence.nullspace_residual=err(residual-sc*solver.solve(c.transpose()*residual));
+    const bool full_ok=e.evidence.canonical_residual<=options.energy_tolerance_hartree;
+    if(e.evidence.canonical_null_directions&&e.evidence.outside_canonical_nao_norm>options.metric_tolerance){e.evidence.status="unverified_operator_outside_canonical";e.evidence.detail="NAO space extends beyond validated canonical effective space; exterior Fock action cannot be established from retained canonical eigenpairs; side energies withheld";return e;}
+    if(e.evidence.hermiticity_error>options.energy_tolerance_hartree||e.evidence.projected_residual>options.energy_tolerance_hartree||e.evidence.eigenvalue_error_hartree>options.energy_tolerance_hartree||!full_ok){e.evidence.status="rejected_operator";e.evidence.detail=full_ok?"Fock/canonical projected operator mismatch":"Full FC-SC epsilon residual fails; projected/null-space diagnostics retained, side energies withheld";return e;}
+    e.fock=an.transpose()*fock*an;e.evidence.available=true;e.evidence.status="verified_same_operator";e.evidence.detail="Complete Fock, Hermiticity, full and projected canonical equations agree; not isolated-fragment energies";return e;
+}
+struct Family {std::size_t fragment=0;std::string type,angular;std::vector<std::size_t> indices;};
+std::string quoted(const std::string& s){std::ostringstream o;o<<'"';for(unsigned char c:s){if(c=='"'||c=='\\')o<<'\\'<<char(c);else if(c=='\n')o<<"\\n";else if(c=='\r')o<<"\\r";else if(c=='\t')o<<"\\t";else if(c<32)o<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<int(c)<<std::dec;else o<<char(c);}o<<'"';return o.str();}
+template<class T,class F>void json_array(std::ostream& o,const std::vector<T>& a,F fn){o<<'[';bool first=true;for(const auto& x:a){if(!first)o<<',';first=false;fn(x);}o<<']';}
+void num(std::ostream& o,double x){if(std::isfinite(x))o<<x;else o<<"null";}
+void optional(std::ostream& o,const std::optional<double>& x){if(x)num(o,*x);else o<<"null";}
+} // namespace
+
+NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& data,const NboSalcOptions& options){
+    NboSalcModel out;out.dataset_id=data.id;out.canonical_fingerprint=nbo_canonical_fingerprint(w);std::ostringstream key;key<<data.id<<':'<<out.canonical_fingerprint<<':'<<std::setprecision(17)<<options.metric_tolerance<<':'<<options.symmetry_tolerance<<':'<<options.energy_tolerance_hartree<<':'<<options.eigenvalue_cluster_tolerance<<':'<<options.maximum_group_order;out.cache_key=key.str();
+    const auto n=std::size_t(w.basis_count);if(!n||w.ao_overlap.size()!=n*n||!data.dataset.association.compatible||data.canonical_fingerprint!=out.canonical_fingerprint){out.detail="Missing metric, rejected association, or changed immutable canonical identity";return out;}
+    const M s=Eigen::Map<const RM>(w.ao_overlap.data(),n,n);const auto geometry=analyse_molecular_symmetry(w);out.point_group=geometry.point_group;auto group=make_group(w,geometry,options);out.group_verified=group.valid;out.group_closure_error=group.error;out.used_group=group.valid?(geometry.linear?"finite sampling subgroup of "+geometry.point_group:geometry.point_group):"C1 fallback";out.operations=group.valid?group.ops:std::vector<SymmetryOperation>{};if(!group.valid)out.diagnostics.push_back(group.detail);
+    std::vector<std::size_t> atom_group(w.atoms.size());std::iota(atom_group.begin(),atom_group.end(),0);auto root=[&](std::size_t a){while(atom_group[a]!=a)a=atom_group[a];return a;};
+    if(group.valid&&w.atoms.size()!=2)for(const auto& op:group.ops)for(std::size_t a=0;a<w.atoms.size();++a){auto x=root(a),y=root(op.atom_permutation[a]);if(x!=y)atom_group[std::max(x,y)]=std::min(x,y);}
+    std::map<std::size_t,std::vector<std::size_t>> atomsets;for(std::size_t a=0;a<w.atoms.size();++a)atomsets[root(a)].push_back(a);
+    std::vector<std::vector<std::size_t>> ordered;for(const auto& p:atomsets)ordered.push_back(p.second);std::stable_sort(ordered.begin(),ordered.end(),[&](const auto& a,const auto& b){if(a.size()==1&&b.size()!=1)return true;if(a.size()!=1&&b.size()==1)return false;return w.atoms[a[0]].atomic_number>w.atoms[b[0]].atomic_number;});
+    for(const auto& a:ordered){NboSalcFragment f;f.id="fragment"+key_atoms(a);f.atoms=a;f.label=atoms_label(w,a);f.side=out.fragments.empty()?0:1;for(auto atom:a)atom_group[atom]=out.fragments.size();out.fragments.push_back(f);}
+    for(auto spin:{NboSpin::Total,NboSpin::Alpha,NboSpin::Beta}){
+        std::vector<const NboOrbitalDescriptor*> descriptors;for(const auto& x:data.orbitals)if(x.ref.kind==NboOrbitalKind::NAO&&x.ref.spin==spin&&x.orthonormal_basis&&x.coefficients.size()==n&&x.atoms.size()==1)descriptors.push_back(&x);if(descriptors.empty())continue;
+        std::sort(descriptors.begin(),descriptors.end(),[](auto a,auto b){return a->ref.index<b->ref.index;});const auto r=descriptors.size();M a(n,r);for(std::size_t j=0;j<r;++j)a.col(j)=Eigen::Map<const V>(descriptors[j]->coefficients.data(),n);const M sa=s*a;const double orth=err(a.transpose()*sa-M::Identity(r,r));out.orthogonality_error=std::max(out.orthogonality_error,orth);if(orth>options.metric_tolerance){out.diagnostics.push_back(std::string(nbo_spin_name(spin))+": NAO metric orthogonality rejected");continue;}
+        auto energy=check_energy(w,data,spin,a,options);
+        std::vector<M> representations,transformed_basis;bool transforms=group.valid;
+        // Both metric isometry and family closure use the complete group, not
+        // a coordinate-dependent choice of generators. Approximately invariant
+        // fields can pass one generator while failing its powers.
+        if(transforms)for(const auto& op:group.ops){const auto t=apply_orbital_symmetry_operation(w,op,flat(a),r);if(t.size()!=n*r){transforms=false;out.diagnostics.push_back("Full-group AO action unavailable; fixed NAO fallback");break;}const M ta=Eigen::Map<const RM>(t.data(),n,r);const double metric_error=err(ta.transpose()*s*ta-M::Identity(r,r));out.representation_error=std::max(out.representation_error,metric_error);if(metric_error>options.symmetry_tolerance){transforms=false;out.diagnostics.push_back("AO action fails metric isometry; fixed NAO fallback");break;}transformed_basis.push_back(ta);}
+        if(transforms)for(const auto& action:transformed_basis)representations.push_back(sa.transpose()*action);
+        if(energy.evidence.available&&transforms){double e=0;for(const auto& g:representations)e=std::max(e,err(g.transpose()*energy.fock*g-energy.fock));energy.evidence.fock_symmetry_error=e;energy.evidence.electronic_symmetry_verified=r==n&&e<=options.symmetry_tolerance;}
+        M density;
+        // Use canonical occupations only where their source spin identity exists;
+        // otherwise keep the verified printed NAO occupation for single nodes.
+        std::vector<std::size_t> canonical_indices;for(std::size_t j=0;j<w.orbitals.size();++j)if((spin==NboSpin::Beta)==(w.orbitals[j].spin==Spin::Beta))canonical_indices.push_back(j);
+        M projections(r,canonical_indices.size());bool canonical_verified=false;for(const auto& ev:data.dataset.association.canonical_evidence)if(ev.spin==spin&&ev.direct_fchk_coefficients)canonical_verified=true;
+        if(canonical_verified){M c(n,canonical_indices.size());V occupations(canonical_indices.size());bool occupation_known=true;for(std::size_t j=0;j<canonical_indices.size();++j){const auto& mo=w.orbitals[canonical_indices[j]];c.col(j)=Eigen::Map<const V>(mo.coefficients.data(),n);occupations[j]=mo.occupation;if(mo.occupation_provenance==DataProvenance::Unavailable)occupation_known=false;if(spin!=NboSpin::Total&&w.orbital_occupation_model==OrbitalOccupationModel::CanonicalShared)occupations[j]=mo.source_orbital_index<std::size_t(spin==NboSpin::Beta?w.beta_electrons:w.alpha_electrons)?1:0;}projections=sa.transpose()*c;if(occupation_known)density=projections*occupations.asDiagonal()*projections.transpose();}
+        if(density.size()&&transforms){energy.evidence.density_symmetry_checked=true;for(const auto& g:representations)energy.evidence.density_symmetry_error=std::max(energy.evidence.density_symmetry_error,err(g.transpose()*density*g-density));energy.evidence.electronic_symmetry_verified=energy.evidence.electronic_symmetry_verified&&energy.evidence.density_symmetry_error<=options.symmetry_tolerance;}else energy.evidence.electronic_symmetry_verified=false;
+        out.energies.push_back(energy.evidence);
+        std::map<std::pair<std::size_t,std::string>,Family> familymap;for(std::size_t j=0;j<r;++j){const auto atom=descriptors[j]->atoms[0];if(atom>=atom_group.size())continue;const NboNao* row=nullptr;for(const auto& x:data.dataset.naos)if(x.spin==spin&&x.id==descriptors[j]->ref.index+1){row=&x;break;}const std::string type=row?compact(row->type):"unclassified";auto& f=familymap[{atom_group[atom],type}];f.fragment=atom_group[atom];f.type=type;f.angular=row?row->angular:"unclassified";f.indices.push_back(j);}
+        const auto start=out.orbitals.size();
+        for(const auto& entry:familymap){const auto& family=entry.second;const auto b=family.indices.size();const auto& fragment=out.fragments[family.fragment];std::vector<M> reps;bool closed=transforms&&group.ops.size()>1;double closure=0;
+            M family_basis(n,b);for(std::size_t j=0;j<b;++j)family_basis.col(j)=a.col(family.indices[j]);
+            // Evaluate the actual field residual. Subtracting two nearly unit
+            // norms assumes exactly orthonormal printed NAOs and turns their
+            // small metric error into its square root, causing frame-dependent
+            // false failures for ill-conditioned/rank-limited AO bases.
+            const M family_metric=s*family_basis;
+            if(closed)for(const auto& action:transformed_basis){M transformed(n,b);for(std::size_t j=0;j<b;++j)transformed.col(j)=action.col(family.indices[j]);const M local=family_metric.transpose()*transformed;reps.push_back(local);const M residual=transformed-family_basis*local;const M residual_metric=residual.transpose()*s*residual;for(std::size_t j=0;j<b;++j)closure=std::max(closure,std::sqrt(std::max(0.0,residual_metric(j,j))));}
+            if(closure>options.symmetry_tolerance)closed=false;
+            if(closed){double relation=0;for(std::size_t i=0;i<reps.size();++i)for(std::size_t j=0;j<reps.size();++j)relation=std::max(relation,err(reps[i]*reps[j]-reps[group.table[i*group.ops.size()+j]]));closure=std::max(closure,relation);if(relation>options.symmetry_tolerance)closed=false;}
+            std::vector<M> spaces;
+            // Single-atom orbitals keep the literal producer NAO gauge. Never
+            // mix O s/p merely because they carry the same one-dimensional irrep.
+            if(closed&&fragment.atoms.size()>1){M central=M::Zero(b,b);std::size_t ci=0;for(const auto& cl:group.classes){M z=M::Zero(b,b);for(auto g:cl)z+=reps[g];z=(z+z.transpose()).eval()/(2*double(cl.size()));central+=std::sqrt(double(++ci)+1.6180339887498948)*z;}Eigen::SelfAdjointEigenSolver<M> eig(central);if(eig.info()==Eigen::Success){for(Eigen::Index lo=0;lo<eig.eigenvalues().size();){Eigen::Index hi=lo+1;while(hi<eig.eigenvalues().size()&&std::abs(eig.eigenvalues()[hi]-eig.eigenvalues()[lo])<=options.eigenvalue_cluster_tolerance*std::max(1.0,std::abs(eig.eigenvalues()[lo])))++hi;auto q=deterministic_basis(eig.eigenvectors().middleCols(lo,hi-lo),1e-9);if(!q.size()){spaces.clear();break;}spaces.push_back(std::move(q));lo=hi;}}}
+            if(closed&&fragment.atoms.size()>1&&!spaces.empty())spaces=merge_group_connected_spaces(std::move(spaces),reps,options.symmetry_tolerance);
+            if(spaces.empty()){spaces.push_back(M::Identity(b,b));if(fragment.atoms.size()>1)closed=false;}
+            // Acceptance is for the entire fixed basis, not just each block.
+            // A bad gauge or noninvariant spectral split must never introduce
+            // duplicate/nonorthogonal directions and inflate MO coverage.
+            M joined(b,b);Eigen::Index offset=0;bool valid_partition=true;
+            for(const auto& q:spaces){if(offset+q.cols()>Eigen::Index(b)){valid_partition=false;break;}joined.middleCols(offset,q.cols())=q;offset+=q.cols();if(closed)for(const auto& rep:reps)if(err(rep*q-q*(q.transpose()*rep*q))>options.symmetry_tolerance)valid_partition=false;}
+            if(offset!=Eigen::Index(b)||err(joined.transpose()*joined-M::Identity(b,b))>options.metric_tolerance)valid_partition=false;
+            if(!valid_partition){spaces={M::Identity(b,b)};closed=false;out.diagnostics.push_back(fragment.id+":"+family.type+": rejected spectral partition; preserving complete fixed NAO family");}
+            std::size_t ordinal=0;for(const auto& q:spaces){NboSalcSubspace sub;sub.id=fragment.id+":"+nbo_spin_name(spin)+":"+family.type+":space"+std::to_string(++ordinal);sub.fragment_id=fragment.id;sub.spin=spin;sub.dimension=q.cols();sub.closure_error=closure;sub.orthogonality_error=err(q.transpose()*q-M::Identity(q.cols(),q.cols()));sub.symmetry_verified=closed;double retention=0;
+                if(closed){for(const auto& rep:reps){const M rq=rep*q;retention=std::max(retention,err(rq-q*(q.transpose()*rq)));double character=(q.transpose()*rq).trace();sub.characters.push_back(character);sub.character_norm+=character*character/double(reps.size());}sub.closure_error=std::max(sub.closure_error,retention);if(retention>options.symmetry_tolerance)sub.symmetry_verified=false;const auto mult=std::size_t(std::llround(std::sqrt(sub.character_norm)));if(mult&&std::abs(sub.character_norm-double(mult*mult))<1e-3&&sub.dimension%mult==0){sub.multiplicity=mult;sub.irrep_dimension=sub.dimension/mult;}}
+                sub.label=sub.symmetry_verified?"Symmetry channel "+std::to_string(ordinal):"Fixed NAO subspace";sub.detail=sub.symmetry_verified?"Geometry-verified invariant subspace; character/partner evidence retained. Phase gauge: stable projector columns in producer NAO order.":"No asserted SALC: trivial group, unsupported action, or literal family is not closed; fixed NAOs retained.";
+                for(Eigen::Index col=0;col<q.cols();++col){NboSalcOrbital o;o.id=sub.id+":member"+std::to_string(col);o.fragment_id=fragment.id;o.subspace_id=sub.id;o.spin=spin;o.type=family.type;o.angular=family.angular;o.partner_index=col;o.partner_dimension=q.cols();o.atoms=fragment.atoms;o.symmetry_adapted=sub.symmetry_verified&&fragment.atoms.size()>1;o.detail=sub.detail;
+                    V global=V::Zero(r);for(std::size_t row=0;row<b;++row){const double coeff=q(row,col);global[family.indices[row]]=coeff;if(coeff!=0)o.terms.push_back({descriptors[family.indices[row]]->ref,coeff});}
+                    o.label=o.terms.size()==1?nbo_orbital(data,o.terms[0].orbital)->label:"SALC "+std::to_string(ordinal)+"."+std::to_string(col+1)+" "+family.type;
+                    if(o.terms.size()==1){for(const auto& row:data.dataset.naos)if(row.spin==o.terms[0].orbital.spin&&row.id==o.terms[0].orbital.index+1){o.angular=row.angular;break;}}
+                    else {o.angular="mixed directions";const auto begin=family.type.find('(');if(begin!=std::string::npos)for(std::size_t k=begin+1;k<family.type.size();++k)if(std::string("spdfghik").find(family.type[k])!=std::string::npos){o.angular=family.type.substr(k,1);break;}}
+                    if(fragment.atoms.size()==1)o.partner_dimension=1;
+                    if(o.symmetry_adapted&&b==2&&q.cols()==1&&family.angular=="s"&&o.terms.size()==2)o.label=(o.terms[0].coefficient*o.terms[1].coefficient>0?"In-phase ":"Out-of-phase ")+family.type;
+                    if(!o.symmetry_adapted&&o.terms.size()>1)o.label="Fragment combination "+family.type;
+                    if(energy.evidence.available){o.energy_hartree=(global.transpose()*energy.fock*global)(0,0);o.energy_semantics="molecular-environment Fock/KS expectation; not a canonical or isolated-fragment eigenvalue";}
+                    if(density.size())o.occupation=(global.transpose()*density*global)(0,0);else if(o.terms.size()==1){const auto* descriptor=nbo_orbital(data,o.terms[0].orbital);if(descriptor)o.occupation=descriptor->occupation;}
+                    const auto index=out.orbitals.size();sub.orbital_indices.push_back(index);out.orbitals.push_back(std::move(o));if(canonical_verified)for(std::size_t j=0;j<canonical_indices.size();++j){const double coefficient=global.dot(projections.col(j));out.links.push_back({index,canonical_indices[j],coefficient,coefficient*coefficient});}
+                }out.subspaces.push_back(std::move(sub));
+            }
+        }
+        if(canonical_verified){std::map<std::size_t,double> shown;for(const auto& link:out.links)if(link.side_index>=start)shown[link.canonical_index]+=link.weight;for(std::size_t j=0;j<canonical_indices.size();++j){NboSalcCoverage c;c.canonical_index=canonical_indices[j];c.weight_sum=shown[c.canonical_index];const V residual=Eigen::Map<const V>(w.orbitals[c.canonical_index].coefficients.data(),n)-a*projections.col(j);c.residual_norm=std::sqrt(std::max(0.0,(residual.transpose()*s*residual)(0,0)));c.available=true;out.coverage.push_back(c);}}
+    }
+    out.available=!out.orbitals.empty();out.status=out.available?"fixed_local_basis_available":"unavailable";out.detail="Fixed NAO/SALC basis; all canonical signed coefficients and raw weights retained without display renormalization. A fragment is a symmetry-related atom family, not an asserted chemical bond.";return out;
+}
+NboOrbitalSelection nbo_salc_selection(const NboSalcModel& model,std::size_t index){NboOrbitalSelection s;s.dataset_id=model.dataset_id;s.mode=NboSelectionMode::Combination;s.semantic_kind="salc";if(index<model.orbitals.size()){const auto& orbital=model.orbitals[index];s.terms=orbital.terms;s.label=orbital.label;s.group_id=orbital.subspace_id;s.source_id=orbital.id;}return s;}
+NboOrbitalSelection nbo_salc_component_selection(const NboSalcModel& model,const NboSalcLink& link){auto s=nbo_salc_selection(model,link.side_index);s.semantic_kind="salc_component";s.target_canonical_index=link.canonical_index;for(auto& term:s.terms)term.coefficient*=link.coefficient;s.label+=" component of canonical MO "+std::to_string(link.canonical_index+1);return s;}
+
+std::string serialize_nbo_salc_json(const NboSalcModel& m){std::ostringstream o;o<<std::setprecision(17);o<<"{\"dataset_id\":"<<quoted(m.dataset_id)<<",\"canonical_fingerprint\":"<<quoted(m.canonical_fingerprint)<<",\"cache_key\":"<<quoted(m.cache_key)<<",\"available\":"<<(m.available?"true":"false")<<",\"status\":"<<quoted(m.status)<<",\"detail\":"<<quoted(m.detail)<<",\"point_group\":"<<quoted(m.point_group)<<",\"used_group\":"<<quoted(m.used_group)<<",\"group_verified\":"<<(m.group_verified?"true":"false")<<",\"group_closure_error\":";num(o,m.group_closure_error);o<<",\"representation_error\":";num(o,m.representation_error);o<<",\"orthogonality_error\":";num(o,m.orthogonality_error);
+    o<<",\"phase_convention\":\"stable projector columns in producer NAO order; largest absolute coefficient positive; individual signs are gauge-dependent\",\"operations\":";json_array(o,m.operations,[&](const auto& x){o<<"{\"matrix\":[";for(int i=0;i<9;++i){if(i)o<<',';num(o,x.matrix[i]);}o<<"],\"atom_permutation\":";json_array(o,x.atom_permutation,[&](auto i){o<<i;});o<<",\"mapping_error_bohr\":";num(o,x.max_mapping_error_bohr);o<<'}';});
+    o<<",\"fragments\":";json_array(o,m.fragments,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"side\":"<<x.side<<",\"atoms\":";json_array(o,x.atoms,[&](auto i){o<<i;});o<<'}';});
+    o<<",\"subspaces\":";json_array(o,m.subspaces,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"fragment_id\":"<<quoted(x.fragment_id)<<",\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"detail\":"<<quoted(x.detail)<<",\"dimension\":"<<x.dimension<<",\"irrep_dimension\":"<<x.irrep_dimension<<",\"multiplicity\":"<<x.multiplicity<<",\"symmetry_verified\":"<<(x.symmetry_verified?"true":"false")<<",\"closure_error\":";num(o,x.closure_error);o<<",\"orthogonality_error\":";num(o,x.orthogonality_error);o<<",\"character_norm\":";num(o,x.character_norm);o<<",\"characters\":";json_array(o,x.characters,[&](auto v){num(o,v);});o<<",\"orbital_indices\":";json_array(o,x.orbital_indices,[&](auto v){o<<v;});o<<'}';});
+    o<<",\"orbitals\":";json_array(o,m.orbitals,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"fragment_id\":"<<quoted(x.fragment_id)<<",\"subspace_id\":"<<quoted(x.subspace_id)<<",\"type\":"<<quoted(x.type)<<",\"angular\":"<<quoted(x.angular)<<",\"detail\":"<<quoted(x.detail)<<",\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"symmetry_adapted\":"<<(x.symmetry_adapted?"true":"false")<<",\"partner_index\":"<<x.partner_index<<",\"partner_dimension\":"<<x.partner_dimension<<",\"energy_hartree\":";optional(o,x.energy_hartree);o<<",\"occupation\":";optional(o,x.occupation);o<<",\"energy_semantics\":"<<quoted(x.energy_semantics)<<",\"atoms\":";json_array(o,x.atoms,[&](auto i){o<<i;});o<<",\"terms\":";json_array(o,x.terms,[&](const auto& t){o<<"{\"kind\":"<<quoted(nbo_orbital_kind_name(t.orbital.kind))<<",\"spin\":"<<quoted(nbo_spin_name(t.orbital.spin))<<",\"index\":"<<t.orbital.index<<",\"coefficient\":";num(o,t.coefficient);o<<'}';});o<<'}';});
+    o<<",\"links\":";json_array(o,m.links,[&](const auto& x){o<<"{\"side_index\":"<<x.side_index<<",\"canonical_index\":"<<x.canonical_index<<",\"coefficient\":";num(o,x.coefficient);o<<",\"weight\":";num(o,x.weight);o<<'}';});
+    o<<",\"coverage\":";json_array(o,m.coverage,[&](const auto& x){o<<"{\"canonical_index\":"<<x.canonical_index<<",\"available\":"<<(x.available?"true":"false")<<",\"weight_sum\":";num(o,x.weight_sum);o<<",\"residual_norm\":";num(o,x.residual_norm);o<<'}';});
+    o<<",\"energies\":";json_array(o,m.energies,[&](const auto& x){o<<"{\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"available\":"<<(x.available?"true":"false")<<",\"status\":"<<quoted(x.status)<<",\"detail\":"<<quoted(x.detail)<<",\"input_units\":"<<quoted(x.input_units)<<",\"canonical_columns_checked\":"<<x.canonical_columns_checked<<",\"effective_rank\":"<<x.effective_rank<<",\"effective_rank_semantics\":\"validated canonical column count; not overlap eigenvalue-floor rank\",\"overlap_numerical_rank\":"<<x.overlap_numerical_rank<<",\"canonical_effective_rank\":"<<x.canonical_effective_rank<<",\"canonical_null_directions\":"<<x.canonical_null_directions<<",\"overlap_rank_threshold\":";num(o,x.overlap_rank_threshold);o<<",\"outside_canonical_nao_norm\":";num(o,x.outside_canonical_nao_norm);o<<",\"outside_canonical_fock_coupling\":";num(o,x.outside_canonical_fock_coupling);o<<",\"nullspace_residual_semantics\":\"residual outside canonical dual metric projector\",\"hermiticity_error\":";num(o,x.hermiticity_error);o<<",\"canonical_residual\":";num(o,x.canonical_residual);o<<",\"projected_residual\":";num(o,x.projected_residual);o<<",\"nullspace_residual\":";num(o,x.nullspace_residual);o<<",\"eigenvalue_error_hartree\":";num(o,x.eigenvalue_error_hartree);o<<",\"fock_symmetry_error\":";num(o,x.fock_symmetry_error);o<<",\"density_symmetry_error\":";num(o,x.density_symmetry_error);o<<",\"density_symmetry_checked\":"<<(x.density_symmetry_checked?"true":"false");o<<",\"electronic_symmetry_verified\":"<<(x.electronic_symmetry_verified?"true":"false")<<",\"source_path\":"<<quoted(x.source.path)<<",\"source_line\":"<<x.source.line_begin<<'}';});
+    o<<",\"diagnostics\":";json_array(o,m.diagnostics,[&](const auto& x){o<<quoted(x);});o<<'}';return o.str();}
+} // namespace cov
