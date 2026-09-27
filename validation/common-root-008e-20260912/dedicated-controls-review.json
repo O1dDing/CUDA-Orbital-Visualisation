@@ -1,0 +1,24 @@
+{
+  "all_collected_before_review": true,
+  "all_reviewed": true,
+  "all_passed": true,
+  "errors": [],
+  "on_off_raw_control_equivalence": {
+    "symmetry_scope": true,
+    "energy_gap_scope": true,
+    "pi_prior": true,
+    "local_irrep_scope": true,
+    "topology_evidence": true,
+    "local_projection": true,
+    "angular_generators": true,
+    "viewport_layout": true
+  },
+  "collection": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400",
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "numpy_version": "1.26.4",
+  "reviewer_sha256": "4b764c1eda38f84db700c8bde5bef166c5b4283ad3afe5ed7d4049b90801b9ef",
+  "formal_case_passes": 0,
+  "next_full_round_allowed": false,
+  "no_recollection_performed": true,
+  "reused_unchanged_reviews": null
+}

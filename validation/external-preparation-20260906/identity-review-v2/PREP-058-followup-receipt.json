@@ -1,0 +1,6 @@
+{
+  "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/11963622/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON",
+  "source_for_identifier": "https://pubchem.ncbi.nlm.nih.gov/compound/11963622",
+  "sha256": "97f104c7f7168cdba3a8c65c140c184c8f19e8e04a8a0a5665f0ea78be559205",
+  "epoch": 1788709971.9782395
+}

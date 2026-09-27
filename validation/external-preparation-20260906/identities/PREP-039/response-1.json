@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 176,
+        "MolecularFormula": "C2H4O2",
+        "ConnectivitySMILES": "CC(=O)O",
+        "InChIKey": "QTBSBXVTEAMEQO-UHFFFAOYSA-N",
+        "IUPACName": "acetic acid",
+        "Charge": 0
+      }
+    ]
+  }
+}

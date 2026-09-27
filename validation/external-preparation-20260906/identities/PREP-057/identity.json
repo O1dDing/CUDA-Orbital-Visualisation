@@ -1,0 +1,42 @@
+{
+  "candidate_id": "PREP-057",
+  "query": "tris(ethylenediamine)cobalt(III)",
+  "expected_formula": "C6H24CoN6",
+  "expected_charge": 3,
+  "family": "螯合金属",
+  "purpose": "手性及不同作用域",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709744.4810472,
+  "lookup_status": "lookup-failed-retained",
+  "identity_candidates": [],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709744.4810472,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-057\\response-1.json",
+      "sha256": "fea962b421bef99bfcabab4aecd3243a6804fc996a5f7ec17c79fc92a902bcaa",
+      "bytes": 329,
+      "error": "ValueError: Unsupported formula syntax: C6H24CoN6+3",
+      "elapsed_seconds": 1.3439197540283203
+    },
+    {
+      "attempt": 2,
+      "started_epoch": 1788709747.8254323,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-057\\response-2.json",
+      "sha256": "fea962b421bef99bfcabab4aecd3243a6804fc996a5f7ec17c79fc92a902bcaa",
+      "bytes": 329,
+      "error": "ValueError: Unsupported formula syntax: C6H24CoN6+3",
+      "elapsed_seconds": 1.1510124206542969
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/tris%28ethylenediamine%29cobalt%28III%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

@@ -1,0 +1,3 @@
+# Preserve the exact evidence hashes, including Gaussian output line endings.
+* -text -whitespace
+*.log -diff

@@ -1,0 +1,314 @@
+{
+  "created_epoch": 1788854241.9831777,
+  "commit": "e2e835a70229b94501127ad336e0ddbc3ea69df3",
+  "total_collected_controls": 40,
+  "fixed_control_results": {
+    "on": {
+      "controls_satisfying_recorded_requirements": 20,
+      "controls_with_failures_or_evidence_gaps": 0,
+      "metamorphic_relations": [
+        {
+          "control_id": "DEN-C03",
+          "reference_control": "DEN-C02",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C03",
+          "reference_control": "DEN-C02",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0
+        },
+        {
+          "control_id": "DEN-C07",
+          "reference_control": "DEN-C06",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C07",
+          "reference_control": "DEN-C06",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C08",
+          "reference_control": "DEN-C06",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C08",
+          "reference_control": "DEN-C06",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C17",
+          "reference_control": "DEN-C16",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C17",
+          "reference_control": "DEN-C16",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        }
+      ]
+    },
+    "off": {
+      "controls_satisfying_recorded_requirements": 20,
+      "controls_with_failures_or_evidence_gaps": 0,
+      "metamorphic_relations": [
+        {
+          "control_id": "DEN-C03",
+          "reference_control": "DEN-C02",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C03",
+          "reference_control": "DEN-C02",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0
+        },
+        {
+          "control_id": "DEN-C07",
+          "reference_control": "DEN-C06",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C07",
+          "reference_control": "DEN-C06",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C08",
+          "reference_control": "DEN-C06",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C08",
+          "reference_control": "DEN-C06",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C17",
+          "reference_control": "DEN-C16",
+          "field": "total",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        },
+        {
+          "control_id": "DEN-C17",
+          "reference_control": "DEN-C16",
+          "field": "spin",
+          "status": "measured",
+          "passed": true,
+          "maximum_absolute_error": 0.0
+        }
+      ]
+    }
+  },
+  "ordinary_validation_comparisons": [
+    {
+      "control_id": "DEN-C01",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "d7e90f8a85c98e8566cadc5706d2509f3ae8251cf61aff8c85ae34d951624111",
+        "d7e90f8a85c98e8566cadc5706d2509f3ae8251cf61aff8c85ae34d951624111"
+      ]
+    },
+    {
+      "control_id": "DEN-C02",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "d338fa2bdf6347fbb92900b44cddcd7ef5a81a01b223419488d742673f59952e",
+        "d338fa2bdf6347fbb92900b44cddcd7ef5a81a01b223419488d742673f59952e"
+      ]
+    },
+    {
+      "control_id": "DEN-C03",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "9d38f2a685211d3d30134dfaf719d1a17cc9b7395007b3b4a527fddc39a8a1b6",
+        "9d38f2a685211d3d30134dfaf719d1a17cc9b7395007b3b4a527fddc39a8a1b6"
+      ]
+    },
+    {
+      "control_id": "DEN-C04",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "92da503f3d8f9af5182c107e5fd5258db45688e33b044dd59fbda5e7551407ee",
+        "92da503f3d8f9af5182c107e5fd5258db45688e33b044dd59fbda5e7551407ee"
+      ]
+    },
+    {
+      "control_id": "DEN-C05",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "4256d31f1ea7c6b470e2cdf6946864fe6b2e5c353dbaae8dca419c02035cff45",
+        "4256d31f1ea7c6b470e2cdf6946864fe6b2e5c353dbaae8dca419c02035cff45"
+      ]
+    },
+    {
+      "control_id": "DEN-C06",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "1a3cb71d8d195e2689d37df34e947c01135bda9acfa86216f84012ca6b652ccc",
+        "1a3cb71d8d195e2689d37df34e947c01135bda9acfa86216f84012ca6b652ccc"
+      ]
+    },
+    {
+      "control_id": "DEN-C07",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "b34e76e807fe555c6dc7985e73859e69ee4f21cd480e289d03dff766e7360330",
+        "b34e76e807fe555c6dc7985e73859e69ee4f21cd480e289d03dff766e7360330"
+      ]
+    },
+    {
+      "control_id": "DEN-C08",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "83af3a49845a962b7fcc2d8143db544186d23120849e8ea1c6bdf0b3235b656c",
+        "83af3a49845a962b7fcc2d8143db544186d23120849e8ea1c6bdf0b3235b656c"
+      ]
+    },
+    {
+      "control_id": "DEN-C09",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "5b0591b54a84054bb7e3e68efb2af52997dabe09cee2468a59fb6d8882507618",
+        "5b0591b54a84054bb7e3e68efb2af52997dabe09cee2468a59fb6d8882507618"
+      ]
+    },
+    {
+      "control_id": "DEN-C10",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "81a28082c511a31470cc4b304503459866b49a43f5776253dd7ec93f6a48a143",
+        "81a28082c511a31470cc4b304503459866b49a43f5776253dd7ec93f6a48a143"
+      ]
+    },
+    {
+      "control_id": "DEN-C11",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "f66a9fb3b868b569fa2035db857a3feae2dc191015246770c43d64ccbbaf6aba",
+        "f66a9fb3b868b569fa2035db857a3feae2dc191015246770c43d64ccbbaf6aba"
+      ]
+    },
+    {
+      "control_id": "DEN-C12",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "c7d3cf7b4112c39ead6d0c492e218e857d4b5ba1f9d03f5e3337b7abf0c4cc3a",
+        "c7d3cf7b4112c39ead6d0c492e218e857d4b5ba1f9d03f5e3337b7abf0c4cc3a"
+      ]
+    },
+    {
+      "control_id": "DEN-C13",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "8005da7a77152be2706d1a4bfd017a97af10eda52b8bf43b78fd5443fefbde57",
+        "8005da7a77152be2706d1a4bfd017a97af10eda52b8bf43b78fd5443fefbde57"
+      ]
+    },
+    {
+      "control_id": "DEN-C14",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "b1fa7fb589d0f9eb324936dcadf6c8e584a8f356fe7039e8a48386ce78d8aac4",
+        "b1fa7fb589d0f9eb324936dcadf6c8e584a8f356fe7039e8a48386ce78d8aac4"
+      ]
+    },
+    {
+      "control_id": "DEN-C15",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "6bbcde72a41b5ff4e9b60d86f45635b413863fff4fb85fabdc0de1d84d44b77a",
+        "6bbcde72a41b5ff4e9b60d86f45635b413863fff4fb85fabdc0de1d84d44b77a"
+      ]
+    },
+    {
+      "control_id": "DEN-C16",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "7d9fbd44ff6e4d7022a55570ab5ff43e31be54b835bfa4c7f42e4c8a7f55bc9a",
+        "7d9fbd44ff6e4d7022a55570ab5ff43e31be54b835bfa4c7f42e4c8a7f55bc9a"
+      ]
+    },
+    {
+      "control_id": "DEN-C17",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "c9a3e1e4eb422174ba33c290fdda5d61c1fb0905461be308fe5e3bfaa4052c96",
+        "c9a3e1e4eb422174ba33c290fdda5d61c1fb0905461be308fe5e3bfaa4052c96"
+      ]
+    },
+    {
+      "control_id": "DEN-C18",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "09ec9bbc98591da2d296728be0af13d86993c75aea2e3e061874e0be21ce8ee5",
+        "09ec9bbc98591da2d296728be0af13d86993c75aea2e3e061874e0be21ce8ee5"
+      ]
+    },
+    {
+      "control_id": "DEN-C19",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "03e2760ffcf3b7b753695675684477acda614a1fc3fe91e12287d120193896fb",
+        "03e2760ffcf3b7b753695675684477acda614a1fc3fe91e12287d120193896fb"
+      ]
+    },
+    {
+      "control_id": "DEN-C20",
+      "all_observed_values_identical": true,
+      "observed_sha256": [
+        "9565158661f36cadae2e4f635d5708c8e57035aab2818b3b3cebc39c1845881d",
+        "9565158661f36cadae2e4f635d5708c8e57035aab2818b3b3cebc39c1845881d"
+      ]
+    }
+  ],
+  "ordinary_validation_identical": true,
+  "all_fixed_requirements_satisfied": true,
+  "wall_seconds": 22.059024572372437,
+  "formal_case_passes": 0,
+  "needs_complete_molecule_regression": true
+}

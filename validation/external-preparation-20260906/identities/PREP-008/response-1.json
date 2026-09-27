@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24606,
+        "MolecularFormula": "BrF5",
+        "ConnectivitySMILES": "FBr(F)(F)(F)F",
+        "InChIKey": "XHVUVQAANZKEKF-UHFFFAOYSA-N",
+        "IUPACName": "pentafluoro-lambda5-bromane",
+        "Charge": 0
+      }
+    ]
+  }
+}

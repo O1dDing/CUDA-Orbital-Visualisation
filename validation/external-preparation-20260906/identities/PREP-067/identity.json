@@ -1,0 +1,23 @@
+{
+  "candidate_id": "PREP-067",
+  "query": "La(NO3)2(phen)(H2O)4(+)",
+  "expected_formula": "C12H16LaN4O10",
+  "expected_charge": 1,
+  "family": "少见配位几何",
+  "purpose": "完整氢键环境与 TD-10 候选重新分类",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [
+    "https://link.springer.com/article/10.1007/s11243-007-0224-4"
+  ],
+  "skip_name_lookup": true,
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709774.1507773,
+  "lookup_status": "source-coordinate-work-pending",
+  "identity_candidates": [],
+  "attempts": [],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review"
+}

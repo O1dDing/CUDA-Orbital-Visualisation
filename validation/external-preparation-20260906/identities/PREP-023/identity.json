@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-023",
+  "query": "isoxazole",
+  "expected_formula": "C3H3NO",
+  "expected_charge": 0,
+  "family": "杂芳环",
+  "purpose": "同分子式异构图去重",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709668.5801485,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 9254,
+      "MolecularFormula": "C3H3NO",
+      "ConnectivitySMILES": "C1=CON=C1",
+      "InChIKey": "CTAPFRYPJLPFDF-UHFFFAOYSA-N",
+      "IUPACName": "1,2-oxazole",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9254"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709668.5801485,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-023\\response-1.json",
+      "sha256": "53c4a5ad80ba03038527f070c40e890ba643f0e52fc882ffcda59a3a69f1ebd6",
+      "bytes": 280,
+      "elapsed_seconds": 1.990858793258667
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/isoxazole/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

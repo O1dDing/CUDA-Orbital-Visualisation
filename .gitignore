@@ -60,6 +60,8 @@ compile_commands.json
 *.out
 
 # Temporary/cache
+__pycache__/
+*.py[cod]
 imgui.ini
 *.tmp
 *.bak

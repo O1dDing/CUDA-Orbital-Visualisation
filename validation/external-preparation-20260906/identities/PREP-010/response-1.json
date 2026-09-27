@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24547,
+        "MolecularFormula": "F2O",
+        "ConnectivitySMILES": "O(F)F",
+        "InChIKey": "UJMWVICAENGCRF-UHFFFAOYSA-N",
+        "IUPACName": "fluoro hypofluorite",
+        "Charge": 0
+      }
+    ]
+  }
+}

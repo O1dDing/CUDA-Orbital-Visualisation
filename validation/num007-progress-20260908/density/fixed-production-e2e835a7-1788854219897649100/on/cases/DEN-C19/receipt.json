@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C19",
+  "input_sha256": "4556fd83d7d489a8be44b24ac6eeaf3994ba7e88856a79627ffc09af0d1dd607",
+  "exe_sha256": "99a44aafaefc045957c36abc0a48d3297549ffa168160c2915d2c671ecd0f6de",
+  "started_epoch": 1788854229.49844,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5150000000139698,
+  "log_sha256": "fd54060c4066b13f6eb55876fe7dc419cfd9797e99bea61d5de57ec9116fa754",
+  "observed_sha256": "03e2760ffcf3b7b753695675684477acda614a1fc3fe91e12287d120193896fb",
+  "finished_epoch": 1788854230.0212712
+}

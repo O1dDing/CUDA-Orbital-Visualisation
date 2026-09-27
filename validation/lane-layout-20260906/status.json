@@ -1,0 +1,34 @@
+{
+  "snapshot_epoch": 1788839327.2817497,
+  "status": "complete-round-adjudicated-navigation-fix-next",
+  "round_identity": "85d3d2c5d287f1a229bf079a5b49715a900396f796264181b3b74a3331491471",
+  "production_commit": "e1e118d6dc34839932c2f28a0fd8379a40e4f3b4",
+  "numeric_counts": {
+    "numeric_subset_pass": 273
+  },
+  "view_counts": {
+    "view_subset_fail": 24,
+    "view_subset_pass": 249
+  },
+  "bundle_counts": {
+    "pass": 1943
+  },
+  "linear_member_click_counts": {
+    "pass": 2699,
+    "fail": 72
+  },
+  "EXP-002": "fixed-within-recorded-stroke-and-hit-region-scope",
+  "NAV-001": "open",
+  "independent_reference_workflow": "active-stage-with-user-stage-boundary-pause-request",
+  "reserved_other_workflow": {
+    "cores": 8,
+    "memory_gib": 48
+  },
+  "this_task_limit": {
+    "cores": 4,
+    "memory_gib": 64
+  },
+  "formal_case_passes": 0,
+  "formal_external_cases": 0,
+  "raw_textures_and_all_screenshots_uploaded": false
+}

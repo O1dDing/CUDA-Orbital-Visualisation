@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24387,
+        "MolecularFormula": "Cl3P",
+        "ConnectivitySMILES": "P(Cl)(Cl)Cl",
+        "InChIKey": "FAIAAWCVCHQXDN-UHFFFAOYSA-N",
+        "IUPACName": "trichlorophosphane",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 8473,
+        "MolecularFormula": "C7H8",
+        "ConnectivitySMILES": "C1C2C=CC1C=C2",
+        "InChIKey": "SJYNFBVQFBRSIB-UHFFFAOYSA-N",
+        "IUPACName": "bicyclo[2.2.1]hepta-2,5-diene",
+        "Charge": 0
+      }
+    ]
+  }
+}

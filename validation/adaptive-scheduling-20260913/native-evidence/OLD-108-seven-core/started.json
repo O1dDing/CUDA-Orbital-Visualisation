@@ -1,0 +1,67 @@
+{
+  "pid": 42988,
+  "started_epoch": 1789303024.9255023,
+  "cores": 7,
+  "job_admission": "PROC_THREAD_ATTRIBUTE_JOB_LIST at process creation",
+  "process_identity": {
+    "pid": 42988,
+    "creation_filetime": 134337766249267493
+  },
+  "job_name": "Local\\COV.Gaussian.513482de4d3b426fa694ab89ebe595ce",
+  "child_environment": {
+    "OMP_NUM_THREADS": "7",
+    "NCPUS": "7",
+    "OMP_THREAD_LIMIT": "7",
+    "MKL_NUM_THREADS": "7",
+    "OPENBLAS_NUM_THREADS": "1",
+    "GAUSS_EXEDIR": "F:\\CalChem\\Gaussian\\Gaussian 16 W",
+    "GAUSS_SCRDIR": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-adaptive-scheduling-20260913\\heavy-seven-core-1789303024887167200\\scratch"
+  },
+  "cpu_rate_hard_cap": 2187,
+  "memory_limit_gib": 32,
+  "console_policy": "detached; system console infrastructure remains responsive",
+  "allocation": {
+    "token": "fbbc2f3a1bca4b1da73f4f5e0d14d934",
+    "owner": {
+      "pid": 45368,
+      "creation_filetime": 134337766237099277
+    },
+    "label": "isolated-smoke/OLD-108",
+    "requested": 7,
+    "allocated": 7,
+    "budget": 14,
+    "concurrent_jobs_at_admission": 1,
+    "policy_version": "3.0-adaptive-physical",
+    "host": {
+      "physical_cores": 16,
+      "logical_processors": 32,
+      "physical_masks": [
+        1,
+        4,
+        16,
+        64,
+        256,
+        1024,
+        4096,
+        16384,
+        65536,
+        262144,
+        1048576,
+        4194304,
+        16777216,
+        67108864,
+        268435456,
+        1073741824
+      ],
+      "topology_source": "Windows GetLogicalProcessorInformation; one record per physical core"
+    },
+    "metadata": {
+      "runtime_identity": "d9f48dc70e1edab1a9150bb55eb0d661e4c33f6a7996edfceb086ca711f95db4",
+      "reference_identity": "e6c62ca320b7e2113e82f8858cc0cc8c5c7415dbf9c9f6e17933d08a2b308841",
+      "frozen_initial_sha256": "44d99a7e1480ba20e60018f61693eb83986761db361f347bbf0f82e5c81f5ae4",
+      "actual_input_sha256": "39aa4e2402b164fe49624eccb1c772a00789a49b9b05f78e6e7152eb8eb8ac0e"
+    },
+    "state": "reserved",
+    "tree": null
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-015",
+  "query": "hydrazine",
+  "expected_formula": "N2H4",
+  "expected_charge": 0,
+  "family": "主族",
+  "purpose": "非平面与孤对耦合",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709647.2821474,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 9321,
+      "MolecularFormula": "H4N2",
+      "ConnectivitySMILES": "NN",
+      "InChIKey": "OAKJQQAXSVQMHS-UHFFFAOYSA-N",
+      "IUPACName": "hydrazine",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/9321"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709647.2821474,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-015\\response-1.json",
+      "sha256": "e8389f4d33a24d6ac05f6f3f9faaed1e7345391bbda6232a11d42ad7cddd5e27",
+      "bytes": 269,
+      "elapsed_seconds": 3.695401191711426
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/hydrazine/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

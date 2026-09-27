@@ -1,12 +1,18 @@
 #include "cov/cuda_orbital.hpp"
+#include "cov/numerical_diagnostics.hpp"
+#include "cov/pi_topology_evidence.hpp"
+#include <sstream>
 #include "cov/file_dialog.hpp"
 #include "cov/gl_api.hpp"
 #include "cov/mo_diagram.hpp"
 #include "cov/molden_parser.hpp"
 #include "cov/molecule_style.hpp"
+#include "cov/orbital_tracking.hpp"
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
 #include "cov/volume_renderer.hpp"
+#include "cov/validation.hpp"
+#include "cov/viewer_layout.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -74,11 +80,8 @@ cov::GridBox make_grid_box(const cov::Wavefunction& wf, const float padding_bohr
 }
 
 std::size_t initial_orbital(const cov::Wavefunction& wf) {
-    std::size_t selected = 0;
-    for (std::size_t i = 0; i < wf.orbitals.size(); ++i) {
-        if (wf.orbitals[i].occupation > 1.0e-4f) selected = i;
-    }
-    return selected;
+    const auto frontier=cov::find_frontier_orbitals(wf.orbitals);
+    return frontier.homo.value_or(0u);
 }
 
 const char* status_label(const StatusKind status, const cov::ui::Language language) {
@@ -127,12 +130,18 @@ void copy_path_to_buffer(const std::filesystem::path& path,
     std::snprintf(buffer.data(), buffer.size(), "%s", value.c_str());
 }
 
+void disabled_wrapped(const char* text) {
+    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+    ImGui::TextWrapped("%s", text);
+    ImGui::PopStyleColor();
+}
+
 void metric_row(const char* label, const char* value) {
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
-    ImGui::TextDisabled("%s", label);
+    disabled_wrapped(label);
     ImGui::TableNextColumn();
-    ImGui::TextUnformatted(value);
+    ImGui::TextWrapped("%s", value);
 }
 
 void push_recent(std::vector<std::filesystem::path>& recent,
@@ -194,6 +203,8 @@ const char* orbital_surface_name(const cov::OrbitalSurfaceMode mode,
 } // namespace
 
 int main(int argc, char** argv) {
+    try { cov::validation::configure(argc, argv); }
+    catch (const std::exception& e) { std::fprintf(stderr,"Validation: %s\n",e.what()); return 2; }
     if (!glfwInit()) {
         std::fprintf(stderr, "GLFW initialisation failed\n");
         return 1;
@@ -202,6 +213,10 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+    if (cov::validation::background()) {
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+    }
 
     GLFWwindow* window = glfwCreateWindow(
         1500, 940, "CUDA Orbital Visualisation", nullptr, nullptr);
@@ -211,7 +226,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    glfwSetWindowSizeLimits(window, 640, 360, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(window);
+    if (cov::validation::active()) {
+        glfwSetWindowSize(window, cov::validation::window_width(), cov::validation::window_height());
+        glfwSetWindowTitle(window, "COV native validation");
+    }
     glfwSwapInterval(1);
     glfwSetDropCallback(window, drop_callback);
 
@@ -223,6 +243,12 @@ int main(int argc, char** argv) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& startup_io = ImGui::GetIO();
+    if (cov::validation::active()) {
+        startup_io.IniFilename = nullptr;
+        // Each native-plan step supplies an ordered event batch for this
+        // frame. Do not defer part of it into the next GLFW polling batch.
+        startup_io.ConfigInputTrickleEventQueue = false;
+    }
     startup_io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     cov::ui::apply_theme(ui_scale);
     cov::ui::configure_fonts(16.5f * ui_scale);
@@ -235,6 +261,7 @@ int main(int argc, char** argv) {
         cov::OrbitCamera camera;
 
         std::optional<cov::Wavefunction> wavefunction;
+        std::optional<cov::OrbitalTrackingResult> frame_tracking;
         std::unique_ptr<cov::CudaOrbitalEvaluator> evaluator;
         cov::GridBox grid_box;
 
@@ -267,6 +294,7 @@ int main(int argc, char** argv) {
             }
             evaluator->evaluate(mo_index, grid_box,
                                 resolution, resolution, resolution);
+            cov::validation::evaluated(mo_index,"selection-or-grid",evaluator->last_kernel_ms());
             status = StatusKind::GridUpdated;
             status_detail = evaluator->device_name();
             recompute = false;
@@ -281,21 +309,44 @@ int main(int argc, char** argv) {
                 options.max_atoms = 100;
                 options.require_orbitals = true;
                 auto wf = cov::parse_molden(path, options);
+                if (cov::validation::active()) {
+                    std::ostringstream diagnostics;
+                    cov::write_numerical_diagnostics_json(diagnostics,wf);
+                    cov::validation::record("input.numerical_diagnostics",diagnostics.str());
+                    std::ostringstream density_evidence;
+                    cov::write_density_evidence_json(density_evidence,wf);
+                    cov::validation::record("input.density_evidence",density_evidence.str());
+                    std::ostringstream topology_evidence;
+                    cov::write_pi_topology_assignments_json(topology_evidence,wf);
+                    cov::validation::record("input.pi_topology_evidence",topology_evidence.str());
+                }
                 const auto new_mo = initial_orbital(wf);
                 const auto new_box = make_grid_box(wf);
+                std::optional<cov::OrbitalTrackingResult> new_tracking;
+                if (wavefunction) {
+                    // Cross-frame identity is descriptive state only. Both
+                    // canonical wavefunctions remain immutable, and loading a
+                    // new frame still resets selection to that frame's own HOMO.
+                    new_tracking = cov::track_orbital_subspaces(*wavefunction, wf);
+                }
 
                 if (evaluator) evaluator->detach_gl_texture();
                 evaluator.reset();
                 wavefunction = std::move(wf);
+                frame_tracking = std::move(new_tracking);
+                renderer.invalidate_geometry_cache();
                 evaluator = std::make_unique<cov::CudaOrbitalEvaluator>(*wavefunction);
                 mo_index = new_mo;
                 pending_mo_index.reset();
+                orbital_ui.browser_cache={};
+                orbital_ui.diagram_cache={};
                 grid_box = new_box;
 
                 renderer.resize_volume(resolution, resolution, resolution);
                 evaluator->attach_gl_texture(renderer.volume_texture());
                 evaluator->evaluate(mo_index, grid_box,
                                     resolution, resolution, resolution);
+                cov::validation::evaluated(mo_index,"input-load",evaluator->last_kernel_ms());
                 current_file = path;
                 copy_path_to_buffer(path, path_buffer);
                 push_recent(recent_files, path);
@@ -312,64 +363,81 @@ int main(int argc, char** argv) {
             std::snprintf(path_buffer.data(), path_buffer.size(), "%s", p.c_str());
             load_file(path_from_utf8(p));
         }
+        if (cov::validation::active() && !wavefunction) {
+            throw std::runtime_error("Native validation input failed: "+status_detail);
+        }
 
-        double last_x = 0.0;
-        double last_y = 0.0;
-        glfwGetCursorPos(window, &last_x, &last_y);
+        bool scene_drag_active = false;
 
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
+            cov::validation::begin_frame(camera,molecule_render,isovalue,resolution,resize_and_recompute);
+            if (resize_and_recompute) recompute = true;
 
             if (!g_dropped_path.empty()) {
                 load_file(path_from_utf8(g_dropped_path));
                 g_dropped_path.clear();
             }
 
-            int fb_w = 1, fb_h = 1;
-            glfwGetFramebufferSize(window, &fb_w, &fb_h);
-            glViewport(0, 0, fb_w, fb_h);
-            glClearColor(0.025f, 0.031f, 0.043f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            if (wavefunction) {
-                // Geometry is rendered first into colour + depth. The implicit
-                // orbital surface then depth-tests against it and alpha-blends
-                // over geometry behind the lobe. This preserves correct front/
-                // back occlusion while allowing a genuinely transparent glass skin.
-                renderer.render_geometry(*wavefunction, grid_box, fb_w, fb_h, camera,
-                                         molecule_render);
-                renderer.render_volume(fb_w, fb_h, isovalue, camera,
-                                       molecule_render.orbital_opacity,
-                                       orbital_material, orbital_surface_mode);
+            if (cov::validation::active()) {
+                int window_width=0, window_height=0;
+                glfwGetWindowSize(window,&window_width,&window_height);
+                if (window_width!=cov::validation::window_width() ||
+                    window_height!=cov::validation::window_height()) {
+                    glfwSetWindowSize(window,cov::validation::window_width(),cov::validation::window_height());
+                    glfwPollEvents();
+                }
             }
-
+            int fb_w = 0, fb_h = 0;
+            glfwGetFramebufferSize(window, &fb_w, &fb_h);
+            if (cov::validation::active() && (fb_w != cov::validation::window_width() ||
+                                             fb_h != cov::validation::window_height())) {
+                throw std::runtime_error("Validation framebuffer differs from the requested size");
+            }
+            if (fb_w <= 0 || fb_h <= 0) {
+                glfwWaitEventsTimeout(0.05);
+                continue;
+            }
             ImGui_ImplOpenGL2_NewFrame();
             ImGui_ImplGlfw_NewFrame();
+            cov::validation::input_frame();
             ImGui::NewFrame();
-
             ImGuiIO& io = ImGui::GetIO();
-            double mx = 0.0, my = 0.0;
-            glfwGetCursorPos(window, &mx, &my);
-            if (!io.WantCaptureMouse &&
-                glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-                camera.yaw += static_cast<float>((mx - last_x) * 0.007);
-                camera.pitch += static_cast<float>((my - last_y) * 0.007);
-                camera.pitch = std::clamp(camera.pitch, -1.45f, 1.45f);
+            const auto layout = cov::viewer_layout(io.DisplaySize.x, io.DisplaySize.y,
+                                                    fb_w, fb_h, ui_scale);
+            const auto& viewport = layout.framebuffer;
+            const bool over_scene = layout.scene.contains(io.MousePos.x, io.MousePos.y);
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                scene_drag_active = over_scene && !io.WantCaptureMouse;
             }
-            if (!io.WantCaptureMouse && std::abs(io.MouseWheel) > 0.0f) {
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) scene_drag_active = false;
+            if (scene_drag_active && over_scene && !io.WantCaptureMouse) {
+                camera.yaw += io.MouseDelta.x * 0.007f;
+                camera.pitch = std::clamp(camera.pitch + io.MouseDelta.y * 0.007f, -1.45f, 1.45f);
+            }
+            if (over_scene && !io.WantCaptureMouse && std::abs(io.MouseWheel) > 0.0f) {
                 camera.distance *= std::pow(0.88f, io.MouseWheel);
                 camera.distance = std::clamp(camera.distance, 1.1f, 6.0f);
             }
-            last_x = mx;
-            last_y = my;
+            glViewport(0, 0, fb_w, fb_h);
+            glClearColor(0.025f, 0.031f, 0.043f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+            if (wavefunction && viewport.width > 0 && viewport.height > 0) {
+                // Geometry and the actual orbital texture share one viewport,
+                // projection and depth buffer, outside the control panel.
+                renderer.render_geometry(*wavefunction, grid_box, viewport.width, viewport.height,
+                                         camera, molecule_render);
+                renderer.render_volume(viewport.width, viewport.height, isovalue, camera,
+                                       molecule_render.orbital_opacity,
+                                       orbital_material, orbital_surface_mode);
+                cov::validation::after_scene(renderer, grid_box, mo_index);
+            }
+            cov::validation::scene_view(layout, camera);
+            glViewport(0, 0, fb_w, fb_h);
 
-            const float margin = 14.0f * ui_scale;
-            const float panel_width = std::min(540.0f * ui_scale,
-                                               std::max(370.0f, io.DisplaySize.x * 0.46f));
-            const float panel_height = std::max(320.0f, io.DisplaySize.y - margin * 2.0f);
-
-            ImGui::SetNextWindowPos(ImVec2(margin, margin), ImGuiCond_Always);
-            ImGui::SetNextWindowSize(ImVec2(panel_width, panel_height), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(layout.controls.x, layout.controls.y), ImGuiCond_Always);
+            ImGui::SetNextWindowSize(ImVec2(layout.controls.width, layout.controls.height), ImGuiCond_Always);
             ImGui::SetNextWindowBgAlpha(0.965f);
             constexpr ImGuiWindowFlags panel_flags =
                 ImGuiWindowFlags_NoTitleBar |
@@ -379,19 +447,20 @@ int main(int argc, char** argv) {
                 ImGuiWindowFlags_NoSavedSettings;
 
             ImGui::Begin("##cov_control_panel", nullptr, panel_flags);
+            const auto panel_position = ImGui::GetWindowPos();
+            const auto panel_size = ImGui::GetWindowSize();
+            cov::validation::hit("layout.control-panel", panel_position,
+                ImVec2(panel_position.x + panel_size.x, panel_position.y + panel_size.y));
 
-            if (ImGui::BeginTable("##cov_header", 2,
-                                  ImGuiTableFlags_SizingStretchProp |
-                                  ImGuiTableFlags_NoSavedSettings)) {
-                ImGui::TableSetupColumn("##brand", ImGuiTableColumnFlags_WidthStretch);
-                ImGui::TableSetupColumn("##language", ImGuiTableColumnFlags_WidthFixed,
-                                        142.0f * ui_scale);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::TextUnformatted(cov::ui::tr(cov::ui::Text::AppTitle, language));
-                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::Tagline, language));
-                ImGui::TableNextColumn();
-                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::LanguageLabel, language));
+            // Keep the complete panel reachable when the window is short.
+            ImGui::BeginChild("##cov_panel_scroll", ImVec2(0, 0), false,
+                              ImGuiWindowFlags_None);
+            const auto brand = [&] {
+                ImGui::TextWrapped("%s", cov::ui::tr(cov::ui::Text::AppTitle, language));
+                disabled_wrapped(cov::ui::tr(cov::ui::Text::Tagline, language));
+            };
+            const auto language_control = [&] {
+                disabled_wrapped(cov::ui::tr(cov::ui::Text::LanguageLabel, language));
                 int language_index = static_cast<int>(language);
                 ImGui::SetNextItemWidth(-1.0f);
                 if (ImGui::Combo("##language_combo", &language_index,
@@ -400,23 +469,39 @@ int main(int argc, char** argv) {
                     glfwSetWindowTitle(window,
                         cov::ui::tr(cov::ui::Text::AppTitle, language));
                 }
+                cov::validation::item("language");
+            };
+            const float header_width = ImGui::CalcTextSize(
+                cov::ui::tr(cov::ui::Text::AppTitle, language)).x +
+                142.0f * ui_scale + 4.0f * ImGui::GetStyle().ItemSpacing.x;
+            if (ImGui::GetContentRegionAvail().x < header_width) {
+                brand();
+                ImGui::Spacing();
+                language_control();
+            } else if (ImGui::BeginTable("##cov_header", 2,
+                                  ImGuiTableFlags_SizingStretchProp |
+                                  ImGuiTableFlags_NoSavedSettings)) {
+                ImGui::TableSetupColumn("##brand", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("##language", ImGuiTableColumnFlags_WidthFixed,
+                                        142.0f * ui_scale);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                brand();
+                ImGui::TableNextColumn();
+                language_control();
                 ImGui::EndTable();
             }
 
             ImGui::Spacing();
             cov::ui::status_badge(status_label(status, language), status_tone(status));
             if (!status_detail.empty()) {
-                ImGui::SameLine();
-                ImGui::TextDisabled("%s", status_detail.c_str());
+                disabled_wrapped(status_detail.c_str());
             } else {
-                ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::IdleHint, language));
+                disabled_wrapped(cov::ui::tr(cov::ui::Text::IdleHint, language));
             }
-            ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::ExperimentalNote, language));
+            disabled_wrapped(cov::ui::tr(cov::ui::Text::ExperimentalNote, language));
             ImGui::Separator();
             ImGui::Spacing();
-
-            ImGui::BeginChild("##cov_panel_scroll", ImVec2(0, 0), false,
-                              ImGuiWindowFlags_None);
 
             cov::ui::begin_card("##file_card", 192.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::FileSection, language));
@@ -434,10 +519,10 @@ int main(int argc, char** argv) {
                 }
             }
             if (!current_file.empty()) {
-                ImGui::SameLine();
-                ImGui::TextDisabled("%s: %s",
-                    cov::ui::tr(cov::ui::Text::CurrentFile, language),
-                    path_to_utf8(current_file.filename()).c_str());
+                const std::string file_label = std::string(
+                    cov::ui::tr(cov::ui::Text::CurrentFile, language)) + ": " +
+                    path_to_utf8(current_file.filename());
+                disabled_wrapped(file_label.c_str());
             }
 
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoldenPath, language));
@@ -471,7 +556,7 @@ int main(int argc, char** argv) {
             if (recent_to_load) load_file(*recent_to_load);
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
-            cov::ui::begin_card("##wavefunction_card", 174.0f * ui_scale);
+            cov::ui::begin_card("##wavefunction_card", 270.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::WavefunctionSection, language));
             if (wavefunction) {
                 if (ImGui::BeginTable("##wavefunction_metrics", 2,
@@ -485,11 +570,70 @@ int main(int argc, char** argv) {
                         std::string("D=") + (wavefunction->pure_d ? "5D" : "6D") +
                         "  F=" + (wavefunction->pure_f ? "7F" : "10F") +
                         "  G=" + (wavefunction->pure_g ? "9G" : "15G");
+                    std::string state = "—";
+                    if (wavefunction->charge_provenance != cov::DataProvenance::Unavailable ||
+                        wavefunction->multiplicity_provenance != cov::DataProvenance::Unavailable) {
+                        state.clear();
+                        if (wavefunction->charge_provenance != cov::DataProvenance::Unavailable) {
+                            if (wavefunction->charge > 0) state += "+";
+                            state += std::to_string(wavefunction->charge);
+                        } else {
+                            state += "?";
+                        }
+                        state += " / ";
+                        state += wavefunction->multiplicity_provenance !=
+                                     cov::DataProvenance::Unavailable
+                                     ? std::to_string(wavefunction->multiplicity) : "?";
+                    }
+                    const std::string electron_split =
+                        wavefunction->electron_counts_provenance ==
+                                cov::DataProvenance::Unavailable
+                            ? "— / —"
+                            : std::to_string(wavefunction->alpha_electrons) + " / " +
+                                  std::to_string(wavefunction->beta_electrons);
+                    std::string diagnostics = "—";
+                    if (wavefunction->scf_convergence !=
+                            cov::ScfConvergenceStatus::Unavailable ||
+                        wavefunction->stability !=
+                            cov::WavefunctionStabilityStatus::Unavailable) {
+                        const char* scf = wavefunction->scf_convergence ==
+                                                  cov::ScfConvergenceStatus::Converged
+                                              ? cov::ui::tr(cov::ui::Text::Converged,language)
+                                              : wavefunction->scf_convergence ==
+                                                        cov::ScfConvergenceStatus::Failed
+                                                    ? cov::ui::tr(cov::ui::Text::Failed,language)
+                                                    : "—";
+                        const char* stability = wavefunction->stability ==
+                                                        cov::WavefunctionStabilityStatus::Stable
+                                                    ? cov::ui::tr(cov::ui::Text::Stable,language)
+                                                    : wavefunction->stability ==
+                                                              cov::WavefunctionStabilityStatus::Unstable
+                                                          ? cov::ui::tr(cov::ui::Text::Unstable,language)
+                                                          : "—";
+                        diagnostics = std::string(scf) + " / " + stability;
+                    }
+                    std::string spin_squared = "—";
+                    if (wavefunction->spin_squared_provenance !=
+                        cov::DataProvenance::Unavailable) {
+                        char value[64]{};
+                        std::snprintf(value, sizeof(value), "%.4f / %.4f",
+                                      wavefunction->spin_squared_before_annihilation,
+                                      wavefunction->spin_squared_after_annihilation);
+                        spin_squared = value;
+                    }
                     metric_row(cov::ui::tr(cov::ui::Text::Atoms, language), atoms.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::Shells, language), shells.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::BasisFunctions, language), basis.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::Orbitals, language), orbitals.c_str());
                     metric_row(cov::ui::tr(cov::ui::Text::ShellConvention, language), convention.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::ChargeMultiplicity, language),
+                               state.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::AlphaBetaElectrons, language),
+                               electron_split.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::SCFStability, language),
+                               diagnostics.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::SpinSquared, language),
+                               spin_squared.c_str());
                     ImGui::EndTable();
                 }
             } else {
@@ -498,6 +642,55 @@ int main(int argc, char** argv) {
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
+            cov::ui::begin_card("##frame_tracking_card", 156.0f * ui_scale);
+            cov::ui::section_title(cov::ui::tr(cov::ui::Text::FrameTracking,
+                                               language));
+            if (frame_tracking) {
+                if (ImGui::BeginTable("##frame_tracking_metrics", 2,
+                                      ImGuiTableFlags_SizingStretchProp |
+                                      ImGuiTableFlags_NoSavedSettings)) {
+                    std::size_t matched_members = 0u;
+                    for (const auto& match : frame_tracking->matches) {
+                        matched_members += match.from_members.size();
+                    }
+                    const std::string matched =
+                        std::to_string(frame_tracking->matches.size()) +
+                        " (" + std::to_string(matched_members) + " MO)";
+                    const std::string unmatched =
+                        std::to_string(frame_tracking->unmatched_from.size()) +
+                        " / " +
+                        std::to_string(frame_tracking->unmatched_to.size());
+                    metric_row(cov::ui::tr(
+                                   cov::ui::Text::AtomMappingCompatibility,
+                                   language),
+                               cov::ui::tr(
+                                   frame_tracking->atom_mapping_compatible
+                                       ? cov::ui::Text::Compatible
+                                       : cov::ui::Text::Incompatible,
+                                   language));
+                    metric_row(cov::ui::tr(cov::ui::Text::MatchedSubspaces,
+                                           language),
+                               matched.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::UnmatchedSubspaces,
+                                           language),
+                               unmatched.c_str());
+                    metric_row(cov::ui::tr(cov::ui::Text::TrackingOptimisation,
+                                           language),
+                               cov::ui::tr(
+                                   frame_tracking->composite_optimisation_truncated
+                                       ? cov::ui::Text::ConservativeFallback
+                                       : cov::ui::Text::ExactOrNotNeeded,
+                                   language));
+                    ImGui::EndTable();
+                }
+            } else {
+                ImGui::TextDisabled("%s", cov::ui::tr(
+                    cov::ui::Text::NoPreviousFrame, language));
+            }
+            cov::ui::end_card();
+            ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
+
+            cov::validation::anchor("panel.browser");
             cov::ui::begin_card("##orbital_browser_card", 620.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::OrbitalBrowser, language));
             cov::ui::OrbitalUIActions orbital_actions;
@@ -510,6 +703,7 @@ int main(int argc, char** argv) {
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
 
+            cov::validation::anchor("panel.diagram");
             cov::ui::begin_card("##energy_diagram_card", 430.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::EnergyDiagram, language));
             cov::ui::OrbitalUIActions diagram_actions;
@@ -526,21 +720,26 @@ int main(int argc, char** argv) {
             if (diagram_actions.select_orbital) pending_mo_index = diagram_actions.select_orbital;
             const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
             if (export_requested && wavefunction) {
-                cov::MODiagramOptions options;
-                options.energy_unit = orbital_ui.energy_unit;
-                options.energy_axis_mode = orbital_ui.energy_axis_mode;
-                options.degeneracy = orbital_ui.degeneracy;
-                options.filter = orbital_ui.filter;
-                options.selected_index = mo_index;
-                options.neighbourhood = static_cast<std::size_t>(std::max(2, orbital_ui.diagram_neighbourhood));
                 std::filesystem::path base = current_file.empty()
                                                  ? std::filesystem::current_path() / "mo_diagram"
                                                  : current_file;
-                const auto result = cov::export_mo_diagram_bundle(*wavefunction, options, base);
+                base = cov::validation::export_base(base);
+                const auto snapshot=diagram_actions.drawn_diagram;
+                cov::MODiagramExportResult result;
+                if (snapshot) result=cov::export_mo_diagram_bundle(*snapshot,base);
+                else result.error="No current diagram view is available for export";
+#ifdef COV_ENABLE_VALIDATION
+                cov::validation::record("export.actual","{\"base\":"+cov::validation::quote(path_to_utf8(base))+
+                    ",\"snapshot_id\":"+(snapshot?cov::validation::quote(snapshot->data.view->id):"null")+
+                    ",\"mode\":"+(snapshot?std::to_string(static_cast<int>(snapshot->data.mode)):"null")+
+                    ",\"selected_index\":"+(snapshot && snapshot->data.view->inspected_orbital_index
+                        ?std::to_string(*snapshot->data.view->inspected_orbital_index):"null")+
+                    ",\"success\":"+((result.svg&&result.png&&result.json&&result.csv)?"true":"false")+"}");
+#endif
                 if (result.svg && result.png && result.json && result.csv) {
                     status = StatusKind::Exported;
-                    if (base.has_extension()) base.replace_extension();
-                    status_detail = path_to_utf8(base) + ".mo.{png,svg,json,csv}";
+                    status_detail = path_to_utf8(result.svg_path.parent_path() /
+                        result.svg_path.stem()) + ".{png,svg,json,csv}";
                 } else {
                     status = StatusKind::Error;
                     status_detail = result.error.empty()
@@ -549,7 +748,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            cov::ui::begin_card("##render_card", 470.0f * ui_scale);
+            cov::ui::begin_card("##render_card", 545.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::RenderingSection, language));
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoleculeStyle, language));
             ImGui::SetNextItemWidth(-1.0f);
@@ -612,6 +811,19 @@ int main(int argc, char** argv) {
             ImGui::SliderFloat("##bond_size", &molecule_render.bond_scale, 0.5f, 2.0f, "%.2f");
             ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowHydrogens, language),
                             &molecule_render.show_hydrogens);
+            ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowCoordinationContacts, language),
+                            &molecule_render.show_coordination_contacts);
+            ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowMulticentreSupport, language),
+                            &molecule_render.show_multicentre_support);
+            ImGui::Checkbox(cov::ui::tr(
+                                cov::ui::Text::ShowPolyhedralCageSupport,language),
+                            &molecule_render.show_polyhedral_cage_support);
+            ImGui::Checkbox(cov::ui::tr(cov::ui::Text::ShowWeakInteractions, language),
+                            &molecule_render.show_weak_interactions);
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("%s", cov::ui::tr(cov::ui::Text::WeakInteractionsHint,
+                                                     language));
+            }
 
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::MoleculeOpacity, language));
             ImGui::SliderFloat("##molecule_opacity", &molecule_render.molecule_opacity,
@@ -673,6 +885,8 @@ int main(int argc, char** argv) {
 
             ImGui::EndChild();
             ImGui::End();
+            cov::validation::field("language",std::to_string(static_cast<int>(language)));
+            cov::validation::ui_frame(mo_index,pending_mo_index.value_or(mo_index));
 
             // Selection debounce: at most the latest requested orbital is evaluated
             // once at the end of this frame. Browser hover/filtering never launches CUDA.
@@ -697,8 +911,10 @@ int main(int argc, char** argv) {
 
             ImGui::Render();
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+            cov::validation::end_frame(fb_w,fb_h,mo_index,orbital_ui,wavefunction?&*wavefunction:nullptr);
 
             glfwSwapBuffers(window);
+            if (cov::validation::done()) {exit_code=cov::validation::result();break;}
         }
 
         if (evaluator) evaluator->detach_gl_texture();

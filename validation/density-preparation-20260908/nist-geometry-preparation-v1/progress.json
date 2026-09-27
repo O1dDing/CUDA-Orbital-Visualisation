@@ -1,0 +1,107 @@
+{
+  "expected_sources": 5,
+  "terminal_sources": 5,
+  "records": [
+    {
+      "candidate_id": "PREP-002",
+      "name": "germane",
+      "elements": {
+        "Ge": 1,
+        "H": 4
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+      "scope": "computed HSEh1PBE/6-311G** geometry; singlet minimum in source; starting input only",
+      "started_epoch": 1788845886.2690792,
+      "http_status": 200,
+      "content_type": "text/html",
+      "charset": null,
+      "resolved_url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+      "status": "html-retrieved-content-review-pending",
+      "bytes": 41159,
+      "sha256": "991075aea39fae6a09b7c2d81b13595756ef37f04a213c68238aeb66d963534c",
+      "finished_epoch": 1788845888.3389375
+    },
+    {
+      "candidate_id": "PREP-007",
+      "name": "chlorine trifluoride",
+      "elements": {
+        "Cl": 1,
+        "F": 3
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+      "scope": "experimental-data index; initial state row D3h is nonminimum; explicit C2v minimum is another conformer; no Cartesian values observed in web extraction",
+      "started_epoch": 1788845889.0413566,
+      "http_status": 200,
+      "content_type": "text/html",
+      "charset": null,
+      "resolved_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+      "status": "html-retrieved-content-review-pending",
+      "bytes": 45250,
+      "sha256": "5ea277bf95f85ae71f12ce1e0fdc07a8eeb9f84a02ee0126e93f2d7e798763cc",
+      "finished_epoch": 1788845890.6765687
+    },
+    {
+      "candidate_id": "PREP-008",
+      "name": "bromine pentafluoride",
+      "elements": {
+        "Br": 1,
+        "F": 5
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+      "scope": "experimental-data index; coordinate payload and original references to be reviewed",
+      "started_epoch": 1788845891.3814478,
+      "http_status": 200,
+      "content_type": "text/html",
+      "charset": null,
+      "resolved_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0",
+      "status": "html-retrieved-content-review-pending",
+      "bytes": 49740,
+      "sha256": "6d88c7ce5371f758a8d317923c742f9fee56e40bd11a0336ccd0e512002b5ecc",
+      "finished_epoch": 1788845892.9706721
+    },
+    {
+      "candidate_id": "PREP-009",
+      "name": "iodine heptafluoride",
+      "elements": {
+        "I": 1,
+        "F": 7
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/alldata2x.asp?casno=16921963&charge=0",
+      "scope": "species index; follow actual geometry links after source retrieval",
+      "started_epoch": 1788845893.673043,
+      "http_status": 200,
+      "content_type": "text/html",
+      "charset": null,
+      "resolved_url": "https://cccbdb.nist.gov/alldata1x.asp",
+      "status": "html-retrieved-content-review-pending",
+      "bytes": 30546,
+      "sha256": "bf154f493fd2e68bc6374c50e2c1986fa84a50a0d2626467fd27a6984d351aec",
+      "finished_epoch": 1788845895.5457678
+    },
+    {
+      "candidate_id": "PREP-042",
+      "name": "phenoxy radical",
+      "elements": {
+        "C": 6,
+        "H": 5,
+        "O": 1
+      },
+      "charge": 0,
+      "url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+      "scope": "G3B3 result page whose geometry is explicitly B3LYP/6-31G*; doublet minimum; starting input only",
+      "started_epoch": 1788845896.2478049,
+      "http_status": 200,
+      "content_type": "text/html",
+      "charset": null,
+      "resolved_url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+      "status": "html-retrieved-content-review-pending",
+      "bytes": 50208,
+      "sha256": "53a69483ad2957bf1494da9e0a06311dc6259bbba5ab0eabb397404507fe57e5",
+      "finished_epoch": 1788845897.7980206
+    }
+  ]
+}

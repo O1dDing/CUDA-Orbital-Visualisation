@@ -1,0 +1,94 @@
+{
+  "source_raw_sha256": "fe1d529000bb4799d95b63450e06f28b9de1acedd9c2bfb517e8bc2ab988f7d9",
+  "cid": 679,
+  "provenance": "PubChem computed 3D conformer; not an experimental reference",
+  "conformers": [
+    {
+      "atom_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "atomic_numbers": [
+        16,
+        8,
+        6,
+        6,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "coordinates_angstrom": [
+        [
+          0.1817,
+          0.0065,
+          -0.5212
+        ],
+        [
+          1.4801,
+          0.0532,
+          0.2284
+        ],
+        [
+          -0.8792,
+          1.3112,
+          0.1464
+        ],
+        [
+          -0.7826,
+          -1.3709,
+          0.1464
+        ],
+        [
+          -0.4483,
+          2.2796,
+          -0.1182
+        ],
+        [
+          -0.9369,
+          1.2252,
+          1.2341
+        ],
+        [
+          -1.8773,
+          1.2284,
+          -0.2901
+        ],
+        [
+          -1.784,
+          -1.3601,
+          -0.29
+        ],
+        [
+          -0.8463,
+          -1.2894,
+          1.2341
+        ],
+        [
+          -0.2831,
+          -2.3059,
+          -0.1182
+        ]
+      ],
+      "minimum_separation_angstrom": 1.0924118087973969,
+      "pubchem_coord_type": [
+        2,
+        5,
+        10
+      ],
+      "source_conformer_id": null
+    }
+  ],
+  "formal_case": false,
+  "independent_geometry_and_electronic_state_review": "pending"
+}

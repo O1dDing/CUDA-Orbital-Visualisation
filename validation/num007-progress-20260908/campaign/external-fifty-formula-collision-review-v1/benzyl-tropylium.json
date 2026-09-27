@@ -1,0 +1,430 @@
+{
+  "candidate_id": "PREP-043",
+  "original_case_id": "OLD-097",
+  "author_coord_sha256": "92c081e8cd78a0e7b1dd77dd32226b1c3d19eeea334aaef07e36bac3265b9acb",
+  "author_coord_git_blob_sha1": "f141c643e0732d8ef3b894abe176727d374373fa",
+  "author_commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+  "original_fchk_sha256": "5e56459c4993f60c1d938bef5727b0334ac58639ab4c59f5c586c022c4642a93",
+  "benzyl_sweeps": [
+    {
+      "cutoff_angstrom": 1.65,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "sorted_degrees": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3
+      ],
+      "oxygen_nitrogen_edges": 0
+    },
+    {
+      "cutoff_angstrom": 1.7,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "sorted_degrees": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3
+      ],
+      "oxygen_nitrogen_edges": 0
+    },
+    {
+      "cutoff_angstrom": 1.75,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "sorted_degrees": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3
+      ],
+      "oxygen_nitrogen_edges": 0
+    },
+    {
+      "cutoff_angstrom": 1.8,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "sorted_degrees": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3
+      ],
+      "oxygen_nitrogen_edges": 0
+    }
+  ],
+  "tropylium_sweeps": [
+    {
+      "cutoff_angstrom": 1.65,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "sorted_degrees": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "oxygen_nitrogen_edges": 0
+    },
+    {
+      "cutoff_angstrom": 1.7,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "sorted_degrees": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "oxygen_nitrogen_edges": 0
+    },
+    {
+      "cutoff_angstrom": 1.75,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "sorted_degrees": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "oxygen_nitrogen_edges": 0
+    },
+    {
+      "cutoff_angstrom": 1.8,
+      "source_atom_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "sorted_degrees": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "oxygen_nitrogen_edges": 0
+    }
+  ],
+  "constitutional_graph_nonisomorphism_established": true,
+  "reason": "The carbon degree sequences differ at every declared cutoff: a six-membered ring with a pendant carbon versus a seven-membered ring. Charge differences are not used to count new structures."
+}

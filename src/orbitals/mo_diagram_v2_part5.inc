@@ -133,7 +133,9 @@ DiagramSelectionPlan build_valence_selection_plan(
 
     std::sort(chosen.begin(), chosen.end());
     chosen.erase(std::unique(chosen.begin(), chosen.end()), chosen.end());
-    const auto labels = build_orbital_labels(wavefunction.orbitals, options.degeneracy);
+    const auto labels = build_orbital_labels(
+        wavefunction.orbitals,
+        point_group_limited_degeneracy(wavefunction, options.degeneracy));
     chosen = expand_degenerate_sets(chosen, labels);
 
     plan.included_indices = std::move(chosen);

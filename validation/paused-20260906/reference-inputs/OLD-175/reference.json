@@ -1,0 +1,40 @@
+{
+  "case_id": "OLD-175",
+  "original_case_identity": "36655f8f4331f29dcfddd8014498c6806cd00d1dbb1f014da70e479b9866dbd5",
+  "purpose": {
+    "kind": "equilibrium_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Candidate equilibrium at the specified charge and multiplicity",
+    "competing_states_required": false,
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {
+    "contains_formal_anionic_fragment": true,
+    "meaning": "Intended zwitterion or salt/ion-pair composition from the original input; physical charge distribution and relaxed structure remain to be verified",
+    "source_gjf": "F:\\CalChem\\Gaussian\\Files\\.gjf\\molecular_ion_master_20260831\\138_nh4_pf6_contact_PBE1PBE_def2SVP.gjf",
+    "source_title": "138 NH4+...PF6- contact fixed COV validation geometry"
+  },
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPPD",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Net anion or documented anionic fragment",
+  "ecp_core_electrons_by_atomic_number": {
+    "1": 0,
+    "7": 0,
+    "9": 0,
+    "15": 0
+  },
+  "explicit_electrons": 80,
+  "alpha_electrons": 40,
+  "beta_electrons": 40,
+  "gaussian_basis_keyword": "Gen",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "fcff10a11a7da7b15c77ce7d12dbb55bf99886f6060e79f7021794f016d55e5f",
+  "initial_input_sha256": "e60b6be2faecc484ef04daf0c922bd26e24bcca03f4f80d62b67806cff4f2b57",
+  "identity": "d0b6b29572ed10e43afdbbc636f5e0a390886cd6d1cc58059d84731851010082"
+}

@@ -1,0 +1,15 @@
+{
+  "created_epoch": 1788851190.748026,
+  "selected_source_ids": [
+    "ED14",
+    "ED18",
+    "PR29",
+    "PR38"
+  ],
+  "source_sha256": "8149f2752999f01469cb11688df7aef27d3aa694d72c70a7d4897f54c07f5d75",
+  "campaign_sha256": "3e6a1ee9f91d73197c6135d75996ff2cbf05876c30b469c1428674bcc82abe18",
+  "selection_basis": "Distinct phosphorus-containing structures across four different transition metals, at most 100 atoms; preparation before any external COV run.",
+  "formal_cases_added": 0,
+  "gaussian_started": false,
+  "cov_executed": false
+}

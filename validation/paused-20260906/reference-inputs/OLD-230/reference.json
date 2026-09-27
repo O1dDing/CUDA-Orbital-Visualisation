@@ -1,0 +1,40 @@
+{
+  "case_id": "OLD-230",
+  "original_case_identity": "663d5bfd00eaabc86a7f7572def67502a7a73aa1717f68c51cd0c35f2fc594e3",
+  "purpose": {
+    "kind": "scan_frame",
+    "reference_geometry": "fixed",
+    "basis": "Original registered scan frame; no minimum requirement",
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {
+    "contains_formal_anionic_fragment": true,
+    "meaning": "Intended zwitterion or salt/ion-pair composition from the original input; physical charge distribution and relaxed structure remain to be verified",
+    "source_gjf": "F:\\CalChem\\Gaussian\\Files\\.gjf\\molecular_scan_master_20260831\\10_nme4_sbf6_approach_02.gjf",
+    "source_title": "10_nme4_sbf6_approach frame 2; Sb_x=6.50_angstrom; fixed scan geometry for COV trajectory validation"
+  },
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPPD",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Net anion or documented anionic fragment",
+  "ecp_core_electrons_by_atomic_number": {
+    "1": 0,
+    "6": 0,
+    "7": 0,
+    "9": 0,
+    "51": 28
+  },
+  "explicit_electrons": 120,
+  "alpha_electrons": 60,
+  "beta_electrons": 60,
+  "gaussian_basis_keyword": "GenECP",
+  "shell_flags": "5D 7F",
+  "expected_g_shell_type": -4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "94288c84733264c5dd3414d30b85c78b4c59d171896fc1601113224c64967779",
+  "initial_input_sha256": "aff2c3d2fcce09dc0ff6d0474a6398cbf44bcfbe3f5fb17de6d7b72522c03efe",
+  "identity": "7aa90c144d2145daad22194fe6dd2cfe6f026be3e9511ab4213d5a4c3072e333"
+}

@@ -1,0 +1,78 @@
+{
+  "round_identity": "03527bd1e32a47962ea5e075694c1837aa633742510e83adf44f690734e0c193",
+  "production_commit": "21036b2990ef86dcdc419c65cdebd2a03bf4a12b",
+  "created_epoch": 1788840966.1922915,
+  "summary_script_sha256": "680b8da577de3c494c6c0ce91fd852d4b9b7b3c42b660818cec3e1701d268100",
+  "collection_counts": {
+    "complete": 1,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 1
+  },
+  "view_subset_counts": {
+    "view_subset_pass": 1
+  },
+  "bundle_counts": {
+    "pass": 7
+  },
+  "selected_png_strokes_checked": 7,
+  "case_count": 1,
+  "linear_member_click_counts": {
+    "pass": 3
+  },
+  "view_failures": [],
+  "view_failures_by_check": {},
+  "view_case_reports": [
+    {
+      "case_id": "OLD-001",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-pilot\\view-review-v1\\OLD-001.json",
+      "sha256": "7487ace402021012587672a736008652072840700d150f8af983db8b98c0ceac"
+    }
+  ],
+  "numeric_failures": [],
+  "numeric_texture_failures": [],
+  "sampled_mos": 15,
+  "complete_frontier_textures": 4,
+  "timing": {
+    "collection_wall_seconds": 17.24217460001819,
+    "independent_review_wall_seconds": 4.675133899989305,
+    "collection_per_case": {
+      "n": 1,
+      "sum_seconds": 17.177896699984558,
+      "minimum_seconds": 17.177896699984558,
+      "median_seconds": 17.177896699984558,
+      "p95_seconds": 17.177896699984558,
+      "maximum_seconds": 17.177896699984558
+    },
+    "independent_review_per_case": {
+      "n": 1,
+      "sum_seconds": 2.0544367999827955,
+      "minimum_seconds": 2.0544367999827955,
+      "median_seconds": 2.0544367999827955,
+      "p95_seconds": 2.0544367999827955,
+      "maximum_seconds": 2.0544367999827955
+    },
+    "view_review_wall_seconds": 0.06708760000765324,
+    "OLD-015": null
+  },
+  "consumed_summaries": {
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-pilot\\collection-complete.json": "fd8cc82e1f003a022c1a5aa431c6761b50080f982285e2da4f4601ff00ad3e3d",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-pilot\\review-v1\\unified-review\\summary.json": "2690aa51bf062db1123c3f3b92631ec692fea89eef4b827ba799e18cb372edd4",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-pilot\\view-review-v1\\summary.json": "c82267264722f33b6ce9d492ea5008a41eff836c7498f373c6109f10290f8a7a"
+  },
+  "formal_case_passes": 0,
+  "external_molecule_count": 0,
+  "REF-001": "paused-by-user",
+  "limitations": [
+    "Draw-call semantics do not prove all visible text/glyph positions or clipping.",
+    "PNG stroke probes do not certify all output pixels.",
+    "Chemical/symmetry interpretation and paused physical references remain separate.",
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

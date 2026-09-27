@@ -1,0 +1,11 @@
+{
+  "pid": 7320,
+  "image": "F:\\Dev\\Python312\\python.exe",
+  "creation_epoch": 1788658257.1644516,
+  "wait": 258,
+  "requested_epoch": 1788690073.258,
+  "method": "Verified coordinator TerminateProcess; its frozen supervisor uses KILL_ON_JOB_CLOSE for all scientific process trees",
+  "retained_stage_records": 2,
+  "terminate_ok": true,
+  "wait_after_1000ms": 0
+}

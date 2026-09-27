@@ -1,0 +1,111 @@
+{
+  "case_id": "OLD-144",
+  "status": "view_subset_pass",
+  "bundles": [
+    {
+      "name": "export-compact-first",
+      "status": "pass",
+      "snapshot_id": "view-46111885504100-22",
+      "export_frame": 522,
+      "selected_mo": 5,
+      "rows": 2,
+      "members": 4,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-compact-last",
+      "status": "pass",
+      "snapshot_id": "view-46112569966100-25",
+      "export_frame": 628,
+      "selected_mo": 8,
+      "rows": 2,
+      "members": 4,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-expanded",
+      "status": "pass",
+      "snapshot_id": "view-46114030276600-32",
+      "export_frame": 855,
+      "selected_mo": 5,
+      "rows": 2,
+      "members": 4,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-restored",
+      "status": "pass",
+      "snapshot_id": "view-46114272584800-33",
+      "export_frame": 890,
+      "selected_mo": 5,
+      "rows": 2,
+      "members": 4,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-linear",
+      "status": "pass",
+      "snapshot_id": "view-46114514896500-34",
+      "export_frame": 925,
+      "selected_mo": 5,
+      "rows": 2,
+      "members": 4,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "export-electron-volts",
+      "status": "pass",
+      "snapshot_id": "view-46114939067400-36",
+      "export_frame": 1007,
+      "selected_mo": 5,
+      "rows": 2,
+      "members": 4,
+      "selected_png_checks": 1
+    },
+    {
+      "name": "actual-export",
+      "status": "pass",
+      "snapshot_id": "view-46115387432500-37",
+      "export_frame": 1060,
+      "selected_mo": 5,
+      "rows": 2,
+      "members": 4,
+      "selected_png_checks": 1
+    }
+  ],
+  "failures": [],
+  "consumed_artifacts": {
+    "expected-evidence.json": "6b7acdfcb5614d27681577de25a742fc40c1f0cfb823683279ffde19a65f843a",
+    "production.json": "2debe32c223c7d62022ffa9013d782894475ef72871ecc21812f4588ba2fc96a",
+    "native/events.jsonl": "6f6fe546dca81cc1e9f51cc8da6ab816ef7acf64a54f36992626209078867307",
+    "native/export-compact-first.mo.json": "c4fe2c9e63bf7dc5f587d68aa014d2fc1ab97c5f977a78e2803b0b4206eeb852",
+    "native/export-compact-first.mo.csv": "94d5fe95f44cddd63087b1f9d90da19765eced96c90791da1f04f1b5ba992b0d",
+    "native/export-compact-first.mo.svg": "b8a0fb1cfba167d860b5eb15e9e6350a3118ce7b05e0f00c65299bc0037a43bc",
+    "native/export-compact-first.mo.png": "0682f0594abe209e162983f46c4793ef022255172e545b832d08a5a421a2cbd1",
+    "native/export-compact-last.mo.json": "93cbd1062ebffe28192157ad2293026ed6efbce57ecb66d8a62ea9f2c4de1f39",
+    "native/export-compact-last.mo.csv": "9d4c238900e6156b0f296af6ddc81f578e3982e43846bf394196fc33ef1d3f29",
+    "native/export-compact-last.mo.svg": "7d648de01769b1a3e93f42e49c1c8cd16c31bcb2ac4dc1857861499aa541c002",
+    "native/export-compact-last.mo.png": "72546803f6e60ea8e2d98661c9f1400f1a646d5add082f8689d602604d307c0b",
+    "native/export-expanded.mo.json": "8fe427559464d2a73147d8d4580d0a61ed78c5f8d91b5ec180c417a4f19ff488",
+    "native/export-expanded.mo.csv": "ccbc9e70cc3d0157bb03a8f853d31d213f57d3a55b654569f61f4e02afa516b1",
+    "native/export-expanded.mo.svg": "cc283e740553b463bf3d325de20c18020e0b43222473ebe620a47d605c81d08d",
+    "native/export-expanded.mo.png": "dd02ff8c97a45dadb931f5e89f5e72ea1403cf39adc2b1db739c2c7a8fc3076c",
+    "native/export-restored.mo.json": "0d8a68baabea63b5344b506669c4fd954275848229caa0809b535282903dd68a",
+    "native/export-restored.mo.csv": "56ed4a00c0652517f69b78646928b1be763f45e9d82ad17b10939c423b0faaed",
+    "native/export-restored.mo.svg": "70ccbaca872b0fd53b6d0ff8d01e738bac0e0043b60685f4da4861fe88cbcbe0",
+    "native/export-restored.mo.png": "f1f6cb86d701eb99bba6466873664a19f833afb727b15e9ac7dce83c7b4a1a47",
+    "native/export-linear.mo.json": "773af1311e071f9b79049f2b14784ed3f09d94b8a24efc3265d21ef907aa031a",
+    "native/export-linear.mo.csv": "2a89b7cbb071a38b4387ffa4561632a2d951b43d36dfdefd8a6f38bd2e6611ea",
+    "native/export-linear.mo.svg": "7c80fb57f481a4f7a05b13aef42ffadc05114b70afef6aacf0cfd907054b3a54",
+    "native/export-linear.mo.png": "6867b623e3ca7bdf4f1f5b76754ddaed6f1fbc9c82ad54b3809e81e6a7b78bc2",
+    "native/export-electron-volts.mo.json": "7770ec739a46b069eb2307f65abf26f9229098c29accdd0fd2792e9c38107aee",
+    "native/export-electron-volts.mo.csv": "d0c55cb3eca14b0947c93724282e829231a94a745cd6ede6f214fffe84a0afb6",
+    "native/export-electron-volts.mo.svg": "96299291cde52cf037bd579d395d5005df364021e868bd5cfd6f38d5a135c226",
+    "native/export-electron-volts.mo.png": "7a91d8fe6d0605b51360535aebdae10c0c2c7fac79d2abcc81c39b025dd9a367",
+    "native/actual-export.mo.json": "7fd15f3871c0cd719f4e0b5f0508441eb1b482584711b07196295e4a667d3a85",
+    "native/actual-export.mo.csv": "dbd03be89c9592b96c45098bc41840fba4e1746774438b8f9acd400d3a53339a",
+    "native/actual-export.mo.svg": "272249326111a03542ce13c34246d0a37a0e09b10db020e01d634dc597088349",
+    "native/actual-export.mo.png": "5ccef8ae1c48a003128708c287368ea590255911eb75a8457aa9d501465c85ea"
+  },
+  "formal_case_pass": false
+}

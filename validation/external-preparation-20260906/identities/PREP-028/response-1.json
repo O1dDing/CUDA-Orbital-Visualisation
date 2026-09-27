@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 31423,
+        "MolecularFormula": "C16H10",
+        "ConnectivitySMILES": "C1=CC2=C3C(=C1)C=CC4=CC=CC(=C43)C=C2",
+        "InChIKey": "BBEAQIROQSPTKN-UHFFFAOYSA-N",
+        "IUPACName": "pyrene",
+        "Charge": 0
+      }
+    ]
+  }
+}

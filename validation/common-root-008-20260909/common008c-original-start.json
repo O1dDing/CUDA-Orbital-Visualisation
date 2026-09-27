@@ -1,0 +1,63 @@
+{
+  "recorded_epoch": 1788958980.9681582,
+  "source_commit": "8e206e188ef84a5e63129ee20e5b95c2f5ad498b",
+  "round_identity": "8c525e0e7421997dd5be928b6fea6c302c886fb98102cbe629e88865c78ed96c",
+  "candidate_state": "formal_collection_running",
+  "case_count": 273,
+  "manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-original\\manifest.json",
+    "sha256": "ae5cb41f6b5df246bac46ab526c6ababaf8b2e6332c0212984262982dff175b0"
+  },
+  "candidate_plan_at_freeze": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-original-launch\\candidate-plan-frozen.json",
+    "sha256": "6f9b8329f6f7c730615635a45026ddee1b7221e6e117ff073faa15978d6878ad"
+  },
+  "workflow_gate": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-workflow-gate.json",
+    "sha256": "009f7ba03fddeaeef5e72e2454e023b7a1d1159c8b365295f8536f216e61e9d1"
+  },
+  "precheck": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-precheck-adjudication.json",
+    "sha256": "8963b4d12657db3573e66559b17abd1b32bc9ad7765255b6e920178be097cb54"
+  },
+  "complete_local_controls": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-complete-local-controls.json",
+    "sha256": "4b0354e0954a318e012ff64950c17f7db894a11ac8901308a3afeb8978c4054e"
+  },
+  "collection_launch": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-original-launch\\identity.json",
+    "sha256": "ebe2f43c46891665ff3c2083030aef492c31f3d5203b8b17b744c8c11393601a"
+  },
+  "review_chain_identity": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-original-review-chain\\identity.json",
+    "sha256": "cfc497f3a031b7daa8c6bc0adb168de64998275bf2a38f7641feb6f45b52773c"
+  },
+  "sessions": {
+    "collection": 41874,
+    "reviews": 18534
+  },
+  "review_coordinator_pid": 2976,
+  "live_progress_path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008C-original\\progress.json",
+  "review_progress_path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-original-review-chain\\progress.json",
+  "progress_at_checkpoint": {
+    "status": "collecting",
+    "started_epoch": 1788958862.9380922,
+    "updated_epoch": 1788958955.45709,
+    "expected_cases": 273,
+    "terminal_cases": 3,
+    "collection_complete": 3,
+    "collection_gaps": 0,
+    "collection_errors": 0,
+    "scientific_analysis": "pending full collection barrier",
+    "formal_case_passes": 0
+  },
+  "gaussian_started": false,
+  "formal_complete_case_passes": 0,
+  "resource_scope": "Only COV collection and reviews: two workers, two physical cores and 24 GiB each, aggregate four cores and 64 GiB. Historical reserve fields in the manifest do not supersede Runtime v2 or authorize Gaussian.",
+  "next_actions": [
+    "Do not launch another collector or review chain for this frozen round.",
+    "Wait for all273 terminal collection records, then let the frozen numeric/view/scope reviews finish.",
+    "Inspect representative actual full-round screenshots and combine the complete results before changing the next candidate.",
+    "Preserve failed attempts and reviewer revisions; resume only incomplete stages after interruption."
+  ]
+}

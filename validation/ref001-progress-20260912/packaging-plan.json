@@ -1,0 +1,49 @@
+{
+  "files": 4880,
+  "source_bytes": 20562025672,
+  "new_unique_files": 2090,
+  "new_unique_bytes": 15464659896,
+  "archives": 34,
+  "excluded": [
+    {
+      "path": "work/jobs/supervisor.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-057/baseline/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-057/opt-segments/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-057/ram-pause/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-057/rwf-restart/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-063/baseline/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-063/opt-segments/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-063/ram-pause/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    },
+    {
+      "path": "work/runtime-v2-fastpause/native-acceptance/1789051465750150800/OLD-063/rwf-restart/runtime-v2-fastpause/control.lock",
+      "reason": "Interpreter cache or ephemeral OS lock; original retained and never restored as a live lock"
+    }
+  ]
+}

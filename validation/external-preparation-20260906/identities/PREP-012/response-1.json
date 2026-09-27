@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 6348,
+        "MolecularFormula": "CS2",
+        "ConnectivitySMILES": "C(=S)=S",
+        "InChIKey": "QGJOPFRUJISHPQ-UHFFFAOYSA-N",
+        "IUPACName": "methanedithione",
+        "Charge": 0
+      }
+    ]
+  }
+}

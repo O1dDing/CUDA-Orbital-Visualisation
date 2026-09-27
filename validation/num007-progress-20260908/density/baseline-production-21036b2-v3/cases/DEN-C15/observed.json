@@ -1,0 +1,4 @@
+{
+  "parse_status": "rejected",
+  "error": "MO contains 2 coefficient entries, but the parsed basis contains 3 functions. Check Cartesian/spherical shell convention or file completeness."
+}

@@ -1,0 +1,84 @@
+{
+  "snapshot_epoch": 1788841265.2504928,
+  "status": "full-round-collecting",
+  "production_commit": "21036b2990ef86dcdc419c65cdebd2a03bf4a12b",
+  "round_identity": "389d5ae5700ec4ab04b38b814b533b47b7cf1c646e0a0d09dd7829d2b4d7403b",
+  "original_case_count": 273,
+  "progress_at_snapshot": {
+    "status": "collecting",
+    "started_epoch": 1788841057.6037312,
+    "updated_epoch": 1788841202.269099,
+    "expected_cases": 273,
+    "terminal_cases": 6,
+    "running": {
+      "OLD-007": {
+        "stage": "cov_validation.exe",
+        "pid": 31068,
+        "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\cases\\OLD-007\\attempt-001\\cases\\OLD-007\\process-native",
+        "started_epoch": 1788841201.8275402
+      },
+      "OLD-008": {
+        "stage": "cov_validation.exe",
+        "pid": 82096,
+        "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\cases\\OLD-008\\attempt-001\\cases\\OLD-008\\process-native",
+        "started_epoch": 1788841202.269099
+      }
+    },
+    "collection_complete": 6,
+    "collection_gaps": 0,
+    "collection_errors": 0,
+    "scientific_analysis": "pending full collection barrier",
+    "formal_case_passes": 0
+  },
+  "preflight_stages": [
+    {
+      "stage": "build-on",
+      "exit_code": 0,
+      "wall_seconds": 4.597019500011811,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\build-on.log"
+    },
+    {
+      "stage": "tests-on",
+      "exit_code": 0,
+      "wall_seconds": 3.0892247000010684,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\tests-on.log"
+    },
+    {
+      "stage": "build-off",
+      "exit_code": 0,
+      "wall_seconds": 77.64847660000669,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\build-off.log"
+    },
+    {
+      "stage": "tests-off",
+      "exit_code": 0,
+      "wall_seconds": 2.5726897999993525,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\tests-off.log"
+    }
+  ],
+  "pilot_identity": "03527bd1e32a47962ea5e075694c1837aa633742510e83adf44f690734e0c193",
+  "probe_identity": "a799ed5b21ff6eaefcc70611f886cef2ebb21861e7b2fcd407d967fca0c7c0bb",
+  "formerly_failed_probe_mos_zero_based": [
+    57,
+    59,
+    60,
+    61
+  ],
+  "probe_member_clicks": {
+    "pass": 21
+  },
+  "NAV_001": "implemented; targeted real-control probe passed; full 273 adjudication pending",
+  "resources": {
+    "workers": 2,
+    "threads_per_worker": 2,
+    "memory_gib_per_worker": 24,
+    "aggregate_cpu_cores": 4,
+    "aggregate_memory_gib": 64,
+    "core_slot_offset": 8,
+    "reserved_independent_reference_cpu_cores": 8,
+    "reserved_independent_reference_memory_gib": 48
+  },
+  "reference_workflow": "independently managed; physical acceptance pending; this task does not control its queue",
+  "formal_case_passes": 0,
+  "formal_external_cases": 0
+}

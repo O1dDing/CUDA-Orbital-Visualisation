@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 948,
+        "MolecularFormula": "N2O",
+        "ConnectivitySMILES": "[N-]=[N+]=O",
+        "InChIKey": "GQPLMRYTRLFLPF-UHFFFAOYSA-N",
+        "IUPACName": "nitrous oxide",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "round_identity": "620f4cf15d163816f192a7f596185ee6d212a9778b880468cf7122bae15cabf7",
+  "programs": {
+    "cov_validation.exe": "973dbb316753deb80202849b734411ea7debcd65afc59e90853667aa3dcf8c48",
+    "cov_scientific_audit_dump.exe": "dd09969b6195e8ec48e906122df8e44d110bbe6ee200cbdae4503a68035340ff",
+    "cov.exe": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6",
+    "cov_scientific_audit_dump_off.exe": "e41c45c69d3b5f63eab8b485e0e84ebdbcc72b0f15b3b6486a9633f2411e2eae"
+  },
+  "all_passed": true,
+  "case_count": 2,
+  "cases": [
+    {
+      "case_id": "AUX-G-CARTESIAN",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "native_commands": 1109,
+      "failed_native_commands": 0,
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\cases\\AUX-G-CARTESIAN\\terminal.json",
+          "sha256": "456a1aed20849b7176aadefdaeadb8095f512d27d4457559cd488e12e8b24e12"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\review-v1\\cases\\AUX-G-CARTESIAN\\attempt-001\\result\\review.json",
+          "sha256": "dc008ad06b0733e17f1512b00caef43764472b02bf9870668cf7ffa4d1d2d6a5"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\view-review-v1\\AUX-G-CARTESIAN.json",
+          "sha256": "44434bd7a0521d7a245d881b5c7a137f43bf05aab9a521847fe9b3f854fa000c"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\scope-review-v1\\AUX-G-CARTESIAN.json",
+          "sha256": "51bbf80568dcbab0d849a5d1d4098e9d9b47e51a7651737dc3ea8db1ffb9c800"
+        }
+      ]
+    },
+    {
+      "case_id": "AUX-G-PURE",
+      "status": "pass",
+      "component_statuses": [
+        "complete",
+        "numeric_subset_pass",
+        "view_subset_pass",
+        "scope_subset_pass"
+      ],
+      "native_commands": 929,
+      "failed_native_commands": 0,
+      "evidence": [
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\cases\\AUX-G-PURE\\terminal.json",
+          "sha256": "6ab2464dd3b9c9dbf6a963cd2226dde8b1c36ea7da59d4821014fc028a85a9ef"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\review-v1\\cases\\AUX-G-PURE\\attempt-001\\result\\review.json",
+          "sha256": "785c670ead93739ae9e491c313f2d52c90fec858e91e95000a3b88bf226e7898"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\view-review-v1\\AUX-G-PURE.json",
+          "sha256": "c4512a4563ec765299c8e825310fcd967de429bbf2183fd862e86781a2378a5b"
+        },
+        {
+          "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\scope-review-v1\\AUX-G-PURE.json",
+          "sha256": "6f5df3509384a911de03c066772663dcb6943180ec7c37c346221508fd0102dc"
+        }
+      ]
+    }
+  ],
+  "manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\manifest.json",
+    "sha256": "0dfac95ee3514f6efc8f8ba468ccc3ebd01188f5c4c0120df5c0df0cf5ba6a2e"
+  },
+  "collection_barrier": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\collection-complete.json",
+    "sha256": "8bb4f69d9643e496438567fbabb794f46c786cebfd331b44964dac879fcdfa23"
+  },
+  "numeric_review": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\review-v1\\unified-review\\summary.json",
+    "sha256": "bb807798e72c5aaa8637b3dbe6a79fc1cce094665d16b6257a90b45c0cd336a2"
+  },
+  "view_review": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\view-review-v1\\summary.json",
+    "sha256": "7f77ddb5e274608b3813929e9e5d2cfb311fa51ba795fac711f7e5d2879b2e85"
+  },
+  "scope_review": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-g-controls\\scope-review-v1\\summary.json",
+    "sha256": "fef1e5130e255903c6c5ef8aa3b4ef6fb38b1934cd0e82c35640be3d915ed182"
+  },
+  "pipeline": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-g-control-chain\\complete.json",
+    "sha256": "be267d2954b27c8686966cab9a9933e2674f6d86b3864db2c591dfd4b9c18225"
+  },
+  "sampled_mos": 500,
+  "complete_frontier_textures": 12,
+  "native_commands": 2038,
+  "wall_seconds": {
+    "collection": 55.82673470000009,
+    "numeric": 4.270922800002154,
+    "view": 0.429023499993491,
+    "scope": 0.13389348983764648
+  },
+  "new_external_molecules": 0,
+  "gaussian_started": false,
+  "formal_case_passes": 0,
+  "scope": "New actual COV measurements and independent comparisons for two existing pure/cartesian g Gaussian-derived fixtures; no new physical calculations or external molecule acceptance.",
+  "recorded_epoch": 1789214283.7008462,
+  "adjudicator_sha256": "7ce74cbeb315d9e3712fae152ae58073cdce35e92e50a8a9f91f083d5c7383d8"
+}

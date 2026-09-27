@@ -1,0 +1,31 @@
+{
+  "commit": "aaabc3edb13c2768f6bc9063ee933a8881e7f57f",
+  "all_stages_passed": true,
+  "stages": [
+    {
+      "stage": "build-on",
+      "exit_code": 0,
+      "wall_seconds": 101.31253530000686,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100\\build-on.log"
+    },
+    {
+      "stage": "tests-on",
+      "exit_code": 0,
+      "wall_seconds": 1.575397399981739,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100\\tests-on.log"
+    },
+    {
+      "stage": "build-off",
+      "exit_code": 0,
+      "wall_seconds": 7.62814369998523,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100\\build-off.log"
+    },
+    {
+      "stage": "tests-off",
+      "exit_code": 0,
+      "wall_seconds": 1.5780551999923773,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\native-evidence-preflight-1788856542626153100\\tests-off.log"
+    }
+  ],
+  "finished_epoch": 1788856655.2022436
+}

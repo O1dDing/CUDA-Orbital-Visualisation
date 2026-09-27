@@ -1,0 +1,1909 @@
+{
+  "source": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55",
+  "source_provenance": "Local package metadata has empty source/citations; verify against primary distribution before accepting",
+  "xyz_files_seen": 2460,
+  "xyz_files_parsed": 2460,
+  "errors": [],
+  "records": [
+    {
+      "candidate_id": "PREP-001",
+      "query": "silane",
+      "expected_formula": "SiH4",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\MB16-43\\SiH4.xyz",
+          "relative_path": "MB16-43/SiH4.xyz",
+          "sha256": "5c1631c4852c6dd1b14ec4fe644e76f6e4d48aa98b4d8b2e011f536c392b5d3a",
+          "atom_count": 5,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 4,
+            "Si": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PA26\\sih4.xyz",
+          "relative_path": "PA26/sih4.xyz",
+          "sha256": "5f2784641973c7f9021ba54a9a5fad42fa4e576eb2cf1bb800c864eb9d8c1b20",
+          "atom_count": 5,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 4,
+            "Si": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\sih4.xyz",
+          "relative_path": "W4-11/sih4.xyz",
+          "sha256": "84a7954beea4b05fd56750cb4bb5a925793e0594c70c6c8c11a8705089855a1d",
+          "atom_count": 5,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 4,
+            "Si": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-002",
+      "query": "germane",
+      "expected_formula": "GeH4",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-003",
+      "query": "phosphine",
+      "expected_formula": "PH3",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BH76\\PH3.xyz",
+          "relative_path": "BH76/PH3.xyz",
+          "sha256": "b2bc2abaa5fa92d3b733e9ff14798e03503f2e759aff79a3bbe6e3d01ca1a813",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\DIPCS10\\ph3.xyz",
+          "relative_path": "DIPCS10/ph3.xyz",
+          "sha256": "74b8aa9deca00487e8d637e26d568e6c148c93ee955019f4f30c50267597c0da",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\G21IP\\20.xyz",
+          "relative_path": "G21IP/20.xyz",
+          "sha256": "9eb0f30eb745c50fad2cfb47d64687ef94b6b0b364e77e8885273ee5d3060dc1",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\NBPRC\\PH3.xyz",
+          "relative_path": "NBPRC/PH3.xyz",
+          "sha256": "c93032a7a9996fd25a01e1d4c0d7e193415ef6c2f38b31e65aa5967a0da6a6d1",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PA26\\ph3.xyz",
+          "relative_path": "PA26/ph3.xyz",
+          "sha256": "961d20fe1caaa4e07be878554b6da987f8986538d01ba2e3abb581b20f8f21f8",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\14b.xyz",
+          "relative_path": "PNICO23/14b.xyz",
+          "sha256": "5850c7846f482e33cb2d4c7b0e16cb429708b23dae82c440bb2c5a719e8a82af",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\16b.xyz",
+          "relative_path": "PNICO23/16b.xyz",
+          "sha256": "9405440fcc2d111154d94a2b57bc2223104fa5bd40291b5e3a7aac0c39215581",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\18b.xyz",
+          "relative_path": "PNICO23/18b.xyz",
+          "sha256": "18836c22ee080fbbcdc26f819a9c77282bde568859a1c45d4e9c5ac1142787a4",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\1a.xyz",
+          "relative_path": "PNICO23/1a.xyz",
+          "sha256": "f0a1d169209ef3fd8c452b13de01a6778f25c86d333aa55bdbfd4ab5d9a209f0",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\1b.xyz",
+          "relative_path": "PNICO23/1b.xyz",
+          "sha256": "cb9ef5681102abc77fdd1adfe7d5ac87d99b7604066c26cc95ce2e617a59de0f",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\ph3.xyz",
+          "relative_path": "W4-11/ph3.xyz",
+          "sha256": "b80ebd49b40598cd2dad55e8eeed70add9eeea81e28047d4241c8e38fdeac2fe",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\YBDE18\\ph3.xyz",
+          "relative_path": "YBDE18/ph3.xyz",
+          "sha256": "edb0c036de73d275c41a281e95e7d6e91478ea4309232001cbea2780c499298b",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-004",
+      "query": "phosphorus trifluoride",
+      "expected_formula": "PF3",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\3a.xyz",
+          "relative_path": "PNICO23/3a.xyz",
+          "sha256": "f281b471122c221f404061c2a96ada49b0a8bff0667224755f3c49e242f6fe5e",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "F": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\3b.xyz",
+          "relative_path": "PNICO23/3b.xyz",
+          "sha256": "4301e2e02f697995e282cf8e76fbde0b4a299ef0cccc1a38b5c06f24f8ec7bb9",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "F": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\YBDE18\\pf3.xyz",
+          "relative_path": "YBDE18/pf3.xyz",
+          "sha256": "ab9b2f469859e6581f3f4cd8d3f7bf8478dc5bb7079c73c646dcaf47bb852eb8",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "F": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-005",
+      "query": "phosphorus trichloride",
+      "expected_formula": "PCl3",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\INV24\\PCl3.xyz",
+          "relative_path": "INV24/PCl3.xyz",
+          "sha256": "2bc252fc71a57fabdbf1dea75c4a7c0d16d753e6e012cb9ac54b62aca94050aa",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "Cl": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\INV24\\PCl3_TS.xyz",
+          "relative_path": "INV24/PCl3_TS.xyz",
+          "sha256": "f24afa2dd496dc9c28cdd8d494124c3bf25fe0717f896cf946b6aac84e7232a3",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "Cl": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\5a.xyz",
+          "relative_path": "PNICO23/5a.xyz",
+          "sha256": "3f24f082820e826d7e2a09780ceee6010a48a267465aa34acc6103ee73bee2c4",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "Cl": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PNICO23\\5b.xyz",
+          "relative_path": "PNICO23/5b.xyz",
+          "sha256": "04184f2205a70a52b3a20d35858e09cac90d90a828d4344a05f6046b8e88a2d2",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "Cl": 3,
+            "P": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-006",
+      "query": "sulfur tetrafluoride",
+      "expected_formula": "SF4",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-007",
+      "query": "chlorine trifluoride",
+      "expected_formula": "ClF3",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-008",
+      "query": "bromine pentafluoride",
+      "expected_formula": "BrF5",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-009",
+      "query": "iodine heptafluoride",
+      "expected_formula": "IF7",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-010",
+      "query": "oxygen difluoride",
+      "expected_formula": "OF2",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\G2RC\\73.xyz",
+          "relative_path": "G2RC/73.xyz",
+          "sha256": "2bb2c438a75795df3d57d6e1bea5e8ce3c76104d4e3890211f480993a6ee8525",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "F": 2,
+            "O": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\f2o.xyz",
+          "relative_path": "W4-11/f2o.xyz",
+          "sha256": "1b5544a68279a954f20e505d412b84cb24dfcf1423b30cdf3733639106f78e80",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "F": 2,
+            "O": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-011",
+      "query": "sulfur trioxide",
+      "expected_formula": "SO3",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\so3.xyz",
+          "relative_path": "W4-11/so3.xyz",
+          "sha256": "05460df4fe8a5c552f8aa37b119701599c63ac18e9903b8ea2c8ce28566e9773",
+          "atom_count": 4,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "O": 3,
+            "S": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-012",
+      "query": "carbon disulfide",
+      "expected_formula": "CS2",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\cs2.xyz",
+          "relative_path": "W4-11/cs2.xyz",
+          "sha256": "1e65b09d36cfc9002c303a97c9beb313b697d4ebcff0ca086df9df612f029d5a",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 1,
+            "S": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-013",
+      "query": "carbonyl sulfide",
+      "expected_formula": "COS",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\ocs.xyz",
+          "relative_path": "W4-11/ocs.xyz",
+          "sha256": "18660b0412335ac83c812afd45181f987e212fad29d2cea78e907d1406b433b2",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 1,
+            "O": 1,
+            "S": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-014",
+      "query": "nitrous oxide",
+      "expected_formula": "N2O",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BH76\\n2o.xyz",
+          "relative_path": "BH76/n2o.xyz",
+          "sha256": "2bdd4b8145ccae58acab82a36abe74ec8f676e09dccba4b805881a04e4717063",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "N": 2,
+            "O": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHPERI\\13r_1.xyz",
+          "relative_path": "BHPERI/13r_1.xyz",
+          "sha256": "f68e6a643018224405d8b639c7e6e3c3eda1d7649360d44e3668abd8fffa3a0f",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "N": 2,
+            "O": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\G2RC\\68.xyz",
+          "relative_path": "G2RC/68.xyz",
+          "sha256": "9fa12c9ac44141badc2099606cbf662ab3a12a7e6555d2db74c4427b22ebaece",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "N": 2,
+            "O": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\n2o.xyz",
+          "relative_path": "W4-11/n2o.xyz",
+          "sha256": "a3c0fd3315394da9cb3d035a42445701db6bc8c33d7c7da379219e731625a926",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "N": 2,
+            "O": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-015",
+      "query": "hydrazine",
+      "expected_formula": "N2H4",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHROT27\\n2h4_ecl1.xyz",
+          "relative_path": "BHROT27/n2h4_ecl1.xyz",
+          "sha256": "56df85aaed8b23695786d0f59777f23410748f8fa129f3e34857617658bf4d36",
+          "atom_count": 6,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHROT27\\n2h4_ecl2.xyz",
+          "relative_path": "BHROT27/n2h4_ecl2.xyz",
+          "sha256": "fc87f9c3c6449b6f29ef6a194c42049a7a8df634261ac0bba6636ad30617f065",
+          "atom_count": 6,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHROT27\\n2h4_st1.xyz",
+          "relative_path": "BHROT27/n2h4_st1.xyz",
+          "sha256": "1938035813ee8cb8f0f8bbedf5ca952534e3c0898228fad7d7dce57d547cb1d1",
+          "atom_count": 6,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\n2h4.xyz",
+          "relative_path": "W4-11/n2h4.xyz",
+          "sha256": "66addb301c5098ed672727dad3cffcc0aa8a40f754435e84d7943e9b0e8e1e6d",
+          "atom_count": 6,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-016",
+      "query": "nitrosyl chloride",
+      "expected_formula": "ClNO",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-017",
+      "query": "thionyl chloride",
+      "expected_formula": "Cl2OS",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-018",
+      "query": "borazine",
+      "expected_formula": "B3H6N3",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\NBPRC\\bz.xyz",
+          "relative_path": "NBPRC/bz.xyz",
+          "sha256": "05f83049affa8d152f078789d2ded416dfe10fae205edaa208f974dd048db2f8",
+          "atom_count": 12,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "B": 3,
+            "H": 6,
+            "N": 3
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-019",
+      "query": "phosphinine",
+      "expected_formula": "C5H5P",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-020",
+      "query": "pyrazine",
+      "expected_formula": "C4H4N2",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E19.xyz",
+          "relative_path": "ISO34/E19.xyz",
+          "sha256": "a909456f665cb71b8c518328082a1eb39cfec1b8ea05129ff5c8a52d25eb104f",
+          "atom_count": 10,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 4,
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E20.xyz",
+          "relative_path": "ISO34/E20.xyz",
+          "sha256": "e61490fe3bb085c92064a76a0bdca44f1f894f224f523e1daeeb7ad77f5eaebc",
+          "atom_count": 10,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 4,
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\P20.xyz",
+          "relative_path": "ISO34/P20.xyz",
+          "sha256": "0ddc9b941f61e7197ebee5f485b072f24e95045944dacdac13fd0006eb593a7e",
+          "atom_count": 10,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 4,
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\S22\\12a.xyz",
+          "relative_path": "S22/12a.xyz",
+          "sha256": "9e750dc849956a1df7c7efdc08e7e7f827e3c0cee04e34c64eca4be47cd95901",
+          "atom_count": 10,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 4,
+            "H": 4,
+            "N": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-021",
+      "query": "1,3,5-triazine",
+      "expected_formula": "C3H3N3",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-022",
+      "query": "oxazole",
+      "expected_formula": "C3H3NO",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-023",
+      "query": "isoxazole",
+      "expected_formula": "C3H3NO",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-024",
+      "query": "thiazole",
+      "expected_formula": "C3H3NS",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-025",
+      "query": "indole",
+      "expected_formula": "C8H7N",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\S22\\14a.xyz",
+          "relative_path": "S22/14a.xyz",
+          "sha256": "0c3f91d348729951437a0d9a59bb20b023c51b5fe071445a942cf78794fdd119",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 7,
+            "N": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\S22\\21a.xyz",
+          "relative_path": "S22/21a.xyz",
+          "sha256": "31b443661d3a88f9c3b9e14b21b7102a9971296ff3ab5f3b0db8ec1b7e5c6603",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 7,
+            "N": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-026",
+      "query": "benzofuran",
+      "expected_formula": "C8H6O",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-027",
+      "query": "benzothiophene",
+      "expected_formula": "C8H6S",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-028",
+      "query": "pyrene",
+      "expected_formula": "C16H10",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-029",
+      "query": "perylene",
+      "expected_formula": "C20H12",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-030",
+      "query": "cubane",
+      "expected_formula": "C8H8",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHPERI\\Benzocyclobutane.xyz",
+          "relative_path": "BHPERI/Benzocyclobutane.xyz",
+          "sha256": "d98fbd5c0cbdf7b15ccbb706163bbbdda84d7f48dc42854a399d9593387f99cd",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHPERI\\ortho-xylylene.xyz",
+          "relative_path": "BHPERI/ortho-xylylene.xyz",
+          "sha256": "fd99966f836255731f726d8a54f5cc3b52f7d299018893199bb7accd0d881009",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHPERI\\TS3.xyz",
+          "relative_path": "BHPERI/TS3.xyz",
+          "sha256": "7f6aaf8d364226ff5312b242252c5fa62195caa4a36262cc451da595d22c90c4",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\DC13\\ISO_C8H8_1.xyz",
+          "relative_path": "DC13/ISO_C8H8_1.xyz",
+          "sha256": "975096d4abb792cbda54080ec9f4d0a96d17e50e9820dd94d1814e52db7dffa7",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\DC13\\ISO_C8H8_41.xyz",
+          "relative_path": "DC13/ISO_C8H8_41.xyz",
+          "sha256": "aa01fa8397a06351ee3dd34822cb0e0be675a7c8b9316b3119f962e84efb3cc0",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E13.xyz",
+          "relative_path": "ISO34/E13.xyz",
+          "sha256": "7c6d796d4d25604d16cb51021e394a34dda4686f59580bbe83843c067a17e761",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\P13.xyz",
+          "relative_path": "ISO34/P13.xyz",
+          "sha256": "f7b4d0745bd58cd40ceff65be5ffe7e73a77d866ec0d84de8a5b93410bd19071",
+          "atom_count": 16,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 8,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-031",
+      "query": "spiro[3.3]heptane",
+      "expected_formula": "C7H12",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\ax-methylcyclohexene.xyz",
+          "relative_path": "FH51/ax-methylcyclohexene.xyz",
+          "sha256": "a21da7d7f34e9d0a84d535a808c94dd92d0e48ddc7de147ae5fe7632559d1b05",
+          "atom_count": 19,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 7,
+            "H": 12
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\eq-methylcyclohexene.xyz",
+          "relative_path": "FH51/eq-methylcyclohexene.xyz",
+          "sha256": "ba36dd375cf9d73a0c724beb798b70600ee5a43e1c63595a144a975a7df7d765",
+          "atom_count": 19,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 7,
+            "H": 12
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-032",
+      "query": "bicyclo[1.1.1]pentane",
+      "expected_formula": "C5H8",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BH76\\C5H8.xyz",
+          "relative_path": "BH76/C5H8.xyz",
+          "sha256": "449064e8e8683323b5ebb781477a1de708a84e68dc8cce871977f4ae3f767bb8",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BH76\\RKT22.xyz",
+          "relative_path": "BH76/RKT22.xyz",
+          "sha256": "e13eae0a761d5f78d4b41823c0f9adc1aed8e4a6bdc800744408eb9e0838d11f",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHPERI\\1_3-Pentadiene.xyz",
+          "relative_path": "BHPERI/1_3-Pentadiene.xyz",
+          "sha256": "38fa7e4bae21f9fd5383a57ed04f4ae99ea0f86f3b5bc86e589dc1de0e8ab80f",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHPERI\\TS4.xyz",
+          "relative_path": "BHPERI/TS4.xyz",
+          "sha256": "d6766f1d558d2ea9b7f7f1e6a1a0faeb678f596eb3b96387c4f077db1c56dd8b",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\1-pentyne.xyz",
+          "relative_path": "FH51/1-pentyne.xyz",
+          "sha256": "3edea33d4432e12c3fb974f26a724e442422e3aa099bb72a370216ae5370ac4c",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\2-pentyne.xyz",
+          "relative_path": "FH51/2-pentyne.xyz",
+          "sha256": "916c9e62e2f4dac9fe84d370918929c77bc051c77687e46dfffde7018bb2de87",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\pentadiene.xyz",
+          "relative_path": "FH51/pentadiene.xyz",
+          "sha256": "63777bd315225b6c9fd2f99362a207f89dfe0e8f2aec9341f66ce6e4c271a6fc",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E8.xyz",
+          "relative_path": "ISO34/E8.xyz",
+          "sha256": "b778f114b8389c5faefad5edf03291b48564da83efc56bb1382bbdfd3e7e86d6",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E9.xyz",
+          "relative_path": "ISO34/E9.xyz",
+          "sha256": "1985fd256b744e67c839218a40e2eb7c62368c53e316db1e0e0e745a2b6b88ac",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\P8.xyz",
+          "relative_path": "ISO34/P8.xyz",
+          "sha256": "16044711691fd2909f8149b005985d0d03f75a86a3a9aa663bfed35a3cdc0698",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\P9.xyz",
+          "relative_path": "ISO34/P9.xyz",
+          "sha256": "5f905c49117be1cf52c24304f79bd1af4137f5fcfc113d19b8273d0589acf8ca",
+          "atom_count": 13,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-033",
+      "query": "norbornadiene",
+      "expected_formula": "C7H8",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\DARC\\P4.xyz",
+          "relative_path": "DARC/P4.xyz",
+          "sha256": "013bfd0d95f3aa6b65acb691616b74b976e1cfab8ebe2b68c8dc397a6260862e",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 7,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\toluene.xyz",
+          "relative_path": "FH51/toluene.xyz",
+          "sha256": "c1738e546c0addae88bfe5befb43780d8ace9a14914bdb97b63f03995d2f5e04",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 7,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E12.xyz",
+          "relative_path": "ISO34/E12.xyz",
+          "sha256": "ed8dad4fc41e0c84608f9d743ed5084c085dc1021db6e8e2215eeeb719b95c2f",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 7,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\P12.xyz",
+          "relative_path": "ISO34/P12.xyz",
+          "sha256": "c49e483e1eee996bcb392b344aa11bf57a31940ff4872e6e8b01110db505f1c3",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 7,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\RSE43\\E2.xyz",
+          "relative_path": "RSE43/E2.xyz",
+          "sha256": "ea0ba72d0858840ab59e81e967e53d0990f47fb9e6c611fef5c9e1bb840bb130",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 7,
+            "H": 8
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-034",
+      "query": "pentatetraene",
+      "expected_formula": "C5H4",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-035",
+      "query": "malonaldehyde",
+      "expected_formula": "C3H4O2",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\TAUT15\\2a.xyz",
+          "relative_path": "TAUT15/2a.xyz",
+          "sha256": "1e556f97382fa74d3ce3d443c1d6b73d679edbb731e0ac4642debf44b9f57f61",
+          "atom_count": 9,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 3,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\TAUT15\\2b.xyz",
+          "relative_path": "TAUT15/2b.xyz",
+          "sha256": "5456c9f81c22eedacc3363aab44a05e9d0ca50c19328ecd51509bdc2f2686f7e",
+          "atom_count": 9,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 3,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-036",
+      "query": "acetylacetone",
+      "expected_formula": "C5H8O2",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E32.xyz",
+          "relative_path": "ISO34/E32.xyz",
+          "sha256": "0ab31810efe7e3e0693cb1ae4de63e6dfe5f64a902be7956174a9c8327eef601",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\P32.xyz",
+          "relative_path": "ISO34/P32.xyz",
+          "sha256": "c9479d622239f376b6093fc8bd48f39e0d99a7ccd07e861afb545cd863e69f45",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\TAUT15\\1a.xyz",
+          "relative_path": "TAUT15/1a.xyz",
+          "sha256": "25e79f4b84bf432095cf44044577e403c13261723acfbb98a7bee0bc29c68021",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\TAUT15\\1b.xyz",
+          "relative_path": "TAUT15/1b.xyz",
+          "sha256": "4068d2db9e0b572acce88314b1773f13d75bf0685761d0813fbd3aa7053cb41b",
+          "atom_count": 15,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 5,
+            "H": 8,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-037",
+      "query": "biphenyl",
+      "expected_formula": "C12H10",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHROT27\\biphenyl.xyz",
+          "relative_path": "BHROT27/biphenyl.xyz",
+          "sha256": "4f34f8bc37f97bff777f1e7589864b64702c1e8ede15e9238bfc8b6eb4063b12",
+          "atom_count": 22,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 12,
+            "H": 10
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\BHROT27\\biphenyl_TS.xyz",
+          "relative_path": "BHROT27/biphenyl_TS.xyz",
+          "sha256": "fcaf6e8a9ea28011ae2aa7524ae367ac9e85f9da3b9f890fae51b2177ccbee9c",
+          "atom_count": 22,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 12,
+            "H": 10
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-038",
+      "query": "1,4-dioxane",
+      "expected_formula": "C4H8O2",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\C2H5CO2CH3.xyz",
+          "relative_path": "FH51/C2H5CO2CH3.xyz",
+          "sha256": "ff15d0756732e5a01a1d6d7772edc1e36aff213fd9272691b96270487b4a14a8",
+          "atom_count": 14,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 4,
+            "H": 8,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\FH51\\C3H7CO2H.xyz",
+          "relative_path": "FH51/C3H7CO2H.xyz",
+          "sha256": "228ce8245cad9dbd56f8e6ce3a2cf50ac32c8a106c9d49bb776350df3b444f12",
+          "atom_count": 14,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 4,
+            "H": 8,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-039",
+      "query": "acetic acid",
+      "expected_formula": "C2H4O2",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\G2RC\\126.xyz",
+          "relative_path": "G2RC/126.xyz",
+          "sha256": "56ce8830d08c736586d74a933e24d70b28fd98762e7c8f905c9b56749a49df32",
+          "atom_count": 8,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\E26.xyz",
+          "relative_path": "ISO34/E26.xyz",
+          "sha256": "d1419a16b237b69f93ee3f88035d78df6311f299b0bb6e340e406165a69e0d79",
+          "atom_count": 8,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\ISO34\\P26.xyz",
+          "relative_path": "ISO34/P26.xyz",
+          "sha256": "816a5f1e53f418644e16fa9b5ebc3359ffafc49aa3387fe2d59ff821cf1823b7",
+          "atom_count": 8,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\PA26\\ch3cooh.xyz",
+          "relative_path": "PA26/ch3cooh.xyz",
+          "sha256": "57fe93c80d0b6913ec504b407eb2982ee6d16ac771c332ed16561b3f1bef371e",
+          "atom_count": 8,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\RSE43\\E18.xyz",
+          "relative_path": "RSE43/E18.xyz",
+          "sha256": "17c0984ceedcbf45e5ed9ab4e065a714abbcedd89901bcc8cc6726584acbd1f5",
+          "atom_count": 8,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\RSE43\\E30.xyz",
+          "relative_path": "RSE43/E30.xyz",
+          "sha256": "d498a7ec273478683c92e51a3134a49201f5fe3b62b225bf202cab7bae4cd32c",
+          "atom_count": 8,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\acetic.xyz",
+          "relative_path": "W4-11/acetic.xyz",
+          "sha256": "bbf36cb2acb42b74122f9fa46c717e83f60fe99faf15bfc65a744d2c39c46048",
+          "atom_count": 8,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 4,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-040",
+      "query": "dimethyl sulfoxide",
+      "expected_formula": "C2H6OS",
+      "expected_charge": 0,
+      "pubchem_status": "computed-starting-conformer-retrieved",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\G2RC\\118.xyz",
+          "relative_path": "G2RC/118.xyz",
+          "sha256": "fabc00383ce264c8edc8fad8a94f855b916fa13162a9d10810d83d27c982d1c0",
+          "atom_count": 10,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 6,
+            "O": 1,
+            "S": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\RSE43\\E39.xyz",
+          "relative_path": "RSE43/E39.xyz",
+          "sha256": "80a5801a03cf8cd4120e8849ba899343d6c71e294548b332273f346b0fecefd5",
+          "atom_count": 10,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 6,
+            "O": 1,
+            "S": 1
+          },
+          "original_source_coordinates_verified": false
+        },
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\WCPT18\\ts9h2o.xyz",
+          "relative_path": "WCPT18/ts9h2o.xyz",
+          "sha256": "ba5d57d898adc7c1a2d6107f3444127775304ccb1918ff759afca0238e238721",
+          "atom_count": 10,
+          "charge": 0,
+          "multiplicity": 1,
+          "formula_counts": {
+            "C": 2,
+            "H": 6,
+            "O": 1,
+            "S": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-041",
+      "query": "TEMPO",
+      "expected_formula": "C9H18NO",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-042",
+      "query": "phenoxy radical",
+      "expected_formula": "C6H5O",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-043",
+      "query": "benzyl radical",
+      "expected_formula": "C7H7",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\RSE43\\P2.xyz",
+          "relative_path": "RSE43/P2.xyz",
+          "sha256": "0f1bd393abdb83bc05aff6b72a32e99caa1afb79116a1965a08403c1ecbc004d",
+          "atom_count": 14,
+          "charge": 0,
+          "multiplicity": 2,
+          "formula_counts": {
+            "C": 7,
+            "H": 7
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-044",
+      "query": "ethynyl radical",
+      "expected_formula": "C2H",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\cch.xyz",
+          "relative_path": "W4-11/cch.xyz",
+          "sha256": "9b5c86c1dfa4b54f7d44b879c66a4feefde18c27b5fc59b901024ef15cf6f296",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 2,
+          "formula_counts": {
+            "C": 2,
+            "H": 1
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-045",
+      "query": "methylperoxy radical",
+      "expected_formula": "CH3O2",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-046",
+      "query": "hydroperoxyl radical",
+      "expected_formula": "HO2",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [
+        {
+          "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\W4-11\\hoo.xyz",
+          "relative_path": "W4-11/hoo.xyz",
+          "sha256": "ec6ab66491123d4bfa0c6249d14695331a03fe8fab9188cd194c7ce6859acc85",
+          "atom_count": 3,
+          "charge": 0,
+          "multiplicity": 2,
+          "formula_counts": {
+            "H": 1,
+            "O": 2
+          },
+          "original_source_coordinates_verified": false
+        }
+      ],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-047",
+      "query": "tetrakis(trifluorophosphine)nickel",
+      "expected_formula": "F12NiP4",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-048",
+      "query": "tetrakis(trimethylphosphine)nickel",
+      "expected_formula": "C12H36NiP4",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-049",
+      "query": "pentacarbonyl(trimethylphosphine)chromium",
+      "expected_formula": "C8H9CrO5P",
+      "expected_charge": 0,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-050",
+      "query": "pentacarbonyl(trifluorophosphine)chromium",
+      "expected_formula": "C5CrF3O5P",
+      "expected_charge": 0,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-051",
+      "query": "cisplatin",
+      "expected_formula": "Cl2H6N2Pt",
+      "expected_charge": 0,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-052",
+      "query": "dichlorobis(trimethylphosphine)platinum(II)",
+      "expected_formula": "C6H18Cl2P2Pt",
+      "expected_charge": 0,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-053",
+      "query": "chlorotris(trimethylphosphine)rhodium(I)",
+      "expected_formula": "C9H27ClP3Rh",
+      "expected_charge": 0,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-054",
+      "query": "carbonylchlorobis(trimethylphosphine)rhodium(I)",
+      "expected_formula": "C7H18ClOP2Rh",
+      "expected_charge": 0,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-055",
+      "query": "bis(ethylenediamine)copper(II)",
+      "expected_formula": "C4H16CuN4",
+      "expected_charge": 2,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-056",
+      "query": "bis(ethylenediamine)zinc(II)",
+      "expected_formula": "C4H16N4Zn",
+      "expected_charge": 2,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-057",
+      "query": "tris(ethylenediamine)cobalt(III)",
+      "expected_formula": "C6H24CoN6",
+      "expected_charge": 3,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-058",
+      "query": "nitroprusside ion",
+      "expected_formula": "C5FeN6O",
+      "expected_charge": -2,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-059",
+      "query": "permanganate",
+      "expected_formula": "MnO4",
+      "expected_charge": -1,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-060",
+      "query": "molybdate",
+      "expected_formula": "MoO4",
+      "expected_charge": -2,
+      "pubchem_status": "conformer-unavailable-or-rejected-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-061",
+      "query": "tetracyanoplatinate(II)",
+      "expected_formula": "C4N4Pt",
+      "expected_charge": -2,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-062",
+      "query": "bis(trimethylphosphine)silver(I)",
+      "expected_formula": "C6H18AgP2",
+      "expected_charge": 1,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-063",
+      "query": "chlorotris(trimethylphosphine)copper(I)",
+      "expected_formula": "C9H27ClCuP3",
+      "expected_charge": 0,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-064",
+      "query": "hexamethyltungsten",
+      "expected_formula": "C6H18W",
+      "expected_charge": 0,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-065",
+      "query": "Co@Ge10(3-)",
+      "expected_formula": "CoGe10",
+      "expected_charge": -3,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-066",
+      "query": "Pd@Bi10(4+)",
+      "expected_formula": "Bi10Pd",
+      "expected_charge": 4,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    },
+    {
+      "candidate_id": "PREP-067",
+      "query": "La(NO3)2(phen)(H2O)4(+)",
+      "expected_formula": "C12H16LaN4O10",
+      "expected_charge": 1,
+      "pubchem_status": "identity-unresolved-retained",
+      "formula_charge_matches": [],
+      "geometry_identity_confirmed": false,
+      "formal_case": false
+    }
+  ],
+  "matched_candidates": 26,
+  "matched_candidates_without_pubchem_3d": 4,
+  "formal_external_cases": 0,
+  "gaussian_started": false,
+  "seconds": 8.938759803771973
+}

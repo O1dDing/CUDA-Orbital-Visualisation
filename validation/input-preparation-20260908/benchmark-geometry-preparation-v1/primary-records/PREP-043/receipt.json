@@ -1,0 +1,57 @@
+{
+  "candidate_id": "PREP-043",
+  "query": "benzyl radical",
+  "commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+  "local_candidate": {
+    "file": "F:\\CalChem\\ORCA\\Executor\\datasets\\Geometries\\GMTKN55\\RSE43\\P2.xyz",
+    "relative_path": "RSE43/P2.xyz",
+    "sha256": "0f1bd393abdb83bc05aff6b72a32e99caa1afb79116a1965a08403c1ecbc004d",
+    "atom_count": 14,
+    "charge": 0,
+    "multiplicity": 2,
+    "formula_counts": {
+      "C": 7,
+      "H": 7
+    },
+    "original_source_coordinates_verified": false
+  },
+  "source_directory": "RSE43/P2",
+  "started_epoch": 1788843964.7151074,
+  "files": [
+    {
+      "name": ".CHRG",
+      "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/RSE43/P2/.CHRG",
+      "git_blob_sha1": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "name": ".UHF",
+      "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/RSE43/P2/.UHF",
+      "git_blob_sha1": "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "name": "coord",
+      "url": "https://raw.githubusercontent.com/grimme-lab/GMTKN55/8d485b37a1ca8837e395042671ca5ba4e0714691/RSE43/P2/coord",
+      "git_blob_sha1": "f141c643e0732d8ef3b894abe176727d374373fa",
+      "sha256": "92c081e8cd78a0e7b1dd77dd32226b1c3d19eeea334aaef07e36bac3265b9acb",
+      "bytes": 1157
+    }
+  ],
+  "formal_case": false,
+  "gaussian_started": false,
+  "accepted_reference_geometry": false,
+  "directory_url": "https://api.github.com/repos/grimme-lab/GMTKN55/contents/RSE43/P2?ref=8d485b37a1ca8837e395042671ca5ba4e0714691",
+  "directory_sha256": "2b11709764651a52d65f5c77c13bd4a472d6a2dab2b51cee76134971ece35d84",
+  "entry_names": [
+    ".CHRG",
+    ".UHF",
+    "PBEh-3c",
+    "coord",
+    "struc.xyz"
+  ],
+  "status": "primary-records-collected",
+  "finished_epoch": 1788843967.531
+}

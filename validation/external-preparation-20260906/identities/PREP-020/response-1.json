@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 9261,
+        "MolecularFormula": "C4H4N2",
+        "ConnectivitySMILES": "C1=CN=CC=N1",
+        "InChIKey": "KYQCOXFCLRTKLS-UHFFFAOYSA-N",
+        "IUPACName": "pyrazine",
+        "Charge": 0
+      }
+    ]
+  }
+}

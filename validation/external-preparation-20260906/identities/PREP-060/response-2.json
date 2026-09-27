@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24621,
+        "MolecularFormula": "MoO4-2",
+        "ConnectivitySMILES": "[O-][Mo](=O)(=O)[O-]",
+        "InChIKey": "MEFBJEMVZONFCJ-UHFFFAOYSA-N",
+        "IUPACName": "dioxido(dioxo)molybdenum",
+        "Charge": -2
+      }
+    ]
+  }
+}

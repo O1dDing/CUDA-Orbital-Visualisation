@@ -1,0 +1,114 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "images": [
+    {
+      "capture": "default",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\default.bmp",
+      "source_sha256": "ef3c29361274d3960abc958d245a5640bf5099cfccb4dba5442a0b7c3c8470ab",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\default.png",
+      "png_sha256": "f69f1a7cdafc34c4a491d04d32a598a708743da0e9602e05f156d733f9724be3",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "portrait",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\portrait.bmp",
+      "source_sha256": "3f42e8eaf8ee9e457bd1315718b9e7a8c188a6f66333f5cdd314f9a4be9ad936",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\portrait.png",
+      "png_sha256": "5daed1aebef653edfc8620ad2a5e2885436dfe07e888507c29681e143af3ace4",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "landscape",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\landscape.bmp",
+      "source_sha256": "750b498dc19c6e07ffd5e998add5db95f7c48ef16fdd86b0a6e23409b4e657b1",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\landscape.png",
+      "png_sha256": "49c93ff861ee65ea8747398644f568c19f15dbbc54c55592110b678195dcc589",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "small",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\small.bmp",
+      "source_sha256": "3f3440eb58885602c4214d2ed8a80299b1199cee74c56b9f7d0ea639916cec4c",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\small.png",
+      "png_sha256": "7fe131a57d2964f9ed0fe4832d69b570a4b8d1fbcece41b1ec88d4d242787cd7",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "small-browser",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\small-browser.bmp",
+      "source_sha256": "6363bca8c3f3818c60c68be36a9453bc67eb13241b5b29e7b1af1338f04e8fa0",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\small-browser.png",
+      "png_sha256": "22898a4eb159681fa970f84b70ec6cfa8ec65fd9b9bb021d096723bf73fa0d75",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "small-header-restored",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\small-header-restored.bmp",
+      "source_sha256": "e0aada71cbfbf320b81d1e02a730f8d51f5d07638553d387e8e161cd3a213b49",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\small-header-restored.png",
+      "png_sha256": "78114bf3e48506841a19c385580e2ced498777431252dc9486b7b52d2f08df2d",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "restored",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\restored.bmp",
+      "source_sha256": "7b43978ca516a9ddf2eb51b6e2e9466872683516f6c6814e11ed67cfa8844c33",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\restored.png",
+      "png_sha256": "97cc5d93e252b1b4a9fa8f953bd535dcc2c509d0a6c59d91798c68bfd983a12e",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "scene-drag",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\scene-drag.bmp",
+      "source_sha256": "b1feae5cc292c6a537a79a73bbb0c9b1b67d4d72064f37b7b9deace8c0656c5c",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\scene-drag.png",
+      "png_sha256": "aee0a856f20f1cd0ed52da397e2fa502740b1f7cf5040d9ecca3a4c8d294a0e7",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "scene-wheel",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\scene-wheel.bmp",
+      "source_sha256": "35c214505fc97056a10b6bf628bfa7b3adbedd0a581bce67cccdf739a22194a1",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\scene-wheel.png",
+      "png_sha256": "612e4814191f60f920f2be79fcbb39fbfc36d9ce4485984aa47ddd6bf35bdb03",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "panel-wheel",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\panel-wheel.bmp",
+      "source_sha256": "82e544850eae2c72dd9da6c65cd7f6bde72940a90643a1c24954f1f5a98e6335",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\panel-wheel.png",
+      "png_sha256": "bca05ed5024dc7bee36c8ef1b13f9b40eb9450a181d1aa99e91adf8e6b33690f",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    },
+    {
+      "capture": "panel-drag",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\native-viewport\\panel-drag.bmp",
+      "source_sha256": "82e544850eae2c72dd9da6c65cd7f6bde72940a90643a1c24954f1f5a98e6335",
+      "png": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\controls-1789211520168203400\\viewport-direct-review\\panel-drag.png",
+      "png_sha256": "bca05ed5024dc7bee36c8ef1b13f9b40eb9450a181d1aa99e91adf8e6b33690f",
+      "direct_visual_status": "pass_for_declared_scene_scope",
+      "observation": "The red sphere remains rendered in the separate scene region with a circular silhouette; the sidebar remains bounded. Wheel changes sphere scale in scene; sidebar wheel/drag preserve the pictured scene."
+    }
+  ],
+  "status": "direct_review_complete",
+  "all_passed_for_declared_scene_scope": true,
+  "recorded_epoch": 1789211725.4820714,
+  "method": "Directly inspected all 11 current actual viewport captures in three labelled overview sheets. Quantitative aspect, centring and input scope remain independently checked by native-viewport.json.",
+  "limits": [
+    "Overview inspection concerns scene placement and visible shape, not all sidebar text.",
+    "The small-browser capture shows a scrolled sidebar with only the lower edge of the browser area; it does not prove that the complete oversized browser is simultaneously readable in 640x360.",
+    "Complete ordinary details interaction and narrow chemistry text are covered by the separately identified desktop review."
+  ],
+  "reviewer_sha256": "a830c4d3aed01e382ed494a99274ce41935c3ba67dd63fdb42c2b249b34ae607"
+}

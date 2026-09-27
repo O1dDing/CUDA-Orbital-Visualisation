@@ -1,0 +1,23 @@
+{
+  "candidate_id": "PREP-051",
+  "query": "cisplatin",
+  "family": "金属配合物",
+  "expected_formula": "Cl2H6N2Pt",
+  "expected_charge": 0,
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "started_epoch": 1788843127.3021662,
+  "input_geometry_accepted": false,
+  "formal_case": false,
+  "gaussian_started": false,
+  "cid": 5702198,
+  "inchikey": "LXZZYRPGZAFOLE-UHFFFAOYSA-L",
+  "disconnected_identity": true,
+  "original_cases_with_same_element_counts": [],
+  "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/5702198/JSON?record_type=3d",
+  "status": "conformer-unavailable-or-rejected-retained",
+  "error": "HTTPError: HTTP Error 404: PUGREST.NotFound",
+  "http_status": 404,
+  "error_file": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-coordinate-preparation-v2\\PREP-051\\response.error",
+  "error_sha256": "8a350f57979cf9b7ce8e54417d61a156a80d3b2316c99c5f3bc6868e3e190bbf",
+  "finished_epoch": 1788843128.314699
+}

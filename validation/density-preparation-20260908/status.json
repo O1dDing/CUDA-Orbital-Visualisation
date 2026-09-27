@@ -1,0 +1,108 @@
+{
+  "snapshot_epoch": 1788848727.5516627,
+  "phase": "density-baseline-queued-and-input-preparation",
+  "candidates_with_archived_starting_coordinates": 44,
+  "starting_coordinate_candidate_ids": [
+    "PREP-001",
+    "PREP-002",
+    "PREP-003",
+    "PREP-004",
+    "PREP-005",
+    "PREP-006",
+    "PREP-007",
+    "PREP-008",
+    "PREP-010",
+    "PREP-011",
+    "PREP-012",
+    "PREP-013",
+    "PREP-014",
+    "PREP-015",
+    "PREP-016",
+    "PREP-017",
+    "PREP-018",
+    "PREP-019",
+    "PREP-020",
+    "PREP-021",
+    "PREP-022",
+    "PREP-023",
+    "PREP-024",
+    "PREP-025",
+    "PREP-026",
+    "PREP-027",
+    "PREP-028",
+    "PREP-029",
+    "PREP-030",
+    "PREP-031",
+    "PREP-032",
+    "PREP-033",
+    "PREP-034",
+    "PREP-035",
+    "PREP-036",
+    "PREP-037",
+    "PREP-038",
+    "PREP-039",
+    "PREP-040",
+    "PREP-042",
+    "PREP-043",
+    "PREP-044",
+    "PREP-045",
+    "PREP-046"
+  ],
+  "formal_external_cases": 0,
+  "accepted_quality_references": 0,
+  "formal_case_passes": 0,
+  "independent_print_precision_tests": {
+    "tests": 7,
+    "passed": 7,
+    "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-print-precision-math-1788846604407094400"
+  },
+  "independent_control_reviewer_tests": {
+    "tests": 7,
+    "passed": 7,
+    "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-reviewer-preflight-1788847493973793400"
+  },
+  "production_density_controls": 20,
+  "production_density_baseline": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\regression-fixtures\\density-source-v1\\baseline-production-21036b2-v3",
+  "production_density_queue_at_snapshot": {
+    "stage": "waiting-for-NUM006-full-collection-and-reviews",
+    "updated_epoch": 1788847933.0231314,
+    "gaussian_controlled": false
+  },
+  "running_round_progress_at_snapshot": {
+    "status": "collecting",
+    "started_epoch": 1788841057.6037312,
+    "updated_epoch": 1788848673.7798626,
+    "expected_cases": 273,
+    "terminal_cases": 230,
+    "running": {
+      "OLD-231": {
+        "stage": "cov_validation.exe",
+        "pid": 67152,
+        "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\cases\\OLD-231\\attempt-001\\cases\\OLD-231\\process-native",
+        "started_epoch": 1788848673.7788618
+      },
+      "OLD-232": {
+        "stage": "cov_validation.exe",
+        "pid": 36192,
+        "directory": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-006-original\\cases\\OLD-232\\attempt-001\\cases\\OLD-232\\process-native",
+        "started_epoch": 1788848673.7798626
+      }
+    },
+    "collection_complete": 230,
+    "collection_gaps": 0,
+    "collection_errors": 0,
+    "scientific_analysis": "pending full collection barrier",
+    "formal_case_passes": 0
+  },
+  "previous_publication": {
+    "commit": "060c02e2ce64bfd364d0b2fa795eb8284e57fd0d",
+    "verified_remote_commit": "060c02e2ce64bfd364d0b2fa795eb8284e57fd0d",
+    "verified_git_blob_files": 285,
+    "all_sha256_match": true,
+    "relative": "validation/input-preparation-20260908",
+    "scope": "Only this publication manifest; no additional raw COV evidence implied"
+  },
+  "independent_gaussian": "User-managed F:/CalChem/COV/Resume; queue/pause request left untouched",
+  "gaussian_started_by_this_work": false,
+  "production_algorithm_changed": false
+}

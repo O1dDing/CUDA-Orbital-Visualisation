@@ -1,0 +1,11 @@
+# REF-001 reference archive — 2026-09-09 baseline
+
+This historical snapshot preserves calculation evidence and recovery material. Its recorded state was 17 collected reference candidates (OLD-001 through OLD-017), 37 completed legacy stages, OLD-018's optimization timeout, OLD-019's completed initial stage and 254 cases not yet started. These are historical counts; the [2026-09-12 snapshot](../ref001-progress-20260912/README.md) contains the subsequent results.
+
+The [file manifest](manifest.json), [case states](case-status.json), [stage states](stage-status.json) and [upload verification](upload-verification.json) retain their original identities. The four incremental assets total 959,732,968 bytes and extend the [original REF-001 data archive](https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/cov-ref-paused-20260906). Content already present in the 23 original volumes is referenced by asset/member identity; identical content preserves its original paths through aliases.
+
+OLD-018's original and cold-copy CHK both have SHA-256 `12c50a01ca0d2b37b1f1234df94ea7d0b2c62553ef605a1108212238de08087e` and size 27,983,872 bytes. The retained FCHK passes its recorded method, basis, atom, charge and spin identity. The exit was the legacy 86,400-second stage deadline, not an SCF convergence failure. Optimization, frequency, stability and physical adjudication were not complete. The original logs also retain the unresolved difference between the requested optimization cycle limit and the Berny maximum printed in the log.
+
+Completed and incomplete attempts, CHK/FCHK, logs, inputs and recovery material remain preserved. A readable checkpoint does not certify arbitrary restart routes. Restore to a separate directory, verify every manifest byte count and SHA-256, and use the current [runtime runbook](../runtime_v2/WORK_PROMPT.md) and accepted native capabilities before resuming calculation. Live OS lock files must not be restored or removed to bypass exclusion.
+
+`candidate_collected` is not `scientific_pass`. This archival baseline contains no complete scientific-acceptance claim. Historical machine-readable receipts remain unchanged; current status is reported separately in the later snapshot.

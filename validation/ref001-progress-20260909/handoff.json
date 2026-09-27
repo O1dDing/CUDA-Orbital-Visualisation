@@ -1,0 +1,49 @@
+{
+  "recorded_epoch": 1788932507.3692532,
+  "archive_complete": true,
+  "release_url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/cov-ref-paused-20260906",
+  "upload_receipt_sha256": "21888b1dcc263fe42f5990639ff60b5140a26e7bfb4efe110b3bca31cacf27fc",
+  "asset_count": 4,
+  "asset_bytes": 959732968,
+  "merged_source_commit": "10b44bea19cdbc421fcb37d3e75aefeb17ad98f7",
+  "reference_cache_and_runtime_v2_preserved": true,
+  "verification": {
+    "runtime_v2_automated_tests": "exit 0; current Windows host, transcript chunk fbf71c",
+    "legacy_read_only_check": {
+      "exit_code": 0,
+      "identities_verified": true,
+      "prepared_reference_inputs_verified": 273,
+      "completed_stages_verified": 37,
+      "calculation_started": false,
+      "transcript_chunk": "c77b03"
+    },
+    "new_archives_all_members_rehashed": true,
+    "sources_unchanged_during_read": true,
+    "old_release_manifest_and_23_assets_digest_verified": true
+  },
+  "reference_status": {
+    "candidate_collected": 17,
+    "stages_collected_verified": 37,
+    "OLD-018": "initial timeout; valid cold checkpoint candidate; no completed optimization/frequencies",
+    "OLD-019": "verified initial complete; paused between stages; stability next",
+    "not_started": 254,
+    "scientific_passes": 0
+  },
+  "current_priority": "Return to COMMON-ROOT-008 after this archive; no immediate Gaussian restart or runtime migration required.",
+  "native_gaussian_runtime_v2_acceptance": "pending",
+  "next_common_root_steps": [
+    "Integrate only draft changes relative to BASE-IDENTITY; retain installed reference cache and runtime v2.",
+    "Validate all four composed common-root batches and dedicated controls, including six energy-unit labels and actual caller/UI/export paths.",
+    "Complete fixed 40-case precheck and workflow gate before a new frozen original273 round.",
+    "Retain original273 plus at least50 distinct external molecules and ordinary/validation final deliverables as the full acceptance objective."
+  ],
+  "reuse_rules": [
+    "Do not repeat NUM-FIX-007C collection or existing unchanged review.",
+    "Checker-only changes may reuse complete original raw evidence under a newly frozen review identity.",
+    "Independent reference cache requires full numerical identity; do not cache COV outputs or pass decisions.",
+    "A new production executable requires new actual COV evidence."
+  ],
+  "repository_scope": "test/fchk-validation-native only; no main/feat branch edits, no software release or tag changes",
+  "original_data_and_pause_preserved": true,
+  "note": "manifest.json retains upload_status=pending as the immutable packaging-time snapshot; upload-verification.json records later verified completion."
+}

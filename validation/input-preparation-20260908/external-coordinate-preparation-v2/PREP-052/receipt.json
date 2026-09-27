@@ -1,0 +1,15 @@
+{
+  "candidate_id": "PREP-052",
+  "query": "dichlorobis(trimethylphosphine)platinum(II)",
+  "family": "磷金属配合物",
+  "expected_formula": "C6H18Cl2P2Pt",
+  "expected_charge": 0,
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "started_epoch": 1788843128.3167033,
+  "input_geometry_accepted": false,
+  "formal_case": false,
+  "gaussian_started": false,
+  "status": "identity-unresolved-retained",
+  "lookup_status": "lookup-failed-retained",
+  "finished_epoch": 1788843128.3167033
+}

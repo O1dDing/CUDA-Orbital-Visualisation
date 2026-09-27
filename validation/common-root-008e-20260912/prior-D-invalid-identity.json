@@ -1,0 +1,723 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "round_identity": "1fb3f3c7e33c5e1a6efa01076edf2c8e9d2e44ddc04af1fc841aaeba75cb4bc4",
+  "programs": {
+    "cov_validation.exe": "8c3e4ed2cb40403c132dd50abe441fc7dcb79b4fc5c3b76709934ec4468536b6",
+    "cov_scientific_audit_dump.exe": "dd09969b6195e8ec48e906122df8e44d110bbe6ee200cbdae4503a68035340ff",
+    "cov.exe": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6",
+    "cov_scientific_audit_dump_off.exe": "e41c45c69d3b5f63eab8b485e0e84ebdbcc72b0f15b3b6486a9633f2411e2eae"
+  },
+  "case_count": 40,
+  "all_cases_adjudicated": true,
+  "overall_precheck_pass": false,
+  "valid_current_candidate_passes": 0,
+  "cause": "Validation binary was configured before the source commit and embedded the previous HEAD plus -dirty. Frozen manifest requested the committed source identity. The collector correctly rejects this mismatch.",
+  "cases": [
+    {
+      "case_id": "OLD-001",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 278,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-001\\terminal.json",
+        "sha256": "5dea08b58b29ae524bf043519f35bd29f40c1e0cd6a7663dd74c125c7fadf404"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-001\\attempt-001\\cases\\OLD-001\\native\\identity.json",
+        "sha256": "b0e00e8705b4c36b0b108d5b317c2ce936d536474b00d25ff7c0e9513b21fb9b"
+      }
+    },
+    {
+      "case_id": "OLD-002",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 425,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-002\\terminal.json",
+        "sha256": "00995c310f09a1ad5e16581ed6fb934d9da414eec0e0ccc2ad03b91a6be68914"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-002\\attempt-001\\cases\\OLD-002\\native\\identity.json",
+        "sha256": "be044c59fcb522bd75d3f7d4172ef6b4e7dafc3093baabd901a819baeeeb7a65"
+      }
+    },
+    {
+      "case_id": "OLD-005",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 601,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-005\\terminal.json",
+        "sha256": "29643f82ca905ab2be2444a6dc9d892832f76babcbc5fb753c79ba1d308ccb02"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-005\\attempt-001\\cases\\OLD-005\\native\\identity.json",
+        "sha256": "eb42a305a838276b487067091bcf570ca8bf4d59b89cec4de48bf2ad93c0c7a3"
+      }
+    },
+    {
+      "case_id": "OLD-006",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 601,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-006\\terminal.json",
+        "sha256": "4dbc3a08d416e2d784812f0002e96b7f172d1e6cc29f4da3868002860336a0f8"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-006\\attempt-001\\cases\\OLD-006\\native\\identity.json",
+        "sha256": "5cf70377b0a3d72cd49e93393cc1bd047bf576e9df0ef91e8ba187a50568e23e"
+      }
+    },
+    {
+      "case_id": "OLD-010",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 399,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-010\\terminal.json",
+        "sha256": "a056cab2597b1669464dc933191a45e2308ec6022202904c378b96398b70fdd4"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-010\\attempt-001\\cases\\OLD-010\\native\\identity.json",
+        "sha256": "86cbc95e37d3bc23e801efaccc1c5fe22f9dae672c609fc1a62db84da4eaf250"
+      }
+    },
+    {
+      "case_id": "OLD-012",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1093,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-012\\terminal.json",
+        "sha256": "38d07ebd0d842aaf96d6c3c313e8e85593edc065b57aeda77409e309c64153be"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-012\\attempt-001\\cases\\OLD-012\\native\\identity.json",
+        "sha256": "86379d5d183486e1db0bd5996a8fbc3cc3a7ef18e1558f8e56ac0e148ac401a5"
+      }
+    },
+    {
+      "case_id": "OLD-013",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1144,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-013\\terminal.json",
+        "sha256": "340bd27af9d4487732186db38c4e2325e8d3265baabbf1dd5647027ab1807d13"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-013\\attempt-001\\cases\\OLD-013\\native\\identity.json",
+        "sha256": "ef8435bafb82eff329575c8d813798a370a79ec95aaa233541d2a08bfae10435"
+      }
+    },
+    {
+      "case_id": "OLD-014",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 704,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-014\\terminal.json",
+        "sha256": "cdc480642975b5ce926b1405a600ceef119896a5a7983f93168e5c24ea934f80"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-014\\attempt-001\\cases\\OLD-014\\native\\identity.json",
+        "sha256": "a4fd2deb292a8a79d36657dc651bd9f56212051971e7fd33fedd8f69d02fb596"
+      }
+    },
+    {
+      "case_id": "OLD-015",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 831,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-015\\terminal.json",
+        "sha256": "383ad0d4b25360f7889e0854853aa051a81f9b1d05f7327da63cf33ec3d610a3"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-015\\attempt-001\\cases\\OLD-015\\native\\identity.json",
+        "sha256": "0eb3393ac74b7494a90c4dae72ffb68517b034b44ff9c09d4aff4ade6abae8ca"
+      }
+    },
+    {
+      "case_id": "OLD-016",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 627,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-016\\terminal.json",
+        "sha256": "320d576e71ed9c891f63d556091d68fcbb7a5f959f4c62564a1c6bcf37013018"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-016\\attempt-001\\cases\\OLD-016\\native\\identity.json",
+        "sha256": "73423a75b9a156c45ea8c36ec16c68c6118e90c2b64225027bd420b7b442ce5a"
+      }
+    },
+    {
+      "case_id": "OLD-017",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 405,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-017\\terminal.json",
+        "sha256": "42d87f9e523af98ed6d71e90250336b20632d9350a7b7471cef2d300f75d3f22"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-017\\attempt-001\\cases\\OLD-017\\native\\identity.json",
+        "sha256": "c99cd5013a262747f2e722f9759b5b3c96f1832b3cc6fa95675e8499249213fb"
+      }
+    },
+    {
+      "case_id": "OLD-018",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1834,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-018\\terminal.json",
+        "sha256": "40b3fc6f65a0c47b311c6f01348c144b9b5b0d5b69f68e8ca977532946ca863a"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-018\\attempt-001\\cases\\OLD-018\\native\\identity.json",
+        "sha256": "84acfa5a74b74785e6bc9f3d00a32fef3681200c12425bcc586bc9baf910a612"
+      }
+    },
+    {
+      "case_id": "OLD-019",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1286,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-019\\terminal.json",
+        "sha256": "1b917e95c311f6d1b801e34ed2591008e38490174cd4feebe9f7f0526f405f36"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-019\\attempt-001\\cases\\OLD-019\\native\\identity.json",
+        "sha256": "f339838986beadce7a6e12c59e4363cb08c38534c3ba0f1a96f8e448d4385bb8"
+      }
+    },
+    {
+      "case_id": "OLD-020",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1439,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-020\\terminal.json",
+        "sha256": "74041eef500684cd527fe7dea4db1a45ea58bdc62993df6a24b2936ca096402f"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-020\\attempt-001\\cases\\OLD-020\\native\\identity.json",
+        "sha256": "2d4c48f72cfa4ce3a2c79ae17a0b098f8f458c14ff9ed5328603bfb88c1cdcba"
+      }
+    },
+    {
+      "case_id": "OLD-038",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1297,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-038\\terminal.json",
+        "sha256": "a6681dd580fdbbf289f5c56fa4861b042f890aed0f7c5ea9158764791a7eac68"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-038\\attempt-001\\cases\\OLD-038\\native\\identity.json",
+        "sha256": "59ebc102dcef5ac6ba27eccf9fb788c5c28e7de712c20e3e727f3c8a3297799f"
+      }
+    },
+    {
+      "case_id": "OLD-071",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 431,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-071\\terminal.json",
+        "sha256": "7acf831228f525ef2d6086b225afd5c8c2ba7612d553da55c60df6e98601aca0"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-071\\attempt-001\\cases\\OLD-071\\native\\identity.json",
+        "sha256": "f7938c90ef96e59135327f17bd69743140fa8b1fba23d69d422970d0c76f34e7"
+      }
+    },
+    {
+      "case_id": "OLD-078",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 841,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-078\\terminal.json",
+        "sha256": "c0f0ed21a4573dffbffc594dd3f4ed94cff91ca2c5c8385dec2f4a6224fa814c"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-078\\attempt-001\\cases\\OLD-078\\native\\identity.json",
+        "sha256": "d7f36c5cbe6eb5e9489891a4bf10747b4247ae91c992d39521d413bba64b980e"
+      }
+    },
+    {
+      "case_id": "OLD-107",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 519,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-107\\terminal.json",
+        "sha256": "a86f949deebc3d7a88f8a3423769cfb045744c17829b928652ba4cd5fb017610"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-107\\attempt-001\\cases\\OLD-107\\native\\identity.json",
+        "sha256": "e4e1a47aee9172af6885d039ea379529d37cffe2badb9c2a35d32266fb0d4482"
+      }
+    },
+    {
+      "case_id": "OLD-127",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1268,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-127\\terminal.json",
+        "sha256": "2cc67ebdd60c9ac2bf83dc7c5f7469fdb2ac98ae50110069ab9c0c32481e7e04"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-127\\attempt-001\\cases\\OLD-127\\native\\identity.json",
+        "sha256": "794164d47af045b136ebea49ae8cac114314bb5ecb75acfafb6960ea06f563e0"
+      }
+    },
+    {
+      "case_id": "OLD-152",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 799,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-152\\terminal.json",
+        "sha256": "3319fdaf57269166e3a2f7ee4faa08d43b14652bc79cb6e61ec7c27927ee0b03"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-152\\attempt-001\\cases\\OLD-152\\native\\identity.json",
+        "sha256": "43469786150b86111761d301196b2a7a431894f252dc5f3a81453b7eb49ad06c"
+      }
+    },
+    {
+      "case_id": "OLD-168",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 964,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-168\\terminal.json",
+        "sha256": "837ed30d5f4be8176aaea69e1295b75519d01233fbefc7c7f4f5e769bdb74ffc"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-168\\attempt-001\\cases\\OLD-168\\native\\identity.json",
+        "sha256": "57bcdbb595db0ab6c3d1663f927505139063af98f0f41825d975a1fbb9ce2623"
+      }
+    },
+    {
+      "case_id": "OLD-170",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 3285,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-170\\terminal.json",
+        "sha256": "c7cbfdbbbb5b00d5f152f1e8a7584a4b6f24fa6449b8112e451b20c83ed38a98"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-170\\attempt-001\\cases\\OLD-170\\native\\identity.json",
+        "sha256": "a2a1704f0bd6bc6a089531b0c88fcadf9dfd988bc2b6938ddc802f3404d1f71c"
+      }
+    },
+    {
+      "case_id": "OLD-171",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1553,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-171\\terminal.json",
+        "sha256": "4115a501c1bd787cdf733e3e820c52048ee342fd8c4db0c65f97cfa69cb38b53"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-171\\attempt-001\\cases\\OLD-171\\native\\identity.json",
+        "sha256": "cef76e650b6848b0a6b31d91c7ba04840126c34fc9cf6e981e4a7bacf5187395"
+      }
+    },
+    {
+      "case_id": "OLD-174",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-174\\terminal.json",
+        "sha256": "87e2178e26d8a7be34c81bb488abc40478e0348d1a03209ee7527226ddf7a220"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-174\\attempt-001\\cases\\OLD-174\\native\\identity.json",
+        "sha256": "729eb6bad6691dfd8570035496ac5fbfb3cb0d2a92960e5ee8c768fa4ccdad47"
+      }
+    },
+    {
+      "case_id": "OLD-175",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 817,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-175\\terminal.json",
+        "sha256": "d9645c7270db40a1ec1badbf116866978f2eafe2ba725da13e7d67761eb70d8f"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-175\\attempt-001\\cases\\OLD-175\\native\\identity.json",
+        "sha256": "53d7aab53b8ae4d4da9cda4f6cc468a7b6bad5aaf666b6929573af84071278c6"
+      }
+    },
+    {
+      "case_id": "OLD-176",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 817,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-176\\terminal.json",
+        "sha256": "9dcb82205c44395806a95d4a300bf1902dc6613efc106d4da9da711354bdfbe4"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-176\\attempt-001\\cases\\OLD-176\\native\\identity.json",
+        "sha256": "4f84180c8db5370a4b6a6a247c80259ad2fb470943e890699c299d0b4fa5511e"
+      }
+    },
+    {
+      "case_id": "OLD-198",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 665,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-198\\terminal.json",
+        "sha256": "80a59304d34da79547f9310f91d832111475c11c5c71585578a3a1f873a306ec"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-198\\attempt-001\\cases\\OLD-198\\native\\identity.json",
+        "sha256": "73a0ac60227190055d11d045b097cbf2cd967ddad0c1d3115f565372af2701a8"
+      }
+    },
+    {
+      "case_id": "OLD-199",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 665,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-199\\terminal.json",
+        "sha256": "4fcae02b458b9adaef07f2878dbfeb484f12a50428ceab6922681be998585356"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-199\\attempt-001\\cases\\OLD-199\\native\\identity.json",
+        "sha256": "8708ba0b508311bacffe8c27b992d238b45bfd2c76b37c83b3779f0df6479c24"
+      }
+    },
+    {
+      "case_id": "OLD-200",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 665,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-200\\terminal.json",
+        "sha256": "7d76b7aba45a2c9fd541640599932bd06b2d77bbb61a3552f7498e256987ae4b"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-200\\attempt-001\\cases\\OLD-200\\native\\identity.json",
+        "sha256": "fc18d71532dc39095b710bcc73266457a448362b84a64a484e7ff6660445fb64"
+      }
+    },
+    {
+      "case_id": "OLD-220",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 828,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-220\\terminal.json",
+        "sha256": "64e240167fa5d30b1af0549dd5e281ba4feadec1b77880776e56255dfec04c50"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-220\\attempt-001\\cases\\OLD-220\\native\\identity.json",
+        "sha256": "e9b7a46a7ee08dbebbc5eb081fdcca9557c365104bdd573a7a94de1366d2d570"
+      }
+    },
+    {
+      "case_id": "OLD-230",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-230\\terminal.json",
+        "sha256": "888cc9c78e206cfb0a046b9b3c6d2849a68b192b472d2c10cc49d67c04c4172f"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-230\\attempt-001\\cases\\OLD-230\\native\\identity.json",
+        "sha256": "6ef64856010057b69e83b138d9a8dd676367da325bb7ce597bca6820f44e7d31"
+      }
+    },
+    {
+      "case_id": "OLD-231",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-231\\terminal.json",
+        "sha256": "0df72e425f68d30f5397d1bfbc3cbf00d8d5a0b0902390decdcb9872b9b66f3c"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-231\\attempt-001\\cases\\OLD-231\\native\\identity.json",
+        "sha256": "d5078e155c1adf2bb9cf711dd545fbbe19dec3f9f514d0c000e37d56e26cd9c4"
+      }
+    },
+    {
+      "case_id": "OLD-232",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1129,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-232\\terminal.json",
+        "sha256": "0890872bb663c74fc8623f52b3edd192d49e128f7e2d223e897ee00ce87a9c5d"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-232\\attempt-001\\cases\\OLD-232\\native\\identity.json",
+        "sha256": "01039b83c69552eb5e32046a286364f178ee4e24e06558fdf31c2cb4eae5bb72"
+      }
+    },
+    {
+      "case_id": "OLD-239",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 593,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-239\\terminal.json",
+        "sha256": "21d6bbd71bb9392c5cd691dc0e1064f92b8ab5769c142916e5e52242cf266757"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-239\\attempt-001\\cases\\OLD-239\\native\\identity.json",
+        "sha256": "dee99037035f95e7f8da39a102c0314db79d551a34a9c67d7ae930c25e68f966"
+      }
+    },
+    {
+      "case_id": "OLD-246",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 692,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-246\\terminal.json",
+        "sha256": "efca9f978edafb3e373ccf1fca78e7cbe4da8a1cc47399d9caa878e15d987486"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-246\\attempt-001\\cases\\OLD-246\\native\\identity.json",
+        "sha256": "b99765f01819afaecbbbb7db3228dfa76ef352941b1a38aa43e83970743adc99"
+      }
+    },
+    {
+      "case_id": "OLD-248",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 926,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-248\\terminal.json",
+        "sha256": "af696ba407ecff730aefeb5bce2087254f5bb578dba67ebe5150dcc2e4eb1a04"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-248\\attempt-001\\cases\\OLD-248\\native\\identity.json",
+        "sha256": "af5d37acafd1409ceccddd387471a9f1638e558f5a008d421cf871154d411ebe"
+      }
+    },
+    {
+      "case_id": "OLD-249",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 1230,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-249\\terminal.json",
+        "sha256": "629886151b98e63cacf07e837ff8f2dc0c3fc64f740df3a0ff1ccb54abcd684b"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-249\\attempt-001\\cases\\OLD-249\\native\\identity.json",
+        "sha256": "168046dac873bf5a4f8fa7d111cc3f9aeb04969f5a9336830efa5973b90a47a1"
+      }
+    },
+    {
+      "case_id": "OLD-258",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 2378,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-258\\terminal.json",
+        "sha256": "c460d0c65460d2d67a09e1623392bd6b8ef790532d4facefc37c9d0a171f0160"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-258\\attempt-001\\cases\\OLD-258\\native\\identity.json",
+        "sha256": "d3a7cec750d559f8556432ae1cea65a87d0776598f6ed73a64729c9aca33988f"
+      }
+    },
+    {
+      "case_id": "OLD-259",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 901,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-259\\terminal.json",
+        "sha256": "472c8057273d2b2ef01e917dbb9eae050d5dd34570197312ac4d47389b7a1720"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-259\\attempt-001\\cases\\OLD-259\\native\\identity.json",
+        "sha256": "220b8a71e03bb59c0110b806660fa9a21c45a6e085bf976e31cba62c5e5c8d99"
+      }
+    },
+    {
+      "case_id": "OLD-271",
+      "status": "invalid_build_identity",
+      "embedded_commit": "da5f91bfac32f44d4f8da4791109a5d4c1a04aec-dirty",
+      "manifest_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+      "collection_status": "completed_with_gaps",
+      "native_commands": 806,
+      "failed_native_commands": 0,
+      "terminal": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-271\\terminal.json",
+        "sha256": "fab0d3ed6af32d504b1d394087c8f85f973010725305dc8e9b4e2ccf13b99c9f"
+      },
+      "embedded_identity": {
+        "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\cases\\OLD-271\\attempt-001\\cases\\OLD-271\\native\\identity.json",
+        "sha256": "7da2931467c1a7bcaf259e60a9333b123b6b0b04e821128491a94817da3f007e"
+      }
+    }
+  ],
+  "integrity_error_counts": {
+    "build identity differs from frozen manifest": 40
+  },
+  "other_collection_findings": [],
+  "native_commands": 39123,
+  "failed_native_commands": 0,
+  "collection_manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\manifest.json",
+    "sha256": "4e6d34f0cd1806c193b094902ed63382a08b287e99e308072ab9022af0f64482"
+  },
+  "collection_barrier": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008D-precheck\\collection-complete.json",
+    "sha256": "fa7d4f2ea7559c7011c33b393b04f46ea364fe635ef6100c52b228cd0afc3110"
+  },
+  "review_chain": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\common008d-review-chain\\complete.json",
+    "sha256": "80db355b55c78896512a43fed51747d87354b5296600272acdd3cd12ffd3b1c9"
+  },
+  "rule": "Do not rewrite the frozen manifest, relabel native identity, or promote these outputs to a later build. Reconfigure after the clean commit and freeze a new round.",
+  "formal_case_passes": 0,
+  "gaussian_started": false,
+  "recorded_epoch": 1789211493.7809968,
+  "adjudicator": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\work\\adjudicate_common008d_identity_failure.py",
+    "sha256": "81a4e7c25257961a89da6eccbc2c1dcc7d9b7ed57ec3b34d1de97e52c9aa0e89"
+  }
+}

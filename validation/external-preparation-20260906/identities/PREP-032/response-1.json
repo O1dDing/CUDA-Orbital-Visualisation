@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 136153,
+        "MolecularFormula": "C5H8",
+        "ConnectivitySMILES": "C1C2CC1C2",
+        "InChIKey": "MKCBRYIXFFGIKN-UHFFFAOYSA-N",
+        "IUPACName": "bicyclo[1.1.1]pentane",
+        "Charge": 0
+      }
+    ]
+  }
+}

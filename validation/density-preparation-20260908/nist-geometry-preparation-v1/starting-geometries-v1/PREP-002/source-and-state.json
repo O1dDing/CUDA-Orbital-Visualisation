@@ -1,0 +1,43 @@
+{
+  "candidate_id": "PREP-002",
+  "source_url": "https://cccbdb.nist.gov/energy3x.asp?basis=21&casno=7782652&method=57",
+  "raw_source_sha256": "991075aea39fae6a09b7c2d81b13595756ef37f04a213c68238aeb66d963534c",
+  "literal_table_sha256": "bb6dc8f21202f681dc9e894bab700264e0e6861fd5a974f0999540b91b81d9a7",
+  "formal_case": false,
+  "accepted_quality_reference": false,
+  "gaussian_started": false,
+  "cov_executed": false,
+  "status": "literal-starting-geometry-prepared",
+  "charge": 0,
+  "interpretation": {
+    "name": "germane",
+    "multiplicity": 1,
+    "state": "1A1",
+    "point_group": "Td",
+    "coordinate_method": "HSEh1PBE/6-311G**",
+    "source_type": "NIST archived computed geometry",
+    "state_table_index": 1,
+    "expected_state_row": [
+      "1",
+      "1",
+      "yes",
+      "Td",
+      "1A1"
+    ],
+    "limitations": [
+      "Coordinates have three decimal places in angstrom.",
+      "The more precise printed bond length and rounded Cartesians need not coincide exactly."
+    ]
+  },
+  "source_table_index": 5,
+  "atom_count": 5,
+  "element_counts": {
+    "Ge": 1,
+    "H": 4
+  },
+  "units": "angstrom",
+  "xyz_file": "PREP-002\\starting.xyz",
+  "xyz_sha256": "bee5a447254fdf5cd76ea7155ce657de84600c3d35521c794d3406f640f16670",
+  "transformations": "None; source element order and literal coordinate tokens retained.",
+  "geometry_quality": "Starting coordinates only; future optimization, frequency, stability, environment and identity checks remain required."
+}

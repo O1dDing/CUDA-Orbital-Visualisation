@@ -1,0 +1,13 @@
+{
+  "control_id": "DEN-C14",
+  "input_sha256": "de09e9e8086b94979d360cf29d4b46669f7856c0cf275be4da453d9fa85e0d65",
+  "exe_sha256": "94dca3439868b6b092b548b7f220d9a2cbd3d3d69fdc47777194d4bdbb657a5c",
+  "started_epoch": 1788854237.3531811,
+  "status": "collected",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.5,
+  "log_sha256": "363bb937b831b76f8117394acb2482179f8924872db54cb7d5aecf3f3aec5308",
+  "observed_sha256": "b1fa7fb589d0f9eb324936dcadf6c8e584a8f356fe7039e8a48386ce78d8aac4",
+  "finished_epoch": 1788854237.863588
+}

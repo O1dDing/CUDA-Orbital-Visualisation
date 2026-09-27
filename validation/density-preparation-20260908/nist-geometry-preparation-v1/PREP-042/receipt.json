@@ -1,0 +1,21 @@
+{
+  "candidate_id": "PREP-042",
+  "name": "phenoxy radical",
+  "elements": {
+    "C": 6,
+    "H": 5,
+    "O": 1
+  },
+  "charge": 0,
+  "url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+  "scope": "G3B3 result page whose geometry is explicitly B3LYP/6-31G*; doublet minimum; starting input only",
+  "started_epoch": 1788845896.2478049,
+  "http_status": 200,
+  "content_type": "text/html",
+  "charset": null,
+  "resolved_url": "https://cccbdb.nist.gov/energy3x.asp?basis=0&casno=2122465&method=64",
+  "status": "html-retrieved-content-review-pending",
+  "bytes": 50208,
+  "sha256": "53a69483ad2957bf1494da9e0a06311dc6259bbba5ab0eabb397404507fe57e5",
+  "finished_epoch": 1788845897.7980206
+}

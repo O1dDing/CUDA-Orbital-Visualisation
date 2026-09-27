@@ -1,0 +1,587 @@
+{
+  "runtime_identity": "d9f48dc70e1edab1a9150bb55eb0d661e4c33f6a7996edfceb086ca711f95db4",
+  "tier_counts": {
+    "16_physical": {
+      "4": 203,
+      "5": 39,
+      "7": 31
+    },
+    "8_physical": {
+      "2": 203,
+      "3": 39,
+      "4": 31
+    }
+  },
+  "heavy_count": 31,
+  "old108": {
+    "name": "070 anthracene fixed COV validation geometry",
+    "formula": "C14H10",
+    "nbasis": 574,
+    "basis": "def2-TZVPP",
+    "pure_cartesian": "5D 7F",
+    "scf": "SCF=(VeryTight,XQC,MaxCycle=1024)",
+    "grid": "SuperFineGrid",
+    "opt": true,
+    "calcfc": true,
+    "freq": true,
+    "historical_nprocshared": [
+      8
+    ],
+    "cores_16": 7,
+    "cores_8": 4
+  },
+  "historical_input_core_counts": {
+    "legacy": {
+      "4": 42
+    },
+    "runtime-v2-fastpause": {
+      "4": 90,
+      "2": 93,
+      "6": 28,
+      "1": 73
+    },
+    "runtime-v2-unified-84fe2a76288c": {
+      "4": 5,
+      "8": 3,
+      "6": 2
+    }
+  },
+  "native_pause": {
+    "OLD-063": {
+      "energy_delta_ha": 2.842170943040401e-14,
+      "pair_distance_max_delta_bohr": 0.0,
+      "frequency_max_delta_cm1": 0.0,
+      "same_method": true,
+      "passed": true,
+      "triggered": true,
+      "ack_latency_seconds": 0.21900000000096043,
+      "cpu_delta_during_hold": 0.0,
+      "attempts": [
+        {
+          "directory": "F:\\CalChem\\COV\\Resume\\work\\runtime-v3-adaptive-d9f48dc70e1e\\native-acceptance\\1789302802362646200\\OLD-063\\ram-pause\\runtime-v3-adaptive-d9f48dc70e1e\\jobs\\OLD-063\\opt-00\\attempt-0001",
+          "hold_acknowledged": true,
+          "ack_latency_seconds": 0.23400000000037835,
+          "cpu_delta_during_hold": 0.0,
+          "pause_diagnostics": [
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.0470000000022992,
+              "owned_processes": [
+                50372,
+                51224
+              ],
+              "covered_processes": [
+                50372,
+                51224
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "59236": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.125,
+              "owned_processes": [
+                50372,
+                51224
+              ],
+              "covered_processes": [
+                50372,
+                51224
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "59236": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.21900000000096043,
+              "owned_processes": [
+                50372,
+                51224
+              ],
+              "covered_processes": [
+                50372,
+                51224
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "59236": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.0470000000022992,
+              "owned_processes": [
+                50372,
+                51224
+              ],
+              "covered_processes": [
+                50372,
+                51224
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "59236": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.15599999999903957,
+              "owned_processes": [
+                50372,
+                51224
+              ],
+              "covered_processes": [
+                50372,
+                51224
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "59236": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.23500000000058208,
+              "owned_processes": [
+                50372,
+                51224
+              ],
+              "covered_processes": [
+                50372,
+                51224
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "59236": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            }
+          ],
+          "pause_failures": [],
+          "active_processes_at_return": 0
+        },
+        {
+          "directory": "F:\\CalChem\\COV\\Resume\\work\\runtime-v3-adaptive-d9f48dc70e1e\\native-acceptance\\1789302802362646200\\OLD-063\\ram-pause\\runtime-v3-adaptive-d9f48dc70e1e\\jobs\\OLD-063\\freq-00\\attempt-0001",
+          "hold_acknowledged": true,
+          "ack_latency_seconds": 0.21900000000096043,
+          "cpu_delta_during_hold": 0.0,
+          "pause_diagnostics": [
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.0470000000022992,
+              "owned_processes": [
+                21752,
+                46448
+              ],
+              "covered_processes": [
+                21752,
+                46448
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "13068": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.125,
+              "owned_processes": [
+                21752,
+                46448
+              ],
+              "covered_processes": [
+                21752,
+                46448
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "13068": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.20300000000133878,
+              "owned_processes": [
+                21752,
+                46448
+              ],
+              "covered_processes": [
+                21752,
+                46448
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "13068": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.0459999999984575,
+              "owned_processes": [
+                21752,
+                46448
+              ],
+              "covered_processes": [
+                21752,
+                46448
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "13068": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.13999999999941792,
+              "owned_processes": [
+                21752,
+                46448
+              ],
+              "covered_processes": [
+                21752,
+                46448
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "13068": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.23400000000037835,
+              "owned_processes": [
+                21752,
+                46448
+              ],
+              "covered_processes": [
+                21752,
+                46448
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "13068": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            }
+          ],
+          "pause_failures": [],
+          "active_processes_at_return": 0
+        }
+      ]
+    },
+    "OLD-057": {
+      "energy_delta_ha": 2.731326276261825e-11,
+      "pair_distance_max_delta_bohr": 0.0,
+      "frequency_max_delta_cm1": 0.0001999999999497959,
+      "same_method": true,
+      "passed": true,
+      "triggered": true,
+      "ack_latency_seconds": 0.23500000000058208,
+      "cpu_delta_during_hold": 0.0,
+      "attempts": [
+        {
+          "directory": "F:\\CalChem\\COV\\Resume\\work\\runtime-v3-adaptive-d9f48dc70e1e\\native-acceptance\\1789302802362646200\\OLD-057\\ram-pause\\runtime-v3-adaptive-d9f48dc70e1e\\jobs\\OLD-057\\opt-00\\attempt-0001",
+          "hold_acknowledged": true,
+          "ack_latency_seconds": 0.23400000000037835,
+          "cpu_delta_during_hold": 0.0,
+          "pause_diagnostics": [
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.031000000002677552,
+              "owned_processes": [
+                45640,
+                50272
+              ],
+              "covered_processes": [
+                45640,
+                50272
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "45232": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.125,
+              "owned_processes": [
+                45640,
+                50272
+              ],
+              "covered_processes": [
+                45640,
+                50272
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "45232": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.20300000000133878,
+              "owned_processes": [
+                45640,
+                50272
+              ],
+              "covered_processes": [
+                45640,
+                50272
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "45232": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.0470000000022992,
+              "owned_processes": [
+                45640,
+                50272
+              ],
+              "covered_processes": [
+                45640,
+                50272
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "45232": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.14099999999962165,
+              "owned_processes": [
+                45640,
+                50272
+              ],
+              "covered_processes": [
+                45640,
+                50272
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "45232": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.23500000000058208,
+              "owned_processes": [
+                45640,
+                50272
+              ],
+              "covered_processes": [
+                45640,
+                50272
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "45232": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            }
+          ],
+          "pause_failures": [],
+          "active_processes_at_return": 0
+        },
+        {
+          "directory": "F:\\CalChem\\COV\\Resume\\work\\runtime-v3-adaptive-d9f48dc70e1e\\native-acceptance\\1789302802362646200\\OLD-057\\ram-pause\\runtime-v3-adaptive-d9f48dc70e1e\\jobs\\OLD-057\\freq-00\\attempt-0001",
+          "hold_acknowledged": true,
+          "ack_latency_seconds": 0.23500000000058208,
+          "cpu_delta_during_hold": 0.0,
+          "pause_diagnostics": [
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.0470000000022992,
+              "owned_processes": [
+                24760,
+                48832
+              ],
+              "covered_processes": [
+                24760,
+                48832
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "41364": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.125,
+              "owned_processes": [
+                24760,
+                48832
+              ],
+              "covered_processes": [
+                24760,
+                48832
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "41364": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.21900000000096043,
+              "owned_processes": [
+                24760,
+                48832
+              ],
+              "covered_processes": [
+                24760,
+                48832
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "41364": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 1,
+              "elapsed_seconds": 0.0470000000022992,
+              "owned_processes": [
+                24760,
+                48832
+              ],
+              "covered_processes": [
+                24760,
+                48832
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "41364": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 2,
+              "elapsed_seconds": 0.15700000000288128,
+              "owned_processes": [
+                24760,
+                48832
+              ],
+              "covered_processes": [
+                24760,
+                48832
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "41364": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            },
+            {
+              "operation": "retire exited thread",
+              "scans": 3,
+              "elapsed_seconds": 0.23500000000058208,
+              "owned_processes": [
+                24760,
+                48832
+              ],
+              "covered_processes": [
+                24760,
+                48832
+              ],
+              "suspended_thread_handles": 11,
+              "unsuspended_infrastructure": {
+                "41364": "C:\\Windows\\System32\\conhost.exe"
+              },
+              "membership_events": [],
+              "unresolved_processes": {}
+            }
+          ],
+          "pause_failures": [],
+          "active_processes_at_return": 0
+        }
+      ]
+    }
+  },
+  "heavy_smoke": {
+    "passed": true,
+    "cores": 7,
+    "nbasis": 574,
+    "normal_termination": false,
+    "scope": "Bounded resource smoke; intentional stop, not completed optimization or a speedup benchmark",
+    "directory": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\cov-adaptive-scheduling-20260913\\heavy-seven-core-1789303024887167200"
+  },
+  "heavy_wall_seconds": 60.11000000000058,
+  "heavy_tree_cpu_seconds": 385.875,
+  "heavy_average_cpu_equivalent": 6.4194809515886915,
+  "heavy_tree_process_count": 19,
+  "heavy_cpu_rate": 2187,
+  "scientific_passes": 0,
+  "formal_batch_started": false,
+  "external50_started": false
+}

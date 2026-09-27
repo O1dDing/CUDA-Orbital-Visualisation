@@ -1,0 +1,7 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  1>Checking Build System
+  Building Custom Rule F:/Codex/2026-09-05/branch-15/outputs/cov-complete-validation-20260906/regression-fixtures/density-source-v1/baseline-production-21036b2-v3/source/density-probe-project/CMakeLists.txt
+  density_source_probe.cpp
+  cov_density_source_probe.vcxproj -> F:\Codex\2026-09-05\branch-15\outputs\cov-complete-validation-20260906\regression-fixtures\density-source-v1\baseline-production-21036b2-v3\build\Release\cov_density_source_probe.exe
+  Building Custom Rule F:/Codex/2026-09-05/branch-15/outputs/cov-complete-validation-20260906/regression-fixtures/density-source-v1/baseline-production-21036b2-v3/source/density-probe-project/CMakeLists.txt

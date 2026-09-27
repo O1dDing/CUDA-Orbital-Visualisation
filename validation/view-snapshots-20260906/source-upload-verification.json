@@ -1,0 +1,8 @@
+{
+  "remote_url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation",
+  "branch": "test/fchk-validation-native",
+  "verified_head": "70e72ef9d4c956b374a36efb4a478489127bca90",
+  "method": "git push exit 0 followed by matching git ls-remote",
+  "verified_epoch": 1788703868.9302835,
+  "large_NUM_FIX_004_evidence_uploaded": false
+}

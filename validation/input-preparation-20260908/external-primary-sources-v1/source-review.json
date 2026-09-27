@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "reviewed_epoch": 1788844809.269842,
+  "formal_external_cases": 0,
+  "accepted_reference_geometries": 0,
+  "gaussian_started": false,
+  "transport_and_content_status_are_distinct": true,
+  "records": [
+    {
+      "candidate": "[Co@Ge10]3-",
+      "status": "primary-literature-reviewed; complete-coordinates-pending",
+      "sources": [
+        "https://onlinelibrary.wiley.com/doi/10.1002/anie.200805511",
+        "https://mediatum.ub.tum.de/doc/1099289/document.pdf",
+        "https://mediatum.ub.tum.de/doc/1534198/1534198.pdf"
+      ],
+      "findings": [
+        "2012 thesis article section contains citation followed by a visually confirmed blank page.",
+        "2020 thesis Table 74 title names CoGe10, but its printed sum formula omits Ge; confirmed in page image.",
+        "Different ammonia environments do not create different core-cluster molecule identities.",
+        "Shape ratios are not proof of all ideal point-group operations."
+      ],
+      "pending": [
+        "Complete coordinates, occupancies, disorder model and justified finite environment."
+      ]
+    },
+    {
+      "candidate": "[Pd@Bi10]4+",
+      "status": "primary-index-reviewed; complete-coordinates-pending",
+      "sources": [
+        "https://www.mdpi.com/1422-8599/2025/2/M2020",
+        "https://www.degruyterbrill.com/document/doi/10.1515/znb-2021-0159/html"
+      ],
+      "deposition_lead": "CCDC 2448552",
+      "findings": [
+        "HTTP 200 for the CCDC request returned a captcha/terms page, not CIF data.",
+        "HTTP 200 for the local MDPI request returned an automatic-access interstitial, not the article.",
+        "Finite-cluster molecular orbitals and periodic-crystal bands are different comparison scopes.",
+        "The 2021 primary article supplies another supplementary-coordinate lead, not a downloaded coordinate file."
+      ],
+      "pending": [
+        "Actual CIF or coordinate-table payload and independent interpretation of disorder/environment."
+      ]
+    },
+    {
+      "candidate": "W(CH3)6",
+      "status": "primary-study-scope-reviewed; coordinates-pending",
+      "sources": [
+        "https://pubs.acs.org/doi/10.1021/ja952231p"
+      ],
+      "findings": [
+        "The cited 1996 study is computational; whole-molecule and WC6 skeleton symmetry differ.",
+        "Previously retrieved PubChem entry with charge -6 is retained as a rejected identity source."
+      ],
+      "pending": [
+        "Complete coordinates and independent state/source checks."
+      ]
+    },
+    {
+      "candidate": "[La(NO3)2(phen)(H2O)4]+",
+      "status": "primary-abstract-reviewed; coordinates-pending",
+      "sources": [
+        "https://link.springer.com/article/10.1007/s11243-007-0224-4"
+      ],
+      "findings": [
+        "The reported surrounding components include hmt, nitrate and crystal water.",
+        "An environment component is not automatically a first-shell La ligand.",
+        "A reported polyhedron name is a hypothesis to compare with coordinates, not a mandated COV output."
+      ],
+      "pending": [
+        "Complete experimental coordinates, shell identification and finite environment choice."
+      ]
+    }
+  ],
+  "local_source_artifacts": [
+    {
+      "file": "CoGe10-environment-thesis-record.html",
+      "bytes": 28269,
+      "sha256": "a5cdd1f2dbc8f1630650f947346a5bc24df731f5bfa86d7206c38f3e92d95a8a",
+      "published_full_content": false
+    },
+    {
+      "file": "CoGe10-environment-thesis-record.html.retrieval.json",
+      "bytes": 609,
+      "sha256": "960e46d7ed2833693220cabc009b72df9e6f89435af8cb29211fea49db263d3e",
+      "published_full_content": false
+    },
+    {
+      "file": "CoGe10-environment-thesis.pdf",
+      "bytes": 13088239,
+      "sha256": "1d64c9c5c87d3bbafe861bd6d1f6b063f8f94b043b5e68b6d1c08a4a2a771799",
+      "published_full_content": false
+    },
+    {
+      "file": "CoGe10-environment-thesis.pdf.retrieval.json",
+      "bytes": 611,
+      "sha256": "92e0a3b39d852bfc3f0932751fdebc9080507fa19f7caa24503d74245bad96c2",
+      "published_full_content": false
+    },
+    {
+      "file": "CoGe10-SI-direct.pdf.retrieval.json",
+      "bytes": 514,
+      "sha256": "347742a272567725f13cc34288ba532363344c1422f3380451f7611bd0f6a92d",
+      "published_full_content": false
+    },
+    {
+      "file": "CoGe10-SI.pdf.retrieval.json",
+      "bytes": 490,
+      "sha256": "29accec586e81026617d00c1a5e287eecad8fe786e77c54d31809cf7c957510f",
+      "published_full_content": false
+    },
+    {
+      "file": "GMTKN55-v1-branch-api.json.retrieval.json",
+      "bytes": 637,
+      "sha256": "8fb46c95766844aab1dfd6d5a1f225ecfba78c4c8bc266b73aa1c20b71e54976",
+      "published_full_content": false
+    },
+    {
+      "file": "GMTKN55-v1-branch.json.retrieval.json",
+      "bytes": 451,
+      "sha256": "f990031b5d91164ba38b6ed7475aa54fc97f0497d248e2e14b12dbc035007050",
+      "published_full_content": false
+    },
+    {
+      "file": "PdBi10-CCDC.html",
+      "bytes": 7094,
+      "sha256": "b2adfad6ed29f291e9368ca12991ecfb536e248aabe49f9a8beae20062ed6d94",
+      "published_full_content": false
+    },
+    {
+      "file": "PdBi10-CCDC.html.retrieval.json",
+      "bytes": 630,
+      "sha256": "1a771fc1b30780819ad3d356f99e139a403349405e796fdcffa33750cb705dff",
+      "published_full_content": false
+    },
+    {
+      "file": "PdBi10-publisher.html",
+      "bytes": 2221,
+      "sha256": "e1b4e6f3c0a81a5b474495ada7880a2de70ed169ba8bb62d9b12f4fcf2b8e046",
+      "published_full_content": false
+    },
+    {
+      "file": "PdBi10-publisher.html.retrieval.json",
+      "bytes": 579,
+      "sha256": "ed13eb28c9c9043a5f944e9be9a895ff1b5c1647c25e628bb884fad962f457ac",
+      "published_full_content": false
+    },
+    {
+      "file": "Stegmaier-clusters-thesis.pdf",
+      "bytes": 15966117,
+      "sha256": "b1cfe8db6aee50e6244c2d095bdb61e08c0b3051721a08770e59c7e100138095",
+      "published_full_content": false
+    },
+    {
+      "file": "Stegmaier-clusters-thesis.pdf.retrieval.json",
+      "bytes": 612,
+      "sha256": "a8e901c960a330d1f44b0b45e99a4d9f532bb091e9ce0260c1c110fe6606914f",
+      "published_full_content": false
+    }
+  ]
+}

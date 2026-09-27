@@ -13,6 +13,13 @@
     ihdr.push_back(8); ihdr.push_back(6); ihdr.push_back(0);
     ihdr.push_back(0); ihdr.push_back(0);
     append_png_chunk(png, "IHDR", ihdr);
+    if (!view_id.empty()) {
+        const std::string key="cov.view.snapshot";
+        std::vector<std::uint8_t> payload(key.begin(),key.end());
+        payload.push_back(0);
+        payload.insert(payload.end(),view_id.begin(),view_id.end());
+        append_png_chunk(png,"tEXt",payload);
+    }
     append_png_chunk(png, "IDAT", zlib);
     append_png_chunk(png, "IEND", {});
 
@@ -237,12 +244,45 @@ SymmetryNotation parse_symmetry_notation(std::string_view raw_view) {
     if (value.empty() || value == "?" || value == "none" || value == "None") return result;
 
     const std::string lower = lower_ascii(value);
+    // Gaussian abbreviates the angular-momentum symbol itself: SG is Sigma,
+    // while SGG/SGU carry an additional inversion suffix. Preserve the raw
+    // producer text; only its presentation is normalised. Greek irreps are
+    // uppercase, distinct from the sigma/pi bonding-channel names.
+    struct LinearAlias { std::string_view prefix; const char* glyph; };
+    constexpr LinearAlias linear_aliases[] = {
+        {"sigma","Σ"},{"sg","Σ"},{"Σ","Σ"},{"σ","Σ"},
+        {"delta","Δ"},{"dlta","Δ"},{"dlt","Δ"},{"Δ","Δ"},{"δ","Δ"},
+        {"phi","Φ"},{"Φ","Φ"},{"φ","Φ"},
+        {"gamma","Γ"},{"Γ","Γ"},{"γ","Γ"},
+        {"pi","Π"},{"Π","Π"},{"π","Π"},
+    };
+    for (const auto& alias : linear_aliases) {
+        if (!lower.starts_with(alias.prefix)) continue;
+        std::string suffix=lower.substr(alias.prefix.size());
+        for (std::size_t at=suffix.find("−");at!=std::string::npos;at=suffix.find("−")) {
+            suffix.replace(at,std::string_view("−").size(),"-");
+        }
+        bool valid=true;
+        std::string parity,reflection;
+        for (const unsigned char c:suffix) {
+            if (std::isspace(c) || c=='_' || c=='.' || c=='^' || c=='{' || c=='}') continue;
+            if ((c=='g' || c=='u') && parity.empty()) parity.push_back(static_cast<char>(c));
+            else if ((c=='+' || c=='-') && reflection.empty()) reflection=c=='+'?"+":"−";
+            else { valid=false;break; }
+        }
+        if (valid) {
+            result.base=alias.glyph;
+            result.subscript=parity;
+            result.superscript=reflection;
+        } else {
+            // Unknown longer text remains literal; a recognised prefix is not
+            // enough evidence to invent a valid irrep or an inversion suffix.
+            result.base=value;
+        }
+        return result;
+    }
     std::size_t pos = 0;
-    if (lower.rfind("sigma", 0) == 0) { result.base = "σ"; pos = 5; }
-    else if (lower.rfind("delta", 0) == 0) { result.base = "δ"; pos = 5; }
-    else if (lower.rfind("phi", 0) == 0) { result.base = "φ"; pos = 3; }
-    else if (lower.rfind("pi", 0) == 0) { result.base = "π"; pos = 2; }
-    else {
+    {
         while (pos < value.size()) {
             const char c = value[pos];
             if ((c >= '0' && c <= '9') || c == '_' || c == '\'' || c == '"' ||

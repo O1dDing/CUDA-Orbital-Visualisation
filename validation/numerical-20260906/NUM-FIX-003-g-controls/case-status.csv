@@ -1,0 +1,3 @@
+﻿case_id,input,collection_status,numerical_status,formal_case_pass,collection_seconds,numerical_review_seconds,failed_checks
+AUX-G-CARTESIAN,AUX-G-CARTESIAN/wavefunction.fch,complete,numeric_subset_pass,False,51.42869439999777,12.589021200001298,
+AUX-G-PURE,AUX-G-PURE/wavefunction.fch,complete,numeric_subset_pass,False,42.28180550000252,16.31988629999978,

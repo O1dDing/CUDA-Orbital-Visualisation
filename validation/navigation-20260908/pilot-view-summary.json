@@ -1,0 +1,22 @@
+{
+  "round_identity": "03527bd1e32a47962ea5e075694c1837aa633742510e83adf44f690734e0c193",
+  "case_count": 1,
+  "all_reviewed": true,
+  "status_counts": {
+    "view_subset_pass": 1
+  },
+  "bundle_count": 7,
+  "failure_count": 0,
+  "wall_seconds": 0.06708760000765324,
+  "reviewer_sha256": "163009fefd417348d020edfedc3026c752ced0634392632b01516cb13adb4630",
+  "collection_barrier_sha256": "fd8cc82e1f003a022c1a5aa431c6761b50080f982285e2da4f4601ff00ad3e3d",
+  "formal_case_passes": 0,
+  "limitations": [
+    "Draw-call semantics do not prove all visible text/glyph positions or clipping.",
+    "PNG stroke probes do not certify all output pixels.",
+    "Chemical/symmetry interpretation and paused physical references remain separate."
+  ],
+  "case_reports": {
+    "OLD-001.json": "7487ace402021012587672a736008652072840700d150f8af983db8b98c0ceac"
+  }
+}

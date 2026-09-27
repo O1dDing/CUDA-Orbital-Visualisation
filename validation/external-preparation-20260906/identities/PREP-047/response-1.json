@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 83776,
+        "MolecularFormula": "F12NiP4",
+        "ConnectivitySMILES": "FP(F)F.FP(F)F.FP(F)F.FP(F)F.[Ni]",
+        "InChIKey": "TXBNRHVYQQTHJK-UHFFFAOYSA-N",
+        "IUPACName": "nickel;tetrakis(trifluorophosphane)",
+        "Charge": 0
+      }
+    ]
+  }
+}

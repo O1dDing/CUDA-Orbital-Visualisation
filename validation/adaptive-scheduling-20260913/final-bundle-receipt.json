@@ -1,0 +1,48 @@
+{
+  "previous_active": {
+    "bundle_identity": "73a633f9103712a3f0137e5e45867f25e0785c3af5b0cd836d686d218e2c52ad",
+    "bundle": "F:\\CalChem\\COV\\Resume\\runtime\\releases\\73a633f9103712a3f0137e5e45867f25e0785c3af5b0cd836d686d218e2c52ad",
+    "config": "F:\\CalChem\\COV\\Resume\\runtime\\config.json"
+  },
+  "previous_config": {
+    "data_root": "F:\\CalChem\\COV\\Resume\\data",
+    "work_root": "F:\\CalChem\\COV\\Resume\\work",
+    "gaussian": "F:\\CalChem\\Gaussian\\Gaussian 16 W",
+    "core_budget": null,
+    "timeout_hours": 72,
+    "disk_reserve_gib": 20,
+    "opt_step_checkpoints": "auto",
+    "freq_recovery": "auto",
+    "runtime_directory": "runtime-v3-adaptive-d9f48dc70e1e"
+  },
+  "prepared": {
+    "bundle_identity": "ad17e613627e1a4ca79e0e2fb25b20f52aa2f3fb7b4707c0b54fc0619720acf3",
+    "bundle": "F:\\CalChem\\COV\\Resume\\runtime\\releases\\ad17e613627e1a4ca79e0e2fb25b20f52aa2f3fb7b4707c0b54fc0619720acf3",
+    "config": "F:\\CalChem\\COV\\Resume\\runtime\\config.json"
+  },
+  "candidate_config": {
+    "data_root": "F:\\CalChem\\COV\\Resume\\data",
+    "work_root": "F:\\CalChem\\COV\\Resume\\work",
+    "gaussian": "F:\\CalChem\\Gaussian\\Gaussian 16 W",
+    "core_budget": null,
+    "timeout_hours": 72,
+    "disk_reserve_gib": 20,
+    "opt_step_checkpoints": "auto",
+    "freq_recovery": "auto",
+    "runtime_directory": "runtime-v3-adaptive-d9f48dc70e1e"
+  },
+  "runtime_identity": "d9f48dc70e1edab1a9150bb55eb0d661e4c33f6a7996edfceb086ca711f95db4",
+  "prepared_epoch": 1789303616.147932,
+  "activated": true,
+  "activation_started_epoch": 1789303681.5913663,
+  "completed": true,
+  "originals_modified": false,
+  "calculation_started": false,
+  "source_import_counts": {
+    "collected_parts": 345,
+    "recovery_sources": 2,
+    "review_holds": 2,
+    "candidate_collected": 105
+  },
+  "completed_epoch": 1789303681.6003673
+}

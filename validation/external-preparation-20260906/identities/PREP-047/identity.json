@@ -1,0 +1,45 @@
+{
+  "candidate_id": "PREP-047",
+  "query": "tetrakis(trifluorophosphine)nickel",
+  "expected_formula": "F12NiP4",
+  "expected_charge": 0,
+  "family": "磷金属配合物",
+  "purpose": "P 先验与 π 受体轨道",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [
+    "https://pubs.rsc.org/en/content/articlelanding/1970/c2/c29700000595"
+  ],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709717.4695685,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 83776,
+      "MolecularFormula": "F12NiP4",
+      "ConnectivitySMILES": "FP(F)F.FP(F)F.FP(F)F.FP(F)F.[Ni]",
+      "InChIKey": "TXBNRHVYQQTHJK-UHFFFAOYSA-N",
+      "IUPACName": "nickel;tetrakis(trifluorophosphane)",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/83776"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709717.4695685,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-047\\response-1.json",
+      "sha256": "2ce071da9bf113d43065e2c52640b6181acf965af1b88b51b0438d08b5b840b5",
+      "bytes": 329,
+      "elapsed_seconds": 1.4875566959381104
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/tetrakis%28trifluorophosphine%29nickel/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

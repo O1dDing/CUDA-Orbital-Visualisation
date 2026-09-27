@@ -1,0 +1,52 @@
+{
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "round_identity": "0c5279ee3b6c582b6c561b960c515c856089f09a9ef29a2702186122b505aed8",
+  "candidate_state": "current_full273_software_collection_running",
+  "manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-original\\manifest.json",
+    "sha256": "c9ff6063e94d461e9f7e14a6910de3ebf2d9250ed8987581285a53a74b925d04"
+  },
+  "candidate_plan_at_freeze": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-launch\\candidate-plan-frozen.json",
+    "sha256": "38b0a4729725efc751d3676dfa61ad9f4d7a7c30173bf337e5d14cda06a09b3e"
+  },
+  "workflow_gate": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-workflow-gate.json",
+    "sha256": "1b868f97bc3c2053ed1b63763557b2b14ac6c53f5b9bea7a9630225c425444b0"
+  },
+  "precheck": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-precheck-adjudication.json",
+    "sha256": "764e436379f6b7ee47f8cd72799ce91020c25d17480fdfcad592048abba71bb4"
+  },
+  "complete_local_controls": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-complete-local-controls.json",
+    "sha256": "65e97f9467e0b9be6349a2126e902fc7339dd9988157cebb30b796e09ebb5de9"
+  },
+  "launch": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-launch\\identity.json",
+    "sha256": "cef432c0f3524b6a34d531a1e7f0321396856903d37541bc6720778b7ae4d758"
+  },
+  "review_identity": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-review-chain\\identity.json",
+    "sha256": "9b20a8919c321ff66d94b0092423001657376b52430139bc6f66574b6b5d85c8"
+  },
+  "sessions": {
+    "collection": 90071,
+    "reviews": 14979
+  },
+  "review_coordinator_pid": 5208,
+  "collection_progress": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-original\\progress.json",
+  "review_progress": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008e-release-preparation-20260912\\common008e-original-review-chain\\progress.json",
+  "recorded_epoch": 1789214359.5909636,
+  "gaussian_control_actions_performed": 0,
+  "formal_case_passes": 0,
+  "resource_scope": "COV total four physical cores and 64 GiB; two workers each two physical cores and 24 GiB.",
+  "next_actions": [
+    "Never launch duplicate collection/review workers for this round.",
+    "All273 collection cases must be terminal before scientific review.",
+    "Let numeric, summary, view and scope reviews finish; directly inspect the17 selected actual full-round screenshots.",
+    "Adjudicate current evidence, update docs and finish the exact ordinary/validation package.",
+    "Preserve other validation-branch commits on merge and push without force.",
+    "Do not start Gaussian, original273 physical references or50 external formal computations."
+  ]
+}

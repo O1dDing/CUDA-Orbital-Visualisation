@@ -1,0 +1,15 @@
+{
+  "commit": "e2e835a70229b94501127ad336e0ddbc3ea69df3",
+  "helpers": {
+    "run_density_preflight.py": "c4252c32bab22f708ba1e833e3eeaa4df40a2a6345c6a391acc9034e228a1afa",
+    "build_general_fixes.py": "b5c28e7e81129367fbd01e00a78eb4020e1edd30d6afef568813e153fb13c97f",
+    "test_general_fixes.py": "0c4dfdf1d6f65a10f7f6154ff7b8a5f78bf696ec4b50bf0b5d2bd941ec0a28bb"
+  },
+  "cores": 4,
+  "memory_gib": 64,
+  "core_slot_offset": 8,
+  "reserved_reference_cores": 8,
+  "reserved_reference_memory_gib": 64,
+  "reference_gaussian_input_memory_gib": 48,
+  "scope": "Component preflight; fixed density controls and full molecule regression follow."
+}

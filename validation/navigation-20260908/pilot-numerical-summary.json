@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "round_identity": "03527bd1e32a47962ea5e075694c1837aa633742510e83adf44f690734e0c193",
+  "collection_sha256": "fd8cc82e1f003a022c1a5aa431c6761b50080f982285e2da4f4601ff00ad3e3d",
+  "review_barrier_sha256": "ff4375a41e816f8ffb829b86a85b6a9e031ae225fadb39cef3940b7eddec1330",
+  "summary_script_sha256": "98065496b5e55aba1ee07b27f30ac51c5d8399432d711a5fc8de952b618d3886",
+  "created_epoch": 1788840853.9350033,
+  "case_count": 1,
+  "collection_counts": {
+    "complete": 1,
+    "completed_with_gaps": 0,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 1
+  },
+  "check_counts": {
+    "BUILD-ON-OFF": {
+      "pass": 1
+    },
+    "ACTUAL-EXE-METRIC-DATA": {
+      "pass": 1
+    },
+    "AO-INTEGRAL": {
+      "pass": 1
+    },
+    "MO-RAW-PRECISION": {
+      "pass": 1
+    },
+    "MO-AO-TRANSFORM": {
+      "pass": 1
+    },
+    "AO-TRANSFORM-PROVENANCE": {
+      "pass": 1
+    },
+    "MO-ENERGIES": {
+      "pass": 1
+    },
+    "MO-GRAM-0": {
+      "pass": 1
+    },
+    "MO-RECONSTRUCTED-ELECTRON-TRACE": {
+      "pass": 1
+    },
+    "DECOMPOSITION-CONSERVATION": {
+      "pass": 1
+    },
+    "ALL-MO-SAMPLED-TEXTURES": {
+      "pass": 1
+    },
+    "FRONTIER-COMPLETE-TEXTURES": {
+      "pass": 1
+    }
+  },
+  "sampled_mos": 15,
+  "complete_frontier_textures": 4,
+  "failed_check_count": 0,
+  "failed_texture_count": 0,
+  "failures": [],
+  "texture_failures": [],
+  "cases": [
+    {
+      "case_id": "OLD-001",
+      "input": "gaussian_validation_set\\01_H3plus_3c2e.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 17.177896699984558,
+      "numerical_review_seconds": 2.0544367999827955,
+      "failed_checks": []
+    }
+  ],
+  "timing": {
+    "collection_wall_seconds": 17.24217460001819,
+    "independent_review_wall_seconds": 4.675133899989305,
+    "collection_per_case": {
+      "n": 1,
+      "sum_seconds": 17.177896699984558,
+      "minimum_seconds": 17.177896699984558,
+      "median_seconds": 17.177896699984558,
+      "p95_seconds": 17.177896699984558,
+      "maximum_seconds": 17.177896699984558
+    },
+    "independent_review_per_case": {
+      "n": 1,
+      "sum_seconds": 2.0544367999827955,
+      "minimum_seconds": 2.0544367999827955,
+      "median_seconds": 2.0544367999827955,
+      "p95_seconds": 2.0544367999827955,
+      "maximum_seconds": 2.0544367999827955
+    }
+  },
+  "formal_case_passes": 0,
+  "remaining": [
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

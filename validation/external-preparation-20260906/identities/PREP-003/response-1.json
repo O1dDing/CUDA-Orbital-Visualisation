@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24404,
+        "MolecularFormula": "H3P",
+        "ConnectivitySMILES": "P",
+        "InChIKey": "XYFCBTPGUUZFHI-UHFFFAOYSA-N",
+        "IUPACName": "phosphane",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "candidate_id": "PREP-043",
+  "query": "benzyl radical",
+  "expected_formula": "C7H7",
+  "expected_charge": 0,
+  "family": "自由基",
+  "purpose": "与环状 C7H7 图去重",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [
+    "OLD-097"
+  ],
+  "lookup_epoch": 1788709710.3018894,
+  "lookup_status": "unique-metadata-match",
+  "identity_candidates": [
+    {
+      "CID": 123147,
+      "MolecularFormula": "C7H7",
+      "ConnectivitySMILES": "[CH2]C1=CC=CC=C1",
+      "InChIKey": "SLRMQYXOBQWXCR-UHFFFAOYSA-N",
+      "Charge": 0,
+      "formula_matches_request": true,
+      "charge_matches_request": true,
+      "compound_page": "https://pubchem.ncbi.nlm.nih.gov/compound/123147"
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709710.3018894,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-043\\response-1.json",
+      "sha256": "8b222103bfc0dca3b154b2538e47cd1e0ce0c559219fb8a9ba41e9258a50bc87",
+      "bytes": 251,
+      "elapsed_seconds": 1.2831251621246338
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/benzyl%20radical/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

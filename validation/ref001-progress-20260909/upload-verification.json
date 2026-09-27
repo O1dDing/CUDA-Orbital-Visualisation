@@ -1,0 +1,43 @@
+{
+  "release_id": 383547061,
+  "release_url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/tag/cov-ref-paused-20260906",
+  "all_uploaded": true,
+  "assets": [
+    {
+      "name": "cov-ref001-progress-20260909-001-of-003.zip",
+      "bytes": 164543757,
+      "sha256": "f64b5dd94151b10201aa84614aa35310c328798bab45095fcaced7ab344807b4",
+      "asset_id": 552077658,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260909-001-of-003.zip",
+      "remote_digest": "sha256:f64b5dd94151b10201aa84614aa35310c328798bab45095fcaced7ab344807b4",
+      "verified_epoch": 1788932113.025984
+    },
+    {
+      "name": "cov-ref001-progress-20260909-002-of-003.zip",
+      "bytes": 756642789,
+      "sha256": "5a60d1df6eab7aa5fc12bc1b65b3139ce515beb25bd51119415c584bee6d7432",
+      "asset_id": 552078413,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260909-002-of-003.zip",
+      "remote_digest": "sha256:5a60d1df6eab7aa5fc12bc1b65b3139ce515beb25bd51119415c584bee6d7432",
+      "verified_epoch": 1788932261.555064
+    },
+    {
+      "name": "cov-ref001-progress-20260909-003-of-003.zip",
+      "bytes": 38426580,
+      "sha256": "1e430ae2d9d1f5aebeeec16c84c4a95ef3514c3aaf1b9e4bdf1cd635a6246040",
+      "asset_id": 552081866,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260909-003-of-003.zip",
+      "remote_digest": "sha256:1e430ae2d9d1f5aebeeec16c84c4a95ef3514c3aaf1b9e4bdf1cd635a6246040",
+      "verified_epoch": 1788932271.9420676
+    },
+    {
+      "name": "cov-ref001-progress-20260909-metadata.zip",
+      "bytes": 119842,
+      "sha256": "dcad12468604add53af288f7c2e94b908f17a589694af152739b0acda1f56d8d",
+      "asset_id": 552082132,
+      "url": "https://github.com/O1dDing/CUDA-Orbital-Visualisation/releases/download/cov-ref-paused-20260906/cov-ref001-progress-20260909-metadata.zip",
+      "remote_digest": "sha256:dcad12468604add53af288f7c2e94b908f17a589694af152739b0acda1f56d8d",
+      "verified_epoch": 1788932276.5093277
+    }
+  ]
+}

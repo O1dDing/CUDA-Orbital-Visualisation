@@ -1,0 +1,14 @@
+{
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "terminal_candidates": 67,
+  "expected_candidates": 67,
+  "counts": {
+    "unique-metadata-match": 47,
+    "lookup-failed-retained": 16,
+    "ambiguous-or-mismatched-metadata": 1,
+    "source-coordinate-work-pending": 3
+  },
+  "formal_external_cases": 0,
+  "gaussian_started": false,
+  "REF-001": "paused-by-user"
+}

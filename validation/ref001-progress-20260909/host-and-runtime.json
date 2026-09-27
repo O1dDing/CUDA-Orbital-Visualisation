@@ -1,0 +1,64 @@
+{
+  "observed_epoch": 1788931953.017032,
+  "host": {
+    "physical_cores": 16,
+    "logical_processors": 32,
+    "physical_masks": [
+      1,
+      4,
+      16,
+      64,
+      256,
+      1024,
+      4096,
+      16384,
+      65536,
+      262144,
+      1048576,
+      4194304,
+      16777216,
+      67108864,
+      268435456,
+      1073741824
+    ],
+    "total_gib": 175.63669204711914,
+    "available_gib": 154.39320373535156,
+    "profile": "16-plus-core-policy",
+    "topology_source": "Windows GetLogicalProcessorInformation; one record per physical core",
+    "affinity_policy": "full startup affinity; threads and Job CPU-rate cap, not exclusive core pinning"
+  },
+  "gaussian_core_budget": 14,
+  "gaussian_processes": [],
+  "legacy_os_lock_acquired": true,
+  "pause": {
+    "requested_epoch": 1788836237.7577765,
+    "reason": "operator requested stage-boundary pause via local menu"
+  },
+  "legacy_source_identity": "3cb21e1d93233d07685f64feb1c3da31f40ad1befa3b211fc394b4de545189ca",
+  "binary_identity": {
+    "g16.exe": "4804e9b667af4be7dac48a23524c7c3fa3e5c004a669a59f122e40d59eeafa5f",
+    "formchk.exe": "b8f1ab5324dc65520ddbe8f16770e00bda2f8e5abf676254fbbf0eda7719458d"
+  },
+  "runtime_v2_commit": "10b44bea19cdbc421fcb37d3e75aefeb17ad98f7",
+  "runtime_v2_source_hashes": {
+    "policy.py": "9ed7bf13ca0cae79d0c02c701f6142e278706fd33e29542bd351e19011859d79",
+    "resume.py": "fd357b1beefe5a37bb3ac0ba0a4a61ac36890eea806ab73935ff5c7d6d386c93",
+    "test_runtime.py": "5ff787b8246a8054259bf2e607654a9555cbab5443b60c8bb816b1667f3c50dd",
+    "windows_job.py": "94b34d2756942f4189fcc6ca27eeab48e41011f234a5e73ff1aa90a5d7c074e8"
+  },
+  "gaussian_native_restart_acceptance": "pending",
+  "calculations_started": false,
+  "recorded_tests": {
+    "runtime_v2_suite": {
+      "exit_code": 0,
+      "tool_output_chunk": "fbf71c",
+      "includes": "policy, fake engine, 273 frozen inputs, real Windows Python child-process controls; not real Gaussian restart"
+    },
+    "legacy_readonly_check": {
+      "exit_code": 0,
+      "prepared_inputs_verified": 273,
+      "completed_stages_verified": 37,
+      "tool_output_chunk": "c77b03"
+    }
+  }
+}

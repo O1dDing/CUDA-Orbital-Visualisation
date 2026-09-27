@@ -1,0 +1,8 @@
+{
+  "commit": "060c02e2ce64bfd364d0b2fa795eb8284e57fd0d",
+  "verified_remote_commit": "060c02e2ce64bfd364d0b2fa795eb8284e57fd0d",
+  "verified_git_blob_files": 285,
+  "all_sha256_match": true,
+  "relative": "validation/input-preparation-20260908",
+  "scope": "Only this publication manifest; no additional raw COV evidence implied"
+}

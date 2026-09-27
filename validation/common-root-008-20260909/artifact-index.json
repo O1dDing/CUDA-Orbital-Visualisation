@@ -1,0 +1,53 @@
+{
+  "source_commit": "8e206e188ef84a5e63129ee20e5b95c2f5ad498b",
+  "frozen_round_identity": "8c525e0e7421997dd5be928b6fea6c302c886fb98102cbe629e88865c78ed96c",
+  "artifacts": [
+    {
+      "file": "common008c-precheck-adjudication.json",
+      "sha256": "8963b4d12657db3573e66559b17abd1b32bc9ad7765255b6e920178be097cb54",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-precheck-adjudication.json"
+    },
+    {
+      "file": "common008c-complete-local-controls.json",
+      "sha256": "4b0354e0954a318e012ff64950c17f7db894a11ac8901308a3afeb8978c4054e",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-complete-local-controls.json"
+    },
+    {
+      "file": "common008c-g-control-adjudication.json",
+      "sha256": "f9ac7469f8d12290c39654cbf56081f9c1ddccc560b282db0480a077e28e1903",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-control-adjudication.json"
+    },
+    {
+      "file": "common008c-workflow-gate.json",
+      "sha256": "009f7ba03fddeaeef5e72e2454e023b7a1d1159c8b365295f8536f216e61e9d1",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-workflow-gate.json"
+    },
+    {
+      "file": "common008c-original-start.json",
+      "sha256": "8ba0b0051a194db659bbeeb21cd39a7e33d063769f9376126cf84211001d71e4",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-original-start.json"
+    },
+    {
+      "file": "fixed40-visual-review.json",
+      "sha256": "fc23ad7579215b187309dba9eb776dea9c11f65fee3b8e18c67bcf4e56f6853f",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-visual-review\\review.json"
+    },
+    {
+      "file": "availability-visual-review.json",
+      "sha256": "fd978dabe819930570b7f39a3531d80fa71808250d7202c920fbf64990e40f0d",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\availability-ui-1788955485419300000\\review-v2\\visual-review.json"
+    },
+    {
+      "file": "auxiliary-review-correction.json",
+      "sha256": "920554f59a37345f7e9275d5d8e95edd9c63c7e4c436f810d11dc1581f989a26",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-view-review-v2\\identity.json"
+    },
+    {
+      "file": "candidate-plan-frozen.json",
+      "sha256": "6f9b8329f6f7c730615635a45026ddee1b7221e6e117ff073faa15978d6878ad",
+      "source": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-original-launch\\candidate-plan-frozen.json"
+    }
+  ],
+  "raw_evidence_location": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906",
+  "scope": "Small durable receipts only; raw screenshots, logs, attempts and failed reviews remain in their original immutable local round directories."
+}

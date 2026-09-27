@@ -1,0 +1,42 @@
+{
+  "candidate_id": "PREP-055",
+  "query": "bis(ethylenediamine)copper(II)",
+  "expected_formula": "C4H16CuN4",
+  "expected_charge": 2,
+  "family": "螯合金属",
+  "purpose": "有限环境与电子态待建",
+  "formal": false,
+  "geometry_status": "not-established",
+  "electronic_state_status": "not-established",
+  "primary_structure_sources": [],
+  "candidate_spec_sha256": "51ee7e69904faa92d0c3d3fdc890ef5e6b741785428949100d2f7788d7ecb683",
+  "original_cases_with_same_element_counts": [],
+  "lookup_epoch": 1788709735.5575724,
+  "lookup_status": "lookup-failed-retained",
+  "identity_candidates": [],
+  "attempts": [
+    {
+      "attempt": 1,
+      "started_epoch": 1788709735.5575724,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-055\\response-1.json",
+      "sha256": "0a11ecafddacbf26c081df9af862eab7d5b7b8467baeb8a59cac93cc8bfb0d8d",
+      "bytes": 318,
+      "error": "ValueError: Unsupported formula syntax: C4H16CuN4+2",
+      "elapsed_seconds": 3.8569562435150146
+    },
+    {
+      "attempt": 2,
+      "started_epoch": 1788709741.415317,
+      "http_status": 200,
+      "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identities\\PREP-055\\response-2.json",
+      "sha256": "0a11ecafddacbf26c081df9af862eab7d5b7b8467baeb8a59cac93cc8bfb0d8d",
+      "bytes": 318,
+      "error": "ValueError: Unsupported formula syntax: C4H16CuN4+2",
+      "elapsed_seconds": 1.647496223449707
+    }
+  ],
+  "formal_case": false,
+  "dedup_scope": "formula screen and PubChem identity only; molecular graph and metal connectivity still require review",
+  "query_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/bis%28ethylenediamine%29copper%28II%29/property/MolecularFormula,ConnectivitySMILES,InChIKey,IUPACName,Charge/JSON"
+}

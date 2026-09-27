@@ -90,40 +90,41 @@ double energy_at_axis_fraction(const double fraction,
     return energy_from_display_coordinate(c0 + fraction * (c1 - c0), transform);
 }
 
+std::string orbital_type_plain(const OrbitalAnnotation& annotation);
+
 std::vector<PositionedLevel> position_levels(const MODiagramData& data,
-                                             const int width,
+                                             int& width,
                                              const int height) {
     std::vector<PositionedLevel> positioned;
     positioned.reserve(data.levels.size());
-    const double centre = static_cast<double>(width) * 0.50;
-
-    // Levels with the same layout-energy coordinate (declared degeneracy or an
-    // accidental exact coincidence) share y but are spread horizontally.
-    std::map<long long, std::vector<std::size_t>> coincident;
-    constexpr double kEnergyBucket = 1.0e12;
-    for (std::size_t i = 0; i < data.levels.size(); ++i) {
-        const long long key = static_cast<long long>(
-            std::llround(data.levels[i].layout_energy_hartree * kEnergyBucket));
-        coincident[key].push_back(i);
-    }
-
-    std::vector<double> x(data.levels.size(), centre);
-    for (const auto& [_, ids] : coincident) {
-        const double spacing = std::clamp(static_cast<double>(width) * 0.105, 92.0, 138.0);
-        for (std::size_t member = 0; member < ids.size(); ++member) {
-            const double offset =
-                (static_cast<double>(member) -
-                 (static_cast<double>(ids.size()) - 1.0) * 0.5) * spacing;
-            x[ids[member]] = centre + offset;
+    std::vector<DiagramRowFootprint> footprints;
+    for (const auto& level:data.levels) {
+        const auto members=mo_diagram_member_views(data,level);
+        const double strokes=members.empty()?0.0:24.0+31.0*static_cast<double>(members.size()-1);
+        // Reserve label space as well as strokes. PNG uses a six-pixel bitmap
+        // advance; SVG has the same labels at ten pixels, with a conservative
+        // eight-pixel advance. Full glyph validation remains a separate check.
+        double label_width=8.0*static_cast<double>(orbital_type_plain(level.annotation).size());
+        if (level.annotation.delocalised_pi.available) {
+            const auto& pi=level.annotation.delocalised_pi;
+            const std::string text="PI "+std::to_string(pi.participating_atoms)+" "+
+                std::to_string(static_cast<int>(std::lround(pi.participating_electrons)))+
+                " "+compact_pi_topology_suffix(pi);
+            label_width=std::max(label_width,8.0*static_cast<double>(text.size()));
         }
+        footprints.push_back({map_energy_y(level.layout_energy_hartree,data.energy_transform,height),
+            18.0,level.annotation.delocalised_pi.available?35.0:23.0,
+            std::max(strokes,label_width)+8.0});
     }
-
+    // Equal or merely nearby *display* footprints need separate lanes, while
+    // their exact physical y coordinates and canonical members stay intact.
+    constexpr double margin=180.0;
+    const auto lanes=layout_diagram_lanes(footprints,std::max(1.0,width-2.0*margin),18.0,2.0);
+    width=static_cast<int>(std::ceil(lanes.width+2.0*margin));
     for (std::size_t i = 0; i < data.levels.size(); ++i) {
         const auto& level = data.levels[i];
-        const double y = map_energy_y(level.layout_energy_hartree,
-                                      data.energy_transform,
-                                      height);
-        positioned.push_back({&level, x[i], y, y - 7.0});
+        const double y=footprints[i].y;
+        positioned.push_back({&level,margin+lanes.centre_x[i],y,y-7.0});
     }
 
     // Only text labels move for collision avoidance. The actual level line y

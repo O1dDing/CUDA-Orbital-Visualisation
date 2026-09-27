@@ -1,0 +1,11 @@
+{
+  "stage": "all-fixed-controls-reviewed",
+  "created_epoch": 1788854241.9831777,
+  "commit": "e2e835a70229b94501127ad336e0ddbc3ea69df3",
+  "total_collected_controls": 40,
+  "ordinary_validation_identical": true,
+  "all_fixed_requirements_satisfied": true,
+  "wall_seconds": 22.059024572372437,
+  "formal_case_passes": 0,
+  "needs_complete_molecule_regression": true
+}

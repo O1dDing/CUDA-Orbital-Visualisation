@@ -1,0 +1,70 @@
+{
+  "all_4_records_reviewed": true,
+  "records": [
+    {
+      "candidate_id": "PREP-018",
+      "query": "borazine",
+      "primary_commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "status": "author-coordinate-identity-established",
+      "atom_count": 12,
+      "maximum_local_coordinate_difference_angstrom": 1.873521702222547e-07,
+      "primary_maximum_coordinate_bohr": 4.991367274,
+      "comparison_scope": "Same atom ordering and coordinate frame; reported difference only, no fit or scaling",
+      "electronic_state_source": "source-state-fields-absent; proposed state requires independent confirmation",
+      "source_geometry": "https://github.com/grimme-lab/GMTKN55/blob/8d485b37a1ca8837e395042671ca5ba4e0714691/NBPRC/bz/coord",
+      "normalized_sha256": "c56b03b1eb8e702ca424125093b8f92970c54f59f194b78746586a4b96c73f2b"
+    },
+    {
+      "candidate_id": "PREP-043",
+      "query": "benzyl radical",
+      "primary_commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "status": "author-coordinate-identity-established",
+      "atom_count": 14,
+      "maximum_local_coordinate_difference_angstrom": 2.1159808394344282e-07,
+      "primary_maximum_coordinate_bohr": 5.65096023938578,
+      "comparison_scope": "Same atom ordering and coordinate frame; reported difference only, no fit or scaling",
+      "electronic_state_source": "explicit-author-records",
+      "source_geometry": "https://github.com/grimme-lab/GMTKN55/blob/8d485b37a1ca8837e395042671ca5ba4e0714691/RSE43/P2/coord",
+      "normalized_sha256": "e642073c1cefba86d65d4c39f61e841059f9b056e77d59d91fd208f8114b4780"
+    },
+    {
+      "candidate_id": "PREP-044",
+      "query": "ethynyl radical",
+      "primary_commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "status": "author-coordinate-identity-established",
+      "atom_count": 3,
+      "maximum_local_coordinate_difference_angstrom": 1.602931103892028,
+      "primary_maximum_coordinate_bohr": 3.02910078299999,
+      "comparison_scope": "Same atom ordering and coordinate frame; reported difference only, no fit or scaling",
+      "electronic_state_source": "explicit-author-records",
+      "source_geometry": "https://github.com/grimme-lab/GMTKN55/blob/8d485b37a1ca8837e395042671ca5ba4e0714691/W4-11/cch/coord",
+      "normalized_sha256": "4cd681951e2169f5c408bada55d108a5fe4af4ff0041d45361425fdc467554ee"
+    },
+    {
+      "candidate_id": "PREP-046",
+      "query": "hydroperoxyl radical",
+      "primary_commit": "8d485b37a1ca8837e395042671ca5ba4e0714691",
+      "formal_case": false,
+      "accepted_reference_geometry": false,
+      "status": "author-coordinate-identity-established",
+      "atom_count": 3,
+      "maximum_local_coordinate_difference_angstrom": 1.7094026482175089,
+      "primary_maximum_coordinate_bohr": 1.753664518,
+      "comparison_scope": "Same atom ordering and coordinate frame; reported difference only, no fit or scaling",
+      "electronic_state_source": "explicit-author-records",
+      "source_geometry": "https://github.com/grimme-lab/GMTKN55/blob/8d485b37a1ca8837e395042671ca5ba4e0714691/W4-11/hoo/coord",
+      "normalized_sha256": "0d6e6467b4fddee0a41dfe629cd6eee7e82aadc2a3f501a077b9abbfe09a433f"
+    }
+  ],
+  "formal_external_cases": 0,
+  "gaussian_started": false,
+  "accepted_quality_references": 0,
+  "attribution": "Goerigk, Hansen, Bauer, Ehrlich, Najibi, Grimme and coauthors, PCCP 2017, 19, 32184-32215, DOI 10.1039/C7CP04913G; dataset CC-BY-4.0",
+  "source_repository_commit": "8d485b37a1ca8837e395042671ca5ba4e0714691"
+}

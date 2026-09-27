@@ -1,0 +1,4 @@
+{"stage": "build-on", "exit_code": 0, "wall_seconds": 4.597019500011811, "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\build-on.log"}
+{"stage": "tests-on", "exit_code": 0, "wall_seconds": 3.0892247000010684, "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\tests-on.log"}
+{"stage": "build-off", "exit_code": 0, "wall_seconds": 77.64847660000669, "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\build-off.log"}
+{"stage": "tests-off", "exit_code": 0, "wall_seconds": 2.5726897999993525, "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\navigation-preflight-1788840607516376700\\tests-off.log"}

@@ -1,0 +1,3956 @@
+{
+  "round_identity": "85d3d2c5d287f1a229bf079a5b49715a900396f796264181b3b74a3331491471",
+  "production_commit": "e1e118d6dc34839932c2f28a0fd8379a40e4f3b4",
+  "created_epoch": 1788839227.788279,
+  "summary_script_sha256": "680b8da577de3c494c6c0ce91fd852d4b9b7b3c42b660818cec3e1701d268100",
+  "collection_counts": {
+    "complete": 249,
+    "completed_with_gaps": 24,
+    "error": 0
+  },
+  "numeric_subset_counts": {
+    "numeric_subset_pass": 273
+  },
+  "view_subset_counts": {
+    "view_subset_fail": 24,
+    "view_subset_pass": 249
+  },
+  "bundle_counts": {
+    "pass": 1943
+  },
+  "selected_png_strokes_checked": 1943,
+  "case_count": 273,
+  "linear_member_click_counts": {
+    "pass": 2699,
+    "fail": 72
+  },
+  "view_failures": [
+    {
+      "case_id": "OLD-013",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0058",
+        "expected_mo": 57,
+        "actual": {
+          "schema": 1,
+          "frame": 6173,
+          "elapsed_seconds": 49.114123,
+          "rendered_mo": 48,
+          "applied_mo": 48,
+          "drawn_ui_mo": 48,
+          "requested_mo": 48,
+          "diagram_generation": 10,
+          "rendered_generation": 242,
+          "volume_generation": 242,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.741119861602783,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.591222335,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-013.json"
+    },
+    {
+      "case_id": "OLD-013",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0060",
+        "expected_mo": 59,
+        "actual": {
+          "schema": 1,
+          "frame": 6659,
+          "elapsed_seconds": 52.1917383,
+          "rendered_mo": 48,
+          "applied_mo": 48,
+          "drawn_ui_mo": 48,
+          "requested_mo": 48,
+          "diagram_generation": 10,
+          "rendered_generation": 242,
+          "volume_generation": 242,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.741119861602783,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.591222335,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-013.json"
+    },
+    {
+      "case_id": "OLD-013",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0061",
+        "expected_mo": 60,
+        "actual": {
+          "schema": 1,
+          "frame": 7145,
+          "elapsed_seconds": 55.6596972,
+          "rendered_mo": 48,
+          "applied_mo": 48,
+          "drawn_ui_mo": 48,
+          "requested_mo": 48,
+          "diagram_generation": 10,
+          "rendered_generation": 242,
+          "volume_generation": 242,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.741119861602783,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.591222335,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-013.json"
+    },
+    {
+      "case_id": "OLD-013",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0062",
+        "expected_mo": 61,
+        "actual": {
+          "schema": 1,
+          "frame": 7631,
+          "elapsed_seconds": 59.1559747,
+          "rendered_mo": 48,
+          "applied_mo": 48,
+          "drawn_ui_mo": 48,
+          "requested_mo": 48,
+          "diagram_generation": 10,
+          "rendered_generation": 242,
+          "volume_generation": 242,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.741119861602783,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.591222335,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-013.json"
+    },
+    {
+      "case_id": "OLD-038",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0042",
+        "expected_mo": 41,
+        "actual": {
+          "schema": 1,
+          "frame": 7991,
+          "elapsed_seconds": 62.9347108,
+          "rendered_mo": 40,
+          "applied_mo": 40,
+          "drawn_ui_mo": 40,
+          "requested_mo": 40,
+          "diagram_generation": 10,
+          "rendered_generation": 324,
+          "volume_generation": 324,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.369215965270996,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.925993955,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json"
+    },
+    {
+      "case_id": "OLD-038",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0043",
+        "expected_mo": 42,
+        "actual": {
+          "schema": 1,
+          "frame": 8477,
+          "elapsed_seconds": 65.8799863,
+          "rendered_mo": 40,
+          "applied_mo": 40,
+          "drawn_ui_mo": 40,
+          "requested_mo": 40,
+          "diagram_generation": 10,
+          "rendered_generation": 324,
+          "volume_generation": 324,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.369215965270996,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.925993955,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json"
+    },
+    {
+      "case_id": "OLD-038",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0052",
+        "expected_mo": 51,
+        "actual": {
+          "schema": 1,
+          "frame": 9067,
+          "elapsed_seconds": 70.152079,
+          "rendered_mo": 50,
+          "applied_mo": 50,
+          "drawn_ui_mo": 50,
+          "requested_mo": 50,
+          "diagram_generation": 10,
+          "rendered_generation": 332,
+          "volume_generation": 332,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.040736198425293,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.442752882,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json"
+    },
+    {
+      "case_id": "OLD-038",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0054",
+        "expected_mo": 53,
+        "actual": {
+          "schema": 1,
+          "frame": 9566,
+          "elapsed_seconds": 73.8305649,
+          "rendered_mo": 52,
+          "applied_mo": 52,
+          "drawn_ui_mo": 52,
+          "requested_mo": 52,
+          "diagram_generation": 10,
+          "rendered_generation": 333,
+          "volume_generation": 333,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.214463949203491,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.42096415,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json"
+    },
+    {
+      "case_id": "OLD-038",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0055",
+        "expected_mo": 54,
+        "actual": {
+          "schema": 1,
+          "frame": 10052,
+          "elapsed_seconds": 77.1729949,
+          "rendered_mo": 52,
+          "applied_mo": 52,
+          "drawn_ui_mo": 52,
+          "requested_mo": 52,
+          "diagram_generation": 10,
+          "rendered_generation": 333,
+          "volume_generation": 333,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.214463949203491,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.42096415,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json"
+    },
+    {
+      "case_id": "OLD-038",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0056",
+        "expected_mo": 55,
+        "actual": {
+          "schema": 1,
+          "frame": 10538,
+          "elapsed_seconds": 80.1179256,
+          "rendered_mo": 52,
+          "applied_mo": 52,
+          "drawn_ui_mo": 52,
+          "requested_mo": 52,
+          "diagram_generation": 10,
+          "rendered_generation": 333,
+          "volume_generation": 333,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.214463949203491,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.42096415,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json"
+    },
+    {
+      "case_id": "OLD-038",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0057",
+        "expected_mo": 56,
+        "actual": {
+          "schema": 1,
+          "frame": 11024,
+          "elapsed_seconds": 83.0620136,
+          "rendered_mo": 52,
+          "applied_mo": 52,
+          "drawn_ui_mo": 52,
+          "requested_mo": 52,
+          "diagram_generation": 10,
+          "rendered_generation": 333,
+          "volume_generation": 333,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.214463949203491,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.42096415,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json"
+    },
+    {
+      "case_id": "OLD-078",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0055",
+        "expected_mo": 54,
+        "actual": {
+          "schema": 1,
+          "frame": 4777,
+          "elapsed_seconds": 34.6441022,
+          "rendered_mo": 53,
+          "applied_mo": 53,
+          "drawn_ui_mo": 53,
+          "requested_mo": 53,
+          "diagram_generation": 10,
+          "rendered_generation": 182,
+          "volume_generation": 182,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.8889919519424438,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.392580138,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-078.json"
+    },
+    {
+      "case_id": "OLD-078",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0056",
+        "expected_mo": 55,
+        "actual": {
+          "schema": 1,
+          "frame": 5263,
+          "elapsed_seconds": 37.5945546,
+          "rendered_mo": 53,
+          "applied_mo": 53,
+          "drawn_ui_mo": 53,
+          "requested_mo": 53,
+          "diagram_generation": 10,
+          "rendered_generation": 182,
+          "volume_generation": 182,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.8889919519424438,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.392580138,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-078.json"
+    },
+    {
+      "case_id": "OLD-078",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0057",
+        "expected_mo": 56,
+        "actual": {
+          "schema": 1,
+          "frame": 5749,
+          "elapsed_seconds": 40.7245633,
+          "rendered_mo": 53,
+          "applied_mo": 53,
+          "drawn_ui_mo": 53,
+          "requested_mo": 53,
+          "diagram_generation": 10,
+          "rendered_generation": 182,
+          "volume_generation": 182,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.8889919519424438,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.392580138,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-078.json"
+    },
+    {
+      "case_id": "OLD-127",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0052",
+        "expected_mo": 51,
+        "actual": {
+          "schema": 1,
+          "frame": 7721,
+          "elapsed_seconds": 54.4118169,
+          "rendered_mo": 50,
+          "applied_mo": 50,
+          "drawn_ui_mo": 50,
+          "requested_mo": 50,
+          "diagram_generation": 10,
+          "rendered_generation": 312,
+          "volume_generation": 312,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.009888172149658,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.602354073,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json"
+    },
+    {
+      "case_id": "OLD-127",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0058",
+        "expected_mo": 57,
+        "actual": {
+          "schema": 1,
+          "frame": 8233,
+          "elapsed_seconds": 57.5378728,
+          "rendered_mo": 55,
+          "applied_mo": 55,
+          "drawn_ui_mo": 55,
+          "requested_mo": 55,
+          "diagram_generation": 10,
+          "rendered_generation": 314,
+          "volume_generation": 314,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.550816059112549,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.510877669,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json"
+    },
+    {
+      "case_id": "OLD-127",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0061",
+        "expected_mo": 60,
+        "actual": {
+          "schema": 1,
+          "frame": 8719,
+          "elapsed_seconds": 60.4824873,
+          "rendered_mo": 55,
+          "applied_mo": 55,
+          "drawn_ui_mo": 55,
+          "requested_mo": 55,
+          "diagram_generation": 10,
+          "rendered_generation": 314,
+          "volume_generation": 314,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.550816059112549,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.510877669,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json"
+    },
+    {
+      "case_id": "OLD-127",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0062",
+        "expected_mo": 61,
+        "actual": {
+          "schema": 1,
+          "frame": 9205,
+          "elapsed_seconds": 63.4390133,
+          "rendered_mo": 55,
+          "applied_mo": 55,
+          "drawn_ui_mo": 55,
+          "requested_mo": 55,
+          "diagram_generation": 10,
+          "rendered_generation": 314,
+          "volume_generation": 314,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.550816059112549,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.510877669,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json"
+    },
+    {
+      "case_id": "OLD-127",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0080",
+        "expected_mo": 79,
+        "actual": {
+          "schema": 1,
+          "frame": 9756,
+          "elapsed_seconds": 66.7893469,
+          "rendered_mo": 77,
+          "applied_mo": 77,
+          "drawn_ui_mo": 77,
+          "requested_mo": 77,
+          "diagram_generation": 10,
+          "rendered_generation": 319,
+          "volume_generation": 319,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.2747199535369873,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.0096690514,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json"
+    },
+    {
+      "case_id": "OLD-127",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0081",
+        "expected_mo": 80,
+        "actual": {
+          "schema": 1,
+          "frame": 10242,
+          "elapsed_seconds": 69.7338799,
+          "rendered_mo": 77,
+          "applied_mo": 77,
+          "drawn_ui_mo": 77,
+          "requested_mo": 77,
+          "diagram_generation": 10,
+          "rendered_generation": 319,
+          "volume_generation": 319,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.2747199535369873,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.0096690514,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json"
+    },
+    {
+      "case_id": "OLD-127",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0082",
+        "expected_mo": 81,
+        "actual": {
+          "schema": 1,
+          "frame": 10728,
+          "elapsed_seconds": 72.6844941,
+          "rendered_mo": 77,
+          "applied_mo": 77,
+          "drawn_ui_mo": 77,
+          "requested_mo": 77,
+          "diagram_generation": 10,
+          "rendered_generation": 319,
+          "volume_generation": 319,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.2747199535369873,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.0096690514,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json"
+    },
+    {
+      "case_id": "OLD-152",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0014",
+        "expected_mo": 13,
+        "actual": {
+          "schema": 1,
+          "frame": 4430,
+          "elapsed_seconds": 29.201766,
+          "rendered_mo": 12,
+          "applied_mo": 12,
+          "drawn_ui_mo": 12,
+          "requested_mo": 12,
+          "diagram_generation": 10,
+          "rendered_generation": 165,
+          "volume_generation": 165,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.777951955795288,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.710717841,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-152.json"
+    },
+    {
+      "case_id": "OLD-152",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0023",
+        "expected_mo": 22,
+        "actual": {
+          "schema": 1,
+          "frame": 5020,
+          "elapsed_seconds": 32.7764242,
+          "rendered_mo": 21,
+          "applied_mo": 21,
+          "drawn_ui_mo": 21,
+          "requested_mo": 21,
+          "diagram_generation": 10,
+          "rendered_generation": 173,
+          "volume_generation": 173,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.8147519826889038,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.135122501,
+          "occupation": 0,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-152.json"
+    },
+    {
+      "case_id": "OLD-168",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0023",
+        "expected_mo": 22,
+        "actual": {
+          "schema": 1,
+          "frame": 5614,
+          "elapsed_seconds": 36.9150529,
+          "rendered_mo": 21,
+          "applied_mo": 21,
+          "drawn_ui_mo": 21,
+          "requested_mo": 21,
+          "diagram_generation": 10,
+          "rendered_generation": 218,
+          "volume_generation": 218,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.8990720510482788,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.478282418,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-168.json"
+    },
+    {
+      "case_id": "OLD-168",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0024",
+        "expected_mo": 23,
+        "actual": {
+          "schema": 1,
+          "frame": 6100,
+          "elapsed_seconds": 39.8595515,
+          "rendered_mo": 21,
+          "applied_mo": 21,
+          "drawn_ui_mo": 21,
+          "requested_mo": 21,
+          "diagram_generation": 10,
+          "rendered_generation": 218,
+          "volume_generation": 218,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.8990720510482788,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.478282418,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-168.json"
+    },
+    {
+      "case_id": "OLD-170",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0158",
+        "expected_mo": 157,
+        "actual": {
+          "schema": 1,
+          "frame": 22617,
+          "elapsed_seconds": 190.1577959,
+          "rendered_mo": 153,
+          "applied_mo": 153,
+          "drawn_ui_mo": 153,
+          "requested_mo": 153,
+          "diagram_generation": 10,
+          "rendered_generation": 990,
+          "volume_generation": 990,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 12.88150405883789,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.281480537,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-170.json"
+    },
+    {
+      "case_id": "OLD-170",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0166",
+        "expected_mo": 165,
+        "actual": {
+          "schema": 1,
+          "frame": 23194,
+          "elapsed_seconds": 193.7264543,
+          "rendered_mo": 164,
+          "applied_mo": 164,
+          "drawn_ui_mo": 164,
+          "requested_mo": 164,
+          "diagram_generation": 10,
+          "rendered_generation": 997,
+          "volume_generation": 997,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 11.45740795135498,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.168015921,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-170.json"
+    },
+    {
+      "case_id": "OLD-171",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0030",
+        "expected_mo": 29,
+        "actual": {
+          "schema": 1,
+          "frame": 9410,
+          "elapsed_seconds": 63.8206542,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 395,
+          "volume_generation": 395,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 5.8554558753967285,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.195038174,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-171.json"
+    },
+    {
+      "case_id": "OLD-174",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0037",
+        "expected_mo": 36,
+        "actual": {
+          "schema": 1,
+          "frame": 6811,
+          "elapsed_seconds": 51.2210617,
+          "rendered_mo": 35,
+          "applied_mo": 35,
+          "drawn_ui_mo": 35,
+          "requested_mo": 35,
+          "diagram_generation": 10,
+          "rendered_generation": 271,
+          "volume_generation": 271,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.434272050857544,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.575458789,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-174.json"
+    },
+    {
+      "case_id": "OLD-174",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0038",
+        "expected_mo": 37,
+        "actual": {
+          "schema": 1,
+          "frame": 7297,
+          "elapsed_seconds": 54.2070744,
+          "rendered_mo": 35,
+          "applied_mo": 35,
+          "drawn_ui_mo": 35,
+          "requested_mo": 35,
+          "diagram_generation": 10,
+          "rendered_generation": 271,
+          "volume_generation": 271,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.434272050857544,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.575458789,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-174.json"
+    },
+    {
+      "case_id": "OLD-174",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0050",
+        "expected_mo": 49,
+        "actual": {
+          "schema": 1,
+          "frame": 7874,
+          "elapsed_seconds": 57.8188904,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.904384136199951,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897609,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-174.json"
+    },
+    {
+      "case_id": "OLD-174",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0051",
+        "expected_mo": 50,
+        "actual": {
+          "schema": 1,
+          "frame": 8360,
+          "elapsed_seconds": 60.8059857,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.904384136199951,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897609,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-174.json"
+    },
+    {
+      "case_id": "OLD-174",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0052",
+        "expected_mo": 51,
+        "actual": {
+          "schema": 1,
+          "frame": 8846,
+          "elapsed_seconds": 63.7933626,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.904384136199951,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897609,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-174.json"
+    },
+    {
+      "case_id": "OLD-174",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0053",
+        "expected_mo": 52,
+        "actual": {
+          "schema": 1,
+          "frame": 9332,
+          "elapsed_seconds": 66.7615816,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.904384136199951,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897609,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-174.json"
+    },
+    {
+      "case_id": "OLD-175",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0030",
+        "expected_mo": 29,
+        "actual": {
+          "schema": 1,
+          "frame": 4614,
+          "elapsed_seconds": 33.5642196,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 175,
+          "volume_generation": 175,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.287583827972412,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.425649032,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-175.json"
+    },
+    {
+      "case_id": "OLD-175",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0031",
+        "expected_mo": 30,
+        "actual": {
+          "schema": 1,
+          "frame": 5100,
+          "elapsed_seconds": 36.5202161,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 175,
+          "volume_generation": 175,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.287583827972412,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.425649032,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-175.json"
+    },
+    {
+      "case_id": "OLD-175",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0032",
+        "expected_mo": 31,
+        "actual": {
+          "schema": 1,
+          "frame": 5586,
+          "elapsed_seconds": 39.4767591,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 175,
+          "volume_generation": 175,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.287583827972412,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.425649032,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-175.json"
+    },
+    {
+      "case_id": "OLD-175",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0033",
+        "expected_mo": 32,
+        "actual": {
+          "schema": 1,
+          "frame": 6072,
+          "elapsed_seconds": 42.4335335,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 175,
+          "volume_generation": 175,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 4.287583827972412,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.425649032,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-175.json"
+    },
+    {
+      "case_id": "OLD-176",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0030",
+        "expected_mo": 29,
+        "actual": {
+          "schema": 1,
+          "frame": 4601,
+          "elapsed_seconds": 32.807208,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 174,
+          "volume_generation": 174,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.4584640264511108,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.356970634,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-176.json"
+    },
+    {
+      "case_id": "OLD-176",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0031",
+        "expected_mo": 30,
+        "actual": {
+          "schema": 1,
+          "frame": 5087,
+          "elapsed_seconds": 35.7579587,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 174,
+          "volume_generation": 174,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.4584640264511108,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.356970634,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-176.json"
+    },
+    {
+      "case_id": "OLD-176",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0032",
+        "expected_mo": 31,
+        "actual": {
+          "schema": 1,
+          "frame": 5573,
+          "elapsed_seconds": 38.7022879,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 174,
+          "volume_generation": 174,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.4584640264511108,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.356970634,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-176.json"
+    },
+    {
+      "case_id": "OLD-176",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0033",
+        "expected_mo": 32,
+        "actual": {
+          "schema": 1,
+          "frame": 6059,
+          "elapsed_seconds": 41.671157,
+          "rendered_mo": 28,
+          "applied_mo": 28,
+          "drawn_ui_mo": 28,
+          "requested_mo": 28,
+          "diagram_generation": 10,
+          "rendered_generation": 174,
+          "volume_generation": 174,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.4584640264511108,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.356970634,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-176.json"
+    },
+    {
+      "case_id": "OLD-198",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0021",
+        "expected_mo": 20,
+        "actual": {
+          "schema": 1,
+          "frame": 3511,
+          "elapsed_seconds": 23.2427896,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.3307199478149414,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.564175467,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-198.json"
+    },
+    {
+      "case_id": "OLD-198",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0022",
+        "expected_mo": 21,
+        "actual": {
+          "schema": 1,
+          "frame": 3997,
+          "elapsed_seconds": 26.1872479,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.3307199478149414,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.564175467,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-198.json"
+    },
+    {
+      "case_id": "OLD-198",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0023",
+        "expected_mo": 22,
+        "actual": {
+          "schema": 1,
+          "frame": 4483,
+          "elapsed_seconds": 29.1381077,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.3307199478149414,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.564175467,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-198.json"
+    },
+    {
+      "case_id": "OLD-199",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0021",
+        "expected_mo": 20,
+        "actual": {
+          "schema": 1,
+          "frame": 3511,
+          "elapsed_seconds": 23.1102955,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9473919868469238,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.566798243,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-199.json"
+    },
+    {
+      "case_id": "OLD-199",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0022",
+        "expected_mo": 21,
+        "actual": {
+          "schema": 1,
+          "frame": 3997,
+          "elapsed_seconds": 26.054758,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9473919868469238,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.566798243,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-199.json"
+    },
+    {
+      "case_id": "OLD-199",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0023",
+        "expected_mo": 22,
+        "actual": {
+          "schema": 1,
+          "frame": 4483,
+          "elapsed_seconds": 29.0054159,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9473919868469238,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.566798243,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-199.json"
+    },
+    {
+      "case_id": "OLD-200",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0021",
+        "expected_mo": 20,
+        "actual": {
+          "schema": 1,
+          "frame": 3511,
+          "elapsed_seconds": 22.9705786,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9389119744300842,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.564175467,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-200.json"
+    },
+    {
+      "case_id": "OLD-200",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0022",
+        "expected_mo": 21,
+        "actual": {
+          "schema": 1,
+          "frame": 3997,
+          "elapsed_seconds": 25.915072,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9389119744300842,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.564175467,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-200.json"
+    },
+    {
+      "case_id": "OLD-200",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0023",
+        "expected_mo": 22,
+        "actual": {
+          "schema": 1,
+          "frame": 4483,
+          "elapsed_seconds": 28.8655816,
+          "rendered_mo": 19,
+          "applied_mo": 19,
+          "drawn_ui_mo": 19,
+          "requested_mo": 19,
+          "diagram_generation": 10,
+          "rendered_generation": 124,
+          "volume_generation": 124,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9389119744300842,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.564175467,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-200.json"
+    },
+    {
+      "case_id": "OLD-220",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0012",
+        "expected_mo": 11,
+        "actual": {
+          "schema": 1,
+          "frame": 4479,
+          "elapsed_seconds": 29.3296841,
+          "rendered_mo": 10,
+          "applied_mo": 10,
+          "drawn_ui_mo": 10,
+          "requested_mo": 10,
+          "diagram_generation": 10,
+          "rendered_generation": 166,
+          "volume_generation": 166,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.5696959495544434,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.624194286,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-220.json"
+    },
+    {
+      "case_id": "OLD-230",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0050",
+        "expected_mo": 49,
+        "actual": {
+          "schema": 1,
+          "frame": 6928,
+          "elapsed_seconds": 50.700935,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 280,
+          "volume_generation": 280,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.152672052383423,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.433627423,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-230.json"
+    },
+    {
+      "case_id": "OLD-231",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0038",
+        "expected_mo": 37,
+        "actual": {
+          "schema": 1,
+          "frame": 6811,
+          "elapsed_seconds": 49.9401657,
+          "rendered_mo": 35,
+          "applied_mo": 35,
+          "drawn_ui_mo": 35,
+          "requested_mo": 35,
+          "diagram_generation": 10,
+          "rendered_generation": 271,
+          "volume_generation": 271,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 6.607872009277344,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.559803576,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-231.json"
+    },
+    {
+      "case_id": "OLD-231",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0051",
+        "expected_mo": 50,
+        "actual": {
+          "schema": 1,
+          "frame": 7414,
+          "elapsed_seconds": 53.6179628,
+          "rendered_mo": 49,
+          "applied_mo": 49,
+          "drawn_ui_mo": 49,
+          "requested_mo": 49,
+          "diagram_generation": 10,
+          "rendered_generation": 280,
+          "volume_generation": 280,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.9726719856262207,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.32215412,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-231.json"
+    },
+    {
+      "case_id": "OLD-231",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0052",
+        "expected_mo": 51,
+        "actual": {
+          "schema": 1,
+          "frame": 7900,
+          "elapsed_seconds": 56.5624842,
+          "rendered_mo": 49,
+          "applied_mo": 49,
+          "drawn_ui_mo": 49,
+          "requested_mo": 49,
+          "diagram_generation": 10,
+          "rendered_generation": 280,
+          "volume_generation": 280,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.9726719856262207,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.32215412,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-231.json"
+    },
+    {
+      "case_id": "OLD-231",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0053",
+        "expected_mo": 52,
+        "actual": {
+          "schema": 1,
+          "frame": 8386,
+          "elapsed_seconds": 59.5071259,
+          "rendered_mo": 49,
+          "applied_mo": 49,
+          "drawn_ui_mo": 49,
+          "requested_mo": 49,
+          "diagram_generation": 10,
+          "rendered_generation": 280,
+          "volume_generation": 280,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.9726719856262207,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.32215412,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-231.json"
+    },
+    {
+      "case_id": "OLD-232",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0037",
+        "expected_mo": 36,
+        "actual": {
+          "schema": 1,
+          "frame": 6811,
+          "elapsed_seconds": 46.5144182,
+          "rendered_mo": 35,
+          "applied_mo": 35,
+          "drawn_ui_mo": 35,
+          "requested_mo": 35,
+          "diagram_generation": 10,
+          "rendered_generation": 271,
+          "volume_generation": 271,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.005120038986206,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.575458788,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-232.json"
+    },
+    {
+      "case_id": "OLD-232",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0038",
+        "expected_mo": 37,
+        "actual": {
+          "schema": 1,
+          "frame": 7297,
+          "elapsed_seconds": 49.4651235,
+          "rendered_mo": 35,
+          "applied_mo": 35,
+          "drawn_ui_mo": 35,
+          "requested_mo": 35,
+          "diagram_generation": 10,
+          "rendered_generation": 271,
+          "volume_generation": 271,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.005120038986206,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.575458788,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-232.json"
+    },
+    {
+      "case_id": "OLD-232",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0050",
+        "expected_mo": 49,
+        "actual": {
+          "schema": 1,
+          "frame": 7874,
+          "elapsed_seconds": 53.0142949,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.376255989074707,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897608,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-232.json"
+    },
+    {
+      "case_id": "OLD-232",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0051",
+        "expected_mo": 50,
+        "actual": {
+          "schema": 1,
+          "frame": 8360,
+          "elapsed_seconds": 55.9599063,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.376255989074707,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897608,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-232.json"
+    },
+    {
+      "case_id": "OLD-232",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0052",
+        "expected_mo": 51,
+        "actual": {
+          "schema": 1,
+          "frame": 8846,
+          "elapsed_seconds": 58.9044794,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.376255989074707,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897608,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-232.json"
+    },
+    {
+      "case_id": "OLD-232",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0053",
+        "expected_mo": 52,
+        "actual": {
+          "schema": 1,
+          "frame": 9332,
+          "elapsed_seconds": 61.8490641,
+          "rendered_mo": 45,
+          "applied_mo": 45,
+          "drawn_ui_mo": 45,
+          "requested_mo": 45,
+          "diagram_generation": 10,
+          "rendered_generation": 278,
+          "volume_generation": 278,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 3.376255989074707,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.393897608,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-232.json"
+    },
+    {
+      "case_id": "OLD-239",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0005",
+        "expected_mo": 4,
+        "actual": {
+          "schema": 1,
+          "frame": 2984,
+          "elapsed_seconds": 19.8700948,
+          "rendered_mo": 0,
+          "applied_mo": 0,
+          "drawn_ui_mo": 0,
+          "requested_mo": 0,
+          "diagram_generation": 10,
+          "rendered_generation": 96,
+          "volume_generation": 96,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9709439873695374,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -2.82379023,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-239.json"
+    },
+    {
+      "case_id": "OLD-246",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0032",
+        "expected_mo": 31,
+        "actual": {
+          "schema": 1,
+          "frame": 3110,
+          "elapsed_seconds": 20.4742427,
+          "rendered_mo": 30,
+          "applied_mo": 30,
+          "drawn_ui_mo": 30,
+          "requested_mo": 30,
+          "diagram_generation": 10,
+          "rendered_generation": 102,
+          "volume_generation": 102,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9526079893112183,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": 0.0614222641,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-246.json"
+    },
+    {
+      "case_id": "OLD-246",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0033",
+        "expected_mo": 32,
+        "actual": {
+          "schema": 1,
+          "frame": 3596,
+          "elapsed_seconds": 23.4187939,
+          "rendered_mo": 30,
+          "applied_mo": 30,
+          "drawn_ui_mo": 30,
+          "requested_mo": 30,
+          "diagram_generation": 10,
+          "rendered_generation": 102,
+          "volume_generation": 102,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 0.9526079893112183,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": 0.0614222641,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-246.json"
+    },
+    {
+      "case_id": "OLD-248",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0028",
+        "expected_mo": 27,
+        "actual": {
+          "schema": 1,
+          "frame": 4559,
+          "elapsed_seconds": 30.8688688,
+          "rendered_mo": 25,
+          "applied_mo": 25,
+          "drawn_ui_mo": 25,
+          "requested_mo": 25,
+          "diagram_generation": 10,
+          "rendered_generation": 169,
+          "volume_generation": 169,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.32150399684906,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.0844526227,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-248.json"
+    },
+    {
+      "case_id": "OLD-258",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0032",
+        "expected_mo": 31,
+        "actual": {
+          "schema": 1,
+          "frame": 14420,
+          "elapsed_seconds": 102.6153484,
+          "rendered_mo": 30,
+          "applied_mo": 30,
+          "drawn_ui_mo": 30,
+          "requested_mo": 30,
+          "diagram_generation": 48,
+          "rendered_generation": 554,
+          "volume_generation": 554,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 6.831808090209961,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": 0.0609511142,
+          "occupation": 1,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-258.json"
+    },
+    {
+      "case_id": "OLD-258",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0033",
+        "expected_mo": 32,
+        "actual": {
+          "schema": 1,
+          "frame": 14906,
+          "elapsed_seconds": 105.5739468,
+          "rendered_mo": 30,
+          "applied_mo": 30,
+          "drawn_ui_mo": 30,
+          "requested_mo": 30,
+          "diagram_generation": 48,
+          "rendered_generation": 554,
+          "volume_generation": 554,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 6.831808090209961,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": 0.0609511142,
+          "occupation": 1,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-258.json"
+    },
+    {
+      "case_id": "OLD-258",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0062",
+        "expected_mo": 61,
+        "actual": {
+          "schema": 1,
+          "frame": 15470,
+          "elapsed_seconds": 109.068199,
+          "rendered_mo": 60,
+          "applied_mo": 60,
+          "drawn_ui_mo": 60,
+          "requested_mo": 60,
+          "diagram_generation": 48,
+          "rendered_generation": 560,
+          "volume_generation": 560,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 9.238368034362793,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": 0.285130663,
+          "occupation": 1,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-258.json"
+    },
+    {
+      "case_id": "OLD-259",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0022",
+        "expected_mo": 21,
+        "actual": {
+          "schema": 1,
+          "frame": 4491,
+          "elapsed_seconds": 30.6366586,
+          "rendered_mo": 13,
+          "applied_mo": 13,
+          "drawn_ui_mo": 13,
+          "requested_mo": 13,
+          "diagram_generation": 10,
+          "rendered_generation": 165,
+          "volume_generation": 165,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 1.5109119415283203,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.367398264,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-259.json"
+    },
+    {
+      "case_id": "OLD-271",
+      "check": "VIEW-LINEAR-MEMBER-CLICK",
+      "detail": {
+        "capture": "linear-member-0019",
+        "expected_mo": 18,
+        "actual": {
+          "schema": 1,
+          "frame": 4587,
+          "elapsed_seconds": 31.2407068,
+          "rendered_mo": 17,
+          "applied_mo": 17,
+          "drawn_ui_mo": 17,
+          "requested_mo": 17,
+          "diagram_generation": 10,
+          "rendered_generation": 169,
+          "volume_generation": 169,
+          "scene_matches_applied": true,
+          "evaluation_reason": "",
+          "kernel_ms": 5.151584148406982,
+          "compact": true,
+          "energy_unit": 0,
+          "axis_mode": 0,
+          "filter": 0,
+          "energy_hartree": -0.864400508,
+          "occupation": 2,
+          "spin": 0
+        }
+      },
+      "evidence": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-271.json"
+    }
+  ],
+  "view_failures_by_check": {
+    "VIEW-LINEAR-MEMBER-CLICK": 72
+  },
+  "view_case_reports": [
+    {
+      "case_id": "OLD-001",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-001.json",
+      "sha256": "8962162c8e7224f6623b7d37a8857215b773d1d9207e2d7a18570730e9e94775"
+    },
+    {
+      "case_id": "OLD-002",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-002.json",
+      "sha256": "f93c60eed4734ce94fedaeb50a3039728c5a2560d03c0882e79f75484c1c24df"
+    },
+    {
+      "case_id": "OLD-003",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-003.json",
+      "sha256": "100703785ba9257b47b6bca8d14993427e085a4ca14531d31e428043e8081499"
+    },
+    {
+      "case_id": "OLD-004",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-004.json",
+      "sha256": "d35ea39908296d4f4527d95df97edb928077b4a2a780dd9f87779cb5dcce01b1"
+    },
+    {
+      "case_id": "OLD-005",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-005.json",
+      "sha256": "a5202a5eb45c02215aa5562936d25dad5db7c4551871b526d652c9b13d4ced82"
+    },
+    {
+      "case_id": "OLD-006",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-006.json",
+      "sha256": "6ce1c75e98fbf8aa4cbc9a353bcb88878c67ca7e5ee01b43a3f519dd62c718bb"
+    },
+    {
+      "case_id": "OLD-007",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-007.json",
+      "sha256": "8526410c755a93c07bff7250f82669bfb5062c56920f44248d530cf9bddd9fcb"
+    },
+    {
+      "case_id": "OLD-008",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-008.json",
+      "sha256": "63fbe82e416bedfd3f247ef395aa9db18b6e3d7e0d5dd987255bffe8f91d8dfb"
+    },
+    {
+      "case_id": "OLD-009",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-009.json",
+      "sha256": "107ea4a94739ac80e1a4e54c212b91db1520e84a2af05a3e44b5869997f346c4"
+    },
+    {
+      "case_id": "OLD-010",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-010.json",
+      "sha256": "a6fa328cfcda5f4bc93e548e199191de154976b4c1bba1f5ef3809fb713b3f34"
+    },
+    {
+      "case_id": "OLD-011",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-011.json",
+      "sha256": "0c1ddd2d562bdf83ab561bc3f1e1a0450952e407ec9cc8bd0105f67f44879a99"
+    },
+    {
+      "case_id": "OLD-012",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-012.json",
+      "sha256": "a43d329b00e82686ca15a310edbd1809ab88d98e77d6cb5b47aa606cbf50d574"
+    },
+    {
+      "case_id": "OLD-013",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-013.json",
+      "sha256": "ebdfb72dd246e8f3ebb4a206f4ecc695d4e29b4ec141861cb6ec00db1652065b"
+    },
+    {
+      "case_id": "OLD-014",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-014.json",
+      "sha256": "1188cf312dc1394532027407561752bf101e136a667270c05ada779fdc9a5724"
+    },
+    {
+      "case_id": "OLD-015",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-015.json",
+      "sha256": "4a332918428f70cb67adc343124d4cbbb02ce544cfa43aa16946cd21aa6c0e0d"
+    },
+    {
+      "case_id": "OLD-016",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-016.json",
+      "sha256": "69e2535689f6ff7b0a8168f817bffcf7f038e0355ec5e7fd7dbabc603a7f390b"
+    },
+    {
+      "case_id": "OLD-017",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-017.json",
+      "sha256": "008da0f41179763579893ea45813510df09d2d9a84396aeec081a7c7e9bd767c"
+    },
+    {
+      "case_id": "OLD-018",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-018.json",
+      "sha256": "40eab8539a00873ca42d2b3d3a2ce8c6f5e2329f40a3a428a50a9c6905fcc359"
+    },
+    {
+      "case_id": "OLD-019",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-019.json",
+      "sha256": "9314225bd771a8feb339dd77fc9529167e0194f623ca353cd7adae974d8f3181"
+    },
+    {
+      "case_id": "OLD-020",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-020.json",
+      "sha256": "03178f2897dc611cf182aaca9ddd4910bbda5f81f3ce1138266aff6205e4efa7"
+    },
+    {
+      "case_id": "OLD-021",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-021.json",
+      "sha256": "00ba91d1dadf17c1764c4c616aab158f1656c97c894cb51a068a0322d1907fe6"
+    },
+    {
+      "case_id": "OLD-022",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-022.json",
+      "sha256": "43c89bfb13a244a3163ec1997f8124783ae4a164901ca70c92088cbe0e59e566"
+    },
+    {
+      "case_id": "OLD-023",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-023.json",
+      "sha256": "d929ecb36697a7d6c42f462d6ef7326806b377b939b37eb4a7712fe1cc8cc8b1"
+    },
+    {
+      "case_id": "OLD-024",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-024.json",
+      "sha256": "ada02402b932e215f4e8c48752095b64e021d659490a09d290bd1e4a7cd65ae4"
+    },
+    {
+      "case_id": "OLD-025",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-025.json",
+      "sha256": "fdaad497648c44b6f2648c1b390aec095c29f2c454a0ce6e29ded08a6ddd68d1"
+    },
+    {
+      "case_id": "OLD-026",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-026.json",
+      "sha256": "f2a8db3c90e599987698db748213269e0d70fd276bad936cdcf7b8ab91900c27"
+    },
+    {
+      "case_id": "OLD-027",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-027.json",
+      "sha256": "91a9650c6595ebe9a435a0e7bcff6c3e7acb7006100c1536d596facd15c9b72b"
+    },
+    {
+      "case_id": "OLD-028",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-028.json",
+      "sha256": "46b3553510a2554d38a2abc3d54b15954ed30ac5dca3e95f20a7f2e82e43f4c8"
+    },
+    {
+      "case_id": "OLD-029",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-029.json",
+      "sha256": "ec77e1d35087522415f3a5e945d520c70b2e30265b54befc8e925b5877908934"
+    },
+    {
+      "case_id": "OLD-030",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-030.json",
+      "sha256": "a9dc04102a074ea48c7b5c34122ff441e62ca97f125ffb576a71b142c0c77847"
+    },
+    {
+      "case_id": "OLD-031",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-031.json",
+      "sha256": "b1f1ace1a999e0afed622d2fc76d34da8d78a8a20179327d05feff42efba9399"
+    },
+    {
+      "case_id": "OLD-032",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-032.json",
+      "sha256": "ce079550b0d1ba75f9ba276d7848072cde5cf8e9ee990b55c5244ee5dbac75d5"
+    },
+    {
+      "case_id": "OLD-033",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-033.json",
+      "sha256": "05023f13d8b00dc9525841000d39e6e3732cb28e60f96ac90ecc3c5cd69c54a9"
+    },
+    {
+      "case_id": "OLD-034",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-034.json",
+      "sha256": "27c54a070dbcac19a2850631ad329bebf8f5d8d28bd358beb3e2f7567b05841e"
+    },
+    {
+      "case_id": "OLD-035",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-035.json",
+      "sha256": "b61451a8256d0348d00fec1be0714fbd7df88afbe81138d6da02029bc953fd18"
+    },
+    {
+      "case_id": "OLD-036",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-036.json",
+      "sha256": "ea52b4b5e0254d14cbee259446f5d92818d493cb49fe4aa44b05491e375d85e3"
+    },
+    {
+      "case_id": "OLD-037",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-037.json",
+      "sha256": "1a2660c756cdf87d325db338cf7db29c01db643f33cab845f8a74ccbc581ab6b"
+    },
+    {
+      "case_id": "OLD-038",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-038.json",
+      "sha256": "68b18173588c525f65bc753e53181c93514cb3669916c5bb445defc542206a9d"
+    },
+    {
+      "case_id": "OLD-039",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-039.json",
+      "sha256": "57c4a1ba28f49e044528fc86722c0c88bc080cf6682bedfbd59215a1bc95b38b"
+    },
+    {
+      "case_id": "OLD-040",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-040.json",
+      "sha256": "ffe25a32f3e553ffef53d5d8e725cb2ef8c1bf399c5d7a2ecc5a17f6b164a7f5"
+    },
+    {
+      "case_id": "OLD-041",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-041.json",
+      "sha256": "96e9642984e410059c29ef9e766ac161dcc3653bf74dda285836b4cfb3d9f734"
+    },
+    {
+      "case_id": "OLD-042",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-042.json",
+      "sha256": "f5f62d90d1e4c41a6c1d6067c31e92e2004ba6bc51c6295c3de26a30413e5f90"
+    },
+    {
+      "case_id": "OLD-043",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-043.json",
+      "sha256": "257747bea5d7a425dbb3e040f30193639dbbbe5e7dd16431776fa247cba46ea0"
+    },
+    {
+      "case_id": "OLD-044",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-044.json",
+      "sha256": "47a14505c2e14311d28cf820f502eb92581a3337189827bebfc8dd13f9d0bd72"
+    },
+    {
+      "case_id": "OLD-045",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-045.json",
+      "sha256": "abbc7fe1df68ddd06e58a3a8492ec1629ab499a459257693f85f0ffbe3350735"
+    },
+    {
+      "case_id": "OLD-046",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-046.json",
+      "sha256": "c8782d85a6704d3832c06727059d670d927421f41ab6e7dc81a3113a3651cf9d"
+    },
+    {
+      "case_id": "OLD-047",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-047.json",
+      "sha256": "f96f5fada18073bf520c642ff358ccdb143b731a24a2c7dd90eb3e5d4eea1bcf"
+    },
+    {
+      "case_id": "OLD-048",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-048.json",
+      "sha256": "3838c8e2a578a7966c6faba2ab871190dee9cd55c67e30b2f72ed999776de956"
+    },
+    {
+      "case_id": "OLD-049",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-049.json",
+      "sha256": "f385b06cb62678e598283e35b253475b40d3b78be9af26d16bc8abe734c7a1e2"
+    },
+    {
+      "case_id": "OLD-050",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-050.json",
+      "sha256": "6c3959d6adef80b5d1e5bad9824056414ea3fad3e33f3a53d5571555a71bd9d1"
+    },
+    {
+      "case_id": "OLD-051",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-051.json",
+      "sha256": "c952910237707a5cf865f47987ebeea59f25cd22820e85bff91b94dde9ac7d33"
+    },
+    {
+      "case_id": "OLD-052",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-052.json",
+      "sha256": "8e50ddeb4bee316663e1baaeb375fd8b8695972c40533edf6662833126e72e8b"
+    },
+    {
+      "case_id": "OLD-053",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-053.json",
+      "sha256": "e7610439b228e6dca22b9ee9925251de69c727380a52ee87a275b3e3ac4e76a7"
+    },
+    {
+      "case_id": "OLD-054",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-054.json",
+      "sha256": "01a5156cf8f169a55430a5ddb8f6b2394a93066f79be79506d1ab179bcf7f4fb"
+    },
+    {
+      "case_id": "OLD-055",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-055.json",
+      "sha256": "9b011c8d2b0ac4e02b7a718b91fa17e123acc9c3d53a5632450835c995406fe7"
+    },
+    {
+      "case_id": "OLD-056",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-056.json",
+      "sha256": "2c339fcee7585fa6ace8c7b1d1d62a3c928f22b0d8fa0cef31f37abac771373e"
+    },
+    {
+      "case_id": "OLD-057",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-057.json",
+      "sha256": "9e7035b81a203e80715148b2db7fe3e053e7d1170dce5c02fff897c0b23ac64e"
+    },
+    {
+      "case_id": "OLD-058",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-058.json",
+      "sha256": "463311d93f98e1301fd7996ec8f441d74a07c59040b61dd0c48e50de01d5d01e"
+    },
+    {
+      "case_id": "OLD-059",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-059.json",
+      "sha256": "91425396b7017709addb58f30f8d26dac0561c3fa4e723844b9689421cafc8ae"
+    },
+    {
+      "case_id": "OLD-060",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-060.json",
+      "sha256": "edc530a49bafe660ba2a59c9f33e010cdf7afac8ee6d63d4f47147a0c21e3a77"
+    },
+    {
+      "case_id": "OLD-061",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-061.json",
+      "sha256": "9c75dc9663ba450319c556bdc3123fbb9e8de2cff5b525bbb737562e7b4cc5f6"
+    },
+    {
+      "case_id": "OLD-062",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-062.json",
+      "sha256": "e22d198d4f52c536bc7b68dc0a5d3eb1c9e5d071b0fd01d71fc663beef54f31c"
+    },
+    {
+      "case_id": "OLD-063",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-063.json",
+      "sha256": "4322166463bdddc1d607c02579444b7eb1690242324dbdf333832709160aab5b"
+    },
+    {
+      "case_id": "OLD-064",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-064.json",
+      "sha256": "1769a34a8fe1d2a16c27237184a59774fe21f724edc5aa653719ff91515c598b"
+    },
+    {
+      "case_id": "OLD-065",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-065.json",
+      "sha256": "a948868785c628168fcd1ca87476433aaf194dad6e121b7fa710877e88783d60"
+    },
+    {
+      "case_id": "OLD-066",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-066.json",
+      "sha256": "cf64bd732ab434ef236fc325ae7995096bcc21febf4a206395a692a199dbfba6"
+    },
+    {
+      "case_id": "OLD-067",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-067.json",
+      "sha256": "01b67e2ff8ec5518e3b184292da90b6a4f021a30e2afe71fdd60e1886eb2718b"
+    },
+    {
+      "case_id": "OLD-068",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-068.json",
+      "sha256": "744fbb0f621fb0cf2e04ce4cc56f7fd1077388c78ea2fe4eaa1e7fe7fb6d8013"
+    },
+    {
+      "case_id": "OLD-069",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-069.json",
+      "sha256": "91f913777811ab45104d91937248b58136cd30cb51e40feadb1b768f76938611"
+    },
+    {
+      "case_id": "OLD-070",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-070.json",
+      "sha256": "8be512b5e9f2ec99e5bd278c779f85ce9f9d1009ed7928ff4e7ef3c80e91b132"
+    },
+    {
+      "case_id": "OLD-071",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-071.json",
+      "sha256": "acce1b033ea7a6d756fb3dfea81d16b25ae587c839534b74ae15686a90388390"
+    },
+    {
+      "case_id": "OLD-072",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-072.json",
+      "sha256": "4db925f4bce9e9ae82af93a4d287930d8132cbd632242614f8d09931641d456e"
+    },
+    {
+      "case_id": "OLD-073",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-073.json",
+      "sha256": "e2e1f5e78bf50964edf2a08fa4c54642fcd62686e2537c224c825794bd994f59"
+    },
+    {
+      "case_id": "OLD-074",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-074.json",
+      "sha256": "52c2588b15f7e94d7c8357129ee094c17b6606a6959cfc7823a6757e45e97a9b"
+    },
+    {
+      "case_id": "OLD-075",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-075.json",
+      "sha256": "edf54ccc9ae201e5d07066a32756f326d10f4c899534931984abada96ad07a66"
+    },
+    {
+      "case_id": "OLD-076",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-076.json",
+      "sha256": "9947aa7d2dbc1b74f9c2820cb90ed69c3fa392830f3e505d5ad136d380664fce"
+    },
+    {
+      "case_id": "OLD-077",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-077.json",
+      "sha256": "7f8eb2a38ac60557d0f9134269b9c107c835dfdfb757fcb9af516758a1337df5"
+    },
+    {
+      "case_id": "OLD-078",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-078.json",
+      "sha256": "458d881a538029edb29c3fe721c963a05f06e1cd5ab201741002d72992b62874"
+    },
+    {
+      "case_id": "OLD-079",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-079.json",
+      "sha256": "fe3b5eaef5f26365200b2f363b2e6e0ac309401fdb17091cc809e5db36052260"
+    },
+    {
+      "case_id": "OLD-080",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-080.json",
+      "sha256": "7d9151ffe6aa5ec3c05d821fd1d1287e2c0941c794ba1f6bd41d277abab23a08"
+    },
+    {
+      "case_id": "OLD-081",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-081.json",
+      "sha256": "afc597fb0699b6c8ce6cf9cb8c0a83f2f8bc3ee9dd3b4acac86cdc93cd77c213"
+    },
+    {
+      "case_id": "OLD-082",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-082.json",
+      "sha256": "b8267d8155e12561d24d126c2acd7b00f3df888fe0e142dfe75f37e10470e8e6"
+    },
+    {
+      "case_id": "OLD-083",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-083.json",
+      "sha256": "9d341791cbdceb1fefab9e08b3958654ad8a02f3cdd1607a9716d5b3851edaaf"
+    },
+    {
+      "case_id": "OLD-084",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-084.json",
+      "sha256": "e9326fac10e0bcb0e96db7ad1db41818e23ee5f1d9af29282f9b3320710cb25e"
+    },
+    {
+      "case_id": "OLD-085",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-085.json",
+      "sha256": "7cf2d5c5b4c00af87e4ef7398c2cd84f9e5316d233b10307512f3867fc03d239"
+    },
+    {
+      "case_id": "OLD-086",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-086.json",
+      "sha256": "697d9343f7645382274200375166dbf2d540699fc35ae00a67a0919125a284bf"
+    },
+    {
+      "case_id": "OLD-087",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-087.json",
+      "sha256": "7d598e71a0617d7512b34216051590c73c0fbcc0b932789b4f85dc6cebf00111"
+    },
+    {
+      "case_id": "OLD-088",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-088.json",
+      "sha256": "dff9e3a787c691795f42fa2543a82c954c08929c278bbbc452ae031285d9476b"
+    },
+    {
+      "case_id": "OLD-089",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-089.json",
+      "sha256": "6a08ab8ab506aa236f32c49a8b3e232f76098ddfa7702228a12e396f91ccc620"
+    },
+    {
+      "case_id": "OLD-090",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-090.json",
+      "sha256": "da7ba47ab673518f824364d6fd52594f9b5aa4f4d7468c7c01c5a7a7d0267b7d"
+    },
+    {
+      "case_id": "OLD-091",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-091.json",
+      "sha256": "fda7efd0695688ae2dccdf5fe0c9f0fb4413cd54b4dad0ed01126a828438fbb0"
+    },
+    {
+      "case_id": "OLD-092",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-092.json",
+      "sha256": "6b629cce6747e402a8968c172691554d299e42f3865d43117d8486dbd667d469"
+    },
+    {
+      "case_id": "OLD-093",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-093.json",
+      "sha256": "26ed4f229ed5725094165f6c2438c587075518f73a99014c5229865a40c235ff"
+    },
+    {
+      "case_id": "OLD-094",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-094.json",
+      "sha256": "2edaa5f029da6a0325f4f8611ad1d3a7c3f5f40a2e4ec6663b0f2d9813f2af3d"
+    },
+    {
+      "case_id": "OLD-095",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-095.json",
+      "sha256": "94445714944c7693cad9f65eea706988135f63b8c00c6d8f92b37302a852c485"
+    },
+    {
+      "case_id": "OLD-096",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-096.json",
+      "sha256": "21c42d6d775c7cbbc97a44424e9dd70bbe95d8cab191379a579ef59f71e6a50b"
+    },
+    {
+      "case_id": "OLD-097",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-097.json",
+      "sha256": "d5e075ba3c3ca5a4d9fb562f861e1000e3b43b9d06be82aa83df5ce15e8a13e4"
+    },
+    {
+      "case_id": "OLD-098",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-098.json",
+      "sha256": "0c4d88dc4246f499e82b03c49c393b4330c8581d4cb2f03a56655ebb4a8cd6af"
+    },
+    {
+      "case_id": "OLD-099",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-099.json",
+      "sha256": "cf66f5d026d9d67513f9860d4a3b7bb7c77b56d230d7390c0cdc530e8948282d"
+    },
+    {
+      "case_id": "OLD-100",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-100.json",
+      "sha256": "4c84f1154dc1eb47e093a1a59bd2f69465f5bbbc89ffd1ffec68a716ff96c4f7"
+    },
+    {
+      "case_id": "OLD-101",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-101.json",
+      "sha256": "0fb1120d56ab4a1a87bbfaf0f90ef0cd9461600f6bb1b026e0bc37c65e66b69b"
+    },
+    {
+      "case_id": "OLD-102",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-102.json",
+      "sha256": "663cc3d34b9695e02a9fb5677f440fbaa0d2fe3b510c4cd04454561535927baf"
+    },
+    {
+      "case_id": "OLD-103",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-103.json",
+      "sha256": "e8574d7e3fce7fd0accaf4b742c1f9c45a1505667bd8822beeb8c1d6bd35a263"
+    },
+    {
+      "case_id": "OLD-104",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-104.json",
+      "sha256": "c5d40bc1f01b957081be2304095700626c75676295614f9b219fc3c92e9dc7c7"
+    },
+    {
+      "case_id": "OLD-105",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-105.json",
+      "sha256": "0f0941b596a0f785aa29a6b38492cf116c2b600f2df375970c505673babbb927"
+    },
+    {
+      "case_id": "OLD-106",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-106.json",
+      "sha256": "908c48c7185efb6ad0402fcee7c97f18386d49753754712392d7a789a8b6ea52"
+    },
+    {
+      "case_id": "OLD-107",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-107.json",
+      "sha256": "d0b230174c819163164443c8269ba26f85528affd420e63339f77b632360b0ad"
+    },
+    {
+      "case_id": "OLD-108",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-108.json",
+      "sha256": "d4ff388f70773361e8b551934241645b2c15738247dfda17645adde719818a34"
+    },
+    {
+      "case_id": "OLD-109",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-109.json",
+      "sha256": "1faf3e6fb34b4a0060c27fa458fbfddbb65afe8b8800dc5a443390a48568b942"
+    },
+    {
+      "case_id": "OLD-110",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-110.json",
+      "sha256": "5fd4dc5e8695c608f539a5d3fe06f65631c5e43a331b042720411991d2ea0a3d"
+    },
+    {
+      "case_id": "OLD-111",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-111.json",
+      "sha256": "a70f882f9b426e8238a02c6993a671ca2f3add7d523949fa91d64c30ccf0c374"
+    },
+    {
+      "case_id": "OLD-112",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-112.json",
+      "sha256": "34398a8d701c2d27612f7580c6d330a2ecd36dcb3818662bc9e044664e7ad0ec"
+    },
+    {
+      "case_id": "OLD-113",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-113.json",
+      "sha256": "1ed6aeb567e756bc5517ac1108d3d5f9a8099d81eed0ac918854ba73daf85f58"
+    },
+    {
+      "case_id": "OLD-114",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-114.json",
+      "sha256": "917fb6af489b0d237669db9f9f7a1837bb64ee9731b81cdd19031fc6d36a529a"
+    },
+    {
+      "case_id": "OLD-115",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-115.json",
+      "sha256": "a0580e22e71ef4bac1b2d829d16ddf921d9a54172041f2e712c6cc72505532f0"
+    },
+    {
+      "case_id": "OLD-116",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-116.json",
+      "sha256": "fb99db9914f2eda4458522e6c3d518447cb8240e45c169da4ed5a28f0625426a"
+    },
+    {
+      "case_id": "OLD-117",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-117.json",
+      "sha256": "03bf4e9d3afc2137a3320cdbc1058922b7bed2af485d894207cc85f8bca17d7b"
+    },
+    {
+      "case_id": "OLD-118",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-118.json",
+      "sha256": "67f4bfd9739cf57284d2d49b9791d41bf7368da4bc12190a264ca864f05543e7"
+    },
+    {
+      "case_id": "OLD-119",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-119.json",
+      "sha256": "876c3619d3f8fe283a60e53ec20c2d8de2e83e33a281c24b2e6376fbb71fc9d4"
+    },
+    {
+      "case_id": "OLD-120",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-120.json",
+      "sha256": "1230335ea99a2eac5544db0ffcd808b5a06d1d5fd0447d17d5417d4747dc2f50"
+    },
+    {
+      "case_id": "OLD-121",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-121.json",
+      "sha256": "811fe62574f6091e3a73791d8c3fc32a226b6b8c12b38b6e320d66cd854164ea"
+    },
+    {
+      "case_id": "OLD-122",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-122.json",
+      "sha256": "a55475c3bdca6bc54d000dd878148cfcb6203d0f5ab7800ded02737357722f79"
+    },
+    {
+      "case_id": "OLD-123",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-123.json",
+      "sha256": "e38917ee08c4d42e4bfebed24bc2fe6eedb7bbcebbaa08cb622719b613423e20"
+    },
+    {
+      "case_id": "OLD-124",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-124.json",
+      "sha256": "0c159a43fac3274cb0d56b49326e6b96bdbd83f14f3c74eacc2e628b5517dffc"
+    },
+    {
+      "case_id": "OLD-125",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-125.json",
+      "sha256": "533ae3241d5f770c35185e2a2216ca96ee43c6feaa41036079fcf45a1ebb70a9"
+    },
+    {
+      "case_id": "OLD-126",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-126.json",
+      "sha256": "28daae1b000c8c05908e79cf950451c67ee8bba04d3e826c3a43146747acff1d"
+    },
+    {
+      "case_id": "OLD-127",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-127.json",
+      "sha256": "5e77d061bd58dac0b01e415eaa60d421d91a253c10cfe4c436ecbc8b8622fb64"
+    },
+    {
+      "case_id": "OLD-128",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-128.json",
+      "sha256": "d1d4abfcf53ca55b7db321111c4bec22fa660a22191fc2511dfb925337d37ba3"
+    },
+    {
+      "case_id": "OLD-129",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-129.json",
+      "sha256": "19b0a257c502fba20a7b7bd8f4fb5d23615bda3d17ef440657934c1388c95caa"
+    },
+    {
+      "case_id": "OLD-130",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-130.json",
+      "sha256": "72a1570bf5b74348ae46175310a52d4eb17b7312109e295da25b3afb6c15837c"
+    },
+    {
+      "case_id": "OLD-131",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-131.json",
+      "sha256": "d0c53da7cd1aee5f3bb46f4dca326c8b6d893a56ce5f11f64b93c2b2d38b3b13"
+    },
+    {
+      "case_id": "OLD-132",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-132.json",
+      "sha256": "4e645d3ac9ca1cb1d3b52d2e9a1c30eff5d8c28cd97963d439326ee83a0b71e5"
+    },
+    {
+      "case_id": "OLD-133",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-133.json",
+      "sha256": "cc706d91399c9ccf29960dd617605f810895630f61d24c9a7d6200ccd4912e7c"
+    },
+    {
+      "case_id": "OLD-134",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-134.json",
+      "sha256": "d1170aac1e3fd6497b823183b75ca8a6c986146463254b3543bdb70eb903dec7"
+    },
+    {
+      "case_id": "OLD-135",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-135.json",
+      "sha256": "1411b774e491804efde355f0cb064e7c87d998c48851ef2a8021e2f5c0d2def3"
+    },
+    {
+      "case_id": "OLD-136",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-136.json",
+      "sha256": "8212b284486864daa4d668a17eb57a2b151a32b8fdf520d6e3f7834829077fe2"
+    },
+    {
+      "case_id": "OLD-137",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-137.json",
+      "sha256": "362473c1ab9fe97ff5edd887269492c314f6d6644c5161d89474266ede8e2ff5"
+    },
+    {
+      "case_id": "OLD-138",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-138.json",
+      "sha256": "301cbf1a345d49a1b41a32a055acb6bb1abe4916d633889caba22a73f9db95e7"
+    },
+    {
+      "case_id": "OLD-139",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-139.json",
+      "sha256": "df4754034c0d9094909492dcbe64e1260a53da5a32cd57c27549bfd65f9c4b15"
+    },
+    {
+      "case_id": "OLD-140",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-140.json",
+      "sha256": "0b982516c10dcf6e7e21fb2e2f588bcec97b661a92320659ba928ed8fc045058"
+    },
+    {
+      "case_id": "OLD-141",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-141.json",
+      "sha256": "396ae2884a1ff7b206f936bfd068e7fb55f7147dc629dc86d2ec93169d8f987a"
+    },
+    {
+      "case_id": "OLD-142",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-142.json",
+      "sha256": "3a824ca6c3fd5eb8ca53227dd42e561555ae9f213e7f79f3f067f9b4993ecfc9"
+    },
+    {
+      "case_id": "OLD-143",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-143.json",
+      "sha256": "ad502d7f38c0b17756f078dfbe9fbaa45e6aeb3eb2402bea1fc76fbb3f7871f8"
+    },
+    {
+      "case_id": "OLD-144",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-144.json",
+      "sha256": "5cf56320c9f9d1d31a01422a8b67288568ab1e7ddfa2b97de50f9fb503d193f3"
+    },
+    {
+      "case_id": "OLD-145",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-145.json",
+      "sha256": "947eff761cf48a826dd37516afa09876974025fec86268e6521dfb27a97ff549"
+    },
+    {
+      "case_id": "OLD-146",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-146.json",
+      "sha256": "5947d5896e0c257d4622eb996b3709a1db3945a51b5951b5fb1b8e681b9490c9"
+    },
+    {
+      "case_id": "OLD-147",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-147.json",
+      "sha256": "c59fb2c85121c7883164bc2046437d4f8fd5c98a7926ab8d00adc75af7e43258"
+    },
+    {
+      "case_id": "OLD-148",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-148.json",
+      "sha256": "2ce0f4dfaedca33bc408c0b1562f9344b0e8b063eebd700aac08e89ab141974b"
+    },
+    {
+      "case_id": "OLD-149",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-149.json",
+      "sha256": "eca63a5b6594437279009e70c799a8b6af069304964cff0960e75ce6dd2bd065"
+    },
+    {
+      "case_id": "OLD-150",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-150.json",
+      "sha256": "509e120208fb94937339d185d7ca2985a56f01c415ce1b62f3f450626fc0eace"
+    },
+    {
+      "case_id": "OLD-151",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-151.json",
+      "sha256": "3b5e64dd9722de2470a84c16b5931e9c532bab15eeb09c0ac73beb15f9e62bcc"
+    },
+    {
+      "case_id": "OLD-152",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-152.json",
+      "sha256": "4e12598c17e3c1dc3d5f46f329bf555248bb51db2e4c454c46aa3602db44581d"
+    },
+    {
+      "case_id": "OLD-153",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-153.json",
+      "sha256": "6ebbcdb4067935e01cf5c3fe6bd6ac98ef57eb5b5ba4cf2097aa51a2e509509b"
+    },
+    {
+      "case_id": "OLD-154",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-154.json",
+      "sha256": "4c24e219babefedd90011859bc9f0b78211da833bca0482327ef3ffa65df3bb6"
+    },
+    {
+      "case_id": "OLD-155",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-155.json",
+      "sha256": "b0399649e2ef11508e1e0851fed9a0fccea75e03b28f6581261486e4fcdba260"
+    },
+    {
+      "case_id": "OLD-156",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-156.json",
+      "sha256": "72f89229b2b0a6c7ad62d8bce686315095243761d674f6ecc317a3da6c9e91e3"
+    },
+    {
+      "case_id": "OLD-157",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-157.json",
+      "sha256": "32dfc0a781b5203b22364242cdc9268b1ff9fe0897c2713269286561daa5f330"
+    },
+    {
+      "case_id": "OLD-158",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-158.json",
+      "sha256": "98d4d7ae8566930bd40e53c98def2f312a32c16bfbf405957819521cc47cc84f"
+    },
+    {
+      "case_id": "OLD-159",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-159.json",
+      "sha256": "d9f5a66d46478d62f1abf83191b44355522b2b17d78271ea3956a95752d53565"
+    },
+    {
+      "case_id": "OLD-160",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-160.json",
+      "sha256": "02d67ea90017974f777f7d7d703d563dde7f419dcb20749d8662453fa32172b3"
+    },
+    {
+      "case_id": "OLD-161",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-161.json",
+      "sha256": "8443866b6a46069feb3e67547631368c740975d2095d9253cca7e79784be5c0d"
+    },
+    {
+      "case_id": "OLD-162",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-162.json",
+      "sha256": "0113b5384096433c5109e8e5a191223dec9566e6604c20ad7d59ca966c25dad3"
+    },
+    {
+      "case_id": "OLD-163",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-163.json",
+      "sha256": "b6bed6e96ea787d4b9f1554c6a101218a003e1d32f462f0eb86d3d3b8bf7a179"
+    },
+    {
+      "case_id": "OLD-164",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-164.json",
+      "sha256": "3beeae69752168ebf713ffa02da877c498f598a39e12780d08b0ebc9bb3aac14"
+    },
+    {
+      "case_id": "OLD-165",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-165.json",
+      "sha256": "09c36b457e66ae645fd036a0320290cc78b5438f50a7679427782653fd5f52aa"
+    },
+    {
+      "case_id": "OLD-166",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-166.json",
+      "sha256": "5320bf1f48c7e8b9ca5d03245bdcd3751db9458782e677a29ab63d1ee318246a"
+    },
+    {
+      "case_id": "OLD-167",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-167.json",
+      "sha256": "664350654cbc12393873172ac9e7ad366d2feb748ed9be9b03d6e56cf0f5a848"
+    },
+    {
+      "case_id": "OLD-168",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-168.json",
+      "sha256": "46cf927805f34af64ae1990399046f7ca6a6dbd2275bef3d3cc9cd4329fc4f38"
+    },
+    {
+      "case_id": "OLD-169",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-169.json",
+      "sha256": "c38278023878d8b1dbefe0a8eb2423dca7cb584c32e36d8c1a927ba826982a9b"
+    },
+    {
+      "case_id": "OLD-170",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-170.json",
+      "sha256": "2aa70be856e56c52f54334016be58c6755ae863268430a9c5167b36d83082f75"
+    },
+    {
+      "case_id": "OLD-171",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-171.json",
+      "sha256": "1e713c221c3dffcedcbc5e94c018db4e143ba1f5465e754cfb7f8c4d42891016"
+    },
+    {
+      "case_id": "OLD-172",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-172.json",
+      "sha256": "ef766ed6ae4308c98a0f13fea5491975dd163bafa0cc500e5bf18b49da707802"
+    },
+    {
+      "case_id": "OLD-173",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-173.json",
+      "sha256": "df1bf835e5584c7e75f6b698f944d9fe8bdd04bbe58b0586c1b9c1f3c83b9592"
+    },
+    {
+      "case_id": "OLD-174",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-174.json",
+      "sha256": "e352edd0bcf7a3e80a8d994b04034b31acde719b308fe3f750fe72153a10ab1a"
+    },
+    {
+      "case_id": "OLD-175",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-175.json",
+      "sha256": "acfde5da231d0fda159bbdbc96336f46702726a5cb7e339e62e7a66c1a078849"
+    },
+    {
+      "case_id": "OLD-176",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-176.json",
+      "sha256": "fbd074e85ec2cb875b771f087e7ce60000afd4a0b4532c402f3c906465ddb42f"
+    },
+    {
+      "case_id": "OLD-177",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-177.json",
+      "sha256": "80adf686fa72b794bba3331e00824e5727f34c27ccfd9a2d48eaf7e1a8fcd919"
+    },
+    {
+      "case_id": "OLD-178",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-178.json",
+      "sha256": "ac5dfa38f4172fb83d7f8bd54384893dd027cadc112109d97e7888a6bcc5abbf"
+    },
+    {
+      "case_id": "OLD-179",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-179.json",
+      "sha256": "e3921c28d840f8391a85a6284a6598fe769233041e6da90b5b82a8481fc6bb75"
+    },
+    {
+      "case_id": "OLD-180",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-180.json",
+      "sha256": "40eb3bb5a8ab760804981e311e1f265bfd28863c57fe102768c401a557140a9f"
+    },
+    {
+      "case_id": "OLD-181",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-181.json",
+      "sha256": "634fd1896f87a87fb5abc718764095a0cdc1be70ab200b683bede9f387687db1"
+    },
+    {
+      "case_id": "OLD-182",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-182.json",
+      "sha256": "10a48998e918f6b8945152568aed0af28cf3b8fad689ad6335c57f551b04c244"
+    },
+    {
+      "case_id": "OLD-183",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-183.json",
+      "sha256": "a188180450839cd467f2fe7d028ba7181e5b372507ae0313136927ffe359f313"
+    },
+    {
+      "case_id": "OLD-184",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-184.json",
+      "sha256": "37a1d98fdf1e3d505447838633e23dabceafa88673f57894a168922f1e9cf837"
+    },
+    {
+      "case_id": "OLD-185",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-185.json",
+      "sha256": "ba0cb985cba7b51a945a0c26064446f9d00524e42217b26f670665f38e5d317f"
+    },
+    {
+      "case_id": "OLD-186",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-186.json",
+      "sha256": "45844b7b80d7ab73492270776fe1e95107345f51bbccdc13d621d0f14f196dab"
+    },
+    {
+      "case_id": "OLD-187",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-187.json",
+      "sha256": "212a82b495e74e5b466c663fbafe1d0962db0ace64e306edc3f1c57e5a194053"
+    },
+    {
+      "case_id": "OLD-188",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-188.json",
+      "sha256": "56504ad5e6ab230bf8f2653e3101eae8ec05fc4f80ec571b654d0648618ed1dc"
+    },
+    {
+      "case_id": "OLD-189",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-189.json",
+      "sha256": "2bd453e13f073d1abc134c5dc19983d1147aede9e8b62075c706375136dacaa8"
+    },
+    {
+      "case_id": "OLD-190",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-190.json",
+      "sha256": "8ed075b06c4688e6af0aba09df028e5df61bf1ec387543cca406a949fe15ed27"
+    },
+    {
+      "case_id": "OLD-191",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-191.json",
+      "sha256": "75f5f381664816101c32a53992c2442612666740869bf3b4de5db6a37ce44506"
+    },
+    {
+      "case_id": "OLD-192",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-192.json",
+      "sha256": "72d9e36ee0c25cf8c0be1a3068c5e10c79ccb4363ef2eb929acc467447ef6b8d"
+    },
+    {
+      "case_id": "OLD-193",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-193.json",
+      "sha256": "0573d99c704fe6c511549862b0a95fe31de109d24e5106625971762ec18c89f3"
+    },
+    {
+      "case_id": "OLD-194",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-194.json",
+      "sha256": "a068e78881fac5c823421c403cabc676192e2c2533fb88a41f443f0adbf4ba13"
+    },
+    {
+      "case_id": "OLD-195",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-195.json",
+      "sha256": "683cb27d6bd429861f158a881b655c1cce4a06baef97367325eca4869b978376"
+    },
+    {
+      "case_id": "OLD-196",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-196.json",
+      "sha256": "dadadb6536d63f353fec43a9242c3586f859516b261aef7134cad4dd57697a4d"
+    },
+    {
+      "case_id": "OLD-197",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-197.json",
+      "sha256": "8082b024ccb9d2c9ed5579732064b31ef2916c6be9c8bf32878fca28d301098e"
+    },
+    {
+      "case_id": "OLD-198",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-198.json",
+      "sha256": "c8fc5e9167192b5152a3697326abb12f4f1a69b81693c3673a59c209ae391a1f"
+    },
+    {
+      "case_id": "OLD-199",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-199.json",
+      "sha256": "1cc4f8aebe3a2e0d73dc43c79edfe1e8bc4db1b9387a8a1962ec6337153acb05"
+    },
+    {
+      "case_id": "OLD-200",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-200.json",
+      "sha256": "c7f6f67104ab595cce94cef6cc4fd77ef87d5113f9f5bb84bc226c1ee70cfb96"
+    },
+    {
+      "case_id": "OLD-201",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-201.json",
+      "sha256": "fab9861ae6344e421ac317fd631955d81a6554b26b18d4419dfce0195e65464d"
+    },
+    {
+      "case_id": "OLD-202",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-202.json",
+      "sha256": "7f7d6b50bc795f572222e139849638c8fbd296ae12f5cdc2d9ac63bc630a7d11"
+    },
+    {
+      "case_id": "OLD-203",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-203.json",
+      "sha256": "d437cb828b50cc44cdb14abb96ee221ea81f104797c5c247b50a4f594122b3fc"
+    },
+    {
+      "case_id": "OLD-204",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-204.json",
+      "sha256": "a0ef78e58223b0008dbcc3abc32ca4fcb77480d050d5b4dce8a2e03439306175"
+    },
+    {
+      "case_id": "OLD-205",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-205.json",
+      "sha256": "138e2e1e2d6c5ee11afbc70f8a1d5e9cbb1c686cb7b6672d33471b512ba597e9"
+    },
+    {
+      "case_id": "OLD-206",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-206.json",
+      "sha256": "4dfe4adc1e5b7d4b76a851993f71496675e121b7c4850e5a96f50c953ea1ce2c"
+    },
+    {
+      "case_id": "OLD-207",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-207.json",
+      "sha256": "4cca9b1984e94e7c2cd9c252bdd2153d7f7b9790de7b283c1eab9e1b84c703ee"
+    },
+    {
+      "case_id": "OLD-208",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-208.json",
+      "sha256": "327d42b6ed8ce8a73af74e2983a52f99308a2a8b65b6bb531a122367dff622ce"
+    },
+    {
+      "case_id": "OLD-209",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-209.json",
+      "sha256": "d9b9f5066aaf91a3152613e404cd92d6d14f8ad25c985d184457ec4e17ca1aa2"
+    },
+    {
+      "case_id": "OLD-210",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-210.json",
+      "sha256": "36692ec96a692b7c0e98f6fe726b168319f20a33bc1104cc77eef26c9846033f"
+    },
+    {
+      "case_id": "OLD-211",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-211.json",
+      "sha256": "89293e02634e4fbf3ddb06a4c1ac7513125ba15895394091d0921b7573db35ce"
+    },
+    {
+      "case_id": "OLD-212",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-212.json",
+      "sha256": "ddbfafdb5867900ae143f17ac728bb5df2b9a1dee0a817ff26a9e77f3b662ee9"
+    },
+    {
+      "case_id": "OLD-213",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-213.json",
+      "sha256": "bb163e83dd5f44a5231d4b700426c3974bb3de44d528d4660ece250e63e1bab6"
+    },
+    {
+      "case_id": "OLD-214",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-214.json",
+      "sha256": "2522e1707a661861a75808196f21a325ff35ce9d801683e5ad13a34392a24377"
+    },
+    {
+      "case_id": "OLD-215",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-215.json",
+      "sha256": "e9d9e5ce55873d6f19bac82829f66293f76fcfb29030285838dcafdb58a7deb7"
+    },
+    {
+      "case_id": "OLD-216",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-216.json",
+      "sha256": "e0755a1e4cea81671b4809abdfc4ca016694c5da86db34c976b8d446a1eef8bf"
+    },
+    {
+      "case_id": "OLD-217",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-217.json",
+      "sha256": "0dd707bb40ef7112ad676187f2af498b5af186187598e93c068e909ef446376f"
+    },
+    {
+      "case_id": "OLD-218",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-218.json",
+      "sha256": "de6f9f8aa066a4a611113fc83e59228b91ae24acf4163d3845d00500c6258dca"
+    },
+    {
+      "case_id": "OLD-219",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-219.json",
+      "sha256": "32f8ac622dd066b011038fdc8020dcc5425c904346d4bd944f9ec55da61666ca"
+    },
+    {
+      "case_id": "OLD-220",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-220.json",
+      "sha256": "a098a8a2918a06cda8d7e50ef5fff9402b9f476d8ad97541400e6e30b4d11bf8"
+    },
+    {
+      "case_id": "OLD-221",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-221.json",
+      "sha256": "a6fbace280e8fdce8aca2997f2a1d58067700e31bba2c78bb8688be64dfd6522"
+    },
+    {
+      "case_id": "OLD-222",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-222.json",
+      "sha256": "d6eeecaa1c8a496da643958d055a5bbb7c24f558f445a35cdf3300a9f2e122ec"
+    },
+    {
+      "case_id": "OLD-223",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-223.json",
+      "sha256": "dc1bfce859491a701be28ba4988bd0f6339d2f3c08c05e0c9a647647b21e260a"
+    },
+    {
+      "case_id": "OLD-224",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-224.json",
+      "sha256": "769f4a6cf5ec0c8bb29d1651e7b8f34e329e83268be0e1cff35a52f6989b0d47"
+    },
+    {
+      "case_id": "OLD-225",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-225.json",
+      "sha256": "e83f0ed4f9e73d5e72b06f5e353c4b36faca967cde6e4957ea2dcad875fcb056"
+    },
+    {
+      "case_id": "OLD-226",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-226.json",
+      "sha256": "9a95dd2adfcd63d7e0042a9f814d703238fe8d2d27078d15fb388890a8aa2b5e"
+    },
+    {
+      "case_id": "OLD-227",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-227.json",
+      "sha256": "bd462e13c4273d5b1335ad222ffcef5a39aab7738e82885bc2b1d16be10b903d"
+    },
+    {
+      "case_id": "OLD-228",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-228.json",
+      "sha256": "bfd66bed65dfbd6b342268b8b265c567b4e9355b09e0577021e2ebc94533a3f8"
+    },
+    {
+      "case_id": "OLD-229",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-229.json",
+      "sha256": "d2e0d160e90c36ecae0d65ec91ff407ee912542ad8c775889a4b973f5d37cf17"
+    },
+    {
+      "case_id": "OLD-230",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-230.json",
+      "sha256": "a170fcdc3b57ff4da16d8fac19439220b10c46490090f2466e77383bb76c2dc3"
+    },
+    {
+      "case_id": "OLD-231",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-231.json",
+      "sha256": "3ebd0ac9eb9db15d964d5fa7f61ce5dbf9274112571b083ec265d9f3ba56fea5"
+    },
+    {
+      "case_id": "OLD-232",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-232.json",
+      "sha256": "0e295fb8c5e937dbc11ab6e090fa5552edecd1b2cf00a94090d3a2f65f5b2e86"
+    },
+    {
+      "case_id": "OLD-233",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-233.json",
+      "sha256": "5750930ce55e1d0cd7290eec548891c5f4634a9e76db060aa85901311d2cf7bd"
+    },
+    {
+      "case_id": "OLD-234",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-234.json",
+      "sha256": "93646c6140e1b341bb75bbd9a9e8e783eddf00f93522578bc052817c17e92be6"
+    },
+    {
+      "case_id": "OLD-235",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-235.json",
+      "sha256": "d675ae742493c62cacd48329ec9dafbb13069d5015ce23b29e4c8400ecf8d231"
+    },
+    {
+      "case_id": "OLD-236",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-236.json",
+      "sha256": "0273f5177181039b5837313cfa460ee1f16c34178253799799654d755f0d703d"
+    },
+    {
+      "case_id": "OLD-237",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-237.json",
+      "sha256": "9a41dc18072fb8a6048e7eebb393480fd841e0a7c535d18c7de94706ea4f2f5f"
+    },
+    {
+      "case_id": "OLD-238",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-238.json",
+      "sha256": "0e54fe9a838270f23c2e499dd86985186b226368adf25512d45602ade4b8da56"
+    },
+    {
+      "case_id": "OLD-239",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-239.json",
+      "sha256": "e87f784d12594836fb0ada9dcb2f4994010329e6b8bbfc36f4c8ab7efc9a3c8a"
+    },
+    {
+      "case_id": "OLD-240",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-240.json",
+      "sha256": "3dbeffa54263b0987d31ea10eb8ab64fc27f4dda77bb10fe6e1cda71efc1a7eb"
+    },
+    {
+      "case_id": "OLD-241",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-241.json",
+      "sha256": "4aa7066aff67499a5a1d38366ce490dfdcd9faa3cab6d91bb3e174748733b45c"
+    },
+    {
+      "case_id": "OLD-242",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-242.json",
+      "sha256": "7e202ebd0ec3e91ce02f808fe2f6f558aee4e9b1f379af092a241bfb751ffb3e"
+    },
+    {
+      "case_id": "OLD-243",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-243.json",
+      "sha256": "52eec3523e847c487a77a270a39139d2467dc0a9e21ae3f989372aa0a497a922"
+    },
+    {
+      "case_id": "OLD-244",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-244.json",
+      "sha256": "8a791b53437d4ecc1d3542cc351ada5920bb75a51b65f9667fde8d6695d52fa9"
+    },
+    {
+      "case_id": "OLD-245",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-245.json",
+      "sha256": "eb80233bd879bb777439c7a8c9184b2ab1b16ac01b3ca82d3064bce6fa4c9fa7"
+    },
+    {
+      "case_id": "OLD-246",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-246.json",
+      "sha256": "5e361ceca798a1412527f1304bc1fd0ee916b0ea917dda42fbbf8446f9e7d3ba"
+    },
+    {
+      "case_id": "OLD-247",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-247.json",
+      "sha256": "97bdb7b1bb1775fa0f3399ca72c08baed76edbe5e91435ac2ce4d9c0f44c6f86"
+    },
+    {
+      "case_id": "OLD-248",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-248.json",
+      "sha256": "609bc7870ea28100bcb6ed7307fa69183e8e98b94eb3aad05870a92b0c32c2dd"
+    },
+    {
+      "case_id": "OLD-249",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-249.json",
+      "sha256": "9d18e29889c76f7a9a156d45e79d079754d51e751d813611d8dd0900eefa836f"
+    },
+    {
+      "case_id": "OLD-250",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-250.json",
+      "sha256": "eb9af00322448cfccc47ef312f739af34d35ac38c4ff13e621aafefa49e9dd54"
+    },
+    {
+      "case_id": "OLD-251",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-251.json",
+      "sha256": "8c47ffd03ede0c5d06e1728416a2d21e62b09f260a5110deb1f780850fbb2194"
+    },
+    {
+      "case_id": "OLD-252",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-252.json",
+      "sha256": "78191467054fbba7816389832c3e467700b1e3da2a7b601e8ba47bb1c3de7bf7"
+    },
+    {
+      "case_id": "OLD-253",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-253.json",
+      "sha256": "a6f33be93f7916b5cf83a7addb54226b2707e439bc60eebc891cab39f9700c8f"
+    },
+    {
+      "case_id": "OLD-254",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-254.json",
+      "sha256": "3d376b9fcb1bbf891a1fdfc220119ac7bc170b0ac7579c33de29c053346d9c1d"
+    },
+    {
+      "case_id": "OLD-255",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-255.json",
+      "sha256": "c3a11c9821de31d550eda35b7b6389101f7c2df7f0f476dcbf82f71606ea8a1a"
+    },
+    {
+      "case_id": "OLD-256",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-256.json",
+      "sha256": "c3358f0b845673f835d4e24e30a69fa5f4b73774dadf9cad567dd3c05d482962"
+    },
+    {
+      "case_id": "OLD-257",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-257.json",
+      "sha256": "c3d5f20da93eeefaa4be276a2b204071efcb25691e2834208b0740c99dd06117"
+    },
+    {
+      "case_id": "OLD-258",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-258.json",
+      "sha256": "455f3645362a75a8bbab8e3edd80cf418e9fd5bdfb1602c62197897a0aacfb8c"
+    },
+    {
+      "case_id": "OLD-259",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-259.json",
+      "sha256": "1379f2491456fe9716707c3e65882f26b34ff9218608fe54d0ec70d3f22c9dad"
+    },
+    {
+      "case_id": "OLD-260",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-260.json",
+      "sha256": "04b8a3da13280ff99d4bb0ac411712efda4da9d2f5c33f058223594545381475"
+    },
+    {
+      "case_id": "OLD-261",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-261.json",
+      "sha256": "5e0e82550dc69877472db63c6d6d69ee1f57071637044f31d29145d5987bf52a"
+    },
+    {
+      "case_id": "OLD-262",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-262.json",
+      "sha256": "eefa3cd4a194b255af4cec3e4d7d20427f8dfaf6494045d7d9c19fe3f1cf4deb"
+    },
+    {
+      "case_id": "OLD-263",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-263.json",
+      "sha256": "6bc30e22a1f38d2dc5b02ec169f25ad842a29ff084f46165832a1d6d4f845cc0"
+    },
+    {
+      "case_id": "OLD-264",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-264.json",
+      "sha256": "c0385d44efbafab5e815ac43e27792fedb7744afaf1c46658e11974c2fc97361"
+    },
+    {
+      "case_id": "OLD-265",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-265.json",
+      "sha256": "877f6d831853f5502991d98804a970b7bd08fae5f98954330087c3814cd83fea"
+    },
+    {
+      "case_id": "OLD-266",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-266.json",
+      "sha256": "6a4417102fa37c86868b4b29e98b17f0ee59c5348add3ba1f9651364cb590087"
+    },
+    {
+      "case_id": "OLD-267",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-267.json",
+      "sha256": "9b7135bd2be64b9f222cf94fdf1160c3ba0fd26cd41f2a62f5fde1839b7d5cec"
+    },
+    {
+      "case_id": "OLD-268",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-268.json",
+      "sha256": "6659a0669adfae20b65c839011558e638a9b4fa92ed56f1c8569f7f2949abddb"
+    },
+    {
+      "case_id": "OLD-269",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-269.json",
+      "sha256": "1d68d82ca81738eee68dcf614526a446b5585da29b3c241021476babd7a87613"
+    },
+    {
+      "case_id": "OLD-270",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-270.json",
+      "sha256": "0433aa7a6c74363612738ff1973d709112f377e28b7055399d53fdd2ab237de1"
+    },
+    {
+      "case_id": "OLD-271",
+      "status": "view_subset_fail",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-271.json",
+      "sha256": "9d2c5e4ca8bc819acec0defd388907f5e123efa1b72cd46037f3c7ba92c9ba28"
+    },
+    {
+      "case_id": "OLD-272",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-272.json",
+      "sha256": "ae115a38662ecf22252c568f64a95755e836316e85ab8c1b804dc84d89e55678"
+    },
+    {
+      "case_id": "OLD-273",
+      "status": "view_subset_pass",
+      "report": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\OLD-273.json",
+      "sha256": "f6364fbd1363d854e0563bf9626ba98848a0e733aea174bcc5ebacaf0a6712f5"
+    }
+  ],
+  "numeric_failures": [],
+  "numeric_texture_failures": [],
+  "sampled_mos": 31871,
+  "complete_frontier_textures": 1214,
+  "timing": {
+    "collection_wall_seconds": 2402.5828976999983,
+    "independent_review_wall_seconds": 1095.4769589000061,
+    "collection_per_case": {
+      "n": 273,
+      "sum_seconds": 9358.559313299927,
+      "minimum_seconds": 10.306651200000488,
+      "median_seconds": 28.24368069999764,
+      "p95_seconds": 72.77015261999765,
+      "maximum_seconds": 260.631123500003
+    },
+    "independent_review_per_case": {
+      "n": 273,
+      "sum_seconds": 4153.0854864000285,
+      "minimum_seconds": 0.8799020000005839,
+      "median_seconds": 12.491913399993791,
+      "p95_seconds": 34.65289654000516,
+      "maximum_seconds": 130.98068849999981
+    },
+    "view_review_wall_seconds": 27.61161010000069,
+    "OLD-015": {
+      "case_id": "OLD-015",
+      "input": "gaussian_validation_set\\15_naphthalene_D2h_def2SVP.fch",
+      "collection_status": "complete",
+      "numerical_status": "numeric_subset_pass",
+      "formal_case_pass": false,
+      "collection_seconds": 52.896140099997865,
+      "numerical_review_seconds": 24.96499539999786,
+      "failed_checks": []
+    }
+  },
+  "consumed_summaries": {
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\collection-complete.json": "c26cf43148bc0c1be26be8bb7f302c4a4fcbebadf2400276217100fab87eccda",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\review-v1\\unified-review\\summary.json": "32a9a67662774a9124dae8cfbb0ea60a3bedd049f9f94968fa61e2e754254673",
+    "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\NUM-FIX-005-original\\view-review-v1\\summary.json": "734b3a98b862b150432acb2be4dd2eb24cc4773be01c832ed38620278a421917"
+  },
+  "formal_case_passes": 0,
+  "external_molecule_count": 0,
+  "REF-001": "paused-by-user",
+  "limitations": [
+    "Draw-call semantics do not prove all visible text/glyph positions or clipping.",
+    "PNG stroke probes do not certify all output pixels.",
+    "Chemical/symmetry interpretation and paused physical references remain separate.",
+    "paused physical reference calculations and adjudication",
+    "full independent stored-density checks",
+    "symmetry/topology/scoped chemistry/UI/export issue closure",
+    "all required invariants and ordinary-build interaction consistency"
+  ]
+}

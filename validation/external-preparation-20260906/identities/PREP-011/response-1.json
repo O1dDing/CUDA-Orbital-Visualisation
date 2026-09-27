@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24682,
+        "MolecularFormula": "O3S",
+        "ConnectivitySMILES": "O=S(=O)=O",
+        "InChIKey": "AKEJUJNQAAGONA-UHFFFAOYSA-N",
+        "IUPACName": "sulfur trioxide",
+        "Charge": 0
+      }
+    ]
+  }
+}

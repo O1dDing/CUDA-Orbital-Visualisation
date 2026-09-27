@@ -1,0 +1,14 @@
+{
+  "created_epoch": 1788855904.9389162,
+  "cutoffs_angstrom": [
+    1.65,
+    1.7,
+    1.75,
+    1.8
+  ],
+  "declaration_before_measurements": true,
+  "scope": "Remaining C/H and C/N/O/H constitutional-identity collisions only; distance graphs are checked across every declared cutoff.",
+  "preceding_identity_screen_sha256": "67775e1b054700407a4dcae05641582c55fa53da0e0c6cf2b50a7326a1d859c8",
+  "formal_cases_added": 0,
+  "gaussian_started": false
+}

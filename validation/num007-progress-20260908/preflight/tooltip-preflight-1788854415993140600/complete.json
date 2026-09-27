@@ -1,0 +1,31 @@
+{
+  "commit": "6b8b99b9f76c8d1f9d8c30d2e27c21796c2ee4b8",
+  "all_stages_passed": true,
+  "stages": [
+    {
+      "stage": "build-on",
+      "exit_code": 0,
+      "wall_seconds": 32.62504109999281,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\tooltip-preflight-1788854415993140600\\build-on.log"
+    },
+    {
+      "stage": "tests-on",
+      "exit_code": 0,
+      "wall_seconds": 1.5842220000049565,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\tooltip-preflight-1788854415993140600\\tests-on.log"
+    },
+    {
+      "stage": "build-off",
+      "exit_code": 0,
+      "wall_seconds": 104.28635149999172,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\tooltip-preflight-1788854415993140600\\build-off.log"
+    },
+    {
+      "stage": "tests-off",
+      "exit_code": 0,
+      "wall_seconds": 1.5716657000011764,
+      "log": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\tooltip-preflight-1788854415993140600\\tests-off.log"
+    }
+  ],
+  "finished_epoch": 1788854556.5108979
+}

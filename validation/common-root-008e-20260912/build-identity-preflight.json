@@ -1,0 +1,24 @@
+{
+  "all_passed": true,
+  "source_commit": "3752f8afe7b1e5687f9960fb7f15cd7c591a3e79",
+  "programs": {
+    "cov_validation.exe": "973dbb316753deb80202849b734411ea7debcd65afc59e90853667aa3dcf8c48",
+    "cov_scientific_audit_dump.exe": "dd09969b6195e8ec48e906122df8e44d110bbe6ee200cbdae4503a68035340ff",
+    "cov.exe": "7d2092d6400e99e4d3723edcc477867e695ea0ce023a351f1bef79e18f7dbbb6",
+    "cov_scientific_audit_dump_off.exe": "e41c45c69d3b5f63eab8b485e0e84ebdbcc72b0f15b3b6486a9633f2411e2eae"
+  },
+  "manifest": {
+    "path": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\general-fixes-20260906\\COMMON-ROOT-008E-precheck\\manifest.json",
+    "sha256": "0e530269df115b809334264f51d8e48df31e73ac041e5a1f3ea31b454298632d"
+  },
+  "embedded_identity": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\identity-repair-1789210025029220200\\native\\identity.json",
+    "sha256": "294f2177a63dad581949e2a68e4be0033c59caa49c796de3e33cf2764876871e"
+  },
+  "repair_receipt": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008d-details-20260912\\identity-repair-1789210025029220200\\complete.json",
+    "sha256": "42312072632cf3ef0f434e0ab4c0c38efee015962505db4343b6f5203edc62ab"
+  },
+  "ordinary_binary_unchanged": true,
+  "gaussian_started": false
+}

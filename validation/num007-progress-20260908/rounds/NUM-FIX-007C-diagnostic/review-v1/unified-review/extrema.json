@@ -1,0 +1,82 @@
+{
+  "round_identity": "1cf61800e5179b615a861b9d000be5410bd7325791bee29eb7ce03ff1a8dea23",
+  "extrema": {
+    "AO_integral_max_absolute_error": {
+      "value": 1.6558191010111053e-14,
+      "case_id": "OLD-013",
+      "mo_zero_based": null
+    },
+    "reference_gram_max_error": {
+      "value": 4.0058916619942165e-08,
+      "case_id": "OLD-013",
+      "mo_zero_based": null
+    },
+    "production_gram_max_error": {
+      "value": 4.00589189470038e-08,
+      "case_id": "OLD-013",
+      "mo_zero_based": null
+    },
+    "production_reference_gram_max_error": {
+      "value": 1.442218298535297e-13,
+      "case_id": "OLD-013",
+      "mo_zero_based": null
+    },
+    "electron_trace_error": {
+      "value": 3.954710336984135e-09,
+      "case_id": "OLD-013",
+      "mo_zero_based": null
+    },
+    "available_chemistry_mos": {
+      "count": 216
+    },
+    "sampled_nrms": {
+      "value": 4.3979249364014586e-06,
+      "case_id": "OLD-013",
+      "mo_zero_based": 114
+    },
+    "sampled_relative_peak_error": {
+      "value": 9.790030934871824e-06,
+      "case_id": "OLD-013",
+      "mo_zero_based": 99
+    },
+    "sampled_max_absolute_error": {
+      "value": 8.655836252648167e-07,
+      "case_id": "OLD-013",
+      "mo_zero_based": 215
+    },
+    "sampled_abs_cosine": {
+      "value": 0.999999999990436,
+      "case_id": "OLD-013",
+      "mo_zero_based": 114
+    },
+    "sampled_unique_points": {
+      "value": 8179,
+      "case_id": "OLD-013",
+      "mo_zero_based": 0
+    },
+    "complete_nrms": {
+      "value": 7.781445644998674e-07,
+      "case_id": "OLD-013",
+      "mo_zero_based": 84
+    },
+    "complete_relative_peak_error": {
+      "value": 1.977974886102629e-06,
+      "case_id": "OLD-013",
+      "mo_zero_based": 83
+    },
+    "complete_max_absolute_error": {
+      "value": 4.0741932026952197e-07,
+      "case_id": "OLD-013",
+      "mo_zero_based": 84
+    },
+    "complete_abs_cosine": {
+      "value": 0.9999999999997135,
+      "case_id": "OLD-013",
+      "mo_zero_based": 84
+    }
+  },
+  "review_barrier_sha256": "f835d86e970259f436498dbd30e766475bbbdb08e4a8998689be2b3acb17bde5",
+  "formal_case_passes": 0,
+  "unavailable_reports": [],
+  "script_sha256": "e10ce6d60f979f852f7af54e5a061d3e95b4c42a40d727c95d0a246be6806c36"
+}

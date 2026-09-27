@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 24637,
+        "MolecularFormula": "ClF3",
+        "ConnectivitySMILES": "FCl(F)F",
+        "InChIKey": "JOHWNGGYGAVMGU-UHFFFAOYSA-N",
+        "IUPACName": "trifluoro-lambda3-chlorane",
+        "Charge": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "identity_review": "F:\\Codex\\2026-09-05\\branch-15\\outputs\\cov-complete-validation-20260906\\external-preparation-v1\\identity-review-v2\\summary.json",
+  "identity_review_sha256": "42ba412753960a9b056aabf0db9ba2b888f91424bac519aec0a39bcec61f534e",
+  "script_sha256": "e8e60bde76b5001a06e6bd3eff50a65300c8e3d925d4d15d347dc7a1ff209a86",
+  "purpose": "Computed starting conformers only; not experimental coordinates or validated quantum references",
+  "cpu_core_slot": 8,
+  "maximum_concurrent_requests": 1,
+  "request_timeout_seconds": 20,
+  "maximum_response_bytes": 4194304,
+  "minimum_request_interval_seconds": 0.7,
+  "automatic_retries": 0,
+  "formal_external_cases": 0,
+  "gaussian_started": false,
+  "independently_managed_gaussian": "F:/CalChem/COV/Resume; not controlled by this preparation",
+  "source_documentation": "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest"
+}

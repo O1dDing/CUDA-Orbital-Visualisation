@@ -1,0 +1,14 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 798,
+        "MolecularFormula": "C8H7N",
+        "ConnectivitySMILES": "C1=CC=C2C(=C1)C=CN2",
+        "InChIKey": "SIKJAQJRHWYJAI-UHFFFAOYSA-N",
+        "IUPACName": "1H-indole",
+        "Charge": 0
+      }
+    ]
+  }
+}

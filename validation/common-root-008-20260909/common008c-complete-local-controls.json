@@ -1,0 +1,89 @@
+{
+  "source_commit": "8e206e188ef84a5e63129ee20e5b95c2f5ad498b",
+  "programs": {
+    "cov_validation.exe": "354d7d14e2fd79345f0f6d636aefdc3dedc540c3362cbf8f5cb336529c85995d",
+    "cov_scientific_audit_dump.exe": "dd09969b6195e8ec48e906122df8e44d110bbe6ee200cbdae4503a68035340ff",
+    "cov.exe": "7c7a54eff2312d59e7262b92d16d32867e85986caece06fd097b1adfdba5d22a",
+    "cov_scientific_audit_dump_off.exe": "e41c45c69d3b5f63eab8b485e0e84ebdbcc72b0f15b3b6486a9633f2411e2eae"
+  },
+  "applicable_local_controls_passed": true,
+  "checks": [
+    {
+      "name": "current_candidate_dedicated_controls",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788955268167816100\\review-1788955380370797400\\summary.json",
+        "sha256": "612d04c1d4e7236771fb5fbe7122ff3845f20bb5e958a8e9ca5e6b3886673993"
+      },
+      "scope": "Current ON/OFF programs: eight mathematical probes, 38 CTests in each mode, native viewport control."
+    },
+    {
+      "name": "current_candidate_native_viewport",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788955268167816100\\review-1788955380370797400\\native-viewport.json",
+        "sha256": "f6f8a3409238d20a92a1d639ba66fa285a832f25a45ea806fe6fb6cd5c6863f6"
+      },
+      "scope": "Same frozen candidate, actual viewport/window/input controls and captured frames."
+    },
+    {
+      "name": "current_candidate_availability_machine_checks",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\availability-ui-1788955485419300000\\review-v2\\machine-review.json",
+        "sha256": "d77a0bf7c66af4ee404e7483264c97463eaad0257ba7ed7b42568ce43f673665"
+      },
+      "scope": "Six cases, 356 native actions and 20 complete selected-MO target frames."
+    },
+    {
+      "name": "current_candidate_availability_visual_checks",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\availability-ui-1788955485419300000\\review-v2\\visual-review.json",
+        "sha256": "fd978dabe819930570b7f39a3531d80fa71808250d7202c920fbf64990e40f0d"
+      },
+      "scope": "All 20 frames directly inspected; not-applicable/unavailable/resolved rows and alpha/beta glyphs."
+    },
+    {
+      "name": "current_candidate_pure_cartesian_g_end_to_end",
+      "status": "pass",
+      "evidence": {
+        "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-control-adjudication.json",
+        "sha256": "f9ac7469f8d12290c39654cbf56081f9c1ddccc560b282db0480a077e28e1903"
+      },
+      "scope": "New actual COV measurements and independent comparisons for two existing pure/cartesian g Gaussian-derived fixtures; no new physical calculations or external molecule acceptance."
+    }
+  ],
+  "control_identity": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788955268167816100\\identity.json",
+    "sha256": "a3253d32681cfabb2a599ce09a9258f5b4c14edf9cc9a19546872a64b92d8bf5"
+  },
+  "control_barrier": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\controls-1788955268167816100\\collection-complete.json",
+    "sha256": "b9d4c3bbb723ff934a5646d30b423c8e7734d6c6d047971fec0203b7c300c15e"
+  },
+  "ui_identity": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\availability-ui-1788955485419300000\\identity.json",
+    "sha256": "2dc4ccfa4d638951e8ea0cc826636b4200fbd6aff2536a090c858594416171e9"
+  },
+  "ui_barrier": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\availability-ui-1788955485419300000\\collection-complete.json",
+    "sha256": "ef0e36031536608901cb1fc27cd76828b69871580e985bd2392208271de3b03c"
+  },
+  "precheck_passed": false,
+  "formal_case_passes": 0,
+  "gaussian_started": false,
+  "limitations": [
+    "These controls validate declared-model mathematics and observed UI behavior, not physical reference acceptance.",
+    "All program hashes changed. Prior candidate raw COV outputs are retained as history, not current-program pass evidence."
+  ],
+  "earlier_partial_control_summary": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-local-controls.json",
+    "sha256": "55f545915e3ad4565c320a62dfbb5927e17047da9f6e9804dce630b08808dcca"
+  },
+  "all_applicable_controls_included": true,
+  "coverage_gap_resolution": {
+    "path": "F:\\Codex\\2026-09-09\\new-chat\\outputs\\common-root-008-integration-20260909\\common008c-g-control-coverage.json",
+    "sha256": "3bffad99af256074e62e2b9a8a126312bf350fde28016a282f793245bf9bb085"
+  }
+}

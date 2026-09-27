@@ -1,0 +1,32 @@
+{
+  "case_id": "OLD-002",
+  "original_case_identity": "b5f78938f49906ce167f90a1a97b752b40591382fff218be84241c1c008519d5",
+  "purpose": {
+    "kind": "equilibrium_candidate",
+    "reference_geometry": "optimize",
+    "basis": "Original input requested optimization; final FCHK geometry is the new starting point",
+    "electronic_state": "specified_input_state; competing states remain to be examined when required"
+  },
+  "chemical_annotation": {},
+  "method": "PBE0-D3(BJ)",
+  "basis_name": "def2-TZVPP",
+  "basis_version": 1,
+  "basis_library": "Basis Set Exchange 0.12",
+  "basis_reason": "Default quality reference",
+  "ecp_core_electrons_by_atomic_number": {
+    "9": 0,
+    "54": 28
+  },
+  "explicit_electrons": 44,
+  "alpha_electrons": 22,
+  "beta_electrons": 22,
+  "gaussian_basis_keyword": "GenECP",
+  "shell_flags": "6D 10F",
+  "expected_g_shell_type": 4,
+  "stability_required": true,
+  "competing_states_required": false,
+  "is_verified_reference": false,
+  "basis_sha256": "f7890b48dd055b71360c2a705c8b96a281e9229bd274b47f3a140546fb00f5ca",
+  "initial_input_sha256": "34a3628ca2924641eab91aaf2f6a363dc1bfeac4e50f911c623da942d53c6f9e",
+  "identity": "bf239f69ed04615251b12a77eb4b11574d64a9bf02f188f02ca96632144c0791"
+}

@@ -1,0 +1,13 @@
+{
+  "PropertyTable": {
+    "Properties": [
+      {
+        "CID": 123271,
+        "MolecularFormula": "C2H",
+        "ConnectivitySMILES": "C#[C]",
+        "InChIKey": "XEHVFKKSDRMODV-UHFFFAOYSA-N",
+        "Charge": 0
+      }
+    ]
+  }
+}

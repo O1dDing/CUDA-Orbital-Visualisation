@@ -1,0 +1,554 @@
+{
+  "candidate_id": "PREP-007",
+  "source_url": "https://cccbdb.nist.gov/exp2x.asp?casno=7790912&charge=0",
+  "raw_sha256": "5ea277bf95f85ae71f12ce1e0fdc07a8eeb9f84a02ee0126e93f2d7e798763cc",
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "Experimental data for ClF3 (Chlorine trifluoride)"
+    }
+  ],
+  "tables": [
+    {
+      "index": 0,
+      "rows": [
+        [
+          "",
+          "Computational Chemistry Comparison and Benchmark DataBase Release 22 (May 2022) Standard Reference Database 101 National Institute of Standards and Technology"
+        ],
+        [
+          "Home All data for one species Geometry Experimental Experimental Geometries Same bond/angle many molecules Internal Coordinates by type Bond angles Calculated Calculated geometry Rotational constant Moments of inertia Products of moments of inertia BSE Bond lengths Show me a calculated geometry Comparisons Bonds, angles Rotational Constants Products of moments of inertia Point group Bad Calculations Bad moment of inertia Tutorials and Explanations Angle formulas Vibrations Experimental Vibrational frequencies Calculated Frequencies Scale factors Reactions Entropies Ions List Ions Energy Calculated Ionization Energy Compare Ionzation energy Electron Affinity Calculated Electron affinity Compare Electron affinity Proton Affinity Calculated Proton affinity Compare Proton affinity Ionization changes point group Experimental One molecule all properties One property a few molecules Enthalpy of formation Entropy Integrated Heat Capacity Heat Capacity Rotational Constants Vibrational Frequencies Dipole moment Ionization Energy Polarizability Quadrupole Point Groups Geometry Experimental Geometries Internal Coordinates by type Bond angles Rotational Constants Point Groups Diatomic bond lengths Vibrations Vibrational frequencies Diatomic Triatomics Energy Atomization Energy Internal Rotation Electrostatics Dipole Quadrupole Polarizability Reference Data Reference states Spin Splittings Molecules with good enthalpy Enthalpy at 0 Kelvin Calculated Energy Optimized Energy Energy 298K Minimum conformation Hydrogen bonds H bond with counterpoise Reaction Reaction Energy 0K Reaction Energy 298K Internal Rotation Barriers to internal rotation Rotational barrier and dipole Rotational Barrier 2 molecules Orbital HOMO LUMO gap HOMO Orbital Energies Nuclear repulsion energy Correlation Full vs Frozen core energies Partial correlation energies Ion Calculated Ionization Energy Vertical ionization Energy Calculated Electron affinity Calculated Proton affinity Atom charge differences Excited State Singlet triplet gap Electronic state Transition state Basis Set Extrapolation BSE energy BSE Bond lengths Geometry Calculated geometry AIM bond orders One type of bond Rotation Rotational constant Products of moments of inertia Moments of inertia Inertial defects Second moments Point group State symmetry <r2> Sorted by r2 Z-matrix Bad Calculations Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Frequencies Animated vibrations Anharmonic Zero point energy (ZPE) Scale Factors Scale factors Scale factor uncertainty Calculate a scale factor Why scale vibrations Set scaling factors Bad Calculations Bad Vib. HF vs MP2 Bad vib. Calc. vs exp. Big anharmonicity Electrostatics Charges Mulliken CHELP Aim ESP Dipole Dipole Dipole angle Dipole calculation types Quadrupole Polarizability Spin Spin density Entropy and Heat Capacity Entropy Reaction entropy Heat Capacity Reaction Reaction Energy 0K Reaction Energy 298K Isodesmic reactions Transition State Transition state Transition state frequencies Transition state geometries IRC Lookup by property By frequency Comparisons Geometry Bonds, angles Bond, angle, or dihedral DFT grid size on point group DFT grid on bond length Core correlation - bond length Same bond/angle many molecules Isoelectronic diatomics Isoelectronic triatomic angles Average bond lengths Rotation Rotational Constants Products of moments of inertia Point group Vibrations Vibrations 2 calculations Frequency differences One frequency Zero point energy Intensity Intensity for one mode Vibrational intensities Reduced mass comparison Anharmonic Triatomic Scale factors Energy Reaction Reaction Energy 0K Reaction Energy 298K Atomization 0K Atomization 298K Single point vs optimized DFT grid size on energy Semiempirical enthalpy Internal rotation Similar molecules Conformation Sets of isomers Sets of tautomers Isomers Entropy Entropy Heat capacity Entropy of several molecules Integrated heat capacity Reaction entropy Electrostatics Dipole Polarizability Several molecules Quadrupole Ion Compare Ionzation energy Koopman ionization energy Koopman IE for a few molecules Compare Electron affinity Compare Proton affinity Protonation Site Resources Info on Results Calculations Done Method and basis set List molecules One molecule Multiple conformers, states Multiple conformers, states Basis functions used I/O files Input/output files MOL file Z-matrix wfn files Glossary Conversion Forms B to I, I to B Angle formulas Integrated heat Capacity Calculating Enthalpy Links NIST Links NIST webbook bibliographic data CCCBDB Experimental data External links Basis Set Exchange Computational Chemistry List Thermochemistry in Gaussian Minnesota Database Collection Benchmark Energy and Geometry Point Groups Thermochemistry Thermochemistry Molecules with good enthalpy A → B + C Reference states Tutorials Vibrations Why scale vibrations Zero-point energies Entropy Methyl rotor entropy Entropy and conformations Energy Getting enthalpy of formation Vertical vs adiabatic IE Thermo from calculations Electrostatics Dipole parts by point group Quadrupoles Geometry Angle formulas Cost Cost Comparison Timings Comparison Bad Calculations Geometry Bad moment of inertia Bad Calculated Bond Lengths Bad point group Worst molecules Vibrations Bad vib. Calc. vs exp. Bad Vib. HF vs MP2 Bad scale factors Low excited states Oddities NaCN Is not linear FAQ Help Units Choose Units Energy Bond length Rotational Constant Moment of Inertia Dipole and Quadrupole Polarizability Explanations Hartree cm-1 Debye Credits Just show me Show me a calculated geometry Summary Using older interface Limit Basis sets Method options List Recent molecules Choose a few Molecules Number of atoms By heavy atoms Diatomics InChI Deuterated Dimers Geometry Point group Point group count Bonds types Isodesmic reactions Bad point group Multiple conformers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants"
+        ],
+        [],
+        [
+          "You are here: Experimental > One molecule all properties"
+        ]
+      ],
+      "preceding_text": "ing of experimental data page 2 function refcolor(refid) { var tref = document.getElementById(\"reftable\") // get all the cells in this table var tds = tref.getElementsByTagName(\"td\") for (i=0; i<tds.length; i++) { tds[i].style.color=\"black\" } document.getElementById(refid).style.color=\"red\" } body{display:none !important;} if (self === top) { var antiClickjack = document.getElementById(\"antiClickjack\"); antiClickjack.parentNode.removeChild(antiClickjack); } else { top.location = self.location; }"
+    },
+    {
+      "index": 1,
+      "rows": [
+        [
+          "Other names"
+        ],
+        [
+          "Chlorine fluoride; Chlorine fluoride (ClF3); Chlorine trifluoride; Chlorotrifluoride; Trifluorure de chlore;"
+        ]
+      ],
+      "preceding_text": "up count Bonds types Isodesmic reactions Bad point group Multiple conformers, states Vibrations Big anharmonicity Energy Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Experimental > One molecule all properties Experimental data for ClF 3 (Chlorine trifluoride) 22 02 02 11 45"
+    },
+    {
+      "index": 2,
+      "rows": [
+        [
+          "INChI",
+          "INChIKey",
+          "SMILES",
+          "IUPAC name"
+        ],
+        [
+          "InChI=1S/ClF3/c2-1(3)4",
+          "JOHWNGGYGAVMGU-UHFFFAOYSA-N",
+          "FCl(F)F",
+          "Chlorine trifluoride"
+        ]
+      ],
+      "preceding_text": "Enthalpy at 0 Kelvin Similar molecules Similar Isomers Cis/trans Tautomers Multiple conformers, states Ions, Dipoles, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Experimental > One molecule all properties Experimental data for ClF 3 (Chlorine trifluoride) 22 02 02 11 45 Other names Chlorine fluoride; Chlorine fluoride (ClF3); Chlorine trifluoride; Chlorotrifluoride; Trifluorure de chlore;"
+    },
+    {
+      "index": 3,
+      "rows": [
+        [
+          "State",
+          "Conformation"
+        ],
+        [
+          "1A1'",
+          "D3H"
+        ]
+      ],
+      "preceding_text": "les, etc. List Ions Ionization changes point group Dipole Quadrupole Polarizability Proton Affinities Index of CCCBDB Feedback Error form Wants You are here: Experimental > One molecule all properties Experimental data for ClF 3 (Chlorine trifluoride) 22 02 02 11 45 Other names Chlorine fluoride; Chlorine fluoride (ClF3); Chlorine trifluoride; Chlorotrifluoride; Trifluorure de chlore; INChI INChIKey SMILES IUPAC name InChI=1S/ClF3/c2-1(3)4 JOHWNGGYGAVMGU-UHFFFAOYSA-N FCl(F)F Chlorine trifluoride"
+    },
+    {
+      "index": 4,
+      "rows": [
+        [
+          "Property",
+          "Value",
+          "Uncertainty",
+          "units",
+          "Reference",
+          "Comment"
+        ]
+      ],
+      "preceding_text": " Wants You are here: Experimental > One molecule all properties Experimental data for ClF 3 (Chlorine trifluoride) 22 02 02 11 45 Other names Chlorine fluoride; Chlorine fluoride (ClF3); Chlorine trifluoride; Chlorotrifluoride; Trifluorure de chlore; INChI INChIKey SMILES IUPAC name InChI=1S/ClF3/c2-1(3)4 JOHWNGGYGAVMGU-UHFFFAOYSA-N FCl(F)F Chlorine trifluoride State Conformation 1 A 1 ' D3H Enthalpy of formation (Hfg), Entropy, Integrated heat capacity (0 K to 298.15 K) (HH), Heat Capacity (Cp)"
+    },
+    {
+      "index": 5,
+      "rows": [
+        [
+          "Mode Number",
+          "Symmetry",
+          "Frequency",
+          "Intensity",
+          "Comment",
+          "Description"
+        ],
+        [
+          "Fundamental(cm-1)",
+          "Harmonic(cm-1)",
+          "Reference",
+          "(km mol-1)",
+          "unc.",
+          "Reference"
+        ],
+        [
+          "1",
+          "A1",
+          "752",
+          "",
+          "Shim",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "2",
+          "A1",
+          "529",
+          "",
+          "Shim",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "3",
+          "A1",
+          "328",
+          "",
+          "Shim",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "4",
+          "B1",
+          "328",
+          "",
+          "Shim",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "5",
+          "B2",
+          "702",
+          "",
+          "Shim",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "6",
+          "B2",
+          "442",
+          "",
+          "VEEL5",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "preceding_text": "ide; Chlorine fluoride (ClF3); Chlorine trifluoride; Chlorotrifluoride; Trifluorure de chlore; INChI INChIKey SMILES IUPAC name InChI=1S/ClF3/c2-1(3)4 JOHWNGGYGAVMGU-UHFFFAOYSA-N FCl(F)F Chlorine trifluoride State Conformation 1 A 1 ' D3H Enthalpy of formation (Hfg), Entropy, Integrated heat capacity (0 K to 298.15 K) (HH), Heat Capacity (Cp) Property Value Uncertainty units Reference Comment Information can also be found for this species in the NIST Chemistry Webbook Vibrational levels (cm -1 )"
+    },
+    {
+      "index": 6,
+      "rows": [
+        [
+          "A",
+          "B",
+          "C",
+          "reference",
+          "comment"
+        ]
+      ],
+      "preceding_text": "rence Comment Information can also be found for this species in the NIST Chemistry Webbook Vibrational levels (cm -1 ) Mode Number Symmetry Frequency Intensity Comment Description Fundamental (cm -1 ) Harmonic (cm -1 ) Reference (km mol -1 ) unc. Reference 1 A 1 752 Shim 2 A 1 529 Shim 3 A 1 328 Shim 4 B 1 328 Shim 5 B 2 702 Shim 6 B 2 442 VEEL5 Calculated vibrational frequencies for ClF 3 (Chlorine trifluoride). Rotational Constants (cm -1 ) See section I.F.4 to change rotational constant units"
+    },
+    {
+      "index": 7,
+      "rows": [
+        [
+          "Product of moments of inertia"
+        ],
+        [
+          "",
+          "amu3Å6",
+          "",
+          "0",
+          "gm3 cm6"
+        ]
+      ],
+      "preceding_text": " Vibrational levels (cm -1 ) Mode Number Symmetry Frequency Intensity Comment Description Fundamental (cm -1 ) Harmonic (cm -1 ) Reference (km mol -1 ) unc. Reference 1 A 1 752 Shim 2 A 1 529 Shim 3 A 1 328 Shim 4 B 1 328 Shim 5 B 2 702 Shim 6 B 2 442 VEEL5 Calculated vibrational frequencies for ClF 3 (Chlorine trifluoride). Rotational Constants (cm -1 ) See section I.F.4 to change rotational constant units A B C reference comment Calculated rotational constants for ClF 3 (Chlorine trifluoride)."
+    },
+    {
+      "index": 8,
+      "rows": [
+        [
+          "Description",
+          "Value",
+          "unc.",
+          "Connectivity",
+          "Reference",
+          "Comment"
+        ],
+        [
+          "Atom 1",
+          "Atom 2",
+          "Atom 3",
+          "Atom 4"
+        ]
+      ],
+      "preceding_text": "752 Shim 2 A 1 529 Shim 3 A 1 328 Shim 4 B 1 328 Shim 5 B 2 702 Shim 6 B 2 442 VEEL5 Calculated vibrational frequencies for ClF 3 (Chlorine trifluoride). Rotational Constants (cm -1 ) See section I.F.4 to change rotational constant units A B C reference comment Calculated rotational constants for ClF 3 (Chlorine trifluoride). Product of moments of inertia amu 3 Å 6 0 gm 3 cm 6 Geometric Data Point Group C 2v Internal coordinates distances (r) in Å, angles (a) in degrees, dihedrals (d) in degrees"
+    },
+    {
+      "index": 9,
+      "rows": [
+        [
+          "Atom",
+          "x (Å)",
+          "y (Å)",
+          "z (Å)"
+        ]
+      ],
+      "preceding_text": "ed vibrational frequencies for ClF 3 (Chlorine trifluoride). Rotational Constants (cm -1 ) See section I.F.4 to change rotational constant units A B C reference comment Calculated rotational constants for ClF 3 (Chlorine trifluoride). Product of moments of inertia amu 3 Å 6 0 gm 3 cm 6 Geometric Data Point Group C 2v Internal coordinates distances (r) in Å, angles (a) in degrees, dihedrals (d) in degrees Description Value unc. Connectivity Reference Comment Atom 1 Atom 2 Atom 3 Atom 4 Cartesians"
+    },
+    {
+      "index": 10,
+      "rows": [
+        [
+          ""
+        ]
+      ],
+      "preceding_text": " Rotational Constants (cm -1 ) See section I.F.4 to change rotational constant units A B C reference comment Calculated rotational constants for ClF 3 (Chlorine trifluoride). Product of moments of inertia amu 3 Å 6 0 gm 3 cm 6 Geometric Data Point Group C 2v Internal coordinates distances (r) in Å, angles (a) in degrees, dihedrals (d) in degrees Description Value unc. Connectivity Reference Comment Atom 1 Atom 2 Atom 3 Atom 4 Cartesians Atom x (Å) y (Å) z (Å) Atom - Atom Distances Distances in Å"
+    },
+    {
+      "index": 11,
+      "rows": [
+        [
+          "Bond Type",
+          "Count"
+        ],
+        [
+          "F-Cl",
+          "3"
+        ]
+      ],
+      "preceding_text": "lorine trifluoride). Product of moments of inertia amu 3 Å 6 0 gm 3 cm 6 Geometric Data Point Group C 2v Internal coordinates distances (r) in Å, angles (a) in degrees, dihedrals (d) in degrees Description Value unc. Connectivity Reference Comment Atom 1 Atom 2 Atom 3 Atom 4 Cartesians Atom x (Å) y (Å) z (Å) Atom - Atom Distances Distances in Å Calculated geometries for ClF 3 (Chlorine trifluoride). Bond descriptions Examples: C-C single bond, C=C, double bond, C#C triple bond, C:C aromatic bond"
+    },
+    {
+      "index": 12,
+      "rows": [
+        [
+          "Atom 1",
+          "Atom 2"
+        ],
+        [
+          "Cl1",
+          "F2"
+        ],
+        [
+          "Cl1",
+          "F3"
+        ],
+        [
+          "Cl1",
+          "F4"
+        ]
+      ],
+      "preceding_text": "nts of inertia amu 3 Å 6 0 gm 3 cm 6 Geometric Data Point Group C 2v Internal coordinates distances (r) in Å, angles (a) in degrees, dihedrals (d) in degrees Description Value unc. Connectivity Reference Comment Atom 1 Atom 2 Atom 3 Atom 4 Cartesians Atom x (Å) y (Å) z (Å) Atom - Atom Distances Distances in Å Calculated geometries for ClF 3 (Chlorine trifluoride). Bond descriptions Examples: C-C single bond, C=C, double bond, C#C triple bond, C:C aromatic bond Bond Type Count F-Cl 3 Connectivity"
+    },
+    {
+      "index": 13,
+      "rows": [
+        [
+          "Energy (cm-1)",
+          "Degeneracy",
+          "reference",
+          "description"
+        ],
+        [
+          "0",
+          "1",
+          "",
+          "1A1"
+        ]
+      ],
+      "preceding_text": "Internal coordinates distances (r) in Å, angles (a) in degrees, dihedrals (d) in degrees Description Value unc. Connectivity Reference Comment Atom 1 Atom 2 Atom 3 Atom 4 Cartesians Atom x (Å) y (Å) z (Å) Atom - Atom Distances Distances in Å Calculated geometries for ClF 3 (Chlorine trifluoride). Bond descriptions Examples: C-C single bond, C=C, double bond, C#C triple bond, C:C aromatic bond Bond Type Count F-Cl 3 Connectivity Atom 1 Atom 2 Cl1 F2 Cl1 F3 Cl1 F4 Electronic energy levels (cm -1 )"
+    },
+    {
+      "index": 14,
+      "rows": [
+        [
+          "Ionization Energy",
+          "I.E. unc.",
+          "vertical I.E.",
+          "v.I.E. unc.",
+          "reference",
+          "Comment"
+        ],
+        [
+          "12.650",
+          "0.050",
+          "13.050",
+          "0.050",
+          "webbook",
+          "lower limit for EA"
+        ]
+      ],
+      "preceding_text": "rees Description Value unc. Connectivity Reference Comment Atom 1 Atom 2 Atom 3 Atom 4 Cartesians Atom x (Å) y (Å) z (Å) Atom - Atom Distances Distances in Å Calculated geometries for ClF 3 (Chlorine trifluoride). Bond descriptions Examples: C-C single bond, C=C, double bond, C#C triple bond, C:C aromatic bond Bond Type Count F-Cl 3 Connectivity Atom 1 Atom 2 Cl1 F2 Cl1 F3 Cl1 F4 Electronic energy levels (cm -1 ) Energy (cm -1 ) Degeneracy reference description 0 1 1 A 1 Ionization Energies (eV)"
+    },
+    {
+      "index": 15,
+      "rows": [
+        [
+          "Electron Affinity",
+          "unc.",
+          "reference",
+          "Comment"
+        ],
+        [
+          "2.398",
+          "0.100",
+          "webbook",
+          "lower limit for EA"
+        ]
+      ],
+      "preceding_text": "nces in Å Calculated geometries for ClF 3 (Chlorine trifluoride). Bond descriptions Examples: C-C single bond, C=C, double bond, C#C triple bond, C:C aromatic bond Bond Type Count F-Cl 3 Connectivity Atom 1 Atom 2 Cl1 F2 Cl1 F3 Cl1 F4 Electronic energy levels (cm -1 ) Energy (cm -1 ) Degeneracy reference description 0 1 1 A 1 Ionization Energies (eV) Ionization Energy I.E. unc. vertical I.E. v.I.E. unc. reference Comment 12.650 0.050 13.050 0.050 webbook lower limit for EA Electron Affinity (eV)"
+    },
+    {
+      "index": 16,
+      "rows": [
+        [
+          "State",
+          "Config",
+          "State description",
+          "Conf description",
+          "Exp. min.",
+          "Dipole (Debye)",
+          "Reference",
+          "comment",
+          "Point Group",
+          "Components"
+        ],
+        [
+          "x",
+          "y",
+          "z",
+          "total",
+          "dipole",
+          "quadrupole"
+        ],
+        [
+          "1",
+          "1",
+          "1A1'",
+          "D3h",
+          "False",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "D3h",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "1A1",
+          "C2v",
+          "True",
+          "",
+          "",
+          "",
+          "0.600",
+          "NSRDS-NBS10",
+          "DT",
+          "C2v",
+          "1",
+          "2"
+        ]
+      ],
+      "preceding_text": "ond, C:C aromatic bond Bond Type Count F-Cl 3 Connectivity Atom 1 Atom 2 Cl1 F2 Cl1 F3 Cl1 F4 Electronic energy levels (cm -1 ) Energy (cm -1 ) Degeneracy reference description 0 1 1 A 1 Ionization Energies (eV) Ionization Energy I.E. unc. vertical I.E. v.I.E. unc. reference Comment 12.650 0.050 13.050 0.050 webbook lower limit for EA Electron Affinity (eV) Electron Affinity unc. reference Comment 2.398 0.100 webbook lower limit for EA Dipole, Quadrupole and Polarizability Electric dipole moment"
+    },
+    {
+      "index": 17,
+      "rows": [
+        [
+          "State",
+          "Config",
+          "State description",
+          "Conf description",
+          "Exp. min.",
+          "Quadrupole (D Å)",
+          "Reference",
+          "comment",
+          "Point Group",
+          "Components"
+        ],
+        [
+          "xx",
+          "yy",
+          "zz",
+          "dipole",
+          "quadrupole"
+        ],
+        [
+          "1",
+          "1",
+          "1A1'",
+          "D3h",
+          "False",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "D3h",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "1A1",
+          "C2v",
+          "True",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "C2v",
+          "1",
+          "2"
+        ]
+      ],
+      "preceding_text": "ctric dipole moment State Config State description Conf description Exp. min. Dipole (Debye) Reference comment Point Group Components x y z total dipole quadrupole 1 1 1 A 1 ' D 3h False D 3h 0 1 1 2 1 A 1 C 2v True 0.600 NSRDS-NBS10 DT C 2v 1 2 Experimental dipole measurement abbreviations: MW microwave; DT Dielectric with Temperature variation; DR Indirect (usually an upper limit); MB Molecular beam Calculated electric dipole moments for ClF 3 (Chlorine trifluoride). Electric quadrupole moment"
+    },
+    {
+      "index": 18,
+      "rows": [
+        [
+          "alpha",
+          "unc.",
+          "Reference"
+        ],
+        [
+          "7.483",
+          "0.193",
+          "2015Tha/Wu:144302"
+        ]
+      ],
+      "preceding_text": "ctric with Temperature variation; DR Indirect (usually an upper limit); MB Molecular beam Calculated electric dipole moments for ClF 3 (Chlorine trifluoride). Electric quadrupole moment State Config State description Conf description Exp. min. Quadrupole (D Å) Reference comment Point Group Components xx yy zz dipole quadrupole 1 1 1 A 1 ' D 3h False D 3h 0 1 1 2 1 A 1 C 2v True C 2v 1 2 Calculated electric quadrupole moments for ClF 3 (Chlorine trifluoride). Electric dipole polarizability (Å 3 )"
+    },
+    {
+      "index": 19,
+      "rows": [
+        [
+          "squib",
+          "reference",
+          "DOI"
+        ],
+        [
+          "2015Tha/Wu:144302",
+          "AJ Thakkar, T Wu \"How well do static electronic dipole polarizabilities from gas-phase experiments compare with density functional and MP2 computations?\" J. Chem. Phys. 143, 144302 (2015)",
+          "10.1063/1.4932594"
+        ],
+        [
+          "NSRDS-NBS10",
+          "R. D. Nelson Jr., D. R. Lide, A. A. Maryott \"Selected Values of electric dipole moments for molecules in the gas phase\" NSRDS-NBS10, 1967",
+          "10.6028/NBS.NSRDS.10"
+        ],
+        [
+          "Shim",
+          "Shimanouchi, T. , Tables of Molecular Vibrational Frequencies, Consolidated Volu",
+          "10.6028/NBS.NSRDS.39"
+        ],
+        [
+          "VEEL5",
+          "M.E. Jacox, Vibrational and Electronic Energy Levels of Polyatomic Transient Molecules, J. Phys. Chem.Ref. Data, Monograph 3 (1994) (updated data in NIST Chemistry Webbook - http://webbook.nist.gov/chemistry/",
+          ""
+        ],
+        [
+          "webbook",
+          "NIST Chemistry Webbook (http://webbook.nist.gov/chemistry)",
+          "10.18434/T4D303"
+        ]
+      ],
+      "preceding_text": "because they may have information that would be of interest to you. No inferences should be drawn on account of other sites being referenced, or not, from this page. There may be other web sites that are more appropriate for your purpose. NIST does not necessarily endorse the views expressed, or concur with the facts presented on these sites. Further, NIST does not endorse any commercial products that may be mentioned on these sites. Please address comments about this page to [email protected] ."
+    },
+    {
+      "index": 20,
+      "rows": [
+        [
+          "Browse"
+        ],
+        [
+          "Previous",
+          "Next"
+        ],
+        [
+          "",
+          ""
+        ]
+      ],
+      "preceding_text": "DS-NBS10, 1967 10.6028/NBS.NSRDS.10 Shim Shimanouchi, T. , Tables of Molecular Vibrational Frequencies, Consolidated Volu 10.6028/NBS.NSRDS.39 VEEL5 M.E. Jacox, Vibrational and Electronic Energy Levels of Polyatomic Transient Molecules, J. Phys. Chem.Ref. Data, Monograph 3 (1994) (updated data in NIST Chemistry Webbook - http://webbook.nist.gov/chemistry/ webbook NIST Chemistry Webbook ( http://webbook.nist.gov/chemistry ) 10.18434/T4D303 Got a better number? Please email us at [email protected]"
+    }
+  ],
+  "related_links": [
+    {
+      "text": "Input/output files",
+      "url": "https://cccbdb.nist.gov/gaufiles1x.asp"
+    },
+    {
+      "text": "10.1063/1.4932594",
+      "url": "http://dx.doi.org/10.1063/1.4932594"
+    },
+    {
+      "text": "10.6028/NBS.NSRDS.10",
+      "url": "http://dx.doi.org/10.6028/NBS.NSRDS.10"
+    },
+    {
+      "text": "10.6028/NBS.NSRDS.39",
+      "url": "http://dx.doi.org/10.6028/NBS.NSRDS.39"
+    },
+    {
+      "text": "10.18434/T4D303",
+      "url": "http://dx.doi.org/10.18434/T4D303"
+    }
+  ],
+  "coordinate_tables": [],
+  "formal_case": false,
+  "gaussian_started": false,
+  "accepted_reference_geometry": false
+}
