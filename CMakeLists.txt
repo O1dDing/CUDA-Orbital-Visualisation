@@ -113,6 +113,9 @@ target_include_directories(cov_molecule PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_compile_features(cov_molecule PUBLIC cxx_std_20)
+# Chemistry routing consumes parser-side NAO/SALC/Fock evidence. Express the
+# dependency so static-library consumers link in the correct order on GNU ld.
+target_link_libraries(cov_molecule PUBLIC cov_parser)
 add_library(cov_platform
     src/platform/file_dialog.cpp
 )
