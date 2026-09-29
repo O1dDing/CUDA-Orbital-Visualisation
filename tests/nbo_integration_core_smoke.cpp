@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 
 namespace {
@@ -108,5 +109,59 @@ int main(int argc,char** argv){try{
     for(const auto* kind:{"NAOMO","NBOMO","NLMOMO"}){auto m=mat(kind,{std::sqrt(.8),std::sqrt(.2)});m.rows=1;reduced.d.matrices.push_back(m);}
     const auto partial=cov::integrate_nbo(reduced.w,reduced.d);require(available(partial,"aomo")&&available(partial,"nho")&&available(partial,"nlmo")&&!available(partial,"aomo_full"),"rectangular local subspace capabilities incorrect");require(partial.dataset.mo_decompositions.size()==2,"reduced subspace lost canonical identities");const auto& pd=partial.dataset.mo_decompositions[0];require(pd.available&&pd.rows.size()==1&&pd.projection_residual_norm&&pd.status=="verified_partial_subspace_projection","partial projection falsely reported complete");near(*pd.weight_sum,.8,"retained subspace weight renormalized");near(*pd.projection_residual_norm,std::sqrt(.2),"missing canonical direction residual not explicit");
     if(argc==3){auto w=cov::parse_wavefunction(argv[1]);auto discovery=cov::discover_nbo_inputs({argv[2]});require(discovery.candidates.size()==1,"single analysis directory discovery is ambiguous");auto real=cov::read_nbo_integration(w,discovery.candidates.front());for(const auto* k:{"source_association","aomo","nho","nlmo"}){if(!available(real,k)){for(const auto& x:real.diagnostics)std::cerr<<x<<'\n';throw std::runtime_error(k);}}for(auto kind:{cov::NboOrbitalKind::GaussianAO,cov::NboOrbitalKind::NAO,cov::NboOrbitalKind::NHO,cov::NboOrbitalKind::NLMO})reconstruction(real,w,kind);}
-    std::cout<<"NBO integration core passed: typed signed reconstruction, real NHO/NLMO components, capability isolation and immutable canonical\n";return 0;
+    const auto rendered=cov::make_nbo_wavefunction(partial.dataset,reduced.w);
+    require(rendered.orbitals.size()==1&&rendered.basis_count==2,"rectangular NBO renderer padded the local space");
+    require(rendered.orbitals[0].coefficients==std::vector<double>({1,0}),"rectangular NBO renderer changed coefficients");
+    near(rendered.orbitals[0].occupation,1.6,"rectangular NBO renderer changed occupation");
+    require(std::isnan(rendered.orbitals[0].energy_hartree),"NBO renderer invented canonical energy");
+    auto rejects_render=[&](cov::NboDataset data,cov::Wavefunction wave,const char* message){
+        bool rejected=false;try{cov::make_nbo_wavefunction(data,wave);}catch(const std::exception&){rejected=true;}
+        require(rejected,message);
+    };
+    auto damaged=partial.dataset;damaged.orbitals[0].occupation+=.1;
+    rejects_render(damaged,reduced.w,"stale association accepted changed printed occupation");
+    damaged=partial.dataset;damaged.orbitals.push_back(damaged.orbitals[0]);
+    rejects_render(damaged,reduced.w,"duplicate NBO identity accepted");
+    damaged=partial.dataset;damaged.orbitals.clear();
+    rejects_render(damaged,reduced.w,"missing NBO identity accepted");
+    damaged=partial.dataset;damaged.orbitals[0].id=2;
+    rejects_render(damaged,reduced.w,"out of subspace NBO identity accepted");
+    damaged=partial.dataset;damaged.orbitals[0].occupation=std::numeric_limits<double>::quiet_NaN();
+    rejects_render(damaged,reduced.w,"nonfinite NBO occupation accepted");
+    damaged=partial.dataset;damaged.orbitals[0].spin=cov::NboSpin::Beta;
+    rejects_render(damaged,reduced.w,"wrong NBO report spin accepted");
+    auto aonbo=[](cov::NboDataset& data)->cov::NboMatrix&{return *std::find_if(data.matrices.begin(),data.matrices.end(),[](const auto& m){return m.kind=="AONBO";});};
+    damaged=partial.dataset;damaged.matrices.push_back(aonbo(damaged));
+    rejects_render(damaged,reduced.w,"duplicate AONBO identity accepted");
+    damaged=partial.dataset;aonbo(damaged).values[0]=.8;
+    rejects_render(damaged,reduced.w,"nonorthonormal AONBO accepted");
+    damaged=partial.dataset;aonbo(damaged).values[0]=std::numeric_limits<double>::quiet_NaN();
+    rejects_render(damaged,reduced.w,"nonfinite AONBO accepted");
+    damaged=partial.dataset;aonbo(damaged).values.pop_back();
+    rejects_render(damaged,reduced.w,"truncated AONBO accepted");
+    damaged=partial.dataset;aonbo(damaged).columns=0;
+    rejects_render(damaged,reduced.w,"empty AONBO accepted");
+    damaged=partial.dataset;aonbo(damaged).spin=cov::NboSpin::Beta;
+    rejects_render(damaged,reduced.w,"wrong AONBO spin accepted");
+    damaged=partial.dataset;for(auto& m:damaged.archive->matrices)if(m.kind=="DENSITY")m.values[0]+=.1;
+    rejects_render(damaged,reduced.w,"stale association accepted changed source density");
+    auto changed_geometry=reduced.w;changed_geometry.atoms[1].z+=.1;
+    rejects_render(partial.dataset,changed_geometry,"stale association accepted changed canonical geometry");
+    damaged=partial.dataset;for(auto& m:damaged.matrices)if(m.kind=="NAOMO")m.values[0]+=.1;
+    require(cov::make_nbo_wavefunction(damaged,reduced.w).orbitals.size()==1,"unrelated transform broke NBO rendering");
+    // The two archive density conventions must agree in a nonorthogonal AO metric.
+    const double metric_offdiag=.25,k=1/std::sqrt(1-metric_offdiag*metric_offdiag);
+    const std::vector<double> a={1,-metric_offdiag*k,0,k},at={1,0,-metric_offdiag*k,k};
+    const std::vector<double> metric={1,metric_offdiag,metric_offdiag,1};
+    auto product=[](const auto& x,const auto& y){std::vector<double> z(4);for(int i=0;i<2;++i)for(int j=0;j<2;++j)for(int l=0;l<2;++l)z[i*2+j]+=x[i*2+l]*y[l*2+j];return z;};
+    auto metric_wave=reduced.w;metric_wave.ao_overlap=metric;
+    for(auto& mo:metric_wave.orbitals){const auto c=mo.coefficients;mo.coefficients=mo.gaussian_source_coefficients={a[0]*c[0]+a[1]*c[1],a[2]*c[0]+a[3]*c[1]};}
+    auto metric_data=partial.dataset;
+    for(auto& m:metric_data.archive->matrices){if(m.kind=="OVERLAP")m.values=metric;else if(m.kind=="LCAOMO")m.values=product(a,m.values);else if(m.kind=="DENSITY")m.values=product(product(a,m.values),at);}
+    near(cov::make_nbo_wavefunction(metric_data,metric_wave).orbitals[0].occupation,1.6,"BODM density convention rejected");
+    metric_data.archive->density_is_bond_order=false;
+    for(auto& m:metric_data.archive->matrices)if(m.kind=="DENSITY")m.values=product(product(metric,m.values),metric);
+    near(cov::make_nbo_wavefunction(metric_data,metric_wave).orbitals[0].occupation,1.6,"covariant density convention rejected");
+    require(reduced.w.orbitals.size()==2&&reduced.w.orbitals[0].coefficients==before,"NBO renderer changed canonical space");
+    std::cout<<"NBO integration core passed: signed reconstruction, rectangular rendering, metric/density rejection controls and immutable canonical\n";return 0;
 }catch(const std::exception& e){std::cerr<<"NBO integration core failed: "<<e.what()<<'\n';return 1;}}

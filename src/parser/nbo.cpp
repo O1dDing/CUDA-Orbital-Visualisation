@@ -332,20 +332,67 @@ NboAssociation associate_nbo(NboDataset& d,const Wavefunction& w) {
 
 Wavefunction make_nbo_wavefunction(const NboDataset& d,const Wavefunction& canonical) {
     if(!d.association.compatible||!d.archive)throw std::runtime_error("NBO rendering requires successful strict same-source association");
-    // Recheck the exact evidence family used by the independently routed NBO
-    // capability. Other sidecars (NAOMO, AOPNAO, etc.) support separate
-    // capabilities and must not invalidate already verified AONBO rendering.
-    // The archive, canonical coefficients, AO mapping, density and every
-    // printed NBO occupation are still checked by associate_nbo below.
+    // Revalidate the source independently of sidecar capability routing. The
+    // effective local space can have fewer columns than the AO/canonical space;
+    // it must not be padded or forced through the square-transform contract.
     NboDataset checked=d;
-    checked.matrices.erase(std::remove_if(checked.matrices.begin(),checked.matrices.end(),
-        [](const NboMatrix& matrix){return matrix.kind!="AONBO";}),checked.matrices.end());
+    checked.matrices.clear();
     const auto association=associate_nbo(checked,canonical);
     if(!association.compatible)
         throw std::runtime_error("NBO rendering association failed ("+association.status+"): "+association.detail);
+    const auto& archive=*d.archive;
+    const auto n=canonical.basis_count;
+    const auto* overlap=matrix(archive.matrices,"OVERLAP",NboSpin::Total);
+    const std::vector<NboSpin> spins=archive.open_shell?
+        std::vector<NboSpin>{NboSpin::Alpha,NboSpin::Beta}:std::vector<NboSpin>{NboSpin::Total};
+    std::map<NboSpin,const NboMatrix*> bases;
+    for(const auto& m:d.matrices)if(m.kind=="AONBO") {
+        if(std::find(spins.begin(),spins.end(),m.spin)==spins.end()||!bases.emplace(m.spin,&m).second)
+            throw std::runtime_error("NBO rendering requires unique AONBO matrices with explicit matching spin");
+        if(m.rows!=n||!m.columns||m.columns>n||m.values.size()!=n*m.columns||
+           !std::all_of(m.values.begin(),m.values.end(),[](double x){return std::isfinite(x);}))
+            throw std::runtime_error("NBO rendering AONBO dimensions or finite-value contract violated");
+    }
+    for(const auto& orbital:d.orbitals)
+        if(std::find(spins.begin(),spins.end(),orbital.spin)==spins.end())
+            throw std::runtime_error("NBO report spin does not match the source electronic state");
+    const auto rectangular_product=[n](const std::vector<double>& a,const std::vector<double>& b,std::size_t columns) {
+        std::vector<double> out(n*columns);
+        for(std::size_t i=0;i<n;++i)for(std::size_t k=0;k<n;++k)
+            for(std::size_t j=0;j<columns;++j)out[i*columns+j]+=a[i*n+k]*b[k*columns+j];
+        return out;
+    };
+    for(const auto spin:spins) {
+        const auto found=bases.find(spin);
+        if(found==bases.end())throw std::runtime_error("NBO rendering requires AONBO for every source spin");
+        const auto& b=*found->second;
+        const auto columns=b.columns;
+        const auto sb=rectangular_product(overlap->values,b.values,columns);
+        for(std::size_t i=0;i<columns;++i)for(std::size_t j=0;j<columns;++j) {
+            double dot=0;for(std::size_t k=0;k<n;++k)dot+=b.values[k*columns+i]*sb[k*columns+j];
+            if(!std::isfinite(dot)||std::abs(dot-(i==j?1.0:0.0))>2e-5)
+                throw std::runtime_error("NBO rendering association failed (invalid_aonbo_metric): AONBO columns are not orthonormal in the source AO metric");
+        }
+        // BODM stores P; the other convention stores S P S. Both produce
+        // the same local occupation, without a spin-dependent factor of two.
+        const auto& density=*matrix(archive.matrices,"DENSITY",spin);
+        const auto& projection=archive.density_is_bond_order?sb:b.values;
+        const auto dp=rectangular_product(density.values,projection,columns);
+        std::vector<bool> seen(columns,false);
+        for(const auto& orbital:d.orbitals)if(orbital.spin==spin) {
+            if(!orbital.id||orbital.id>columns||seen[orbital.id-1]||!std::isfinite(orbital.occupation))
+                throw std::runtime_error("NBO rendering requires one finite occupation per unique local column");
+            const auto column=orbital.id-1;seen[column]=true;
+            double occupation=0;for(std::size_t k=0;k<n;++k)occupation+=projection[k*columns+column]*dp[k*columns+column];
+            if(!std::isfinite(occupation)||std::abs(occupation-orbital.occupation)>4e-5)
+                throw std::runtime_error("NBO rendering printed occupation disagrees with source density");
+        }
+        if(!std::all_of(seen.begin(),seen.end(),[](bool x){return x;}))
+            throw std::runtime_error("NBO rendering is missing report identities for local columns");
+    }
     Wavefunction out;out.atoms=canonical.atoms;out.primitives=canonical.primitives;out.shells=canonical.shells;out.basis_count=canonical.basis_count;out.pure_d=canonical.pure_d;out.pure_f=canonical.pure_f;out.pure_g=canonical.pure_g;out.source_title="NBO localized orbitals (independent dataset)";out.ao_overlap=canonical.ao_overlap;out.ao_overlap_provenance=canonical.ao_overlap_provenance;
-    const auto n=out.basis_count;std::vector<std::size_t> gaussian_to_internal(n);for(std::size_t i=0;i<n;++i)gaussian_to_internal[canonical.gaussian_ao_transform[i].source_index]=i;
-    for(auto& x:d.orbitals){const auto* m=matrix(d.matrices,"AONBO",x.spin);if(!m||m->rows!=n||m->columns!=n||x.id==0||x.id>n)throw std::runtime_error("Complete AONBO matrix for every orbital/spin is required");MolecularOrbital mo;mo.energy_hartree=std::numeric_limits<double>::quiet_NaN();mo.occupation=x.occupation;mo.occupation_provenance=DataProvenance::Producer;mo.spin=x.spin==NboSpin::Beta?Spin::Beta:Spin::Alpha;mo.spin_provenance=DataProvenance::Producer;mo.spin_source_text=nbo_spin_name(x.spin);mo.source_orbital_index=x.id-1;mo.coefficients.resize(n);for(std::size_t i=0;i<n;++i){const auto internal=gaussian_to_internal[checked.association.gaussian_row[i]];mo.coefficients[internal]=m->values[i*n+x.id-1]*checked.association.coefficient_scale[i]*canonical.gaussian_ao_transform[internal].coefficient_scale;}out.orbitals.push_back(std::move(mo));}
+    std::vector<std::size_t> gaussian_to_internal(n);for(std::size_t i=0;i<n;++i)gaussian_to_internal[canonical.gaussian_ao_transform[i].source_index]=i;
+    for(auto& x:d.orbitals){const auto* m=bases.at(x.spin);MolecularOrbital mo;mo.energy_hartree=std::numeric_limits<double>::quiet_NaN();mo.occupation=x.occupation;mo.occupation_provenance=DataProvenance::Producer;mo.spin=x.spin==NboSpin::Beta?Spin::Beta:Spin::Alpha;mo.spin_provenance=DataProvenance::Producer;mo.spin_source_text=nbo_spin_name(x.spin);mo.source_orbital_index=x.id-1;mo.coefficients.resize(n);for(std::size_t i=0;i<n;++i){const auto internal=gaussian_to_internal[association.gaussian_row[i]];mo.coefficients[internal]=m->values[i*m->columns+x.id-1]*association.coefficient_scale[i]*canonical.gaussian_ao_transform[internal].coefficient_scale;}out.orbitals.push_back(std::move(mo));}
     if(out.orbitals.empty())throw std::runtime_error("No NBO orbitals available");return out;
 }
 
