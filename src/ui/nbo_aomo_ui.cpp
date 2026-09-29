@@ -402,14 +402,9 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
         const double t=(coordinate-low)/(high-low);
         return numeric_top+static_cast<float>(1-t)*numeric_span;
     };
-    const bool canonical_has_beta=std::any_of(canonical.orbitals.begin(),canonical.orbitals.end(),
-        [](const auto& orbital){return orbital.spin==Spin::Beta;});
     const auto canonical_label=[&](std::size_t index) {
-        if(state.names && index<state.names->canonical.size())return state.names->canonical[index].label;
-        auto label=std::to_string(index+1)+"?";
-        if(canonical_has_beta)
-            label+=canonical.orbitals[index].spin==Spin::Beta?" [beta]":" [alpha]";
-        return label;
+        const auto* name=state.names&&index<state.names->canonical.size()?&state.names->canonical[index]:nullptr;
+        return canonical_mo_display_label(canonical,index,name);
     };
     std::map<std::size_t,std::size_t> mo_nodes;
     for(std::size_t li=0;li<diagram.data.levels.size();++li) {
@@ -471,14 +466,11 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
                 const auto partner_name=strip_spin(canonical_label(partner));
                 if(primary_name==partner_name)
                     node.spatial_pair_label=primary_name+" α/β"+occupancy;
-                else node.spatial_pair_label="MO"+std::to_string(primary+1)+
-                    (canonical.orbitals[primary].spin==Spin::Beta?"β":"α")+"/"+
-                    std::to_string(partner+1)+
-                    (canonical.orbitals[partner].spin==Spin::Beta?"β":"α")+occupancy;
+                else node.spatial_pair_label=canonical_label(primary)+" / "+canonical_label(partner)+occupancy;
                 if(pair->second.second)node.label=node.spatial_pair_label;
                 else node.label.clear();
-                node.detail+="; matched alpha/beta spatial display pair with original MO "+
-                    std::to_string(other+1)+
+                node.detail+="; matched alpha/beta spatial display pair with "+
+                    canonical_mo_source_label(canonical,other)+
                     "; each member retains its own canonical eigenvalue and selection. "
                     "Within a degenerate subspace, this display correspondence need not be unique.";
             }
@@ -651,7 +643,10 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
             if(orbital.spin!=NboSpin::Total)
                 node.label+=" ["+std::string(nbo_spin_name(orbital.spin))+"]";
             if(orbital.atoms.size()>1 && state.names && i<state.names->salc.size()) {
-                const auto& name=state.names->salc[i];node.label=name.label;
+                const auto& name=state.names->salc[i];
+                node.label=name.verified&&name.ordinal?name.label:
+                    std::string(orbital.symmetry_adapted?"SALC ":"Fragment orbital ")+
+                    std::to_string(i+1)+" ["+nbo_spin_name(orbital.spin)+"]";
                 node.symmetry_irrep=name.irrep;node.symmetry_ordinal=name.ordinal;
                 node.symmetry_name_verified=name.verified;node.name_detail=name.detail;
                 node.detail+="; "+name.detail;
@@ -1747,7 +1742,7 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
     // Capture the complete content row before SameLine controls change the
     // cursor; fitting must use the graph width, never a toolbar remainder.
     const float graph_available_width=std::max(1.0f,ImGui::GetContentRegionAvail().x-28*scale);
-    const char* preset_names[]={aomo_text(language,"Teaching overview"),
+    const char* preset_names[]={aomo_text(language,"Overview"),
         aomo_text(language,"Research analysis"),aomo_text(language,"Full basis")};
     constexpr const char* preset_items[]={"aomo.preset.teaching","aomo.preset.research","aomo.preset.full"};
     const char* preset_caption=aomo_text(language,"View");
@@ -2243,8 +2238,10 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
                 ":"+nbo_orbital_kind_name(state.basis_kind);
             selection.target_canonical_index=snapshot->focused_canonical_index;
             selection.label="Signed partial sum of "+std::to_string(terms.size())+
-                " actual "+nbo_orbital_kind_name(state.basis_kind)+" components of MO "+
-                std::to_string(snapshot->focused_canonical_index+1);
+                " actual "+nbo_orbital_kind_name(state.basis_kind)+" components of "+
+                canonical_mo_display_label(canonical,snapshot->focused_canonical_index,
+                    state.names&&snapshot->focused_canonical_index<state.names->canonical.size()
+                        ?&state.names->canonical[snapshot->focused_canonical_index]:nullptr);
             selection.terms=terms;selection.normalize=false;
             state.pending_selection=std::move(selection);
         }
@@ -2256,8 +2253,10 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
             selection.group_id="mo:"+std::to_string(snapshot->focused_canonical_index)+
                 ":"+nbo_orbital_kind_name(state.basis_kind);
             selection.target_canonical_index=snapshot->focused_canonical_index;
-            selection.label="Separate signed components of MO "+
-                std::to_string(snapshot->focused_canonical_index+1);
+            selection.label="Separate signed components of "+
+                canonical_mo_display_label(canonical,snapshot->focused_canonical_index,
+                    state.names&&snapshot->focused_canonical_index<state.names->canonical.size()
+                        ?&state.names->canonical[snapshot->focused_canonical_index]:nullptr);
             selection.terms=terms;selection.normalize=false;
             state.pending_selection=std::move(selection);
         }
@@ -2270,8 +2269,13 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         }
         ImGui::TextDisabled(aomo_text(language,"Selected components: %zu / %zu"),
             terms.size(),links.size());
-        if(state.basis_kind==NboOrbitalKind::NAO)
-            ImGui::TextWrapped("%s",aomo_text(language,"All NAO terms represent the validated local-subspace projection; use Full canonical MO for any residual outside that span."));
+        const bool omitted_terms=std::any_of(links.begin(),links.end(),[&](const auto& link){
+            return !state.sum_component_ids.contains(row_id(link.orbital))&&std::abs(link.coefficient)>1e-12;
+        });
+        const bool outside_local_span=state.basis_kind==NboOrbitalKind::NAO&&
+            snapshot->focused_projection_residual_norm&&*snapshot->focused_projection_residual_norm>2e-5;
+        if(omitted_terms||outside_local_span)
+            ImGui::TextWrapped("%s",aomo_text(language,"Showing partial orbital composition."));
         validation::anchor("aomo.coefficients");
         ImGui::BeginChild("##aomo.coefficients",ImVec2(0,240*scale),ImGuiChildFlags_Border);
         for(std::size_t i=0;i<links.size();++i) {

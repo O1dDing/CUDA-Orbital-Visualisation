@@ -60,7 +60,6 @@ enum class Text {
     GPUResident,
     InteractionHint,
     IsovalueHint,
-    ExperimentalNote,
     Ready,
     Parsing,
     Loaded,

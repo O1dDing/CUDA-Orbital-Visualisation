@@ -1,8 +1,10 @@
 #include "cov/orbital_tracking.hpp"
 
 #include <chrono>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -147,6 +149,54 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    // Check observable scores and ambiguity, not merely assignment counts.
+    // The second source's locally preferred edge is consumed by the stronger
+    // source, so its valid second choice must retain the ambiguity warning.
+    for (const auto& match : competition.matches) {
+        const bool first_source = match.from_members == std::vector<std::size_t>{0u};
+        const double expected_score = first_source ? 0.99 : 0.59;
+        const double expected_similarity = first_source ? 1.0 : 0.60;
+        if (std::abs(match.score - expected_score) > 1e-12 ||
+            std::abs(match.similarity - expected_similarity) > 1e-12 ||
+            match.ambiguous != !first_source ||
+            match.source != cov::OrbitalTrackingSource::SMetricChemicalDescriptor) {
+            std::cerr << "ordinary score or ambiguity regression\n";
+            return EXIT_FAILURE;
+        }
+    }
+
+    // Incompatible atom order must still retain sorted, degenerate membership
+    // groups on both sides, even when their chemical descriptors are unusable.
+    auto incompatible_from = split_frame(2u, true, -0.30, 2.0);
+    incompatible_from.orbitals.push_back(orbital(-0.80, 2.0, 0u, 1.0));
+    auto incompatible_to = incompatible_from;
+    std::swap(incompatible_to.atoms[0], incompatible_to.atoms[1]);
+    incompatible_to.orbitals[0].chemistry.available = false;
+    const auto incompatible = cov::track_orbital_subspaces(
+        incompatible_from, incompatible_to);
+    const std::vector<std::vector<std::size_t>> incompatible_groups{{2u}, {0u, 1u}};
+    if (incompatible.atom_mapping_compatible || !incompatible.matches.empty() ||
+        incompatible.unmatched_from != incompatible_groups ||
+        incompatible.unmatched_to != incompatible_groups ||
+        incompatible.composite_optimisation_truncated) {
+        std::cerr << "incompatible frame membership regression\n";
+        return EXIT_FAILURE;
+    }
+
+    // Missing chemistry supports no assignment; every original group must be
+    // reported unmatched, with no optimizer truncation invented for this case.
+    auto unavailable_to = second;
+    for (auto& mo : unavailable_to.orbitals) mo.chemistry.available = false;
+    const auto unavailable = cov::track_orbital_subspaces(first, unavailable_to);
+    const std::vector<std::vector<std::size_t>> singleton_groups{{0u}, {1u}};
+    if (!unavailable.atom_mapping_compatible || !unavailable.matches.empty() ||
+        unavailable.unmatched_from != singleton_groups ||
+        unavailable.unmatched_to != singleton_groups ||
+        unavailable.composite_optimisation_truncated) {
+        std::cerr << "unsupported ordinary assignment regression\n";
+        return EXIT_FAILURE;
+    }
+
     // Symmetry lowering may split an e subspace into two adjacent singlets.
     // Tracking must preserve the two-dimensional identity as a whole instead
     // of silently dropping it because the temporary group sizes differ.
@@ -193,6 +243,31 @@ int main() {
         !interleaved.unmatched_from.empty() ||
         !interleaved.unmatched_to.empty()) {
         std::cerr << "interleaved local split subspace regression\n";
+        return EXIT_FAILURE;
+    }
+
+    // A complete split/recombine may consume one side while the other has a
+    // chemically distinct extra singlet. Preserve that unmatched member in
+    // both transition directions without requesting an ordinary assignment.
+    auto shorter_split = interleaved_to;
+    shorter_split.orbitals.erase(shorter_split.orbitals.begin() + 1);
+    const auto partial_lowering = cov::track_orbital_subspaces(
+        interleaved_from, shorter_split);
+    const auto partial_restoring = cov::track_orbital_subspaces(
+        shorter_split, interleaved_from);
+    const std::vector<std::vector<std::size_t>> extra_singlet{{2u}};
+    const auto partial_union = [](const cov::OrbitalTrackingResult& value) {
+        return value.atom_mapping_compatible && value.matches.size() == 1u &&
+            value.composite_matches_selected == 1u &&
+            value.matches.front().from_members == std::vector<std::size_t>{0u, 1u} &&
+            value.matches.front().to_members == std::vector<std::size_t>{0u, 1u};
+    };
+    if (!partial_union(partial_lowering) || !partial_union(partial_restoring) ||
+        partial_lowering.unmatched_from != extra_singlet ||
+        !partial_lowering.unmatched_to.empty() ||
+        !partial_restoring.unmatched_from.empty() ||
+        partial_restoring.unmatched_to != extra_singlet) {
+        std::cerr << "partial split/recombine unmatched membership regression\n";
         return EXIT_FAILURE;
     }
 

@@ -1,68 +1,40 @@
-# COV 的 AO–MO / NBO 联动
+# Explore AO–MO and NBO relationships
 
-本页说明程序操作和数据含义。每份数据是否通过验收，以交付目录中的案例台账和证据索引为准。
+[简体中文](AOMO_NBO.zh-CN.md)
 
-## 导入与回退
+Chemical Orbital Visualiser (COV) brings orbital energies, occupations and composition into one view. In the v0.4.0 preview, you can open an existing Gaussian FCHK and its corresponding NBO results, then move from an MO, atom or bond to related orbitals and contributions. Inspect a selected orbital in 3D when you want to see its shape.
 
-把 FCHK 和同一计算的 NBO 文件一起拖入，或拖入整个计算目录；也可在输入框填写文件或目录路径。程序读取文件内容识别报告、电子结构档案和轨道变换矩阵。计算目录内有多个候选时，先选择所需计算；不会启动 Gaussian 或 NBO 计算。
+## Which files do I need?
 
-普通使用无需填写多个路径。高级路径入口仍保留，供处理不规则文件组织。
+COV reads results that already exist; it does not run Gaussian or NBO. Drop the files together, drop their directory, or enter a path. If the directory contains several calculations, choose the one you want. The advanced path controls help when the files are stored in different places.
 
-- 没有 NBO：保持原有 Gaussian MO 视图，显示数据缺失。
-- 报告存在但缺分解矩阵：整体图退回纯 MO，逐项启用已有且验证通过的能力。
-- 同源核验失败：显示拒绝原因，保持 Gaussian 视图。
-- 一项高级矩阵损坏或缺失：只关闭依赖该矩阵的功能。
-- 多个计算候选：保留当前视图，等待明确选择；不会自动混合不同分子的文件。
+| What you want to see | Files to provide |
+| --- | --- |
+| MO energies, occupations, energy diagram and 3D MO | Gaussian FCHK/FCH, or a Molden wavefunction. |
+| NPA charges, Wiberg indices and listed E(2) interactions | A Gaussian FCHK and the corresponding NBO report containing those sections: a Gaussian `.log`/`.out` or standalone NBO output. |
+| NBO orbital shapes and canonical MO–NBO connections | The matching FCHK and NBO report, the NBO `.47` archive, and complete AONBO and NBOMO matrices. |
+| NAO contributions to an MO | The matching FCHK, report, archive and matrices above, plus AONAO and NAOMO matrices together. An NAONBO matrix can provide an additional comparison. |
 
-使用 ECP 时核对有效核电荷；开壳层分别保留 alpha/beta；原 Gaussian canonical 系数、顺序、能量和占据不被局域轨道替换。不同计算、坐标或原子顺序不能仅凭文件名相似而融合。
+Matrix file numbers are chosen when the NBO calculation is produced; they are not fixed by COV. For example, a calculation requesting `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` would write files with those numbers if the producer follows the requests. Check the matrix headings and your calculation output rather than assuming that `FILE.37` or another numbered file has a particular role. Some detailed NHO and NLMO views also need the relevant orbital data in the report and matrices.
 
-## 整体图与三维场
+If you start with a CHK file, use an installed `formchk` to create an FCHK, or let COV call the installed converter. Use the checkpoint from the calculation that produced the NBO results. If NBO files are missing, the ordinary MO view still works; an analysis that needs missing data will be unavailable.
 
-关注 MO 沿用现有 COV 的价层、前线虚轨道、简并和紧凑视图规则。图左侧是原子轨道，中间可显示与所选 MO 对应的真实片段组合，右侧是 canonical MO。
+## Follow an orbital through the diagram
 
-- 点 MO：右侧显示该 MO，图上突出它的真实成分连接。
-- 点 NAO 或 Gaussian AO：显示该轨道，反向突出关联 MO。
-- 点片段组合：显示来自这些原子的带符号成分和。
-- 点连接：显示系数乘以该轨道的单项贡献；连接重叠时选择明确的目标。
-- 打开完整系数：勾选若干项，查看部分和、独立叠加或完整重构。
-- 原子、片段和简并组可折叠。隐藏的项仍在完整数据中，不被当作不存在或零。
+Choose an MO in the browser or energy diagram. The diagram focuses on valence and nearby unoccupied levels; **All** in the browser shows the full imported orbital list. Click an MO to highlight its available links to Gaussian atomic orbitals (AO), natural atomic orbitals (NAO) and atom groups. Click an AO, NAO or link to inspect a contribution or find related MOs. You can select several terms and show their signed partial sum or overlay them in 3D. Folding groups tidies the diagram without removing their members.
 
-NAO 是正交的自然原子轨道；Gaussian AO 是原计算的基函数，二者不能混称。NAO 的系数平方可作为该正交表示下的权重；Gaussian AO 的系数平方不是原子布居。图中不为 AO 伪造与 MO 共用的能量轴，也不把 Fock 对角元称为 canonical MO 能量。片段组合只有在有相应证据时才具有特定对称含义，不能仅凭图形称为 SALC。
+NAOs form an orthogonal representation, so squared NAO coefficients can describe weights in that representation. Squared coefficients of the original, generally nonorthogonal Gaussian AOs are not atomic populations. When NAO or SALC energies are available, they can use the same numerical axis as the MOs. Their values are operator expectation values in the molecular environment; the central values are canonical MO energies. The illustrative side layout arranges orbitals without using their energies. A group of orbitals is a SALC only when the available data supports that symmetry meaning.
 
-右侧标题始终记录轨道类别、编号、自旋或带系数项数。主场红/蓝表示正/负相位；第二个独立场使用绿/金。成分叠加计算的是波函数的带符号和，不是密度相加。
+**Overview** shows a compact view. **Research analysis** adds detail, and **Full basis** includes core and Rydberg orbitals. These presets change what is shown.
 
-## 从分子图出发
+## Start from the molecule
 
-在右侧点击原子或键，在“选中的三维对象”查看数值来源及相关轨道按钮。
+Click an atom or bond in the 3D view to open its related values and orbital links. Where the report provides them, atoms can be coloured by NPA charge or spin population; bonds can show Wiberg indices, bonding and antibonding orbitals, and coordination or multicentre relationships. A Wiberg index is a continuous value, not an integer bond order.
 
-- NPA 电荷和自旋布居可直接为原子着色，色标及所选数值显示在右侧。
-- 普通整数多重键来自已验证的 Lewis NBO 成键集合，Wiberg 保留连续值，不作四舍五入。成键和反键轨道分别可点击。
-- 配位、多中心和未定整数键型使用对应风格。灰色点划线表示存在连接证据，但不能确定整数键型。
-- 环的几何绘制注释不单独证明芳香性或电子离域。
-- NHO 可显示真实定向轨道瓣，点击 s/p/d（存在时也有 f/g）查看带符号角成分和，也可逐项选择叠加。
-- E(2) 点击后显示供体与受体两个实际轨道和方向关系；数值仍是二阶微扰证据，单位为 kcal/mol。
-- NLMO 可分别查看完整轨道、由报告核定的主 NBO 成分和其余带符号尾部。
+NHO views can show directional orbital lobes and their angular components. Select an E(2) interaction to see its donor and acceptor orbitals together; the E(2) value is a perturbation estimate, not a bond or reaction energy. NLMO views can separate the full orbital, its main NBO component and the remaining tail when the needed data is available.
 
-小成分可能低于当前等值面阈值。右侧“适合当前成分”按该选择的实际度量范数调整显示阈值，滑块显示所用数值；轨道系数和场幅度保持不变。比较不同轨道大小时应采用相同阈值。右侧“看清骨架”降低轨道不透明度，使原子和键可见。
+A small contribution may be hidden by the current isosurface threshold. Use **Fit component** to adjust the display threshold or **Reveal bonds** to make the molecule easier to see. Keep the same threshold when comparing the sizes of different orbitals.
 
-秩不足或局域空间不完整时，图明确保留投影权重与重构残差。局域投影可用不等于全空间重构可用。金属 canonical 的 δ 特征也不自动意味着 NBO 解包含局域 δ 键，不能据此补画整数四重键。
+## Export
 
-局域轨道空间的列数可以小于 AO 或正则轨道空间。NBO 三维入口按实际矩形 AONBO 显示已验证的列，并重新检查同源档案、AO 度量、逐自旋密度与每列报告占据；不会补零扩成方阵，也不会因此声称完整重构可用。若尚未选定唯一 NBO，请先在“选择轨道”中选具体条目，再使用“NBO 轨道”按钮；“正则 MO”按钮可返回原始轨道。
-
-## 一致导出
-
-“导出整体图”生成同一快照的 `.aomo.svg`、`.aomo.png`、`.aomo.json`、`.aomo.csv`。JSON 保留输入身份、中央 MO 集合、实际节点/连接 ID、选择、分组、过滤与投影信息；CSV 保存完整数值范围。SVG/PNG 是静态导出，运行时三维联动在 COV 中使用。
-
-## 可机读验证版
-
-普通程序为 `cov.exe`；验证版为 `cov_validation.exe`，使用同一解析、选择、渲染和导出路径：
-
-```text
-cov_validation.exe "绝对路径/canonical.fchk" --validation-plan "绝对路径/check.plan" --validation-output "绝对路径/evidence" --validation-background
-```
-
-计划以 `COV_VALIDATION 1` 开头。常用命令为 `drop "文件或目录"`、`click "实际控件ID"`、`seek "面板ID"`、`capture "名字"`、`volume "名字" "当前渲染MO索引"`。`volume` 的最后一个参数不是叠加场编号：一次调用会记录主场及 `-field1` 等独立场。具体可回放计划随验收证据保存。
-
-输出包括 `session.json`、`actions.jsonl`、`events.jsonl`、`*.ui.json`、`selection-*.json`、`integration-*.json`、实际截图及 GPU 纹理采样。退出码零只说明计划执行成功；科学通过还需独立核对预期选择身份、原始矩阵、带符号场值、实际拾取对象、截图与导出一致性。
-
-验证中的 drop 命令调用生产输入处理路径；它不等价于已经验证 Windows 文件管理器的跨窗口拖放手势。普通程序操作记录另行保存，任何未完成的必要操作都应明确列出。
+**Export whole diagram** saves `.aomo.svg`, `.aomo.png`, `.aomo.json` and `.aomo.csv`. SVG/PNG are static figures; JSON/CSV retain selections, groups and values. Interactive 3D exploration remains in COV.

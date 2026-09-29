@@ -43,6 +43,8 @@ struct OrbitalTrackingOptions {
     std::size_t maximum_local_component_pool = 16u;
     std::size_t maximum_composite_candidates_per_anchor = 8u;
     std::size_t maximum_conflict_component_candidates = 128u;
+    // These optimizer budgets apply per conflict component, after candidate
+    // construction; they are not an end-to-end tracking or file-loading limit.
     std::size_t maximum_optimizer_states = 250000u;
     double maximum_optimizer_milliseconds = 250.0;
 };

@@ -1,4 +1,5 @@
 #include "cov/nbo_ui.hpp"
+#include "cov/nbo_aomo_labels.hpp"
 #include "cov/validation.hpp"
 #include <imgui.h>
 #include <algorithm>
@@ -21,10 +22,10 @@ enum Label { Title, Path, Archive, Aonbo, Nbomo, Naomo, Aonao, Naonbo, FocusNote
              Orbitals, Wiberg, E2, Matrices, EnergyNote, ExportPath, Export,
              Source, Threshold, Units, NoData, Count };
 constexpr const char* labels[4][Count] = {
-    {"NBO analysis", "NBO output path", "ARCHIVE .47 (optional)", "AONBO .37 (optional)", "NBOMO .49 (optional)", "NAOMO .51: NAO / canonical MO (optional)", "AONAO .52: AO / NAO (optional)", "NAONBO .53: NAO / NBO (optional)", "Focused NAO composition appears in the central MO diagram above.", "Analysis segment (-1: require unique)", "Attach NBO", "Canonical MOs", "NBO orbitals", "Source association", "NBO coefficients verified for rendering", "Report only: coefficients or source association unavailable", "NPA populations", "NAOs", "NBO orbital occupations and components", "Wiberg indices", "Second-order interactions", "Matrix evidence", "Diagonal Fock values are not canonical MO energies.", "Export base path", "Export NBO bundle", "Source", "Print threshold", "Units", "No data reported"},
-    {"NBO 分析", "NBO 输出路径", "ARCHIVE .47（可选）", "AONBO .37（可选）", "NBOMO .49（可选）", "NAOMO .51：NAO / 正则 MO（可选）", "AONAO .52：AO / NAO（可选）", "NAONBO .53：NAO / NBO（可选）", "聚焦的 NAO 成分显示在上方中央 MO 图中。", "分析段（-1：要求唯一）", "关联 NBO", "正则 MO", "NBO 轨道", "同源关联", "NBO 系数已验证，可渲染", "仅报告：缺少系数或同源关联", "NPA 布居", "NAO", "NBO 轨道占据与成分", "Wiberg 指数", "二阶相互作用", "矩阵证据", "Fock 对角值不是正则 MO 能量。", "导出路径前缀", "导出 NBO 数据", "来源", "打印阈值", "单位", "未报告数据"},
-    {"NBO 解析", "NBO 出力パス", "ARCHIVE .47（任意）", "AONBO .37（任意）", "NBOMO .49（任意）", "NAOMO .51：NAO / 正準 MO（任意）", "AONAO .52：AO / NAO（任意）", "NAONBO .53：NAO / NBO（任意）", "NAO 成分は上の中央 MO 図に表示します。", "解析区間（-1：一意のみ）", "NBO を関連付け", "正準 MO", "NBO 軌道", "同一源の照合", "描画用 NBO 係数を検証済み", "報告のみ：係数または照合が不足", "NPA 原子分布", "NAO", "NBO 軌道の占有数と成分", "Wiberg 指数", "二次相互作用", "行列の証拠", "Fock 対角値は正準 MO エネルギーではありません。", "出力先の基底名", "NBO 一式を書き出す", "出典", "印字しきい値", "単位", "報告データなし"},
-    {"Analyse NBO", "Chemin de sortie NBO", "ARCHIVE .47 (facultatif)", "AONBO .37 (facultatif)", "NBOMO .49 (facultatif)", "NAOMO .51 : NAO / OM canoniques (facultatif)", "AONAO .52 : AO / NAO (facultatif)", "NAONBO .53 : NAO / NBO (facultatif)", "La composition NAO ciblée figure dans le diagramme central ci-dessus.", "Segment d’analyse (-1 : unique)", "Associer NBO", "OM canoniques", "Orbitales NBO", "Association des sources", "Coefficients NBO vérifiés pour l’affichage", "Rapport seul : coefficients ou association absents", "Populations NPA", "NAO", "Occupation et composants NBO", "Indices de Wiberg", "Interactions du second ordre", "Preuves matricielles", "Les valeurs diagonales de Fock ne sont pas des énergies OM canoniques.", "Chemin de base de l’export", "Exporter NBO", "Source", "Seuil d’impression", "Unités", "Aucune donnée rapportée"}
+    {"NBO analysis", "NBO output path", "ARCHIVE .47 (optional)", "AONBO .37 (optional)", "NBOMO .49 (optional)", "NAOMO .51: NAO / canonical MO (optional)", "AONAO .52: AO / NAO (optional)", "NAONBO .53: NAO / NBO (optional)", "Focused NAO composition appears in the central MO diagram above.", "Analysis segment (-1: require unique)", "Attach NBO", "Canonical MOs", "NBO orbitals", "Calculation files", "NBO orbitals available", "Report available; orbital data unavailable", "NPA populations", "NAOs", "NBO orbital occupations and components", "Wiberg indices", "Second-order interactions", "Orbital matrices", "Diagonal Fock values are not canonical MO energies.", "Export base path", "Export NBO bundle", "Source", "Print threshold", "Units", "No data reported"},
+    {"NBO 分析", "NBO 输出路径", "ARCHIVE .47（可选）", "AONBO .37（可选）", "NBOMO .49（可选）", "NAOMO .51：NAO / 正则 MO（可选）", "AONAO .52：AO / NAO（可选）", "NAONBO .53：NAO / NBO（可选）", "聚焦的 NAO 成分显示在上方中央 MO 图中。", "分析段（-1：要求唯一）", "关联 NBO", "正则 MO", "NBO 轨道", "计算文件", "可显示 NBO 轨道", "已读取报告，轨道数据不可用", "NPA 布居", "NAO", "NBO 轨道占据与成分", "Wiberg 指数", "二阶相互作用", "轨道矩阵", "Fock 对角值不是正则 MO 能量。", "导出路径前缀", "导出 NBO 数据", "来源", "打印阈值", "单位", "未报告数据"},
+    {"NBO 解析", "NBO 出力パス", "ARCHIVE .47（任意）", "AONBO .37（任意）", "NBOMO .49（任意）", "NAOMO .51：NAO / 正準 MO（任意）", "AONAO .52：AO / NAO（任意）", "NAONBO .53：NAO / NBO（任意）", "NAO 成分は上の中央 MO 図に表示します。", "解析区間（-1：一意のみ）", "NBO を関連付け", "正準 MO", "NBO 軌道", "計算ファイル", "NBO 軌道を表示できます", "レポートを読み込みました。軌道データは利用できません", "NPA 原子分布", "NAO", "NBO 軌道の占有数と成分", "Wiberg 指数", "二次相互作用", "軌道行列", "Fock 対角値は正準 MO エネルギーではありません。", "出力先の基底名", "NBO 一式を書き出す", "出典", "印字しきい値", "単位", "報告データなし"},
+    {"Analyse NBO", "Chemin de sortie NBO", "ARCHIVE .47 (facultatif)", "AONBO .37 (facultatif)", "NBOMO .49 (facultatif)", "NAOMO .51 : NAO / OM canoniques (facultatif)", "AONAO .52 : AO / NAO (facultatif)", "NAONBO .53 : NAO / NBO (facultatif)", "La composition NAO ciblée figure dans le diagramme central ci-dessus.", "Segment d’analyse (-1 : unique)", "Associer NBO", "OM canoniques", "Orbitales NBO", "Fichiers de calcul", "Orbitales NBO disponibles", "Rapport disponible ; données orbitalaires indisponibles", "Populations NPA", "NAO", "Occupation et composants NBO", "Indices de Wiberg", "Interactions du second ordre", "Matrices orbitalaires", "Les valeurs diagonales de Fock ne sont pas des énergies OM canoniques.", "Chemin de base de l’export", "Exporter NBO", "Source", "Seuil d’impression", "Unités", "Aucune donnée rapportée"}
 };
 const char* trn(Language language, Label key) {
     const int row=std::clamp(static_cast<int>(language),0,3);
@@ -71,10 +72,10 @@ struct ReportText {
 };
 ReportText report_text(Language language) {
     switch(language){
-        case Language::ChineseSimplified:return {"原子","电荷","内层","价层","里德堡","打印总布居","占据","Fock 对角 (Ha)","成分","系数","来源证据","NBOMO 贡献","选中正则 MO","显示阈值 |T|²","已显示权重","剩余权重","无完整 NBOMO 矩阵","行/列或自旋不匹配","能隙 (Ha)","原始权重 |T|²","ECP 核心电子","显式电子布居","FCHK 未提供 beta MO；beta 轨道来源为已关联的 archive 与 NBO 文件，不能当作 FCHK beta MO。","正则系数证据","直接 FCHK 系数","密度已核验","自旋密度"};
-        case Language::Japanese:return {"原子","電荷","内殻","価電子","リュードベリ","印字総分布","占有数","Fock 対角 (Ha)","成分","係数","出典の証拠","NBOMO 寄与","選択した正準 MO","表示しきい値 |T|²","表示した重み","残りの重み","完全な NBOMO 行列なし","行・列またはスピンが不一致","エネルギー差 (Ha)","生の重み |T|²","ECP 内殻電子","明示的電子分布","FCHK に beta MO がありません。beta 軌道は照合済み archive と NBO ファイルに由来し、FCHK の beta MO とみなしません。","正準係数の証拠","FCHK 係数を直接確認","密度を検証済み","スピン密度"};
-        case Language::French:return {"Atome","Charge","Cœur","Valence","Rydberg","Population totale imprimée","Occupation","Diagonale de Fock (Ha)","Composant","Coefficient","Preuves de provenance","Contributions NBOMO","OM canonique choisi","Seuil affiché |T|²","Poids affiché","Poids restant","Aucune matrice NBOMO complète","Lignes, colonnes ou spin incompatibles","Écart d’énergie (Ha)","Poids brut |T|²","Électrons de cœur ECP","Population explicite","Le FCHK ne contient pas d’OM bêta ; les orbitales bêta proviennent de l’archive associée et des fichiers NBO, sans identité OM bêta FCHK.","Preuve des coefficients canoniques","Coefficients FCHK directs","Densité vérifiée","Densité de spin"};
-        default:return {"Atom","Charge","Core","Valence","Rydberg","Printed total population","Occupation","Fock diagonal (Ha)","Component","Coefficient","Source evidence","NBOMO contributions","Selected canonical MO","Display threshold |T|²","Shown weight","Remaining weight","No complete NBOMO matrix","Row/column or spin mismatch","Energy gap (Ha)","Raw weight |T|²","ECP core electrons","Explicit population","FCHK has no beta MO; beta orbitals come from the associated archive and NBO files, not FCHK beta MO identity.","Canonical coefficient evidence","Direct FCHK coefficients","Density verified","Spin density"};
+        case Language::ChineseSimplified:return {"原子","电荷","内层","价层","里德堡","打印总布居","占据","Fock 对角 (Ha)","成分","系数","来源","NBOMO 贡献","选中正则 MO","显示阈值 |T|²","已显示权重","剩余权重","无完整 NBOMO 矩阵","行/列或自旋不匹配","能隙 (Ha)","原始权重 |T|²","ECP 核心电子","显式电子布居","FCHK 未提供 beta MO；beta 轨道来源为已关联的 archive 与 NBO 文件，不能当作 FCHK beta MO。","正则轨道系数","直接 FCHK 系数","密度匹配","自旋密度"};
+        case Language::Japanese:return {"原子","電荷","内殻","価電子","リュードベリ","印字総分布","占有数","Fock 対角 (Ha)","成分","係数","出典","NBOMO 寄与","選択した正準 MO","表示しきい値 |T|²","表示した重み","残りの重み","完全な NBOMO 行列なし","行・列またはスピンが不一致","エネルギー差 (Ha)","生の重み |T|²","ECP 内殻電子","明示的電子分布","FCHK に beta MO がありません。beta 軌道は照合済み archive と NBO ファイルに由来し、FCHK の beta MO とみなしません。","正準軌道係数","FCHK 係数を直接確認","密度の一致","スピン密度"};
+        case Language::French:return {"Atome","Charge","Cœur","Valence","Rydberg","Population totale imprimée","Occupation","Diagonale de Fock (Ha)","Composant","Coefficient","Source","Contributions NBOMO","OM canonique choisi","Seuil affiché |T|²","Poids affiché","Poids restant","Aucune matrice NBOMO complète","Lignes, colonnes ou spin incompatibles","Écart d’énergie (Ha)","Poids brut |T|²","Électrons de cœur ECP","Population explicite","Le FCHK ne contient pas d’OM bêta ; les orbitales bêta proviennent de l’archive associée et des fichiers NBO, sans identité OM bêta FCHK.","Preuve des coefficients canoniques","Coefficients FCHK directs","Densité vérifiée","Densité de spin"};
+        default:return {"Atom","Charge","Core","Valence","Rydberg","Printed total population","Occupation","Fock diagonal (Ha)","Component","Coefficient","Source","NBOMO contributions","Selected canonical MO","Display threshold |T|²","Shown weight","Remaining weight","No complete NBOMO matrix","Row/column or spin mismatch","Energy gap (Ha)","Raw weight |T|²","ECP core electrons","Explicit population","FCHK has no beta MO; beta orbitals come from the associated archive and NBO files, not FCHK beta MO identity.","Canonical orbital coefficients","Direct FCHK coefficients","Density agreement","Spin density"};
     }
 }
 std::string fmt(double value) {
@@ -299,10 +300,10 @@ FocusView make_focus_view(const NboDataset& dataset,
     } else {v.status="available";v.reason="Choose atoms and shells from the validated NAO decomposition.";}
     return v;
 }
-std::string focus_mo_label(const MODiagramViewSnapshot& diagram,std::size_t index,
+std::string focus_mo_label(const MODiagramViewSnapshot& diagram,const Wavefunction& canonical,std::size_t index,
                            Language language) {
     for(const auto& level:diagram.data.levels)if(mo_diagram_level_covers_orbital(level,index)) {
-        std::string label="MO "+std::to_string(index+1)+" "+level.annotation.family;
+        std::string label=canonical_mo_display_label(canonical,index)+" "+level.annotation.family;
         if(level.annotation.bonding_class==BondingClass::Nonbonding)
             label+=std::string(" / ")+nbo_local(language,"nonbonding","非成键",
                 "非結合","non liante");
@@ -311,7 +312,7 @@ std::string focus_mo_label(const MODiagramViewSnapshot& diagram,std::size_t inde
                 "多中心","multicentrique");
         return label;
     }
-    return "MO "+std::to_string(index+1);
+    return canonical_mo_display_label(canonical,index);
 }
 std::vector<const FocusShell*> visible_focus_shells(const FocusView& v,
                                                      const NboFocusUIState& state) {
@@ -342,6 +343,11 @@ std::map<int,FocusAngularWeights> angular_weights(const FocusView& view,
 
 std::string nbo_glyph_seed(Language language) {
     std::string out;
+    out += nbo_local(language,
+        "NBO data not found. Choose file… Choose a calculation. Missing .47 archive; NBO orbitals unavailable. NBO data does not match this calculation. The NBO file is incomplete or damaged.",
+        "无法定位 NBO 数据。选择文件…选择计算。缺少 .47 文件，无法显示 NBO 轨道。NBO 数据与当前计算不匹配。NBO 文件不完整或已损坏。此轨道的 NAO 组成不可用。缺少对应的母 NBO，无法区分主成分和尾部。",
+        "NBO データが見つかりません。ファイルを選択…計算を選択。.47 ファイルがないため、NBO 軌道を表示できません。NBO データが現在の計算と一致しません。NBO ファイルが不完全または破損しています。対応する親 NBO がないため、主成分とテールを分けられません。",
+        "Données NBO introuvables. Choisir un fichier… Choisir un calcul. Archive .47 manquante ; orbitales NBO indisponibles. Les données NBO ne correspondent pas à ce calcul. Le fichier NBO est incomplet ou endommagé. NBO parent indisponible ; impossible de séparer la partie principale et la queue.");
     for(const char* value:labels[std::clamp(static_cast<int>(language),0,3)]) {
         out+=value;out+=' ';
     }
@@ -426,11 +432,11 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
     }
     if(!view.eligible.empty()) {
         const std::string preview=focus.canonical_index?
-            focus_mo_label(diagram,*focus.canonical_index,language):
+            focus_mo_label(diagram,canonical,*focus.canonical_index,language):
             nbo_local(language,"Choose MO","选择 MO","MO を選択","Choisir une OM");
         if(ImGui::BeginCombo("##nbo.focus.mo",preview.c_str())) {
             for(const auto index:view.eligible) {
-                const auto label=focus_mo_label(diagram,index,language);
+                const auto label=focus_mo_label(diagram,canonical,index,language);
                 if(ImGui::Selectable(label.c_str(),focus.canonical_index==index))focus.canonical_index=index;
             }
             ImGui::EndCombo();
@@ -440,7 +446,7 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
     }
     if(view.status!="available") {
         ImGui::TextWrapped("%s",nbo_local(language,
-            "NAO view unavailable for this MO.","此 MO 的 NAO 视图不可用。",
+            "NAO composition unavailable for this orbital.","此轨道的 NAO 组成不可用。",
             "この MO の NAO 表示は利用できません。",
             "Vue NAO indisponible pour cette OM."));
         validation::field("nbo.focus.status",view.status+": "+view.reason);
@@ -749,7 +755,8 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
             const auto descriptor=std::find_if(integration.orbitals.begin(),integration.orbitals.end(),
                 [&](const auto& orbital){return orbital.ref.kind==NboOrbitalKind::Canonical &&
                     orbital.ref.index==index;});
-            const auto label="MO "+std::to_string(index+1)+"##nbo.context.mo."+std::to_string(index);
+            const auto label=(canonical?canonical_mo_display_label(*canonical,index):
+                "MO [list] "+std::to_string(index+1))+"##nbo.context.mo."+std::to_string(index);
             if(ImGui::Selectable(label.c_str())&&descriptor!=integration.orbitals.end())
                 s.aomo.pending_selection=nbo_single_selection(integration,descriptor->ref);
             validation::item("nbo.context.mo."+std::to_string(index));
@@ -770,18 +777,25 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
     section_title(trn(language,Title));
     validation::field("nbo.input.candidate_count",std::to_string(s.input_discovery?s.input_discovery->candidates.size():0));
     if(s.input_discovery) {
-        note(nbo_local(language,"NBO inputs detected","已检测到 NBO 输入",
-            "NBO 入力を検出","Fichiers NBO détectés"));
+        const bool has_report=std::any_of(s.input_discovery->candidates.begin(),
+            s.input_discovery->candidates.end(),[](const auto& c){return !c.report.empty();});
+        if(!has_report) {
+            note(nbo_local(language,"NBO data not found.","无法定位 NBO 数据。",
+                "NBO データが見つかりません。","Données NBO introuvables."));
+            if(ImGui::Button(nbo_local(language,"Choose file…","选择文件…",
+                "ファイルを選択…","Choisir un fichier…")))actions.choose_input=true;
+            validation::item("nbo.input.choose_file");
+        }
         validation::field("nbo.input.status",s.input_status);
         const auto& discovery=*s.input_discovery;
         if(discovery.selection_required || discovery.candidates.size()>1) {
             note(language==Language::ChineseSimplified?
-                "检测到多个计算或分析段；请选择要关联的候选。":
+                "选择计算。":
                 language==Language::Japanese?
-                "複数の計算または解析区間が見つかりました。候補を選択してください。":
+                "計算を選択。":
                 language==Language::French?
-                "Plusieurs calculs ou segments ont été trouvés. Choisissez un candidat.":
-                "Multiple calculations or analysis segments were found. Choose a candidate.");
+                "Choisir un calcul.":
+                "Choose a calculation.");
             for(std::size_t i=0;i<discovery.candidates.size();++i) {
                 const auto& c=discovery.candidates[i];
                 std::string label=c.label.empty()?c.id:c.label;
@@ -826,6 +840,24 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
     if(!s.error.empty())note(s.error);
     if(!s.dataset)return actions;
     const auto& d=*s.dataset;
+    if(!d.association.compatible) {
+        const auto& reason=d.association.status;
+        if(reason=="missing_archive")
+            note(nbo_local(language,"Missing .47 archive; NBO orbitals unavailable.",
+                "缺少 .47 文件，无法显示 NBO 轨道。",
+                ".47 ファイルがないため、NBO 軌道を表示できません。",
+                "Archive .47 manquante ; orbitales NBO indisponibles."));
+        else if(reason.starts_with("incompatible_"))
+            note(nbo_local(language,"NBO data does not match this calculation.",
+                "NBO 数据与当前计算不匹配。",
+                "NBO データが現在の計算と一致しません。",
+                "Les données NBO ne correspondent pas à ce calcul."));
+        else if(reason.starts_with("invalid_"))
+            note(nbo_local(language,"The NBO file is incomplete or damaged.",
+                "NBO 文件不完整或已损坏。",
+                "NBO ファイルが不完全または破損しています。",
+                "Le fichier NBO est incomplet ou endommagé."));
+    }
     if(s.integration)draw_selected_nbo_context(s,*s.integration,canonical,diagram,language);
     validation::field("nbo.association",d.association.status+": "+d.association.detail);
     if(s.integration) {
@@ -1013,10 +1045,10 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
             validation::item("nbo.nlmo.components");
             if(nlmo_details_open) {
                 if(!parent)note(nbo_local(language,
-                    "No printed and verified parent NBO: main/tail assignment unavailable.",
-                    "没有已打印并核验的母 NBO：主成分/尾部划分不可用。",
-                    "印字・検証済みの親 NBO がなく、主成分とテールは区別できません。",
-                    "Aucun NBO parent imprimé et vérifié : décomposition principale/queue indisponible."));
+                    "Parent NBO unavailable; main and tail components cannot be separated.",
+                    "缺少对应的母 NBO，无法区分主成分和尾部。",
+                    "対応する親 NBO がないため、主成分とテールを分けられません。",
+                    "NBO parent indisponible ; impossible de séparer la partie principale et la queue."));
                 else {
                     std::vector<NboOrbitalTerm> tail;
                     for(const auto& component:components)if(!(component.orbital==*parent))

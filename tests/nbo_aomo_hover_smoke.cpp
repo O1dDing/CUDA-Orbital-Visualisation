@@ -30,6 +30,7 @@ int main(){try {
     NboIntegration data;data.id="fixture";
     NboAomoNode mo;mo.label="1b2";mo.canonical_index=0;
     mo.symmetry_irrep="b2";mo.symmetry_name_verified=true;
+    mo.symmetry_ordinal=1;
     auto render=[&](const NboAomoNode& n,const NboSalcModel* s=nullptr,Language l=Language::English){return joined(nbo_aomo_hover_lines(n,wf,data,s,l));};
     require(render(mo).find("unresolved")!=std::string::npos,"missing chemistry must stay unresolved");
     auto& chemistry=wf.orbitals[0].chemistry;

@@ -1,5 +1,6 @@
 #include "cov/nbo_aomo_hover.hpp"
 #include "cov/nbo_aomo_ui.hpp"
+#include "cov/nbo_aomo_labels.hpp"
 #include "cov/orbital_chemistry_summary.hpp"
 #include <algorithm>
 #include <array>
@@ -145,12 +146,17 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
         const auto index=*node.canonical_index;
         if(index>=wf.orbitals.size())return {title,text(Word::Unknown,language)};
         const auto& mo=wf.orbitals[index];
-        std::string identity=title+" (MO "+std::to_string(index+1)+")";
+        NboAomoName display_name;display_name.label=node.individual_label.empty()?node.label:node.individual_label;
+        display_name.irrep=node.symmetry_irrep;display_name.ordinal=node.symmetry_ordinal;
+        display_name.verified=node.symmetry_name_verified;
+        std::string identity=concise_spin(canonical_mo_display_label(wf,index,&display_name));
         const bool spin_resolved=wf.orbital_occupation_model==OrbitalOccupationModel::ExplicitSpin ||
             std::any_of(wf.orbitals.begin(),wf.orbitals.end(),[](const auto& o){return o.spin==Spin::Beta;});
         if(spin_resolved && !has_spin(identity))
             identity+=spin_text(mo.spin==Spin::Beta?NboSpin::Beta:NboSpin::Alpha);
         lines.push_back(identity);
+        if(display_name.verified&&!display_name.ordinal)
+            lines.push_back(text(Word::Symmetry,language)+orbital_irrep_display_label(display_name));
         const auto& chemistry=mo.chemistry;
         if(chemistry.available) {
             std::string pair_identity;

@@ -25,8 +25,8 @@ struct LocalisedString {
 };
 
 constexpr std::array<LocalisedString, kTextCount> kStrings{{
-    {"CUDA Orbital Visualisation", "CUDA Orbital Visualisation", "CUDA Orbital Visualisation", "CUDA Orbital Visualisation"},
-    {"GPU-first molecular orbital viewer", "GPU 优先的分子轨道可视化", "GPUファースト分子軌道ビューア", "Visualiseur d’orbitales moléculaires orienté GPU"},
+    {"Chemical Orbital Visualiser", "Chemical Orbital Visualiser", "Chemical Orbital Visualiser", "Chemical Orbital Visualiser"},
+    {"Orbital energies, occupations and connections", "轨道能量、电子占据与轨道联系", "軌道エネルギー・占有数・軌道間の関係", "Énergies, occupations et relations orbitalaires"},
     {"Language", "语言", "言語", "Langue"},
     {"File", "文件", "ファイル", "Fichier"},
     {"Molden file", "Molden 文件", "Molden ファイル", "Fichier Molden"},
@@ -74,7 +74,6 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"GPU resident", "GPU 常驻", "GPU 常駐", "Résident GPU"},
     {"Left-drag to orbit · mouse wheel to zoom", "按住鼠标左键旋转 · 滚轮缩放", "左ドラッグで回転 · ホイールでズーム", "Glisser gauche : rotation · molette : zoom"},
     {"Changing isovalue is instant and does not recompute the CUDA grid.", "调整等值面不会重新计算 CUDA 网格，可即时更新。", "等値面の変更では CUDA グリッドを再計算せず、即時更新します。", "Changer l’isovaleur est instantané et ne recalcule pas la grille CUDA."},
-    {"Experimental MVP · scientific validation in progress", "实验性 MVP · 科学数值验证仍在进行", "実験的 MVP · 科学的検証を継続中", "MVP expérimental · validation scientifique en cours"},
     {"Ready", "就绪", "準備完了", "Prêt"},
     {"Parsing", "正在解析", "解析中", "Analyse"},
     {"Loaded", "已加载", "読み込み完了", "Chargé"},

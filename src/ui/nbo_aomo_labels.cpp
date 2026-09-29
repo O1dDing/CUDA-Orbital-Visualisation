@@ -20,6 +20,7 @@ namespace {
 constexpr double character_tolerance=2e-4;
 constexpr double metric_tolerance=2e-5;
 constexpr double energy_order_tolerance=2e-5;
+thread_local std::size_t canonical_name_revision=0;
 using Vec=std::array<double,3>;
 using Mat=std::array<double,9>;
 double dot(const Vec& a,const Vec& b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
@@ -109,6 +110,54 @@ Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
     }
     if(f.detail.empty())f.detail=f.linear?"Validated angular-momentum-resolving sampling of "+f.group:"Validated full finite "+f.group+" operation matrices";
     return f;
+}
+Frame canonical_frame(const Wavefunction& w){
+    // Use the same matrix, closure, character and metric gates as an attached
+    // SALC frame. A geometry label alone does not certify orbital symmetry.
+    const auto geometry=analyse_molecular_symmetry(w);
+    NboSalcModel frame;
+    frame.point_group=frame.used_group=geometry.point_group;
+    frame.group_verified=!geometry.operations.empty();
+    frame.operations=geometry.operations;
+    if(geometry.linear){
+        Vec axis{};double length2=0;
+        for(const auto& atom:w.atoms){
+            Vec v{atom.x-geometry.centre_bohr[0],atom.y-geometry.centre_bohr[1],atom.z-geometry.centre_bohr[2]};
+            if(dot(v,v)>length2){length2=dot(v,v);axis=v;}
+        }
+        if(length2<=1e-20)return frame_for(w,&frame);
+        for(auto& x:axis)x/=std::sqrt(length2);
+        const Vec seed=std::abs(axis[0])<.8?Vec{1,0,0}:Vec{0,1,0};
+        Vec normal{axis[1]*seed[2]-axis[2]*seed[1],axis[2]*seed[0]-axis[0]*seed[2],axis[0]*seed[1]-axis[1]*seed[0]};
+        const double normal_length=std::sqrt(dot(normal,normal));
+        for(auto& x:normal)x/=normal_length;
+        Mat reflection=identity;
+        for(int a=0;a<3;++a)for(int b=0;b<3;++b)reflection[3*a+b]-=2*normal[a]*normal[b];
+        unsigned lmax=0;for(const auto& shell:w.shells)lmax=std::max(lmax,unsigned(shell.angular_momentum));
+        // Match the validated SALC sampling resolution; no angular order is
+        // inferred from molecule identity or an orbital number.
+        const unsigned order=std::max(3u,2*lmax+1);
+        const auto inversion_op=std::find_if(geometry.operations.begin(),geometry.operations.end(),
+            [](const auto& op){return op.kind==SymmetryOperationKind::Inversion;});
+        const bool centrosymmetric=geometry.point_group=="Dinfh";
+        if(centrosymmetric&&inversion_op==geometry.operations.end())return frame_for(w,&frame);
+        frame.operations.clear();
+        const Mat cross{0,-axis[2],axis[1],axis[2],0,-axis[0],-axis[1],axis[0],0};
+        for(unsigned k=0;k<order;++k){
+            const double angle=2*3.14159265358979323846*k/order,c=std::cos(angle),s=std::sin(angle);
+            Mat rotation{};
+            for(int a=0;a<3;++a)for(int b=0;b<3;++b)
+                rotation[3*a+b]=c*identity[3*a+b]+(1-c)*axis[a]*axis[b]+s*cross[3*a+b];
+            for(int mirror=0;mirror<2;++mirror)for(int invert=0;invert<(centrosymmetric?2:1);++invert){
+                SymmetryOperation op;op.matrix=mirror?multiply(rotation,reflection):rotation;
+                if(invert){for(auto& x:op.matrix)x=-x;op.atom_permutation=inversion_op->atom_permutation;}
+                else{op.atom_permutation.resize(w.atoms.size());std::iota(op.atom_permutation.begin(),op.atom_permutation.end(),0);}
+                frame.operations.push_back(std::move(op));
+            }
+        }
+        frame.used_group="finite sampling subgroup of "+geometry.point_group;
+    }
+    return frame_for(w,&frame);
 }
 // For a linear molecule O(2) characters are 2 cos(m theta), with an
 // inversion parity in Dinfh and a reflection sign for Sigma. Compare EVERY
@@ -276,7 +325,7 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     const bool open=std::any_of(w.orbitals.begin(),w.orbitals.end(),[](const auto& mo){return mo.spin==Spin::Beta;});
     const bool associated=!salc || ((salc->dataset_id.empty()||data.id.empty()||salc->dataset_id==data.id)&&
         (salc->canonical_fingerprint.empty()||data.canonical_fingerprint.empty()||salc->canonical_fingerprint==data.canonical_fingerprint));
-    const auto frame=frame_for(w,associated?salc:nullptr);std::vector<Unit> units;std::vector<bool> taken(w.orbitals.size(),false);
+    const auto frame=salc?frame_for(w,associated?salc:nullptr):canonical_frame(w);std::vector<Unit> units;std::vector<bool> taken(w.orbitals.size(),false);
     const bool simple=frame.group=="C1"||frame.group=="Ci"||frame.group=="Cs"||frame.group=="C2"||frame.group=="C2h"||frame.group=="C2v";
     struct NamedCharacters {std::string label;std::size_t dimension;std::vector<double> values;};std::vector<NamedCharacters> known;
     // Complete small Abelian tables are already defined by match_simple.
@@ -302,7 +351,7 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
         // A producer's Abelian subgroup is not the full-group naming scope.
         // Keep its literal source record intact, but do not mix its labels
         // with calculated full-group labels and their occurrence counters.
-        if(frame.valid&&group!=frame.group)solid=false;
+        if(!frame.group.empty()&&group!=frame.group)solid=false;
         if(solid&&dim>1){std::vector<std::size_t> members;
             if(evidence.molecular_assignment)members=evidence.molecular_assignment->orbital_indices;
             else for(std::size_t j=0;j<w.orbitals.size();++j)if(w.orbitals[j].spin==mo.spin&&std::abs(w.orbitals[j].energy_hartree-mo.energy_hartree)<=1e-5&&normalized(w.orbitals[j].symmetry)==normalized(mo.symmetry))members.push_back(j);
@@ -382,5 +431,64 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     for(std::size_t i=0;i<out.salc.size();++i)if(open)out.salc[i].label+=salc->orbitals[i].spin==NboSpin::Beta?" [beta]":salc->orbitals[i].spin==NboSpin::Alpha?" [alpha]":" [total]";
     (void)data; // Identity is immutable and belongs to the caller's attachment.
     return out;
+}
+
+std::shared_ptr<const NboAomoNames> canonical_mo_names(const Wavefunction& w){
+    struct Cache {
+        const Wavefunction* wavefunction=nullptr;
+        const MolecularOrbital* orbitals=nullptr;
+        const Atom* atoms=nullptr;
+        const DerivedOrbitalSymmetryAssignment* assignments=nullptr;
+        std::size_t orbital_count=0,atom_count=0,assignment_count=0,revision=0;
+        std::string group,enrichment;
+        std::shared_ptr<const NboAomoNames> names;
+    };
+    static thread_local Cache cache;
+    if(!cache.names||cache.revision!=canonical_name_revision||cache.wavefunction!=&w||cache.orbitals!=w.orbitals.data()||
+       cache.atoms!=w.atoms.data()||cache.assignments!=w.derived_orbital_symmetry_assignments.data()||
+       cache.orbital_count!=w.orbitals.size()||cache.atom_count!=w.atoms.size()||
+       cache.assignment_count!=w.derived_orbital_symmetry_assignments.size()||
+       cache.group!=w.point_group_detected||cache.enrichment!=w.enrichment_source){
+        cache.wavefunction=&w;cache.orbitals=w.orbitals.data();cache.atoms=w.atoms.data();
+        cache.assignments=w.derived_orbital_symmetry_assignments.data();
+        cache.orbital_count=w.orbitals.size();cache.atom_count=w.atoms.size();
+        cache.assignment_count=w.derived_orbital_symmetry_assignments.size();
+        cache.group=w.point_group_detected;cache.enrichment=w.enrichment_source;
+        cache.revision=canonical_name_revision;
+        cache.names=std::make_shared<const NboAomoNames>(build_nbo_aomo_names(w,NboIntegration{},nullptr));
+    }
+    return cache.names;
+}
+
+void invalidate_canonical_mo_names_cache(){++canonical_name_revision;}
+
+std::string canonical_mo_source_label(const Wavefunction& w,std::size_t index){
+    if(index>=w.orbitals.size())return "MO ?";
+    const auto& mo=w.orbitals[index];
+    const bool source=mo.source_orbital_index!=std::numeric_limits<std::size_t>::max();
+    std::string label=std::string(source?"MO ":"MO [list] ")+std::to_string((source?mo.source_orbital_index:index)+1);
+    const bool explicit_spin=w.orbital_occupation_model==OrbitalOccupationModel::ExplicitSpin||
+        std::any_of(w.orbitals.begin(),w.orbitals.end(),[](const auto& o){return o.spin==Spin::Beta;});
+    if(explicit_spin)label+=mo.spin==Spin::Beta?" [beta]":" [alpha]";
+    return label;
+}
+
+std::string canonical_mo_display_label(const Wavefunction& w,std::size_t index,const NboAomoName* name){
+    if(index>=w.orbitals.size())return "MO ?";
+    const auto standalone=name?std::shared_ptr<const NboAomoNames>{}:canonical_mo_names(w);
+    if(!name&&standalone&&index<standalone->canonical.size())name=&standalone->canonical[index];
+    if(name&&name->verified&&name->ordinal&&!name->irrep.empty()){
+        auto label=std::to_string(name->ordinal)+orbital_label(name->irrep);
+        const bool explicit_spin=w.orbital_occupation_model==OrbitalOccupationModel::ExplicitSpin||
+            std::any_of(w.orbitals.begin(),w.orbitals.end(),[](const auto& o){return o.spin==Spin::Beta;});
+        if(explicit_spin)
+            label+=w.orbitals[index].spin==Spin::Beta?" [beta]":" [alpha]";
+        return label;
+    }
+    return canonical_mo_source_label(w,index);
+}
+
+std::string orbital_irrep_display_label(const NboAomoName& name){
+    return name.verified&&!name.irrep.empty()?orbital_label(name.irrep):"?";
 }
 } // namespace cov::ui

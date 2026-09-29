@@ -75,6 +75,7 @@ struct NboUIState {
 };
 
 struct NboUIActions {
+    bool choose_input = false;
     bool attach = false;
     bool canonical_set = false;
     bool nbo_set = false;

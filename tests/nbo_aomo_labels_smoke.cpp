@@ -86,12 +86,55 @@ int main(){try{
     const char* irreps[]={"A1","A1","B2","A1","B1","A1","B2"};const std::size_t ordinals[]={1,2,1,3,1,4,2};
     for(std::size_t i=0;i<7;++i){require(a.canonical[i].verified&&a.canonical[i].irrep==irreps[i]&&a.canonical[i].ordinal==ordinals[i],"full-set canonical ordinal/irrep wrong");require(f.w.orbitals[i].coefficients==before[i].coefficients,"naming modified coefficients");}
     require(a.canonical[1].label=="2a\xE2\x82\x81","ordinal must precede Unicode irrep subscript");
+    const auto standalone=cov::ui::canonical_mo_names(f.w);
+    require(standalone->salc.empty(),"standalone canonical naming must not fabricate SALCs");
+    for(std::size_t i=0;i<7;++i){
+        require(standalone->canonical[i].verified&&standalone->canonical[i].irrep==irreps[i]&&
+                standalone->canonical[i].ordinal==ordinals[i],"canonical naming incorrectly depends on NBO capability");
+        require(cov::ui::canonical_mo_display_label(f.w,i)==a.canonical[i].label,"standalone main label differs from attached name");
+    }
+    auto asymmetric=f.w;asymmetric.atoms.push_back({"He",2,.37,.19,.63});
+    const auto c1=cov::ui::canonical_mo_names(asymmetric);
+    require(c1->canonical[0].verified&&c1->canonical[0].irrep=="A"&&c1->canonical[0].ordinal==1,
+            "C1 canonical labels must be available without an NBO frame");
+    auto plane=f.w;plane.atoms[1].y=1.35;plane.atoms[1].z=-.83;
+    const auto cs=cov::ui::canonical_mo_names(plane);
+    require(cs->canonical[0].verified&&cs->canonical[0].irrep=="A'"&&
+            cs->canonical[4].verified&&cs->canonical[4].irrep=="A''", "Cs canonical labels must follow mirror characters without NBO");
+    cov::Wavefunction fallback;fallback.orbital_occupation_model=cov::OrbitalOccupationModel::ExplicitSpin;
+    fallback.orbitals.resize(3);fallback.orbitals[0].source_orbital_index=6;
+    fallback.orbitals[1].source_orbital_index=2;fallback.orbitals[1].spin=cov::Spin::Beta;
+    cov::ui::NboAomoName unknown;
+    require(cov::ui::canonical_mo_display_label(fallback,0,&unknown)=="MO 7 [alpha]"&&
+            cov::ui::canonical_mo_display_label(fallback,1,&unknown)=="MO 3 [beta]", "fallback must use the actual source spin block rather than list position");
+    require(cov::ui::canonical_mo_display_label(fallback,2,&unknown)=="MO [list] 3 [alpha]",
+            "unavailable source index must be explicitly distinguished from a source number");
+    auto alpha_name=a.canonical[1];
+    auto alpha_only=fallback;alpha_only.orbitals.resize(1);
+    require(cov::ui::canonical_mo_display_label(alpha_only,0,&alpha_name)=="2a\xE2\x82\x81 [alpha]",
+            "an explicit alpha-only orbital set must retain its spin on scientific labels");
+    auto known_without_order=a.canonical[1];known_without_order.ordinal=0;known_without_order.label="?a1";
+    require(cov::ui::canonical_mo_display_label(fallback,0,&known_without_order)=="MO 7 [alpha]"&&
+            cov::ui::orbital_irrep_display_label(known_without_order)=="a\xE2\x82\x81",
+            "a known irrep must remain auxiliary without inventing an occurrence ordinal");
+    auto reloaded=f.w;
+    require(cov::ui::canonical_mo_names(reloaded)->canonical[0].ordinal==1,"initial reload fixture label missing");
+    reloaded.orbitals[1].energy_hartree=reloaded.orbitals[0].energy_hartree;
+    cov::ui::invalidate_canonical_mo_names_cache();
+    const auto reload_names=cov::ui::canonical_mo_names(reloaded);
+    require(reload_names->canonical[0].verified&&reload_names->canonical[0].ordinal==0&&
+            reload_names->canonical[1].verified&&reload_names->canonical[1].ordinal==0,
+            "input reload must invalidate labels even when object and buffers retain their addresses");
     require(a.salc[0].irrep=="B2"&&a.salc[1].irrep=="A1"&&a.salc[0].ordinal==1&&a.salc[1].ordinal==1,"pair labels must follow measured characters, not source ordering or sign text");
     auto tied=f;tied.w.orbitals[1].energy_hartree=tied.w.orbitals[0].energy_hartree;const auto tied_names=cov::ui::build_nbo_aomo_names(tied.w,tied.data,&tied.salc);require(tied_names.canonical[0].verified&&tied_names.canonical[1].verified&&tied_names.canonical[0].ordinal==0&&tied_names.canonical[1].ordinal==0&&tied_names.canonical[3].ordinal==3,"source order cannot break an unresolved equal-energy same-irrep copy tie, but later total counts remain known");
     auto rotated=f;const double c=std::cos(.713),s=std::sin(.713);rotate(rotated,Mat{c,-s,0,s,c,0,0,0,1});compare(a,cov::ui::build_nbo_aomo_names(rotated.w,rotated.data,&rotated.salc));
     auto swapped=f;rotate(swapped,Mat{0,-1,0,1,0,0,0,0,1});std::swap(swapped.salc.operations[1],swapped.salc.operations[2]);for(auto& sub:swapped.salc.subspaces)std::swap(sub.characters[1],sub.characters[2]);compare(a,cov::ui::build_nbo_aomo_names(swapped.w,swapped.data,&swapped.salc));
     auto mixed=f;const auto x=mixed.w.orbitals[0].coefficients,y=mixed.w.orbitals[4].coefficients;const double q=.02,p=std::sqrt(1-q*q);for(std::size_t j=0;j<7;++j){mixed.w.orbitals[0].coefficients[j]=p*x[j]+q*y[j];mixed.w.orbitals[4].coefficients[j]=-q*x[j]+p*y[j];}
     const auto m=cov::ui::build_nbo_aomo_names(mixed.w,mixed.data,&mixed.salc);require(!m.canonical[0].verified&&!m.canonical[4].verified,"99.96 percent dominant weight must not certify a mixed eigenfunction");require(m.canonical[1].verified&&m.canonical[1].ordinal==0,"unknown earlier state must not silently corrupt symmetry ordinal");
+    const auto mixed_standalone=cov::ui::canonical_mo_names(mixed.w);
+    require(!mixed_standalone->canonical[0].verified&&!mixed_standalone->canonical[4].verified&&
+            mixed_standalone->canonical[1].verified&&mixed_standalone->canonical[1].ordinal==0,
+            "standalone naming must preserve mixed-orbital and incomplete ordinal gates");
     auto low_mixed=mixed;low_mixed.w.orbitals[4].energy_hartree=-19;const double mild=.0003,mild_p=std::sqrt(1-mild*mild);for(std::size_t j=0;j<7;++j){low_mixed.w.orbitals[0].coefficients[j]=mild_p*x[j]+mild*y[j];low_mixed.w.orbitals[4].coefficients[j]=-mild*x[j]+mild_p*y[j];}const auto counted_core=cov::ui::build_nbo_aomo_names(low_mixed.w,low_mixed.data,&low_mixed.salc);require(!counted_core.canonical[0].verified&&!counted_core.canonical[4].verified&&counted_core.canonical[1].ordinal==2&&counted_core.canonical[2].ordinal==1,"complete invariant mixed core must supply integer counts without relabelling its individual members");
     auto reducible=f;reducible.salc.subspaces.resize(1);auto& red=reducible.salc.subspaces[0];red.orbital_indices={0,1};red.dimension=2;red.irrep_dimension=0;red.multiplicity=0;red.characters={2,2,0,0};const auto bad=cov::ui::build_nbo_aomo_names(reducible.w,reducible.data,&reducible.salc);require(!bad.salc[0].verified&&!bad.salc[1].verified,"reducible SALC must not get a dimension-derived irrep");
     auto open=f;for(auto mo:before){mo.spin=cov::Spin::Beta;mo.energy_hartree+=.01;open.w.orbitals.push_back(mo);}const auto spin=cov::ui::build_nbo_aomo_names(open.w,open.data,&open.salc);require(spin.canonical[1].ordinal==2&&spin.canonical[8].ordinal==2&&spin.canonical[1].label.find("[alpha]")!=std::string::npos&&spin.canonical[8].label.find("[beta]")!=std::string::npos,"spin counters must be independent");
@@ -107,6 +150,12 @@ int main(){try{
     auto repeated=oct_salc;repeated.orbitals.insert(repeated.orbitals.end(),oct_salc.orbitals.begin(),oct_salc.orbitals.end());auto& repeated_sub=repeated.subspaces[0];repeated_sub.dimension=6;repeated_sub.multiplicity=2;repeated_sub.orbital_indices={0,1,2,3,4,5};for(auto& chi:repeated_sub.characters)chi*=2;const auto copies=cov::ui::build_nbo_aomo_names(oct,f.data,&repeated);for(const auto& name:copies.salc)require(name.verified&&name.irrep=="T1u"&&name.ordinal==0,"repeated irreps retain known symmetry without inventing copy numbering");
     auto no_source=oct;no_source.derived_orbital_symmetry_assignments.clear();for(auto& mo:no_source.orbitals){mo.symmetry.clear();mo.symmetry_provenance=cov::DataProvenance::Unavailable;}const auto calculated=cov::ui::build_nbo_aomo_names(no_source,f.data,&oct_salc);for(const auto& name:calculated.canonical)require(name.verified&&name.irrep=="T1u"&&name.ordinal==1,"missing producer label must be calculated from actual finite-group coefficients");
     auto lin=linear();const auto linear_before=lin.w.orbitals;const auto linear_names=cov::ui::build_nbo_aomo_names(lin.w,lin.data,&lin.salc);
+    const auto standalone_linear=cov::ui::canonical_mo_names(lin.w);
+    for(std::size_t i=0;i<lin.w.orbitals.size();++i)
+        require(standalone_linear->canonical[i].verified&&
+                standalone_linear->canonical[i].irrep==linear_names.canonical[i].irrep&&
+                standalone_linear->canonical[i].ordinal==linear_names.canonical[i].ordinal,
+                "standalone linear naming must resolve actual angular momenta without an NBO attachment");
     for(const auto& name:linear_names.canonical)require(name.verified,"unlabelled linear canonical must be classified");
     require(linear_names.canonical[0].irrep=="Sigma_g+"&&linear_names.canonical[0].ordinal==1&&linear_names.canonical[1].ordinal==2&&linear_names.canonical[5].ordinal==3,"hidden core must contribute to full-set Sigma numbering");
     require(linear_names.canonical[3].irrep=="Pi_u"&&linear_names.canonical[3].ordinal==1&&linear_names.canonical[4].ordinal==1&&linear_names.canonical[5].irrep=="Sigma_g+","accidental Pi plus Sigma energy coincidence must not merge irreps");

@@ -12,6 +12,7 @@
 #include "cov/nbo_channels.hpp"
 #include "cov/chemistry_route.hpp"
 #include "cov/orbital_tracking.hpp"
+#include "cov/nbo_aomo_labels.hpp"
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
 #include "cov/volume_renderer.hpp"
@@ -236,7 +237,7 @@ int main(int argc, char** argv) {
     }
 
     GLFWwindow* window = glfwCreateWindow(
-        1500, 940, "CUDA Orbital Visualisation", nullptr, nullptr);
+        1500, 940, "Chemical Orbital Visualiser", nullptr, nullptr);
     if (!window) {
         std::fprintf(stderr, "Unable to create OpenGL window\n");
         glfwTerminate();
@@ -363,11 +364,11 @@ int main(int argc, char** argv) {
             }else if(wavefunction && mo_index<wavefunction->orbitals.size()) {
                 view.kind=cov::ActiveOrbitalKind::Canonical;
                 view.source_id=routed?routed->canonical_fingerprint:path_to_utf8(current_file);
-                view.source_label="MO "+std::to_string(mo_index+1);
-                view.label=view.source_label;
+                view.source_label=cov::ui::canonical_mo_source_label(*wavefunction,mo_index);
+                view.label=cov::ui::canonical_mo_display_label(*wavefunction,mo_index);
                 if(nbo_ui.aomo.names && mo_index<nbo_ui.aomo.names->canonical.size()){
                     const auto& name=nbo_ui.aomo.names->canonical[mo_index];
-                    if(name.verified){view.label=name.label;
+                    if(name.verified){view.label=cov::ui::canonical_mo_display_label(*wavefunction,mo_index,&name);
                         view.display_name_evidence=name.detail;}
                 }
                 view.semantic_kind="canonical";
@@ -565,6 +566,7 @@ int main(int argc, char** argv) {
                     // Cross-frame identity is descriptive state only. Both
                     // canonical wavefunctions remain immutable, and loading a
                     // new frame still resets selection to that frame's own HOMO.
+                    // ✳ TODO: Profile slow frame opens and bound search work per conflict group.
                     new_tracking = cov::track_orbital_subspaces(*wavefunction, wf);
                 }
 
@@ -601,6 +603,7 @@ int main(int argc, char** argv) {
                 nbo_ui.error.clear();
                 nbo_ui.export_status.clear();
                 wavefunction = std::move(next_wavefunction);
+                cov::ui::invalidate_canonical_mo_names_cache();
                 routed=std::move(next_route);
                 nbo_ui.routed=&*routed;
                 semantic_graph=std::move(next_graph);
@@ -792,9 +795,22 @@ int main(int argc, char** argv) {
         bool scene_drag_active = false;
         ImVec2 scene_press{};
         bool scene_was_dragged=false;
+        bool choose_nbo_input=false;
 
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
+            // Open at the next frame boundary, after previous draw references
+            // are released. Reuse the package loader and native picker.
+            if(choose_nbo_input){
+                choose_nbo_input=false;
+                const auto dialog=cov::open_molden_file_dialog();
+                if(dialog.selected())load_inputs({dialog.path});
+                else if(!dialog.cancelled&&!dialog.error.empty()){
+                    status=StatusKind::Error;
+                    status_detail=dialog.supported?dialog.error:
+                        cov::ui::tr(cov::ui::Text::OpenDialogUnsupported,language);
+                }
+            }
             cov::validation::begin_frame(camera,molecule_render,isovalue,resolution,resize_and_recompute);
             if (resize_and_recompute) recompute = true;
             if(auto paths=cov::validation::take_dropped_paths();!paths.empty())load_inputs(paths);
@@ -932,9 +948,9 @@ int main(int argc, char** argv) {
                         scene_text(language,"total","总","全体","total");
                 };
                 const auto mo_caption=[&](std::size_t index) {
-                    if(nbo_ui.aomo.names && index<nbo_ui.aomo.names->canonical.size())
-                        return nbo_ui.aomo.names->canonical[index].label+" · MO "+std::to_string(index+1);
-                    return std::string(scene_text(language,"Canonical MO ","正则 MO ","正準 MO ","OM canonique "))+std::to_string(index+1);
+                    const auto* name=nbo_ui.aomo.names && index<nbo_ui.aomo.names->canonical.size()
+                        ?&nbo_ui.aomo.names->canonical[index]:nullptr;
+                    return cov::ui::canonical_mo_display_label(*wavefunction,index,name);
                 };
                 std::string label;
                 if(inspection){
@@ -956,13 +972,7 @@ int main(int argc, char** argv) {
                 }
                 else if(nbo_active && nbo_ui.dataset && mo_index<nbo_ui.dataset->orbitals.size())
                     label="NBO "+std::to_string(mo_index+1)+" / "+spin_caption(nbo_ui.dataset->orbitals[mo_index].spin);
-                else label=mo_caption(canonical_mo_index)+" / "+
-                    (wavefunction->orbitals[canonical_mo_index].spin==cov::Spin::Beta?"β":"α");
-                if(!inspection && !nbo_active && integration)for(const auto& orbital:integration->orbitals)
-                    if(orbital.ref.kind==cov::NboOrbitalKind::Canonical && orbital.ref.index==canonical_mo_index){
-                        label=mo_caption(canonical_mo_index)+" / "+spin_caption(orbital.ref.spin);
-                        break;
-                    }
+                else label=mo_caption(canonical_mo_index);
                 // Translate presentation only; inspection identities and the actual signed field stay intact.
                 if(inspection) {
                     const auto& selected=inspection->selection;
@@ -1172,7 +1182,6 @@ int main(int argc, char** argv) {
             } else {
                 disabled_wrapped(cov::ui::tr(cov::ui::Text::IdleHint, language));
             }
-            if(!aomo_available)disabled_wrapped(cov::ui::tr(cov::ui::Text::ExperimentalNote, language));
             ImGui::Separator();
             ImGui::Spacing();
 
@@ -1452,6 +1461,7 @@ int main(int argc, char** argv) {
             cov::ui::end_card();
             ImGui::Dummy(ImVec2(0, 7.0f * ui_scale));
             const bool attach_requested = nbo_actions.attach;
+            if(nbo_actions.choose_input)choose_nbo_input=true;
             std::optional<bool> requested_set;
             if (nbo_actions.canonical_set) requested_set=false;
             if (nbo_actions.nbo_set) requested_set=true;

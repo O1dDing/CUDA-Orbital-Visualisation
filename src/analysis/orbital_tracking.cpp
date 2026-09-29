@@ -83,7 +83,8 @@ std::vector<double> orbital_descriptor(const Wavefunction& wf,
 }
 
 std::vector<Subspace> make_subspaces(const Wavefunction& wf,
-                                     const double tolerance) {
+                                     const double tolerance,
+                                     const bool build_descriptors = true) {
     std::vector<std::size_t> order(wf.orbitals.size());
     std::iota(order.begin(), order.end(), 0u);
     std::stable_sort(order.begin(), order.end(), [&](const auto a, const auto b) {
@@ -117,6 +118,9 @@ std::vector<Subspace> make_subspaces(const Wavefunction& wf,
         group.occupation += static_cast<double>(orbital.occupation);
     }
 
+    // Incompatible atom mappings still report the same orbital memberships,
+    // but cannot use their chemical descriptors for any match.
+    if (!build_descriptors) return result;
     for (auto& group : result) {
         group.descriptor.assign(descriptor_dimension(wf), 0.0);
         bool available = true;
@@ -374,11 +378,42 @@ std::vector<std::vector<std::size_t>> local_unions(
     return result;
 }
 
+struct OrdinaryPairScore {
+    double score = -std::numeric_limits<double>::infinity();
+    double similarity = 0.0;
+    bool ready = false;
+};
+
+using OrdinaryPairScores = std::vector<std::vector<OrdinaryPairScore>>;
+
 std::vector<CompositeCandidate> make_candidates(
     const std::vector<Subspace>& left,
     const std::vector<Subspace>& right,
-    const OrbitalTrackingOptions& options) {
+    const OrbitalTrackingOptions& options,
+    OrdinaryPairScores& ordinary_scores) {
     std::vector<CompositeCandidate> result;
+    // Preserve combine_subspaces' singleton arithmetic (including its second
+    // normalization), while constructing each singleton only once per frame.
+    std::vector<Subspace> left_singletons, right_singletons;
+    std::vector<bool> left_raw_equivalent, right_raw_equivalent;
+    left_singletons.reserve(left.size());
+    right_singletons.reserve(right.size());
+    left_raw_equivalent.reserve(left.size());
+    right_raw_equivalent.reserve(right.size());
+    const auto same_score_inputs = [](const Subspace& original,
+                                      const Subspace& singleton) {
+        return singleton.energy == original.energy &&
+            singleton.occupation == original.occupation &&
+            singleton.descriptor == original.descriptor;
+    };
+    for (std::size_t i = 0u; i < left.size(); ++i) {
+        left_singletons.push_back(combine_subspaces(left, {i}));
+        left_raw_equivalent.push_back(same_score_inputs(left[i], left_singletons.back()));
+    }
+    for (std::size_t j = 0u; j < right.size(); ++j) {
+        right_singletons.push_back(combine_subspaces(right, {j}));
+        right_raw_equivalent.push_back(same_score_inputs(right[j], right_singletons.back()));
+    }
     std::set<std::pair<std::vector<std::size_t>,
                        std::vector<std::size_t>>> unique;
     const auto append = [&](std::vector<std::size_t> left_groups,
@@ -387,8 +422,12 @@ std::vector<CompositeCandidate> make_candidates(
         CompositeCandidate candidate;
         candidate.left_groups = std::move(left_groups);
         candidate.right_groups = std::move(right_groups);
-        candidate.left = combine_subspaces(left, candidate.left_groups);
-        candidate.right = combine_subspaces(right, candidate.right_groups);
+        candidate.left = candidate.left_groups.size() == 1u
+            ? left_singletons[candidate.left_groups.front()]
+            : combine_subspaces(left, candidate.left_groups);
+        candidate.right = candidate.right_groups.size() == 1u
+            ? right_singletons[candidate.right_groups.front()]
+            : combine_subspaces(right, candidate.right_groups);
         if ((candidate.left_groups.size() > 1u ||
              candidate.right_groups.size() > 1u) &&
             std::abs(candidate.left.energy - candidate.right.energy) >
@@ -406,6 +445,18 @@ std::vector<CompositeCandidate> make_candidates(
         }
         candidate.score = match_score(candidate.left, candidate.right, options,
                                       candidate.similarity);
+        if (!candidate.composite()) {
+            const auto i = candidate.left_groups.front();
+            const auto j = candidate.right_groups.front();
+            // The final ordinary assignment historically scores the original
+            // groups, not their normalized singleton copies. Reuse a score only
+            // when all arithmetic inputs agree exactly; otherwise score those
+            // original groups lazily below to preserve rounding and tie order.
+            if (left_raw_equivalent[i] && right_raw_equivalent[j]) {
+                ordinary_scores[i][j] =
+                    {candidate.score, candidate.similarity, true};
+            }
+        }
         const double minimum_similarity = candidate.composite()
             ? options.minimum_composite_similarity
             : options.minimum_similarity;
@@ -827,15 +878,23 @@ OrbitalTrackingResult track_orbital_subspaces(
     const OrbitalTrackingOptions& options) {
     OrbitalTrackingResult result;
     result.atom_mapping_compatible = compatible_atoms(from, to);
-    const auto left = make_subspaces(from, options.degeneracy_tolerance_hartree);
-    const auto right = make_subspaces(to, options.degeneracy_tolerance_hartree);
+    const auto left = make_subspaces(from, options.degeneracy_tolerance_hartree,
+                                    result.atom_mapping_compatible);
+    const auto right = make_subspaces(to, options.degeneracy_tolerance_hartree,
+                                     result.atom_mapping_compatible);
     if (!result.atom_mapping_compatible) {
         for (const auto& item : left) result.unmatched_from.push_back(item.members);
         for (const auto& item : right) result.unmatched_to.push_back(item.members);
         return result;
     }
 
-    const auto candidates = make_candidates(left, right, options);
+    // TODO(perf): Profile local-union enumeration before adding an end-to-end
+    // budget. The current DP limits apply separately to each conflict component
+    // and do not bound candidate generation or final assignment. Any future
+    // truncation must preserve explicit unmatched/ambiguous results.
+    OrdinaryPairScores ordinary_scores(
+        left.size(), std::vector<OrdinaryPairScore>(right.size()));
+    const auto candidates = make_candidates(left, right, options, ordinary_scores);
     for (const auto& candidate : candidates) {
         if (candidate.composite()) ++result.composite_candidates_considered;
     }
@@ -886,51 +945,66 @@ OrbitalTrackingResult track_orbital_subspaces(
         ++result.composite_matches_selected;
     }
 
-    const std::size_t padded = std::max(left.size(), right.size());
-    std::vector<std::vector<double>> weights(
-        padded, std::vector<double>(padded, 0.0));
-    std::vector<std::vector<double>> scores(
-        left.size(), std::vector<double>(right.size(),
-                                        -std::numeric_limits<double>::infinity()));
-    std::vector<std::vector<double>> similarities(
-        left.size(), std::vector<double>(right.size(), 0.0));
-    for (std::size_t i = 0; i < left.size(); ++i) {
-        if (used_left[i]) continue;
-        for (std::size_t j = 0; j < right.size(); ++j) {
-            if (used_right[j]) continue;
-            double similarity = 0.0;
-            const double score = match_score(left[i], right[j], options, similarity);
-            scores[i][j] = score;
-            similarities[i][j] = similarity;
-            if (std::isfinite(score) &&
-                similarity >= options.minimum_similarity && score > 0.0) {
-                weights[i][j] = score;
+    const bool remaining_left =
+        std::find(used_left.begin(), used_left.end(), false) != used_left.end();
+    const bool remaining_right =
+        std::find(used_right.begin(), used_right.end(), false) != used_right.end();
+    // No ordinary assignment can remain when composites consumed either side.
+    // Keep the original padded dimensions/order otherwise: deleting zero rows
+    // or columns can change the historical choice between equal optima.
+    if (remaining_left && remaining_right) {
+        const std::size_t padded = std::max(left.size(), right.size());
+        std::vector<std::vector<double>> weights(
+            padded, std::vector<double>(padded, 0.0));
+        bool any_weight = false;
+        for (std::size_t i = 0; i < left.size(); ++i) {
+            for (std::size_t j = 0; j < right.size(); ++j) {
+                auto& cached = ordinary_scores[i][j];
+                if (used_left[i] || used_right[j]) {
+                    // Consumed groups did not enter the old ordinary score
+                    // matrix and must not become ambiguity alternatives now.
+                    cached = {};
+                    continue;
+                }
+                if (!cached.ready) {
+                    cached.score = match_score(left[i], right[j], options,
+                                               cached.similarity);
+                    cached.ready = true;
+                }
+                const double similarity = cached.similarity;
+                const double score = cached.score;
+                if (std::isfinite(score) &&
+                    similarity >= options.minimum_similarity && score > 0.0) {
+                    weights[i][j] = score;
+                    any_weight = true;
+                }
             }
         }
-    }
-    const auto assignment = maximum_weight_assignment(weights);
-    for (std::size_t i = 0u; i < left.size(); ++i) {
-        if (used_left[i]) continue;
-        const std::size_t j = assignment[i];
-        if (j >= right.size() || used_right[j] || weights[i][j] <= 0.0) continue;
-        double alternative = -std::numeric_limits<double>::infinity();
-        for (std::size_t other = 0u; other < right.size(); ++other) {
-            if (other != j) alternative = std::max(alternative, scores[i][other]);
+        const auto assignment = any_weight ? maximum_weight_assignment(weights)
+            : std::vector<std::size_t>(padded, padded);
+        for (std::size_t i = 0u; i < left.size(); ++i) {
+            if (used_left[i]) continue;
+            const std::size_t j = assignment[i];
+            if (j >= right.size() || used_right[j] || weights[i][j] <= 0.0) continue;
+            double alternative = -std::numeric_limits<double>::infinity();
+            for (std::size_t other = 0u; other < right.size(); ++other) {
+                if (other != j) alternative = std::max(alternative, ordinary_scores[i][other].score);
+            }
+            for (std::size_t other = 0u; other < left.size(); ++other) {
+                if (other != i) alternative = std::max(alternative, ordinary_scores[other][j].score);
+            }
+            OrbitalSubspaceMatch match;
+            match.from_members = left[i].members;
+            match.to_members = right[j].members;
+            match.similarity = ordinary_scores[i][j].similarity;
+            match.score = ordinary_scores[i][j].score;
+            match.ambiguous = std::isfinite(alternative) &&
+                match.score - alternative < options.ambiguity_margin;
+            match.source = OrbitalTrackingSource::SMetricChemicalDescriptor;
+            result.matches.push_back(std::move(match));
+            used_left[i] = true;
+            used_right[j] = true;
         }
-        for (std::size_t other = 0u; other < left.size(); ++other) {
-            if (other != i) alternative = std::max(alternative, scores[other][j]);
-        }
-        OrbitalSubspaceMatch match;
-        match.from_members = left[i].members;
-        match.to_members = right[j].members;
-        match.similarity = similarities[i][j];
-        match.score = scores[i][j];
-        match.ambiguous = std::isfinite(alternative) &&
-            match.score - alternative < options.ambiguity_margin;
-        match.source = OrbitalTrackingSource::SMetricChemicalDescriptor;
-        result.matches.push_back(std::move(match));
-        used_left[i] = true;
-        used_right[j] = true;
     }
     for (std::size_t i = 0; i < left.size(); ++i) {
         if (!used_left[i]) result.unmatched_from.push_back(left[i].members);

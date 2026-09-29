@@ -26,6 +26,20 @@
 namespace cov::ui {
 namespace {
 
+const NboAomoName* canonical_name_for(const Wavefunction& w,std::size_t index,
+                                     const OrbitalUIState& state){
+    if(state.nbo_ui && state.nbo_ui->aomo.names &&
+       index<state.nbo_ui->aomo.names->canonical.size())
+        return &state.nbo_ui->aomo.names->canonical[index];
+    const auto names=canonical_mo_names(w);
+    return index<names->canonical.size()?&names->canonical[index]:nullptr;
+}
+
+std::string displayed_canonical_name(const Wavefunction& w,std::size_t index,
+                                     const OrbitalUIState& state){
+    return canonical_mo_display_label(w,index,canonical_name_for(w,index,state));
+}
+
 constexpr ImU32 kSigmaColour = IM_COL32(57, 210, 232, 255);
 constexpr ImU32 kPiColour = IM_COL32(226, 93, 220, 255);
 constexpr ImU32 kDeltaColour = IM_COL32(244, 155, 65, 255);
@@ -537,10 +551,14 @@ void draw_level_details(const MODiagramData& data,
         ?data.metadata[orbital_index]:level.metadata;
     const std::string displayed_symmetry=metadata.symmetry.empty()?"N/A":metadata.symmetry;
     const auto* actual=orbital_index<wavefunction.orbitals.size()?&wavefunction.orbitals[orbital_index]:nullptr;
-    ImGui::Text("MO %s", metadata.display_label.c_str());
+    ImGui::TextUnformatted(displayed_canonical_name(wavefunction,orbital_index,state).c_str());
     ImGui::Separator();
-    labelled_number(tr(Text::RawMO, language), std::to_string(metadata.raw_mo_number));
+    labelled_number(tr(Text::RawMO, language), canonical_mo_source_label(wavefunction,orbital_index));
     labelled_number(tr(Text::InternalIndex, language), std::to_string(metadata.orbital_index));
+    if(state.grouped_labels && metadata.degeneracy_size>1)
+        labelled_value(tr(Text::GroupedLabels,language),metadata.display_label,kNumericColour);
+    if(const auto* name=canonical_name_for(wavefunction,orbital_index,state);name&&name->verified&&!name->ordinal)
+        labelled_value(tr(Text::Symmetry,language),orbital_irrep_display_label(*name),kSymmetryColour);
     labelled_number(tr(Text::ExactEnergy, language),
                     format_energy(metadata.energy_hartree, state.energy_unit, 6));
     labelled_number("Ha", fixed_number(metadata.energy_hartree, 10));
@@ -788,7 +806,9 @@ void draw_level_tooltip(const MODiagramData& data,
     ImGui::SetNextWindowSizeConstraints(ImVec2(0,0),ImVec2(std::max(120.0f,work_size.x-24.0f),std::max(120.0f,work_size.y-24.0f)));
     ImGui::BeginTooltip();
     ImGui::PushTextWrapPos(ImGui::GetFontSize()*24.0f);
-    ImGui::Text("MO %s",metadata.display_label.c_str());
+    ImGui::TextUnformatted(displayed_canonical_name(wavefunction,orbital_index,state).c_str());
+    if(const auto* name=canonical_name_for(wavefunction,orbital_index,state);name&&name->verified&&!name->ordinal)
+        labelled_value(tr(Text::Symmetry,language),orbital_irrep_display_label(*name),kSymmetryColour);
     labelled_number(tr(Text::ExactEnergy,language),format_energy(metadata.energy_hartree,state.energy_unit,8));
     labelled_number(tr(Text::Occupation,language),
         actual.occupation_provenance!=DataProvenance::Unavailable && std::isfinite(actual.occupation)?fixed_number(actual.occupation,6):"N/A");
@@ -1031,10 +1051,12 @@ void draw_arrow(ImDrawList* draw, const ImVec2 start, const bool up, const ImU32
                             ImVec2(tip.x + 3.5f, tip.y + head), colour);
 }
 
-std::string compact_metadata(const OrbitalMetadata& item, const EnergyUnit unit,
+std::string compact_metadata(const Wavefunction& wavefunction,const OrbitalMetadata& item, const EnergyUnit unit,
                              const NboAomoName* verified) {
     std::ostringstream out;
-    out << "label=" << item.display_label << "; raw_mo=" << item.raw_mo_number
+    out << "label=" << canonical_mo_display_label(wavefunction,item.orbital_index,verified)
+        << "; source_identity=" << canonical_mo_source_label(wavefunction,item.orbital_index)
+        << "; grouping_label=" << item.display_label << "; raw_mo=" << item.raw_mo_number
         << "; internal_index=" << item.orbital_index
         << "; energy_hartree=" << item.energy_hartree
         << "; energy_display=" << convert_hartree(item.energy_hartree, unit)
@@ -1165,7 +1187,7 @@ void draw_diagram_details_window(const MODiagramData& data,
         if(row && *row<data.levels.size()) {
             draw_level_details(data,data.levels[*row],wavefunction,state,language,selected_index);
         } else if(selected_index<wavefunction.orbitals.size()) {
-            ImGui::Text("MO %zu",selected_index+1);
+            ImGui::TextUnformatted(displayed_canonical_name(wavefunction,selected_index,state).c_str());
             ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsOutsideDiagram,language));
         }
         ImGui::Separator();
@@ -1245,14 +1267,15 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     }
     const FrontierOrbitals& frontier=*state.browser_cache.frontier;
     const auto& metadata=state.browser_cache.metadata;
-    const NboAomoNames* aomo_names=nullptr;
+    const auto standalone_names=canonical_mo_names(wavefunction);
+    const NboAomoNames* aomo_names=standalone_names.get();
     if(state.nbo_ui && state.nbo_ui->integration &&
        prepare_nbo_aomo_state(state.nbo_ui->aomo,*state.nbo_ui->integration,wavefunction))
         aomo_names=state.nbo_ui->aomo.names.get();
     const auto verified_name=[&](std::size_t index)->const NboAomoName* {
         if(!aomo_names || index>=aomo_names->canonical.size())return nullptr;
         const auto& name=aomo_names->canonical[index];
-        return name.verified?&name:nullptr;
+        return &name;
     };
     const Spin selected_spin = selected_index < wavefunction.orbitals.size()
         ? wavefunction.orbitals[selected_index].spin : Spin::Alpha;
@@ -1321,7 +1344,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                           (table_scroll?ImGuiTableFlags_ScrollY:0) | ImGuiTableFlags_SizingStretchProp |
                           ImGuiTableFlags_NoSavedSettings, ImVec2(0.0f, table_scroll?270.0f*ui_scale:0))) {
         ImGui::TableSetupScrollFreeze(0, 1);
-        ImGui::TableSetupColumn("MO", ImGuiTableColumnFlags_WidthFixed, 76.0f * ui_scale);
+        ImGui::TableSetupColumn("MO", ImGuiTableColumnFlags_WidthFixed, 132.0f * ui_scale);
         ImGui::TableSetupColumn(tr(Text::Energy, language), ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableSetupColumn(tr(Text::Occupation, language), ImGuiTableColumnFlags_WidthFixed, 64.0f * ui_scale);
         ImGui::TableSetupColumn(tr(Text::Symmetry, language), ImGuiTableColumnFlags_WidthFixed, 80.0f * ui_scale);
@@ -1332,7 +1355,8 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
             for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row) {
                 const std::size_t index = candidates[static_cast<std::size_t>(row)];
                 const auto& item = metadata[index];
-                const std::string label = state.grouped_labels ? item.display_label : std::to_string(item.raw_mo_number);
+                const auto* name=verified_name(index);
+                const std::string label=canonical_mo_display_label(wavefunction,index,name);
                 ImGui::PushID(static_cast<int>(index));
                 ImGui::TableNextRow(0,1.3f*ImGui::GetTextLineHeightWithSpacing()); ImGui::TableNextColumn();
                 if (ImGui::Selectable(label.c_str(), index == selected_index,
@@ -1340,13 +1364,14 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                     actions.select_orbital = index;
                 }
                 cov::validation::item("browser.mo."+std::to_string(index));
+                if(state.grouped_labels && item.degeneracy_size>1)
+                    ImGui::TextDisabled("%s",item.display_label.c_str());
                 ImGui::TableNextColumn();
                 ImGui::TextColored(text_colour(kNumericColour), "%s",
                                    format_energy(item.energy_hartree, state.energy_unit, 5).c_str());
                 ImGui::TableNextColumn();
                 ImGui::TextColored(text_colour(kNumericColour), "%.2f", item.occupation);
-                const auto* name=verified_name(index);
-                const std::string symmetry=name?name->label:
+                const std::string symmetry=name&&name->verified?orbital_irrep_display_label(*name):
                     (item.symmetry_view.label.empty()?"?":item.symmetry_view.label);
                 ImGui::TableNextColumn(); draw_rich_symmetry(symmetry,kSymmetryColour);
                 cov::validation::item("browser.symmetry."+std::to_string(index)+".label");
@@ -1358,7 +1383,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     }
 
     if (selected_index < metadata.size() && ImGui::Button(tr(Text::CopyMetadata, language))) {
-        const std::string text = compact_metadata(metadata[selected_index], state.energy_unit,
+        const std::string text = compact_metadata(wavefunction,metadata[selected_index], state.energy_unit,
                                                   verified_name(selected_index));
         ImGui::SetClipboardText(text.c_str());
         validation::record("browser.copy","{\"text\":"+validation::quote(text)+"}");

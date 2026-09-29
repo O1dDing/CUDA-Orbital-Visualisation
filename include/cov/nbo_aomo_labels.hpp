@@ -3,6 +3,7 @@
 #include "cov/nbo_salc.hpp"
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace cov::ui {
 struct NboAomoName {
@@ -21,4 +22,14 @@ struct NboAomoNames {
 // per frame. No coefficients, source labels, orbital ordering or fields change.
 NboAomoNames build_nbo_aomo_names(const Wavefunction&,const NboIntegration&,
                                  const NboSalcModel*);
+// Canonical naming is available without an NBO attachment. The cache is for
+// immutable loaded wavefunctions; it never changes producer data or coefficients.
+std::shared_ptr<const NboAomoNames> canonical_mo_names(const Wavefunction&);
+void invalidate_canonical_mo_names_cache();
+// Source identity is spin-block based; unavailable source indices are explicitly
+// identified as list positions. Internal indices remain the selection addresses.
+std::string canonical_mo_source_label(const Wavefunction&,std::size_t);
+std::string canonical_mo_display_label(const Wavefunction&,std::size_t,
+                                     const NboAomoName* = nullptr);
+std::string orbital_irrep_display_label(const NboAomoName&);
 } // namespace cov::ui
