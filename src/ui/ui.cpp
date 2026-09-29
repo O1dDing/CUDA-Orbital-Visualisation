@@ -22,8 +22,8 @@ struct LocalisedString {
 };
 
 constexpr std::array<LocalisedString, kTextCount> kStrings{{
-    {"CUDA Orbital Visualisation", "CUDA Orbital Visualisation", "CUDA Orbital Visualisation", "CUDA Orbital Visualisation"},
-    {"GPU-first molecular orbital viewer", "GPU 优先的分子轨道可视化", "GPUファースト分子軌道ビューア", "Visualiseur d’orbitales moléculaires orienté GPU"},
+    {"Chemical Orbital Visualiser", "Chemical Orbital Visualiser", "Chemical Orbital Visualiser", "Chemical Orbital Visualiser"},
+    {"Orbital energies, occupations and connections", "轨道能量、电子占据与轨道联系", "軌道エネルギー・占有数・軌道間のつながり", "Énergies, occupations et liens entre orbitales"},
     {"Language", "语言", "言語", "Langue"},
     {"File", "文件", "ファイル", "Fichier"},
     {"Molden file", "Molden 文件", "Molden ファイル", "Fichier Molden"},

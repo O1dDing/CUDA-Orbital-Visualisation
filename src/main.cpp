@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
     }
 
     GLFWwindow* window = glfwCreateWindow(
-        1500, 940, "CUDA Orbital Visualisation", nullptr, nullptr);
+        1500, 940, "Chemical Orbital Visualiser", nullptr, nullptr);
     if (!window) {
         std::fprintf(stderr, "Unable to create OpenGL window\n");
         glfwTerminate();
