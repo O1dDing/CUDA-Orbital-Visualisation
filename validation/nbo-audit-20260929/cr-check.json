@@ -1,0 +1,1318 @@
+{
+  "schema": "cov.r16.cr-product-check.v1",
+  "product_path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\nbo-audit-20260929\\routes-final\\CrCO6\\result.json",
+  "product_sha256": "39f948a2d5a73eac785d9d2b687dd2bb564a69e44074811ecab5d860e2f89eb1",
+  "reference_sha256": "28d4c5937dbaaefba08cf02b4aef41633f79ba4255cd71939fbd54e6a158dbc3",
+  "passed": true,
+  "check_count": 159,
+  "failed_count": 0,
+  "checks": [
+    {
+      "check": "unique_collective_metal_six_carbon_pi",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "verified_nbo_provider",
+      "passed": true,
+      "actual": "nbo",
+      "expected": "nbo"
+    },
+    {
+      "check": "actual_source_evidence",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "rank3",
+      "passed": true,
+      "actual": 3,
+      "expected": 3
+    },
+    {
+      "check": "finite_nonnegative_singular_values",
+      "passed": true,
+      "actual": [
+        0.14942642089961986,
+        0.14942642053533137,
+        0.14942642052824884,
+        1.2977542333882334e-14,
+        9.662196503651608e-15
+      ],
+      "expected": null
+    },
+    {
+      "check": "three_active_singular_values",
+      "passed": true,
+      "actual": [
+        0.14942642052824884,
+        0.14942642053533137,
+        0.14942642089961986
+      ],
+      "expected": [
+        0.1494264205282488,
+        0.14942642053533137,
+        0.14942642089961983
+      ]
+    },
+    {
+      "check": "singular_0",
+      "passed": true,
+      "actual": 0.14942642052824884,
+      "expected": {
+        "value": 0.1494264205282488,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "singular_1",
+      "passed": true,
+      "actual": 0.14942642053533137,
+      "expected": {
+        "value": 0.14942642053533137,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "singular_2",
+      "passed": true,
+      "actual": 0.14942642089961986,
+      "expected": {
+        "value": 0.14942642089961983,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "centre_onsite_hartree",
+      "passed": true,
+      "actual": -0.2065781362559865,
+      "expected": {
+        "value": -0.2065781362559865,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "ligand_onsite_hartree",
+      "passed": true,
+      "actual": -0.170585447790035,
+      "expected": {
+        "value": -0.17058544779003504,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "centre_occupation",
+      "passed": true,
+      "actual": 1.5116977027382088,
+      "expected": {
+        "value": 1.5116977027382088,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "ligand_occupation",
+      "passed": true,
+      "actual": 0.8226252412612126,
+      "expected": {
+        "value": 0.8226252412612126,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "centre_onsite_range_hartree.finite_ordered",
+      "passed": true,
+      "actual": [
+        -0.20657813632351313,
+        -0.20657813613572248
+      ],
+      "expected": null
+    },
+    {
+      "check": "centre_onsite_range_hartree[0]",
+      "passed": true,
+      "actual": -0.20657813632351313,
+      "expected": {
+        "value": -0.20657813632351305,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "centre_onsite_range_hartree[1]",
+      "passed": true,
+      "actual": -0.20657813613572248,
+      "expected": {
+        "value": -0.2065781361357225,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "ligand_onsite_range_hartree.finite_ordered",
+      "passed": true,
+      "actual": [
+        -0.17058544802510645,
+        -0.17058544739522846
+      ],
+      "expected": null
+    },
+    {
+      "check": "ligand_onsite_range_hartree[0]",
+      "passed": true,
+      "actual": -0.17058544802510645,
+      "expected": {
+        "value": -0.17058544802510645,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "ligand_onsite_range_hartree[1]",
+      "passed": true,
+      "actual": -0.17058544739522846,
+      "expected": {
+        "value": -0.17058544739522843,
+        "absolute_tolerance": 5e-06
+      }
+    },
+    {
+      "check": "centre_occupation_range.finite_ordered",
+      "passed": true,
+      "actual": [
+        1.5116977012804265,
+        1.5116977041183608
+      ],
+      "expected": null
+    },
+    {
+      "check": "centre_occupation_range[0]",
+      "passed": true,
+      "actual": 1.5116977012804265,
+      "expected": {
+        "value": 1.5116977012804265,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "centre_occupation_range[1]",
+      "passed": true,
+      "actual": 1.5116977041183608,
+      "expected": {
+        "value": 1.5116977041183608,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "ligand_occupation_range.finite_ordered",
+      "passed": true,
+      "actual": [
+        0.8226252395695677,
+        0.8226252421099813
+      ],
+      "expected": null
+    },
+    {
+      "check": "ligand_occupation_range[0]",
+      "passed": true,
+      "actual": 0.8226252395695677,
+      "expected": {
+        "value": 0.822625239569568,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "ligand_occupation_range[1]",
+      "passed": true,
+      "actual": 0.8226252421099813,
+      "expected": {
+        "value": 0.8226252421099812,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "whole_metal_onsite_interval_lower",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "whole_metal_occupation_interval_higher",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "backdonation_direction",
+      "passed": true,
+      "actual": "centre_to_ligand",
+      "expected": "centre_to_ligand"
+    },
+    {
+      "check": "direction_evidence",
+      "passed": true,
+      "actual": "Lower occupied centre coupled projector and direct same-channel localized E2 donor/acceptor spans",
+      "expected": null
+    },
+    {
+      "check": "six_real_angular_projectors",
+      "passed": true,
+      "actual": 6,
+      "expected": 6
+    },
+    {
+      "check": "angular[1].unique",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "angular[1].rank2",
+      "passed": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "check": "angular[1].actual_p_metric",
+      "passed": true,
+      "actual": 0.8044043086307698,
+      "expected": {
+        "value": 0.8044043097912691,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[1].spectrum_shape",
+      "passed": true,
+      "actual": [
+        -3.904862709667049e-26,
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "expected": null
+    },
+    {
+      "check": "angular[1].eigen[0]",
+      "passed": true,
+      "actual": -3.904862709667049e-26,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[1].eigen[1]",
+      "passed": true,
+      "actual": 0.9999999999999998,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[1].eigen[2]",
+      "passed": true,
+      "actual": 1.0000000000000002,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[1].sigma_leakage",
+      "passed": true,
+      "actual": 2.220446049250313e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[1].partition_residual",
+      "passed": true,
+      "actual": 2.220446049250313e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[3].unique",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "angular[3].rank2",
+      "passed": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "check": "angular[3].actual_p_metric",
+      "passed": true,
+      "actual": 0.804404308630011,
+      "expected": {
+        "value": 0.804404309791269,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[3].spectrum_shape",
+      "passed": true,
+      "actual": [
+        -3.9623882719006455e-26,
+        0.9999999999999996,
+        0.9999999999999997
+      ],
+      "expected": null
+    },
+    {
+      "check": "angular[3].eigen[0]",
+      "passed": true,
+      "actual": -3.9623882719006455e-26,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[3].eigen[1]",
+      "passed": true,
+      "actual": 0.9999999999999996,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[3].eigen[2]",
+      "passed": true,
+      "actual": 0.9999999999999997,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[3].sigma_leakage",
+      "passed": true,
+      "actual": 4.440892098500626e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[3].partition_residual",
+      "passed": true,
+      "actual": 3.3306690738754696e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[5].unique",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "angular[5].rank2",
+      "passed": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "check": "angular[5].actual_p_metric",
+      "passed": true,
+      "actual": 0.804404308028802,
+      "expected": {
+        "value": 0.8044043089045939,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[5].spectrum_shape",
+      "passed": true,
+      "actual": [
+        -2.5296111581886525e-19,
+        0.9999999999999999,
+        1
+      ],
+      "expected": null
+    },
+    {
+      "check": "angular[5].eigen[0]",
+      "passed": true,
+      "actual": -2.5296111581886525e-19,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[5].eigen[1]",
+      "passed": true,
+      "actual": 0.9999999999999999,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[5].eigen[2]",
+      "passed": true,
+      "actual": 1,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[5].sigma_leakage",
+      "passed": true,
+      "actual": 1.1102230246251565e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[5].partition_residual",
+      "passed": true,
+      "actual": 1.1102230246251565e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[7].unique",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "angular[7].rank2",
+      "passed": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "check": "angular[7].actual_p_metric",
+      "passed": true,
+      "actual": 0.8044043079401954,
+      "expected": {
+        "value": 0.8044043089045939,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[7].spectrum_shape",
+      "passed": true,
+      "actual": [
+        0,
+        0.9999999999999999,
+        1.0000000000000002
+      ],
+      "expected": null
+    },
+    {
+      "check": "angular[7].eigen[0]",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[7].eigen[1]",
+      "passed": true,
+      "actual": 0.9999999999999999,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[7].eigen[2]",
+      "passed": true,
+      "actual": 1.0000000000000002,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[7].sigma_leakage",
+      "passed": true,
+      "actual": 2.220446049250313e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[7].partition_residual",
+      "passed": true,
+      "actual": 3.3306690738754696e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[9].unique",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "angular[9].rank2",
+      "passed": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "check": "angular[9].actual_p_metric",
+      "passed": true,
+      "actual": 0.8044043084161357,
+      "expected": {
+        "value": 0.8044043094401151,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[9].spectrum_shape",
+      "passed": true,
+      "actual": [
+        1.1056964393580382e-16,
+        0.9999999999999998,
+        1.0000000000000004
+      ],
+      "expected": null
+    },
+    {
+      "check": "angular[9].eigen[0]",
+      "passed": true,
+      "actual": 1.1056964393580382e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[9].eigen[1]",
+      "passed": true,
+      "actual": 0.9999999999999998,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[9].eigen[2]",
+      "passed": true,
+      "actual": 1.0000000000000004,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[9].sigma_leakage",
+      "passed": true,
+      "actual": 4.440892098500626e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[9].partition_residual",
+      "passed": true,
+      "actual": 2.220446049250313e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[11].unique",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "angular[11].rank2",
+      "passed": true,
+      "actual": 2,
+      "expected": 2
+    },
+    {
+      "check": "angular[11].actual_p_metric",
+      "passed": true,
+      "actual": 0.8044043084022197,
+      "expected": {
+        "value": 0.8044043094401148,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "angular[11].spectrum_shape",
+      "passed": true,
+      "actual": [
+        -1.724101070495485e-18,
+        1,
+        1.0000000000000004
+      ],
+      "expected": null
+    },
+    {
+      "check": "angular[11].eigen[0]",
+      "passed": true,
+      "actual": -1.724101070495485e-18,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[11].eigen[1]",
+      "passed": true,
+      "actual": 1,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[11].eigen[2]",
+      "passed": true,
+      "actual": 1.0000000000000004,
+      "expected": {
+        "value": 1,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[11].sigma_leakage",
+      "passed": true,
+      "actual": 4.440892098500626e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 0.0002
+      }
+    },
+    {
+      "check": "angular[11].partition_residual",
+      "passed": true,
+      "actual": 2.220446049250313e-16,
+      "expected": {
+        "value": 0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->68].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[22->68].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[22->68].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647385063896,
+      "expected": {
+        "value": 0.9977647385063897,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->68].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->68].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->68].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314921245052,
+      "expected": {
+        "value": 0.18548314921245057,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->74].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[22->74].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[22->74].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647385063896,
+      "expected": {
+        "value": 0.9977647385063897,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->74].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->74].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->74].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.1854831493501914,
+      "expected": {
+        "value": 0.1854831493501913,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->59].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[23->59].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[23->59].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386778696,
+      "expected": {
+        "value": 0.9977647386778696,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->59].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->59].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->59].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314945968078,
+      "expected": {
+        "value": 0.18548314945968072,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->67].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[23->67].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[23->67].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386778696,
+      "expected": {
+        "value": 0.9977647386778696,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->67].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->67].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->67].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314916796999,
+      "expected": {
+        "value": 0.18548314916797012,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->58].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[24->58].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[24->58].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386862147,
+      "expected": {
+        "value": 0.997764738686215,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->58].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->58].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->58].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314944325586,
+      "expected": {
+        "value": 0.18548314944325606,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->73].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[24->73].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[24->73].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386862147,
+      "expected": {
+        "value": 0.997764738686215,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->73].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->73].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->73].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314929460524,
+      "expected": {
+        "value": 0.18548314929460513,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->62].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[23->62].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[23->62].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386778696,
+      "expected": {
+        "value": 0.9977647386778696,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->62].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->62].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->62].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314948222763,
+      "expected": {
+        "value": 0.1854831494822278,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->61].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[24->61].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[24->61].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386862147,
+      "expected": {
+        "value": 0.997764738686215,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->61].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->61].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->61].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314946579866,
+      "expected": {
+        "value": 0.1854831494657985,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->65].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[22->65].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[22->65].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647385063896,
+      "expected": {
+        "value": 0.9977647385063897,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->65].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->65].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->65].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.1854831494572899,
+      "expected": {
+        "value": 0.18548314945729003,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->64].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[23->64].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[23->64].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386778696,
+      "expected": {
+        "value": 0.9977647386778696,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->64].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->64].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[23->64].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314941485783,
+      "expected": {
+        "value": 0.1854831494148577,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->71].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[22->71].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[22->71].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647385063896,
+      "expected": {
+        "value": 0.9977647385063897,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->71].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->71].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[22->71].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314957621825,
+      "expected": {
+        "value": 0.18548314957621828,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->70].present_once",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "check": "E2[24->70].source",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "check": "E2[24->70].donor_centre_weight",
+      "passed": true,
+      "actual": 0.9977647386862147,
+      "expected": {
+        "value": 0.997764738686215,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->70].donor_ligand_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->70].acceptor_centre_weight",
+      "passed": true,
+      "actual": 0,
+      "expected": {
+        "value": 0.0,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "E2[24->70].acceptor_ligand_weight",
+      "passed": true,
+      "actual": 0.18548314952063774,
+      "expected": {
+        "value": 0.18548314952063796,
+        "absolute_tolerance": 2e-05
+      }
+    },
+    {
+      "check": "direction_donor_weight.supported_span",
+      "passed": true,
+      "actual": 0.9977647386234914,
+      "expected": [
+        0.9977447386234913,
+        1.00002
+      ]
+    },
+    {
+      "check": "direction_acceptor_weight.supported_span",
+      "passed": true,
+      "actual": 0.7479377960110005,
+      "expected": [
+        0.7419125976150613,
+        1.00002
+      ]
+    },
+    {
+      "check": "canonical_immutable",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    }
+  ]
+}

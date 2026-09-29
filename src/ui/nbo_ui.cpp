@@ -768,6 +768,7 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
     const auto words=report_text(language);
     ImGui::Spacing();
     section_title(trn(language,Title));
+    validation::field("nbo.input.candidate_count",std::to_string(s.input_discovery?s.input_discovery->candidates.size():0));
     if(s.input_discovery) {
         note(nbo_local(language,"NBO inputs detected","已检测到 NBO 输入",
             "NBO 入力を検出","Fichiers NBO détectés"));
@@ -893,6 +894,7 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
         ImGui::BeginDisabled(!wiberg_cap||!wiberg_cap->available());
         ImGui::Checkbox(bond_label.c_str(),&s.show_bond_indices);
         validation::item("nbo.overlay.wiberg");
+        validation::field("nbo.overlay.wiberg.checked",s.show_bond_indices?"true":"false");
         if(ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) &&
            (!wiberg_cap||!wiberg_cap->available()))
             ImGui::SetTooltip("%s",nbo_local(language,"Bond indices unavailable",
@@ -903,6 +905,7 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
         ImGui::BeginDisabled(!e2_cap||!e2_cap->available());
         ImGui::Checkbox(e2_label.c_str(),&s.show_e2);
         validation::item("nbo.overlay.e2");
+        validation::field("nbo.overlay.e2.checked",s.show_e2?"true":"false");
         if(ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) &&
            (!e2_cap||!e2_cap->available()))
             ImGui::SetTooltip("%s",nbo_local(language,"E(2) interactions unavailable",

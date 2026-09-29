@@ -65,6 +65,31 @@ void ordered_geometry_rejection_controls() {
 }
 }
 int main(int argc,char** argv){try{
+    auto identity_fixture=fixture();
+    const auto identity_before=cov::integrate_nbo(identity_fixture.w,identity_fixture.d);
+    identity_fixture.d.naos.front().type="Ryd(2s)";
+    require(cov::integrate_nbo(identity_fixture.w,identity_fixture.d).id!=identity_before.id,
+            "NAO report classification change retained stale integration identity");
+    cov::NboOrbitalSelection stale_report_selection;stale_report_selection.dataset_id=identity_before.id;
+    stale_report_selection.terms.push_back({{cov::NboOrbitalKind::NAO,cov::NboSpin::Total,0},1});
+    require(!cov::make_nbo_selection_view(cov::integrate_nbo(identity_fixture.w,identity_fixture.d),identity_fixture.w,stale_report_selection).available,
+            "selection accepted an identity from the previous report contents");
+    const auto changed_id=[&](auto mutate,const char* reason){auto copy=fixture();mutate(copy.d);
+        require(cov::integrate_nbo(copy.w,copy.d).id!=identity_before.id,reason);};
+    changed_id([](auto& d){d.naos[0].energy_hartree=-.3;},"NAO energy omitted from identity");
+    changed_id([](auto& d){d.nlmos[0].parent_nbo=2;},"NLMO parent omitted from identity");
+    changed_id([](auto& d){d.orbitals[0].components.push_back({1,50,.7,"s"});},"NHO component evidence omitted from identity");
+    changed_id([](auto& d){cov::NboE2Section e;e.printing_threshold=1;d.e2_sections.push_back(e);},"E2 missing-value semantics omitted from identity");
+    changed_id([](auto& d){d.archive->density_is_bond_order=false;},"density convention omitted from identity");
+    changed_id([](auto& d){d.archive->atoms[0].x+=.1;},"archive association identity omitted from identity");
+    changed_id([](auto& d){d.matrices[0].rows=1;},"matrix dimensions omitted from identity");
+    auto density_identity=fixture();density_identity.w.total_density_packed={1.6,.8,.4};
+    density_identity.w.total_density_provenance=cov::DataProvenance::Producer;
+    require(cov::nbo_canonical_fingerprint(density_identity.w)!=identity_before.canonical_fingerprint,
+            "producer density omitted from immutable canonical identity");
+    identity_fixture=fixture();identity_fixture.d.nlmos.front().parent_percent=70;
+    require(cov::integrate_nbo(identity_fixture.w,identity_fixture.d).id!=identity_before.id,
+            "NLMO parent composition change retained stale integration identity");
     ordered_geometry_rejection_controls();
     auto f=fixture();const auto before=f.w.orbitals[0].coefficients;auto d=cov::integrate_nbo(f.w,f.d);
     for(const auto* k:{"canonical","gaussian_ao","source_association","nao","aomo","nbo","nho","nlmo","pnao"})require(available(d,k),k);

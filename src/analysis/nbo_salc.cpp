@@ -101,6 +101,49 @@ std::vector<M> merge_group_connected_spaces(std::vector<M> spaces,const std::vec
     for(const auto& [key,indices]:components){Eigen::Index count=0;for(auto i:indices)count+=spaces[i].cols();M joined(spaces.front().rows(),count);Eigen::Index offset=0;for(auto i:indices){joined.middleCols(offset,spaces[i].cols())=spaces[i];offset+=spaces[i].cols();}auto q=deterministic_basis(joined,1e-9);if(q.size()==0)return {};result.push_back(std::move(q));}return result;
 }
 struct Energy {NboSalcEnergyEvidence evidence;M fock;};
+M archive_coefficients(const Wavefunction& w,const NboAssociation& assoc,const M& x){
+    const auto n=std::size_t(w.basis_count);
+    if(x.rows()!=n||assoc.gaussian_row.size()!=n||assoc.coefficient_scale.size()!=n||
+       w.gaussian_ao_transform.size()!=n)return {};
+    std::vector<std::size_t> inv(n,n);
+    for(std::size_t i=0;i<n;++i)if(w.gaussian_ao_transform[i].source_index<n)
+        inv[w.gaussian_ao_transform[i].source_index]=i;
+    M y(n,x.cols());
+    for(std::size_t k=0;k<n;++k){
+        if(assoc.gaussian_row[k]>=n||inv[assoc.gaussian_row[k]]>=n)return {};
+        const auto i=inv[assoc.gaussian_row[k]];
+        const double scale=assoc.coefficient_scale[k]*w.gaussian_ao_transform[i].coefficient_scale;
+        if(!std::isfinite(scale)||std::abs(scale)<1e-20)return {};
+        y.row(k)=x.row(i)/scale;
+    }
+    return y;
+}
+M verified_density(const Wavefunction& w,const NboIntegration& data,NboSpin spin,
+                   const M& a,double tolerance,std::string& reason){
+    const auto& d=data.dataset;const auto n=std::size_t(w.basis_count);
+    const NboCanonicalEvidence* evidence=nullptr;
+    for(const auto& item:d.association.canonical_evidence)if(item.spin==spin){
+        if(evidence){reason="Ambiguous same-spin density association";return {};}
+        evidence=&item;
+    }
+    if(!d.archive||!evidence||!evidence->density_verified){
+        reason="No independently associated same-spin producer density";return {};
+    }
+    const auto* p=find(d.archive->matrices,"DENSITY",spin);
+    const auto* s=find(d.archive->matrices,"OVERLAP",NboSpin::Total);
+    if(!complete(p,n)||!complete(s,n)){
+        reason="Missing complete same-spin producer density or overlap";return {};
+    }
+    const M density=matrix(*p);
+    if(err(density-density.transpose())>tolerance){
+        reason="Producer density is not Hermitian within tolerance";return {};
+    }
+    M b=archive_coefficients(w,d.association,a);
+    if(!b.size()){reason="Missing or invalid AO convention mapping for density";return {};}
+    if(d.archive->density_is_bond_order)b=(matrix(*s)*b).eval();
+    reason="Independently associated same-spin archive density projected in the NAO metric";
+    return b.transpose()*density*b;
+}
 Energy check_energy(const Wavefunction& w,const NboIntegration& data,NboSpin spin,const M& a,const NboSalcOptions& options){
     Energy e;e.evidence.spin=spin;const auto& d=data.dataset;const auto n=std::size_t(w.basis_count);if(!d.archive){e.evidence.detail="No same-source archive";return e;}
     e.evidence.input_units=d.archive->fock_input_units;const auto* f=find(d.archive->matrices,"FOCK",spin);const auto* s=find(d.archive->matrices,"OVERLAP",NboSpin::Total);
@@ -108,12 +151,10 @@ Energy check_energy(const Wavefunction& w,const NboIntegration& data,NboSpin spi
     const auto& assoc=d.association;const NboCanonicalEvidence* ev=nullptr;for(const auto& x:assoc.canonical_evidence)if(x.spin==spin)ev=&x;
     if(!ev||!ev->direct_fchk_coefficients){e.evidence.detail="No direct same-spin canonical coefficient identity";return e;}
     if(assoc.gaussian_row.size()!=n||assoc.coefficient_scale.size()!=n||w.gaussian_ao_transform.size()!=n){e.evidence.detail="Missing AO convention mapping";return e;}
-    std::vector<std::size_t> inv(n,n);for(std::size_t i=0;i<n;++i)if(w.gaussian_ao_transform[i].source_index<n)inv[w.gaussian_ao_transform[i].source_index]=i;
-    auto archive_coefficients=[&](const M& x){M y(n,x.cols());for(std::size_t k=0;k<n;++k){if(assoc.gaussian_row[k]>=n||inv[assoc.gaussian_row[k]]>=n)return M{};const auto i=inv[assoc.gaussian_row[k]];const double scale=assoc.coefficient_scale[k]*w.gaussian_ao_transform[i].coefficient_scale;if(!std::isfinite(scale)||std::abs(scale)<1e-20)return M{};y.row(k)=x.row(i)/scale;}return y;};
     std::vector<std::size_t> indices;for(std::size_t i=0;i<w.orbitals.size();++i)if((spin==NboSpin::Beta)==(w.orbitals[i].spin==Spin::Beta))indices.push_back(i);
     if(indices.empty()){e.evidence.detail="No canonical columns for spin";return e;}
     M c(n,indices.size());V eps(indices.size());for(std::size_t j=0;j<indices.size();++j){const auto& mo=w.orbitals[indices[j]];if(mo.coefficients.size()!=n||!std::isfinite(mo.energy_hartree)){e.evidence.detail="Invalid canonical energy or coefficient dimensions";return e;}c.col(j)=Eigen::Map<const V>(mo.coefficients.data(),n);eps[j]=mo.energy_hartree;}
-    c=archive_coefficients(c);const M an=archive_coefficients(a);if(c.size()==0||an.size()==0){e.evidence.detail="Invalid AO convention scale";return e;}
+    c=archive_coefficients(w,assoc,c);const M an=archive_coefficients(w,assoc,a);if(c.size()==0||an.size()==0){e.evidence.detail="Invalid AO convention scale";return e;}
     const M fock=matrix(*f),overlap=matrix(*s);e.evidence.hermiticity_error=err(fock-fock.transpose());const M fc=fock*c,sc=overlap*c,residual=fc-sc*eps.asDiagonal();
     e.evidence.canonical_residual=err(residual);e.evidence.projected_residual=err(c.transpose()*residual);e.evidence.eigenvalue_error_hartree=err(c.transpose()*fc-eps.asDiagonal().toDenseMatrix());e.evidence.canonical_columns_checked=indices.size();
     Eigen::SelfAdjointEigenSolver<M> se(overlap);if(se.info()!=Eigen::Success){e.evidence.detail="Overlap spectral decomposition failed";return e;}
@@ -162,12 +203,14 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
         if(transforms)for(const auto& op:group.ops){const auto t=apply_orbital_symmetry_operation(w,op,flat(a),r);if(t.size()!=n*r){transforms=false;out.diagnostics.push_back("Full-group AO action unavailable; fixed NAO fallback");break;}const M ta=Eigen::Map<const RM>(t.data(),n,r);const double metric_error=err(ta.transpose()*s*ta-M::Identity(r,r));out.representation_error=std::max(out.representation_error,metric_error);if(metric_error>options.symmetry_tolerance){transforms=false;out.diagnostics.push_back("AO action fails metric isometry; fixed NAO fallback");break;}transformed_basis.push_back(ta);}
         if(transforms)for(const auto& action:transformed_basis)representations.push_back(sa.transpose()*action);
         if(energy.evidence.available&&transforms){double e=0;for(const auto& g:representations)e=std::max(e,err(g.transpose()*energy.fock*g-energy.fock));energy.evidence.fock_symmetry_error=e;energy.evidence.electronic_symmetry_verified=r==n&&e<=options.symmetry_tolerance;}
-        M density;
-        // Use canonical occupations only where their source spin identity exists;
-        // otherwise keep the verified printed NAO occupation for single nodes.
+        std::string density_reason;
+        const M density=verified_density(w,data,spin,a,options.metric_tolerance,density_reason);
+        out.diagnostics.push_back(std::string(nbo_spin_name(spin))+": SALC occupation: "+density_reason);
+        // Canonical links and producer-density occupations have independent gates.
+        // In particular, verified RO beta density needs no invented beta MO block.
         std::vector<std::size_t> canonical_indices;for(std::size_t j=0;j<w.orbitals.size();++j)if((spin==NboSpin::Beta)==(w.orbitals[j].spin==Spin::Beta))canonical_indices.push_back(j);
         M projections(r,canonical_indices.size());bool canonical_verified=false;for(const auto& ev:data.dataset.association.canonical_evidence)if(ev.spin==spin&&ev.direct_fchk_coefficients)canonical_verified=true;
-        if(canonical_verified){M c(n,canonical_indices.size());V occupations(canonical_indices.size());bool occupation_known=true;for(std::size_t j=0;j<canonical_indices.size();++j){const auto& mo=w.orbitals[canonical_indices[j]];c.col(j)=Eigen::Map<const V>(mo.coefficients.data(),n);occupations[j]=mo.occupation;if(mo.occupation_provenance==DataProvenance::Unavailable)occupation_known=false;if(spin!=NboSpin::Total&&w.orbital_occupation_model==OrbitalOccupationModel::CanonicalShared)occupations[j]=mo.source_orbital_index<std::size_t(spin==NboSpin::Beta?w.beta_electrons:w.alpha_electrons)?1:0;}projections=sa.transpose()*c;if(occupation_known)density=projections*occupations.asDiagonal()*projections.transpose();}
+        if(canonical_verified){M c(n,canonical_indices.size());for(std::size_t j=0;j<canonical_indices.size();++j)c.col(j)=Eigen::Map<const V>(w.orbitals[canonical_indices[j]].coefficients.data(),n);projections=sa.transpose()*c;}
         if(density.size()&&transforms){energy.evidence.density_symmetry_checked=true;for(const auto& g:representations)energy.evidence.density_symmetry_error=std::max(energy.evidence.density_symmetry_error,err(g.transpose()*density*g-density));energy.evidence.electronic_symmetry_verified=energy.evidence.electronic_symmetry_verified&&energy.evidence.density_symmetry_error<=options.symmetry_tolerance;}else energy.evidence.electronic_symmetry_verified=false;
         out.energies.push_back(energy.evidence);
         std::map<std::pair<std::size_t,std::string>,Family> familymap;for(std::size_t j=0;j<r;++j){const auto atom=descriptors[j]->atoms[0];if(atom>=atom_group.size())continue;const NboNao* row=nullptr;for(const auto& x:data.dataset.naos)if(x.spin==spin&&x.id==descriptors[j]->ref.index+1){row=&x;break;}const std::string type=row?compact(row->type):"unclassified";auto& f=familymap[{atom_group[atom],type}];f.fragment=atom_group[atom];f.type=type;f.angular=row?row->angular:"unclassified";f.indices.push_back(j);}

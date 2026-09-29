@@ -82,8 +82,9 @@ struct PiFrame{M q;double leakage=0,centre=0,minimum_p=0,residual=0;
     std::array<double,3> spectrum{};};
 std::optional<PiFrame> derived_pi_frame(const Wavefunction& w,const NboIntegration& data,
                         std::size_t atom,const std::array<std::size_t,3>& ids,
-                        NboSpin spin,const V3& axis){
-    if(axis.norm()<0.5)return std::nullopt;
+                        NboSpin spin,const V3& axis,std::string& reason){
+    const auto fail=[&](const char* why)->std::optional<PiFrame>{reason=why;return std::nullopt;};
+    if(axis.norm()<0.5)return fail("Bond axis cannot be defined");
     const auto n=static_cast<std::size_t>(w.basis_count);
     std::array<const NboOrbitalDescriptor*,3> descriptors{};
     for(int component=0;component<3;++component){
@@ -92,7 +93,7 @@ std::optional<PiFrame> derived_pi_frame(const Wavefunction& w,const NboIntegrati
             descriptors[component]=nbo_orbital(data,{NboOrbitalKind::NAO,
                 NboSpin::Total,ids[component]-1});
         if(!descriptors[component]||descriptors[component]->coefficients.size()!=n)
-            return std::nullopt;
+            return fail("NAO descriptor or complete coefficient column is missing");
     }
     Wavefunction view=w;view.orbitals.clear();
     const std::array<std::array<double,3>,6> samples{{
@@ -120,11 +121,11 @@ std::optional<PiFrame> derived_pi_frame(const Wavefunction& w,const NboIntegrati
                projection.represented_spin_orbital_rank!=1||
                !std::isfinite(projection.angular_partition_residual)||
                std::abs(projection.angular_partition_residual)>2e-5)
-                return std::nullopt;
+                return fail("Local angular projection rank or partition residual failed");
             const V coeff=Eigen::Map<const V>(view.orbitals[sample].coefficients.data(),n);
             const double norm=coeff.dot(metric*coeff);
             if(!std::isfinite(norm)||norm<0.7||std::abs(norm-1)>5e-5)
-                return std::nullopt;
+                return fail("NAO metric normalization failed");
             sigma[sample]=norm*projection.component_projection_traces[1];
             pi[sample]=norm*(projection.component_projection_traces[2]+
                        projection.component_projection_traces[3]);
@@ -142,7 +143,7 @@ std::optional<PiFrame> derived_pi_frame(const Wavefunction& w,const NboIntegrati
         }
         Eigen::SelfAdjointEigenSolver<M> ps(gp);
         if(ps.info()!=Eigen::Success||ps.eigenvalues()[0]<0.7||centre<0.7)
-            return std::nullopt;
+            return fail("Local p metric or centre projection is below the supported threshold");
         const M gpi=gp-gs;
         Eigen::GeneralizedSelfAdjointEigenSolver<M> angular(gpi,gp);
         if(angular.info()!=Eigen::Success||!angular.eigenvalues().allFinite()||
@@ -150,7 +151,7 @@ std::optional<PiFrame> derived_pi_frame(const Wavefunction& w,const NboIntegrati
            std::abs(angular.eigenvalues()[0])>2e-4||
            std::abs(1-angular.eigenvalues()[1])>2e-4||
            std::abs(1-angular.eigenvalues()[2])>2e-4)
-            return std::nullopt;
+            return fail("Generalized pi projector eigenvalues failed the sigma/pi separation gate");
         const M eig=angular.eigenvectors().rightCols(2);
         Eigen::HouseholderQR<M> qr(eig);
         const M local=qr.householderQ()*M::Identity(3,2);
@@ -158,7 +159,7 @@ std::optional<PiFrame> derived_pi_frame(const Wavefunction& w,const NboIntegrati
         const M local_gs=local.transpose()*gs*local;
         Eigen::GeneralizedSelfAdjointEigenSolver<M> verify(local_gs,local_gp);
         if(verify.info()!=Eigen::Success||!verify.eigenvalues().allFinite()||
-           verify.eigenvalues().maxCoeff()>2e-4)return std::nullopt;
+           verify.eigenvalues().maxCoeff()>2e-4)return fail("Residual sigma leakage exceeds tolerance");
         PiFrame result;result.q=M::Zero(n,2);
         for(int row=0;row<3;++row)result.q.row(ids[row]-1)=local.row(row);
         result.leakage=std::max(std::abs(angular.eigenvalues()[0]),
@@ -168,7 +169,7 @@ std::optional<PiFrame> derived_pi_frame(const Wavefunction& w,const NboIntegrati
         result.residual=residual;
         for(int i=0;i<3;++i)result.spectrum[i]=angular.eigenvalues()[i];
         return result;
-    }catch(const std::exception&){return std::nullopt;}
+    }catch(const std::exception& e){reason=std::string("Local angular projector unavailable: ")+e.what();return std::nullopt;}
 }
 std::string verified_symmetry(const Wavefunction& w,std::size_t index){
     for(const auto& assignment:w.derived_orbital_symmetry_assignments)
@@ -293,6 +294,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         const NboIntegration& data,
         const std::vector<std::pair<std::size_t,std::size_t>>& strong_connectivity){
     NboPiCouplingAnalysis out;
+    std::vector<std::string> projection_failures;
     if(!data.dataset.association.compatible||data.canonical_fingerprint!=nbo_canonical_fingerprint(w)){
         out.status="rejected";out.reason="NBO association does not match immutable canonical identity";
         return out;
@@ -370,8 +372,9 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             for(const auto& [other,p_ids]:family.p){
                 if(!bonded.count(std::minmax(atom,other))||atom==other)continue;
                 const V3 axis=bond_axis(w,atom,other);if(axis.norm()<0.5)continue;
-                auto frame=derived_pi_frame(w,data,other,p_ids,spin,axis);
-                if(!frame){valid=false;break;}
+                std::string reason;
+                auto frame=derived_pi_frame(w,data,other,p_ids,spin,axis,reason);
+                if(!frame){projection_failures.push_back(std::string(nbo_spin_name(spin))+" atom "+std::to_string(other+1)+": "+reason);valid=false;break;}
                 candidate.ligand.push_back(other);
                 candidate.li.insert(candidate.li.end(),p_ids.begin(),p_ids.end());
                 parts.push_back(frame->q);add_angular(candidate,other,*frame);
@@ -386,9 +389,14 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             const auto ca=family.p.find(atom),lb=family.p.find(other);
             if(ca==family.p.end()||lb==family.p.end())continue;
             const V3 axis=bond_axis(w,atom,other);if(axis.norm()<0.5)continue;
-            auto centre_frame=derived_pi_frame(w,data,atom,ca->second,spin,axis);
-            auto ligand_frame=derived_pi_frame(w,data,other,lb->second,spin,axis);
-            if(!centre_frame||!ligand_frame)continue;
+            std::string centre_reason,ligand_reason;
+            auto centre_frame=derived_pi_frame(w,data,atom,ca->second,spin,axis,centre_reason);
+            auto ligand_frame=derived_pi_frame(w,data,other,lb->second,spin,axis,ligand_reason);
+            if(!centre_frame||!ligand_frame){
+                projection_failures.push_back(std::string(nbo_spin_name(spin))+" atoms "+
+                    std::to_string(atom+1)+"-"+std::to_string(other+1)+": "+centre_reason+" "+ligand_reason);
+                continue;
+            }
             Candidate candidate;candidate.centre={atom};candidate.ligand={other};
             candidate.ci.assign(ca->second.begin(),ca->second.end());
             candidate.li.assign(lb->second.begin(),lb->second.end());
@@ -518,12 +526,17 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         out.evidence.push_back(f->source);
     }
     if(out.couplings.empty()){
-        out.status=out.evidence.empty()?"insufficient_evidence":"not_applicable";
+        out.status=out.evidence.empty()||!projection_failures.empty()?"insufficient_evidence":"not_applicable";
         out.reason=out.evidence.empty()?"No spin has a complete matched NAO transform and independently consistent same-source Fock operator":
+            !projection_failures.empty()?"Same-source Fock verified; local pi projection evidence is incomplete":
             "No supported bonded valence p-pi or d-to-ligand-p-pi coupling block";
     }else{
         out.status="available";
         out.reason="Same-operator coupled NAO projectors; canonical groups retain source identities and complete eigenvalue intervals";
+    }
+    if(!projection_failures.empty()){
+        out.reason+="; candidate pi subspaces could not be verified";
+        for(const auto& failure:projection_failures)out.reason+="; "+failure;
     }
     return out;
 }

@@ -506,6 +506,8 @@ int main(int argc, char** argv) {
             resize_and_recompute=false;
             identity();
             cov::validation::evaluated(mo_index,"set-switch",evaluator->last_kernel_ms());
+            status=StatusKind::GridUpdated;
+            status_detail=(use_nbo?"NBO ":"Canonical MO ")+std::to_string(next_index+1);
             recompute = false;
         };
 
@@ -590,6 +592,8 @@ int main(int argc, char** argv) {
                 nbo_ui.selected_atoms.clear();
                 nbo_ui.selected_structure.reset();
                 nbo_ui.atom_colour_mode=0;
+                nbo_ui.show_bond_indices=false;nbo_ui.show_e2=false;
+                nbo_ui.input_discovery.reset();nbo_ui.pending_candidate.reset();
                 nbo_active = false;
                 nbo_wavefunction.reset();
                 nbo_ui.dataset.reset();
@@ -677,7 +681,7 @@ int main(int argc, char** argv) {
             cov::validation::evaluated(0,"typed-orbital-selection",evaluator->last_kernel_ms());
         };
 
-        auto attach_integration = [&](cov::NboIntegration next) {
+        auto attach_integration = [&](cov::NboIntegration next,bool keep_discovery=false) {
             if(!wavefunction)throw std::runtime_error("Load the matching Gaussian wavefunction first");
             cov::annotate_nbo_bond_channels(next,*wavefunction);
             if(inspection || nbo_active)activate_set(false);
@@ -691,6 +695,10 @@ int main(int argc, char** argv) {
             renderer.invalidate_geometry_cache();
             cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
             nbo_ui.focus={};nbo_ui.aomo={};nbo_ui.selected_atoms.clear();nbo_ui.selected_structure.reset();
+            nbo_ui.show_bond_indices=false;nbo_ui.show_e2=false;
+            nbo_ui.pending_candidate.reset();
+            if(!keep_discovery)nbo_ui.input_discovery.reset();
+            nbo_ui.input_status=integration->dataset.source.path;
             nbo_ui.error.clear();
             if(const auto* c=cov::nbo_capability(*integration,"nbo");c && c->available()) {
                 try { nbo_wavefunction=cov::make_nbo_wavefunction(integration->dataset,*wavefunction); }
@@ -699,10 +707,29 @@ int main(int argc, char** argv) {
             const auto suggested=cov::ui::suggest_initial_nbo_index(*integration,orbital_ui.diagram_cache.snapshot.get());
             nbo_ui.selected_orbital=suggested.value_or(std::numeric_limits<std::size_t>::max());
             nbo_mo_index=nbo_ui.selected_orbital;
+            status=nbo_ui.error.empty()?StatusKind::Loaded:StatusKind::Error;
+            status_detail=nbo_ui.error.empty()?integration->dataset.source.path:nbo_ui.error;
             cov::validation::record("nbo.integration",cov::serialize_nbo_integration_json(*integration));
             cov::validation::record("nbo.attach","{\"source\":"+cov::validation::quote(integration->dataset.source.path)+
                 ",\"association\":"+cov::validation::quote(integration->dataset.association.status)+
                 ",\"renderable\":"+(nbo_wavefunction?"true":"false")+"}");
+        };
+        auto clear_integration = [&] {
+            if(inspection || nbo_active)activate_set(false);
+            nbo_wavefunction.reset();nbo_ui.integration=nullptr;integration.reset();
+            nbo_ui.dataset.reset();nbo_ui.aomo={};nbo_ui.focus={};
+            nbo_ui.selected_atoms.clear();nbo_ui.selected_structure.reset();
+            nbo_ui.selected_orbital=std::numeric_limits<std::size_t>::max();
+            nbo_ui.atom_colour_mode=0;nbo_ui.show_bond_indices=false;nbo_ui.show_e2=false;
+            nbo_ui.pending_candidate.reset();
+            orbital_ui.browser_cache={};orbital_ui.diagram_cache={};
+            routed.reset();nbo_ui.routed=nullptr;semantic_graph={};
+            if(wavefunction){
+                routed=cov::route_chemistry(*wavefunction);
+                nbo_ui.routed=&*routed;semantic_graph=*routed->interaction_graph.value;
+                cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
+            }
+            renderer.invalidate_geometry_cache();
         };
         auto apply_candidate = [&](const cov::NboInputCandidate& candidate) {
             if(!candidate.canonical.empty() && candidate.canonical.lexically_normal()!=current_file.lexically_normal()) {
@@ -711,19 +738,13 @@ int main(int argc, char** argv) {
             }
             if(!wavefunction)throw std::runtime_error("The package has no loaded canonical wavefunction");
             if(candidate.report.empty()){
-                if(inspection || nbo_active)activate_set(false);
-                nbo_wavefunction.reset();nbo_ui.integration=nullptr;integration.reset();
-                routed=cov::route_chemistry(*wavefunction);
-                nbo_ui.routed=&*routed;
-                semantic_graph=*routed->interaction_graph.value;
-                renderer.invalidate_geometry_cache();
-                cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
-                nbo_ui.dataset.reset();nbo_ui.aomo={};nbo_ui.selected_atoms.clear();nbo_ui.selected_structure.reset();
+                clear_integration();
                 nbo_ui.input_status="NBO data missing — Gaussian molecular orbitals remain available";
+                status=StatusKind::Loaded;
                 status_detail=nbo_ui.input_status;
                 return;
             }
-            attach_integration(cov::read_nbo_integration(*wavefunction,candidate));
+            attach_integration(cov::read_nbo_integration(*wavefunction,candidate),true);
             nbo_ui.input_status=candidate.label;
             if(const auto* matched=cov::nbo_capability(*integration,"source_association");
                matched && matched->state==cov::NboCapabilityState::Rejected){
@@ -741,17 +762,20 @@ int main(int argc, char** argv) {
                     apply_candidate(found.candidates.front());
                 } else if(found.candidates.empty()) {
                     // Existing Molden and standalone Gaussian use the same loader.
-                    if(paths.size()==1 && !std::filesystem::is_directory(paths.front()))load_file(paths.front());
+                    if(paths.size()==1 && !std::filesystem::is_directory(paths.front())){
+                        load_file(paths.front());
+                        if(status==StatusKind::Error)throw std::runtime_error(status_detail);
+                    }
                     nbo_ui.input_status="No unique NBO calculation found. Gaussian view is retained.";
                 } else {
                     nbo_ui.input_status="Multiple calculations found — choose the matching calculation below";
                 }
                 nbo_ui.input_discovery=std::move(found);
             } catch(const std::exception& e){
-                if(inspection || nbo_active)activate_set(false);
-                nbo_wavefunction.reset();nbo_ui.integration=nullptr;integration.reset();
-                nbo_ui.dataset.reset();nbo_ui.aomo={};nbo_ui.selected_atoms.clear();nbo_ui.selected_structure.reset();
+                clear_integration();
+                nbo_ui.input_discovery.reset();
                 nbo_ui.error=e.what();nbo_ui.input_status="NBO association failed; Gaussian view is retained";
+                status=StatusKind::Error;status_detail=nbo_ui.error;
                 cov::validation::record("input.package.error","{\"reason\":"+cov::validation::quote(e.what())+"}");
             }
         };
@@ -1629,7 +1653,11 @@ int main(int argc, char** argv) {
                 const auto selected=*nbo_ui.pending_candidate;nbo_ui.pending_candidate.reset();
                 if(selected<nbo_ui.input_discovery->candidates.size()){
                     const auto candidate=nbo_ui.input_discovery->candidates[selected];
-                    try {apply_candidate(candidate);}catch(const std::exception& e){nbo_ui.error=e.what();}
+                    try {apply_candidate(candidate);}catch(const std::exception& e){
+                        clear_integration();nbo_ui.input_discovery.reset();nbo_ui.error=e.what();
+                        nbo_ui.input_status="NBO association failed; Gaussian view is retained";
+                        status=StatusKind::Error;status_detail=nbo_ui.error;
+                    }
                 }
             }
             if(nbo_ui.aomo.pending_selection){

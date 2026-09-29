@@ -40,7 +40,58 @@ void channels_json(std::ostream& o,const std::vector<NboChannelEvidence>& channe
     });
 }
 struct Fingerprint {std::uint64_t h=1469598103934665603ull;void bytes(const void* p,std::size_t n){auto b=static_cast<const unsigned char*>(p);for(std::size_t i=0;i<n;++i){h^=b[i];h*=1099511628211ull;}}template<class T>void add(const T& x){bytes(&x,sizeof(x));}void text(const std::string& x){bytes(x.data(),x.size());const unsigned char delimiter=0xff;bytes(&delimiter,1);}std::string str()const{std::ostringstream o;o<<std::hex<<std::setw(16)<<std::setfill('0')<<h;return o.str();}};
-std::string canonical_fingerprint(const Wavefunction& w){Fingerprint f;f.add(w.basis_count);for(const auto& a:w.atoms){f.add(a.atomic_number);f.add(a.nuclear_charge);f.add(a.x);f.add(a.y);f.add(a.z);}for(const auto& s:w.shells){f.add(s.atom_index);f.add(s.basis_offset);f.add(s.primitive_offset);f.add(s.primitive_count);f.add(s.angular_momentum);f.add(s.pure);}for(const auto& p:w.primitives){f.add(p.exponent);f.add(p.coefficient);}for(double x:w.ao_overlap)f.add(x);for(const auto& o:w.orbitals){f.add(o.source_orbital_index);f.add(o.spin);f.add(o.energy_hartree);f.add(o.occupation);for(double x:o.coefficients)f.add(x);for(double x:o.gaussian_source_coefficients)f.add(x);}return f.str();}
+template<class T>void hash_values(Fingerprint& f,const std::vector<T>& v){f.add(v.size());for(const auto& x:v)f.add(x);}
+template<class T>void hash_optional(Fingerprint& f,const std::optional<T>& v){f.add(v.has_value());if(v)f.add(*v);}
+void hash_source(Fingerprint& f,const NboSource& s){
+    f.text(s.path);f.text(s.block);f.text(s.producer_version);f.text(s.raw);
+    f.add(s.line_begin);f.add(s.line_end);f.add(s.analysis_segment);
+}
+void hash_matrix(Fingerprint& f,const NboMatrix& m){
+    f.text(m.kind);f.add(m.spin);f.add(m.rows);f.add(m.columns);hash_values(f,m.values);hash_source(f,m.source);
+}
+void hash_components(Fingerprint& f,const std::vector<NboLocalComponent>& components){
+    f.add(components.size());for(const auto& c:components){f.add(c.atom);f.add(c.percent);
+        f.add(c.coefficient);f.text(c.hybrid);hash_source(f,c.source);}
+}
+// Every producer field that can change a capability, descriptor, classification,
+// or explanation belongs to identity. Derived association results are recomputed.
+std::string dataset_fingerprint(const std::string& canonical,const NboDataset& d){
+    Fingerprint f;f.text("cov.nbo.identity.v2");f.text(canonical);
+    f.text(d.producer_version);hash_source(f,d.source);
+    f.add(d.populations.size());for(const auto& p:d.populations){
+        f.add(p.atom);f.text(p.symbol);f.add(p.spin);f.add(p.charge);f.add(p.core);
+        f.add(p.valence);f.add(p.rydberg);f.add(p.total);hash_optional(f,p.spin_density);hash_source(f,p.source);
+    }
+    f.add(d.naos.size());for(const auto& x:d.naos){f.add(x.id);f.add(x.atom);f.add(x.spin);
+        f.text(x.symbol);f.text(x.angular);f.text(x.type);f.add(x.occupation);
+        hash_optional(f,x.energy_hartree);hash_optional(f,x.spin_density);hash_source(f,x.source);}
+    f.add(d.orbitals.size());for(const auto& x:d.orbitals){f.add(x.id);f.add(x.ordinal);
+        f.add(x.spin);f.text(x.kind);f.text(x.label);hash_values(f,x.atoms);f.add(x.occupation);
+        hash_optional(f,x.diagonal_fock_hartree);f.add(x.energy_source.has_value());
+        if(x.energy_source)hash_source(f,*x.energy_source);hash_components(f,x.components);hash_source(f,x.source);}
+    f.add(d.e2.size());for(const auto& x:d.e2){f.add(x.donor);f.add(x.acceptor);f.add(x.spin);
+        f.add(x.value);f.add(x.energy_gap_hartree);f.add(x.fock_hartree);f.text(x.units);
+        hash_optional(f,x.printing_threshold);hash_source(f,x.source);}
+    f.add(d.e2_sections.size());for(const auto& x:d.e2_sections){f.add(x.spin);
+        hash_optional(f,x.printing_threshold);f.text(x.units);f.text(x.missing_reason);hash_source(f,x.source);}
+    f.add(d.wiberg.size());for(const auto& x:d.wiberg){f.add(x.atom_a);f.add(x.atom_b);
+        f.add(x.spin);f.add(x.value);hash_source(f,x.source);}
+    f.add(d.nlmos.size());for(const auto& x:d.nlmos){f.add(x.id);f.add(x.spin);
+        f.add(x.occupation);f.add(x.parent_percent);f.text(x.parent_label);hash_optional(f,x.parent_nbo);
+        hash_components(f,x.components);hash_source(f,x.source);}
+    f.add(d.matrices.size());for(const auto& m:d.matrices)hash_matrix(f,m);
+    f.add(d.archive.has_value());if(d.archive){const auto& a=*d.archive;
+        f.add(a.basis_count);f.add(a.open_shell);f.add(a.density_is_bond_order);f.text(a.fock_input_units);
+        f.add(a.atoms.size());for(const auto& x:a.atoms){f.add(x.atomic_number);f.add(x.nuclear_charge);f.add(x.x);f.add(x.y);f.add(x.z);}
+        hash_values(f,a.centers);hash_values(f,a.labels);hash_values(f,a.ncomp);hash_values(f,a.nprim);hash_values(f,a.nptr);
+        hash_values(f,a.exponents);hash_values(f,a.cs);hash_values(f,a.cp);hash_values(f,a.cd);hash_values(f,a.cf);hash_values(f,a.cg);
+        f.add(a.matrices.size());for(const auto& m:a.matrices)hash_matrix(f,m);hash_source(f,a.source);
+    }
+    f.add(d.cmo_summaries.size());for(const auto& s:d.cmo_summaries)hash_source(f,s);
+    f.add(d.warnings.size());for(const auto& s:d.warnings)f.text(s);
+    return f.str();
+}
+std::string canonical_fingerprint(const Wavefunction& w){Fingerprint f;f.text("cov.canonical.identity.v2");f.add(w.source);f.add(w.orbital_occupation_model);f.add(w.orbital_occupation_model_provenance);f.add(w.alpha_electrons);f.add(w.beta_electrons);f.add(w.electron_counts_provenance);f.add(w.total_density_provenance);f.add(w.spin_density_provenance);hash_values(f,w.total_density_packed);hash_values(f,w.spin_density_packed);for(const auto& t:w.gaussian_ao_transform){f.add(t.source_index);f.add(t.basis_scale);f.add(t.coefficient_scale);}for(const auto& o:w.orbitals){f.add(o.occupation_provenance);f.add(o.spin_provenance);}f.add(w.basis_count);for(const auto& a:w.atoms){f.add(a.atomic_number);f.add(a.nuclear_charge);f.add(a.x);f.add(a.y);f.add(a.z);}for(const auto& s:w.shells){f.add(s.atom_index);f.add(s.basis_offset);f.add(s.primitive_offset);f.add(s.primitive_count);f.add(s.angular_momentum);f.add(s.pure);}for(const auto& p:w.primitives){f.add(p.exponent);f.add(p.coefficient);}for(double x:w.ao_overlap)f.add(x);for(const auto& o:w.orbitals){f.add(o.source_orbital_index);f.add(o.spin);f.add(o.energy_hartree);f.add(o.occupation);for(double x:o.coefficients)f.add(x);for(double x:o.gaussian_source_coefficients)f.add(x);}return f.str();}
 std::string ref_id(const NboOrbitalRef& r){return std::string(nbo_orbital_kind_name(r.kind))+":"+nbo_spin_name(r.spin)+":"+std::to_string(r.index);}
 double metric_dot(const std::vector<double>& x,const std::vector<double>& y,const std::vector<double>& s){const auto n=x.size();double sum=0;for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)sum+=x[i]*s[i*n+j]*y[j];return sum;}
 std::vector<double> multiply(const std::vector<double>& a,const std::vector<double>& b,std::size_t n){std::vector<double> c(n*n);for(std::size_t i=0;i<n;++i)for(std::size_t k=0;k<n;++k)for(std::size_t j=0;j<n;++j)c[i*n+j]+=a[i*n+k]*b[k*n+j];return c;}
@@ -241,7 +292,9 @@ NboIntegration read_nbo_integration(const Wavefunction& w,const NboInputCandidat
     auto out=integrate_nbo(w,d);for(const auto& item:candidate.matrices)if(!supplied(d,item.first))capability(out,"matrix:"+item.first,NboCapabilityState::Rejected,"Explicit supplied matrix could not be read; see diagnostic",{{item.second.string()}});out.diagnostics.insert(out.diagnostics.end(),errors.begin(),errors.end());return out;
 }
 
-NboIntegration integrate_nbo(const Wavefunction& w,const NboDataset& raw){NboIntegration out;out.dataset=raw;out.canonical_fingerprint=canonical_fingerprint(w);Fingerprint id;id.text(out.canonical_fingerprint);id.text(raw.source.path);id.add(raw.source.analysis_segment);for(const auto& m:raw.matrices){id.text(m.kind);id.add(m.spin);for(double x:m.values)id.add(x);}for(const auto& p:raw.populations){id.add(p.atom);id.add(p.spin);id.add(p.charge);id.add(p.total);id.add(p.spin_density.has_value());if(p.spin_density)id.add(*p.spin_density);}for(const auto& o:raw.orbitals){id.add(o.id);id.add(o.spin);id.text(o.kind);id.text(o.label);id.add(o.occupation);}for(const auto& e:raw.e2){id.add(e.donor);id.add(e.acceptor);id.add(e.spin);id.add(e.value);}for(const auto& b:raw.wiberg){id.add(b.atom_a);id.add(b.atom_b);id.add(b.spin);id.add(b.value);}if(raw.archive)for(const auto& m:raw.archive->matrices){id.text(m.kind);id.add(m.spin);for(double x:m.values)id.add(x);}out.id=id.str();
+NboIntegration integrate_nbo(const Wavefunction& w,const NboDataset& raw){
+    NboIntegration out;out.dataset=raw;out.canonical_fingerprint=canonical_fingerprint(w);
+    out.id=dataset_fingerprint(out.canonical_fingerprint,raw);
     for(const auto& key:{"canonical","gaussian_ao","report","source_association","nao","aomo","pnao","nho","nbo","nlmo","charges","spin","wiberg","interactions","structure"})capability(out,key,NboCapabilityState::Missing,"Required data have not been supplied");
     const auto n=w.basis_count;const bool metric=w.ao_overlap.size()==n*n;std::vector<std::size_t> ao_atom(n,std::numeric_limits<std::size_t>::max());for(const auto& s:w.shells){const auto count=s.pure?2*s.angular_momentum+1:(s.angular_momentum+1)*(s.angular_momentum+2)/2;for(std::size_t k=0;k<count&&s.basis_offset+k<n;++k)ao_atom[s.basis_offset+k]=s.atom_index;}
     for(std::size_t i=0;i<w.orbitals.size();++i){const auto& mo=w.orbitals[i];if(mo.coefficients.size()!=n)continue;NboOrbitalDescriptor x;x.ref={NboOrbitalKind::Canonical,mo.spin==Spin::Beta?NboSpin::Beta:(w.orbital_occupation_model==OrbitalOccupationModel::ExplicitSpin?NboSpin::Alpha:NboSpin::Total),i};x.id=ref_id(x.ref);x.label="MO "+std::to_string(mo.source_orbital_index+1);x.coefficients=mo.coefficients;x.orthonormal_basis=true;x.energy_hartree=mo.energy_hartree;x.energy_semantics="Gaussian canonical eigenvalue";if(mo.occupation_provenance!=DataProvenance::Unavailable)x.occupation=mo.occupation;if(metric)x.metric_norm2=metric_dot(x.coefficients,x.coefficients,w.ao_overlap);out.orbitals.push_back(std::move(x));}

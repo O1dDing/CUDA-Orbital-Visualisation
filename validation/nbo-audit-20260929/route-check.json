@@ -1,0 +1,955 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "acetylene",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        }
+      ]
+    },
+    {
+      "case": "CO2",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 42,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 2.220446049250313e-16,
+            "count": 798
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 42,
+            "total": 42
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 5.323382270559092e-09,
+            "missing": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "CrCO6",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 199,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 1.3322676295501878e-15,
+            "count": 16716
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 199,
+            "total": 199
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 1.0190744146446274e-08,
+            "missing": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "H2O",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 24,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 2.220446049250313e-16,
+            "count": 312
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 24,
+            "total": 24
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 4.2734608069892015e-09,
+            "missing": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "O2-RO-complete",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "Mayer_not_relabelled_Wiberg",
+          "passed": true,
+          "observed": {
+            "atom_a": 0,
+            "atom_b": 1,
+            "kind": "covalent-connectivity",
+            "strength": "strong_connectivity",
+            "mayer_order": 1.860641388518559,
+            "wiberg_index": 2.0142,
+            "wiberg_source_path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\r16\\fixtures\\O2-RO-complete\\analysis.log",
+            "distance_bohr": 2.28278916
+          }
+        },
+        {
+          "name": "O2_total_charge_zero",
+          "passed": true,
+          "observed": {
+            "status": "available",
+            "provider": "nbo",
+            "method": "NPA total charge",
+            "reason": "Complete independently validated total NPA charges",
+            "fallback_reason": "",
+            "evidence": [
+              {
+                "path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\r16\\fixtures\\O2-RO-complete\\analysis.log",
+                "block": "NPA",
+                "line_begin": 88,
+                "line_end": 88,
+                "analysis_segment": 0
+              },
+              {
+                "path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\r16\\fixtures\\O2-RO-complete\\analysis.log",
+                "block": "NPA",
+                "line_begin": 89,
+                "line_end": 89,
+                "analysis_segment": 0
+              }
+            ],
+            "values": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "name": "O2_spin_separate",
+          "passed": true,
+          "observed": {
+            "status": "available",
+            "provider": "nbo",
+            "method": "NPA alpha-minus-beta spin",
+            "reason": "Complete independently validated NPA spin population",
+            "fallback_reason": "",
+            "evidence": [
+              {
+                "path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\r16\\fixtures\\O2-RO-complete\\analysis.log",
+                "block": "NPA",
+                "line_begin": 88,
+                "line_end": 88,
+                "analysis_segment": 0
+              },
+              {
+                "path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\r16\\fixtures\\O2-RO-complete\\analysis.log",
+                "block": "NPA",
+                "line_begin": 89,
+                "line_end": 89,
+                "analysis_segment": 0
+              }
+            ],
+            "values": [
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 28,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 2.220446049250313e-16,
+            "count": 364
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 28,
+            "total": 28
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 6.009374119268008e-09,
+            "missing": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "O2-RO-spin-rejected",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "O2_total_charge_zero",
+          "passed": true,
+          "observed": {
+            "status": "available",
+            "provider": "nbo",
+            "method": "NPA total charge",
+            "reason": "Complete independently validated total NPA charges",
+            "fallback_reason": "",
+            "evidence": [
+              {
+                "path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\r16\\fixtures\\O2-RO-spin-rejected\\analysis.log",
+                "block": "NPA",
+                "line_begin": 88,
+                "line_end": 88,
+                "analysis_segment": 0
+              },
+              {
+                "path": "E:\\Codex\\2026-09-27\\cov-nbo-thread-01a0da55-c2d2-73b0-2\\work\\r16\\fixtures\\O2-RO-spin-rejected\\analysis.log",
+                "block": "NPA",
+                "line_begin": 89,
+                "line_end": 89,
+                "analysis_segment": 0
+              }
+            ],
+            "values": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "name": "rejected_spin_has_no_value",
+          "passed": true,
+          "observed": {
+            "status": "rejected",
+            "provider": "none",
+            "method": "NPA alpha-minus-beta spin",
+            "reason": "Printed NPA spin populations are incomplete or failed the independent alpha-minus-beta density check",
+            "fallback_reason": "",
+            "evidence": [],
+            "values": null
+          }
+        },
+        {
+          "name": "spin_capability_rejected",
+          "passed": true,
+          "observed": {
+            "key": "spin",
+            "state": "rejected",
+            "detail": "Printed NPA spin populations are incomplete or failed the independent alpha-minus-beta density check",
+            "sources": []
+          }
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 28,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 2.220446049250313e-16,
+            "count": 364
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 28,
+            "total": 28
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 6.009374119268008e-09,
+            "missing": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "TiF6-complete",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 115,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 8.881784197001252e-16,
+            "count": 5520
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 115,
+            "total": 115
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 7.942280436491884e-09,
+            "missing": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "TiF6-legacy",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fallback_graph_reason_visible",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "no_integration",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "legacy_composition",
+          "passed": true,
+          "observed": null
+        }
+      ]
+    },
+    {
+      "case": "TiF6-partial",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fallback_graph_reason_visible",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "composition_falls_back_with_reason",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "partial_does_not_disable_independent_nbo",
+          "passed": true,
+          "observed": {
+            "key": "nbo",
+            "state": "available",
+            "detail": "Real NBO columns and report occupations validated",
+            "sources": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "TiF6-rejected",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fallback_graph_reason_visible",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "composition_falls_back_with_reason",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "association_rejected",
+          "passed": true,
+          "observed": {
+            "key": "source_association",
+            "state": "rejected",
+            "detail": "incompatible_dimensions: Atom/basis count differs",
+            "sources": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "TiF6-sigma-E2-only",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 115,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 8.881784197001252e-16,
+            "count": 5520
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 115,
+            "total": 115
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 7.942280436491884e-09,
+            "missing": 0
+          }
+        }
+      ]
+    },
+    {
+      "case": "XeF2",
+      "passed": true,
+      "checks": [
+        {
+          "name": "canonical_immutable",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "canonical_zero_index_preserved",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fingerprint_present",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "per_capability_metadata",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "graph_charge_source_matches_route",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "fragment_charges_use_routed_values",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "bond_observables_have_distinct_names",
+          "passed": true,
+          "observed": null
+        },
+        {
+          "name": "available_NAO_decompositions_used",
+          "passed": true,
+          "observed": {
+            "checked": 64,
+            "failed": []
+          }
+        },
+        {
+          "name": "independent_shell_weights",
+          "passed": true,
+          "observed": {
+            "max_error": 4.440892098500626e-16,
+            "count": 1856
+          }
+        },
+        {
+          "name": "full_basis_completeness",
+          "passed": true,
+          "observed": {
+            "complete": 64,
+            "total": 64
+          }
+        },
+        {
+          "name": "full_basis_measured_residual",
+          "passed": true,
+          "observed": {
+            "max": 4.0381811867943173e-07,
+            "missing": 0
+          }
+        }
+      ]
+    }
+  ],
+  "total": 12,
+  "passed_cases": 12,
+  "required_cases": [
+    "CO2",
+    "CrCO6",
+    "H2O",
+    "O2-RO-complete",
+    "O2-RO-spin-rejected",
+    "TiF6-complete",
+    "TiF6-legacy",
+    "TiF6-partial",
+    "TiF6-rejected",
+    "TiF6-sigma-E2-only",
+    "XeF2",
+    "acetylene"
+  ],
+  "missing_cases": []
+}
