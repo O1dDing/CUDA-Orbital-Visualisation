@@ -225,7 +225,9 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
 }
 
 std::string nbo_aomo_hover_glyph_seed(Language language) {
-    std::string result="MO NAO SALC AO PNAO α β σ π δ φ · + ? [] () 0123456789";
+    // Common scientific names use Unicode subscripts and spectroscopic signs;
+    // source-number fallback and known-irrep auxiliary lines share this font.
+    std::string result="MO NAO SALC AO PNAO α β σ π δ φ γ Σ Π Δ Φ Γ · + − ? [] () 0123456789 ₀₁₂₃₄₅₆₇₈₉ ′ ″";
     for(const auto& row:words){result+=' ';result+=row[language_index(language)];}
     return result;
 }

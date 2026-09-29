@@ -1,5 +1,6 @@
 #include "cov/orbital_ui.hpp"
 #include "cov/nbo_ui.hpp"
+#include "cov/nbo_aomo_text.hpp"
 #include "cov/orbital_ui_text.hpp"
 #include "cov/numerical_diagnostics.hpp"
 #include "cov/overlap.hpp"
@@ -563,8 +564,8 @@ void draw_selected_chemistry(const Wavefunction& wf,
             else ImGui::TextDisabled("Retained NAO norm: unavailable");
             if(value.residual_norm)ImGui::Text("AO-metric reconstruction residual: %.3g",*value.residual_norm);
             else ImGui::TextDisabled("AO-metric reconstruction residual: unavailable");
-            ImGui::TextDisabled("%s",value.complete?
-                "Complete verified NAO expansion":"Reduced or incompletely verified NAO expansion");
+            if(!value.complete)
+                ImGui::TextDisabled("%s",aomo_text(language,"Showing partial orbital composition."));
             std::vector<const NboNaoGroupContribution*> shells;
             for(const auto& shell:value.shells)shells.push_back(&shell);
             std::sort(shells.begin(),shells.end(),[](auto a,auto b){return a->weight>b->weight;});

@@ -11,9 +11,12 @@ COV reads results that already exist; it does not run Gaussian or NBO. Drop the 
 | What you want to see | Files to provide |
 | --- | --- |
 | MO energies, occupations, energy diagram and 3D MO | Gaussian FCHK/FCH, or a Molden wavefunction. |
-| NPA charges, Wiberg indices and listed E(2) interactions | A Gaussian FCHK and the corresponding NBO report containing those sections: a Gaussian `.log`/`.out` or standalone NBO output. |
-| NBO orbital shapes and canonical MO–NBO connections | The matching FCHK and NBO report, the NBO `.47` archive, and complete AONBO and NBOMO matrices. |
-| NAO contributions to an MO | The matching FCHK, report, archive and matrices above, plus AONAO and NAOMO matrices together. An NAONBO matrix can provide an additional comparison. |
+| Values in the NBO report | A Gaussian FCHK and the corresponding NBO report containing those sections: a Gaussian `.log`/`.out` or standalone NBO output. |
+| NBO orbital shapes | The matching FCHK and NBO report, the NBO `.47` archive, and an AONBO matrix. |
+| Canonical MO–NBO connections | The files for NBO orbital shapes, plus an NBOMO matrix. |
+| NAO contributions to an MO | The matching FCHK, report and `.47` archive, plus AONAO and NAOMO matrices together. AONBO and NBOMO are not required for this view. |
+
+The files must come from the same calculation. The `.47` archive needs overlap, density and MO data. Reading report values and using them in the molecule view require different inputs: charge and spin colouring and Wiberg annotations also need matching NAO matrices and density data; the E(2) donor–acceptor view needs the corresponding NBO orbitals and Fock data. NHO and NLMO views need their own report entries and matrices.
 
 Matrix file numbers are chosen when the NBO calculation is produced; they are not fixed by COV. For example, a calculation requesting `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` would write files with those numbers if the producer follows the requests. Check the matrix headings and your calculation output rather than assuming that `FILE.37` or another numbered file has a particular role. Some detailed NHO and NLMO views also need the relevant orbital data in the report and matrices.
 
@@ -25,11 +28,13 @@ Choose an MO in the browser or energy diagram. The diagram focuses on valence an
 
 NAOs form an orthogonal representation, so squared NAO coefficients can describe weights in that representation. Squared coefficients of the original, generally nonorthogonal Gaussian AOs are not atomic populations. When NAO or SALC energies are available, they can use the same numerical axis as the MOs. Their values are operator expectation values in the molecular environment; the central values are canonical MO energies. The illustrative side layout arranges orbitals without using their energies. A group of orbitals is a SALC only when the available data supports that symmetry meaning.
 
+A local basis may contain fewer orbitals than the Gaussian AO basis. The diagram then shows the available contributions and the uncovered part, without rescaling the contributions to 100%.
+
 **Overview** shows a compact view. **Research analysis** adds detail, and **Full basis** includes core and Rydberg orbitals. These presets change what is shown.
 
 ## Start from the molecule
 
-Click an atom or bond in the 3D view to open its related values and orbital links. Where the report provides them, atoms can be coloured by NPA charge or spin population; bonds can show Wiberg indices, bonding and antibonding orbitals, and coordination or multicentre relationships. A Wiberg index is a continuous value, not an integer bond order.
+Click an atom or bond in the 3D view to open its related values and orbital links. With the report and matching matrices available, atoms can be coloured by NPA charge or spin population; bonds can show Wiberg indices, bonding and antibonding orbitals, and coordination or multicentre relationships. A Wiberg index is a continuous value, not an integer bond order.
 
 NHO views can show directional orbital lobes and their angular components. Select an E(2) interaction to see its donor and acceptor orbitals together; the E(2) value is a perturbation estimate, not a bond or reaction energy. NLMO views can separate the full orbital, its main NBO component and the remaining tail when the needed data is available.
 

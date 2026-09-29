@@ -624,11 +624,13 @@ void draw_nbo_focus_view(NboFocusUIState& focus,const NboDataset& dataset,
             const auto p=ImGui::GetItemRectMin();
             const float mo_x=p.x+80.0f*scale,mo_y=p.y+height*0.5f;
             draw->AddCircleFilled(ImVec2(mo_x,mo_y),24.0f*scale,IM_COL32(64,98,160,255));
-            draw->AddText(ImVec2(mo_x-22.0f*scale,mo_y-7.0f*scale),IM_COL32(255,255,255,255),
-                          ("MO "+std::to_string(*view.index+1)).c_str());
+            const auto mo_name=canonical_mo_display_label(canonical,*view.index);
+            const auto name_size=ImGui::CalcTextSize(mo_name.c_str());
+            draw->AddText(ImVec2(mo_x-name_size.x*0.5f,mo_y-name_size.y*0.5f),
+                          IM_COL32(255,255,255,255),mo_name.c_str());
             const auto& mo=canonical.orbitals[*view.index];
-            const std::string mo_identity="MO "+std::to_string(*view.index+1)+" ["+
-                std::string(mo.spin==Spin::Beta?"beta":"alpha")+"]  E="+fmt(mo.energy_hartree)+" Ha";
+            const std::string mo_identity=mo_name+" / "+canonical_mo_source_label(canonical,*view.index)+
+                "  E="+fmt(mo.energy_hartree)+" Ha";
             draw->AddText(ImVec2(p.x+8.0f*scale,p.y+5.0f*scale),IM_COL32(168,188,218,255),mo_identity.c_str());
             for(std::size_t i=0;i<graph_nodes.size();++i) {
                 const float y=p.y+50.0f*scale+row*i;
@@ -755,7 +757,9 @@ void draw_selected_nbo_context(NboUIState& s,const NboIntegration& integration,
             const auto descriptor=std::find_if(integration.orbitals.begin(),integration.orbitals.end(),
                 [&](const auto& orbital){return orbital.ref.kind==NboOrbitalKind::Canonical &&
                     orbital.ref.index==index;});
-            const auto label=(canonical?canonical_mo_display_label(*canonical,index):
+            const auto* name=s.aomo.names && index<s.aomo.names->canonical.size()
+                ?&s.aomo.names->canonical[index]:nullptr;
+            const auto label=(canonical?canonical_mo_display_label(*canonical,index,name):
                 "MO [list] "+std::to_string(index+1))+"##nbo.context.mo."+std::to_string(index);
             if(ImGui::Selectable(label.c_str())&&descriptor!=integration.orbitals.end())
                 s.aomo.pending_selection=nbo_single_selection(integration,descriptor->ref);

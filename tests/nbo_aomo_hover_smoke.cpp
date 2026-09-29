@@ -101,14 +101,28 @@ int main(){try {
     model.orbitals[0].atoms={0};model.orbitals[0].type="Val(2p)";model.orbitals[0].angular="px";
     model.orbitals[0].terms={{{NboOrbitalKind::NAO,NboSpin::Total,0},1}};
     require(render(sn,&model).find("Atomic basis")!=std::string::npos && render(sn,&model).find("phase")==std::string::npos,"single-atom NAO inherited molecular SALC classification");
-    for(auto language:{Language::ChineseSimplified,Language::Japanese,Language::French}) {
+    auto unordered=mo;unordered.symmetry_ordinal=0;
+    auto unknown=unordered;unknown.symmetry_name_verified=false;unknown.symmetry_irrep.clear();
+    const auto source_index=wf.orbitals[0].source_orbital_index;
+    wf.orbitals[0].source_orbital_index=7;
+    for(auto language:{Language::English,Language::ChineseSimplified,Language::Japanese,Language::French}) {
         const auto localized=render(ao,nullptr,language);
-        require(localized!=atomic && localized.find("px")!=std::string::npos,"localized atomic direction identity lost");
+        require((language==Language::English||localized!=atomic) && localized.find("px")!=std::string::npos,"localized atomic direction identity lost");
         const auto seed=nbo_aomo_hover_glyph_seed(language);
         require_glyphs(localized,seed);
         require_glyphs(render(mo,nullptr,language),seed);
         require_glyphs(render(sn,&model,language),seed);
+        const auto without_order=render(unordered,nullptr,language);
+        require(without_order.find("MO 8")!=std::string::npos &&
+                without_order.find("b₂")!=std::string::npos && without_order.find("1b₂")==std::string::npos,
+                "known symmetry without order must remain auxiliary to the true source identity");
+        require_glyphs(without_order,seed);
+        const auto without_symmetry=render(unknown,nullptr,language);
+        require(without_symmetry.find("MO 8")!=std::string::npos && without_symmetry.find("b₂")==std::string::npos,
+                "missing symmetry must not inherit the old node title's scientific name");
+        require_glyphs(without_symmetry,seed);
     }
+    wf.orbitals[0].source_orbital_index=source_index;
     NboAomoNode group;group.label="Set (3)";group.group_header=true;group.canonical_index=0;
     require(render(group).find("subspace")!=std::string::npos && render(group).find("[\xCE\xB2]")==std::string::npos,"group header misrepresented as an individual orbital");
     require(wf.orbitals[0].occupation==2 && data.dataset.naos[0].angular=="px","hover changed source data");

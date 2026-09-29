@@ -302,12 +302,16 @@ int main() {
     for(const auto& node:sentinel_view->nodes) {
         if(!node.canonical_index)continue;
         const auto index=*node.canonical_index;
-        require(node.individual_label==std::string("?")+
+        require(wf.basis_count==0 && wf.orbitals[index].coefficients.empty() &&
+            wf.orbitals[index].symmetry.empty() &&
+            wf.orbitals[index].source_orbital_index==std::numeric_limits<std::size_t>::max(),
+            "the unknown-symmetry fixture must retain absent physical and source-index evidence");
+        require(node.individual_label==std::string("MO [list] ")+std::to_string(index+1)+
             (index==4?" [beta]":" [alpha]") &&
             node.id=="canonical_mo:"+std::to_string(index) &&
             node.detail.find("original MO "+std::to_string(index+1))!=std::string::npos &&
-            !node.symmetry_name_verified,
-            "missing physical symmetry evidence must remain unknown while preserving each actual spin");
+            !node.symmetry_name_verified && node.symmetry_irrep.empty() && node.symmetry_ordinal==0,
+            "source-number fallback must preserve unknown physical symmetry and each actual spin");
         const float right=std::max(node.label_x+node.label_width,
             node.occupation_x+node.occupation_width);
         for(const auto& other:sentinel_view->nodes) {
@@ -357,22 +361,26 @@ int main() {
         sentinel_svg.find("degenerate:")==std::string::npos &&
         sentinel_svg.find("id=\"canonical_mo:4\"")!=std::string::npos,
         "exports must exclude sentinel/false-group identities without losing the valid spin counterpart");
-    require(sentinel_json.find("? [alpha]")!=std::string::npos &&
-        sentinel_json.find("? [beta]")!=std::string::npos &&
-        sentinel_svg.find("data-individual-label=\"? [alpha]\"")!=std::string::npos &&
-        sentinel_svg.find("data-individual-label=\"? [beta]\"")!=std::string::npos &&
+    require(sentinel_json.find("MO [list] 1 [alpha]")!=std::string::npos &&
+        sentinel_json.find("MO [list] 5 [beta]")!=std::string::npos &&
+        sentinel_json.find("\"symmetry_name_verified\":false")!=std::string::npos &&
+        sentinel_json.find("\"symmetry_irrep\":\"\"")!=std::string::npos &&
+        sentinel_json.find("\"symmetry_ordinal\":0")!=std::string::npos &&
+        sentinel_svg.find("data-individual-label=\"MO [list] 1 [alpha]\"")!=std::string::npos &&
+        sentinel_svg.find("data-individual-label=\"MO [list] 5 [beta]\"")!=std::string::npos &&
         sentinel_svg.find("id=\"canonical_mo:4\"")!=std::string::npos,
         "JSON and SVG must preserve unknown symmetry, spin and exact canonical identity");
     require(sentinel_json.find("spatial_pair_id")!=std::string::npos &&
-        sentinel_svg.find("? α/β")!=std::string::npos,
+        sentinel_svg.find("MO [list] 4 [alpha] / MO [list] 5 [beta]")!=std::string::npos,
         "exports must preserve the shared pair cue and both individual member identities");
     for(auto& orbital:wf.orbitals)orbital.spin=cov::Spin::Alpha;
     aomo_state.names.reset(); // The fixture mutates an otherwise immutable attachment.
     ++aomo_state.revision;
     const auto closed_shell=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
     for(const auto& node:closed_shell->nodes)
-        if(node.canonical_index)require(node.label=="?" &&
-            node.id=="canonical_mo:"+std::to_string(*node.canonical_index),
+        if(node.canonical_index)require(node.label=="MO [list] "+std::to_string(*node.canonical_index+1) &&
+            node.id=="canonical_mo:"+std::to_string(*node.canonical_index) &&
+            !node.symmetry_name_verified && node.symmetry_irrep.empty() && node.symmetry_ordinal==0,
             "a canonical set without beta orbitals must retain unknown symmetry and true member identity");
     // A fixed local-shell fixture with a deliberately Rydberg-dominated virtual
     // MO exercises the filter boundary, compact stack, and raw/display split.

@@ -1267,11 +1267,15 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     }
     const FrontierOrbitals& frontier=*state.browser_cache.frontier;
     const auto& metadata=state.browser_cache.metadata;
-    const auto standalone_names=canonical_mo_names(wavefunction);
-    const NboAomoNames* aomo_names=standalone_names.get();
+    std::shared_ptr<const NboAomoNames> standalone_names;
+    const NboAomoNames* aomo_names=nullptr;
     if(state.nbo_ui && state.nbo_ui->integration &&
        prepare_nbo_aomo_state(state.nbo_ui->aomo,*state.nbo_ui->integration,wavefunction))
         aomo_names=state.nbo_ui->aomo.names.get();
+    if(!aomo_names){
+        standalone_names=canonical_mo_names(wavefunction);
+        aomo_names=standalone_names.get();
+    }
     const auto verified_name=[&](std::size_t index)->const NboAomoName* {
         if(!aomo_names || index>=aomo_names->canonical.size())return nullptr;
         const auto& name=aomo_names->canonical[index];

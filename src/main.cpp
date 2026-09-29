@@ -365,12 +365,13 @@ int main(int argc, char** argv) {
                 view.kind=cov::ActiveOrbitalKind::Canonical;
                 view.source_id=routed?routed->canonical_fingerprint:path_to_utf8(current_file);
                 view.source_label=cov::ui::canonical_mo_source_label(*wavefunction,mo_index);
-                view.label=cov::ui::canonical_mo_display_label(*wavefunction,mo_index);
+                const cov::ui::NboAomoName* display_name=nullptr;
                 if(nbo_ui.aomo.names && mo_index<nbo_ui.aomo.names->canonical.size()){
                     const auto& name=nbo_ui.aomo.names->canonical[mo_index];
-                    if(name.verified){view.label=cov::ui::canonical_mo_display_label(*wavefunction,mo_index,&name);
-                        view.display_name_evidence=name.detail;}
+                    display_name=&name;
+                    if(name.verified)view.display_name_evidence=name.detail;
                 }
+                view.label=cov::ui::canonical_mo_display_label(*wavefunction,mo_index,display_name);
                 view.semantic_kind="canonical";
                 view.spin=wavefunction->orbital_occupation_model==cov::OrbitalOccupationModel::CanonicalShared?
                     cov::NboSpin::Total:wavefunction->orbitals[mo_index].spin==cov::Spin::Beta?
@@ -615,7 +616,8 @@ int main(int argc, char** argv) {
                 pending_mo_index.reset();
                 orbital_ui.browser_cache={};
                 orbital_ui.diagram_cache={};
-                cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
+                if(cov::validation::active())
+                    cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
                 grid_box = new_box;
                 current_file = path;
 
@@ -680,7 +682,8 @@ int main(int argc, char** argv) {
                 canonical_mo_index=selection.terms.front().orbital.index;
             pending_mo_index.reset();recompute=false;resize_and_recompute=false;
             identity();
-            cov::validation::record("aomo.selection",cov::serialize_nbo_selection_json(*inspection));
+            if(cov::validation::active())
+                cov::validation::record("aomo.selection",cov::serialize_nbo_selection_json(*inspection));
             cov::validation::evaluated(0,"typed-orbital-selection",evaluator->last_kernel_ms());
         };
 
@@ -696,7 +699,8 @@ int main(int argc, char** argv) {
             nbo_ui.routed=&*routed;
             semantic_graph=*routed->interaction_graph.value;
             renderer.invalidate_geometry_cache();
-            cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
+            if(cov::validation::active())
+                cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
             nbo_ui.focus={};nbo_ui.aomo={};nbo_ui.selected_atoms.clear();nbo_ui.selected_structure.reset();
             nbo_ui.show_bond_indices=false;nbo_ui.show_e2=false;
             nbo_ui.pending_candidate.reset();
@@ -712,7 +716,9 @@ int main(int argc, char** argv) {
             nbo_mo_index=nbo_ui.selected_orbital;
             status=nbo_ui.error.empty()?StatusKind::Loaded:StatusKind::Error;
             status_detail=nbo_ui.error.empty()?integration->dataset.source.path:nbo_ui.error;
-            cov::validation::record("nbo.integration",cov::serialize_nbo_integration_json(*integration));
+            // Do not build large diagnostic payloads during ordinary viewing.
+            if(cov::validation::active())
+                cov::validation::record("nbo.integration",cov::serialize_nbo_integration_json(*integration));
             cov::validation::record("nbo.attach","{\"source\":"+cov::validation::quote(integration->dataset.source.path)+
                 ",\"association\":"+cov::validation::quote(integration->dataset.association.status)+
                 ",\"renderable\":"+(nbo_wavefunction?"true":"false")+"}");
@@ -730,7 +736,8 @@ int main(int argc, char** argv) {
             if(wavefunction){
                 routed=cov::route_chemistry(*wavefunction);
                 nbo_ui.routed=&*routed;semantic_graph=*routed->interaction_graph.value;
-                cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
+                if(cov::validation::active())
+                    cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
             }
             renderer.invalidate_geometry_cache();
         };
