@@ -24,15 +24,15 @@ v0.4 预览版加入了 NBO 分析。配合计算生成的 NBO 文件，可以�
 | 版本 | 包含的功能 | Windows 下载 |
 |---|---|---|
 | [稳定版 v0.3.0](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0) | 轨道能量、占据情况、能级图和三维视图 | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.3.0/CUDA-Orbital-Visualisation-v0.3.0-Windows-sm120.zip) |
-| [预览版 v0.4.0-pre.1](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.4.0-pre.1) | 增加 NBO 分析、轨道组成和轨道联系 | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.4.0-pre.1/CUDA-Orbital-Visualisation-v0.4.0-pre.1-Windows-sm120.zip) |
+| [预览版 v0.4.0-pre.2](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.4.0-pre.2) | 增加 NBO 分析、轨道组成和轨道联系 | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.4.0-pre.2/Chemical-Orbital-Visualiser-v0.4.0-pre.2-Windows-sm120.zip) |
 
-现有下载包仍显示旧产品名称。
+v0.3.0 下载包保留旧产品名称。
 
 现有 Windows 包适用于 RTX 50 系列；其他架构的安装包尚未提供。
 
 ## 开始使用
 
-1. 下载并解压 Windows ZIP。v0.3.0：运行 `cov.exe`。v0.4.0-pre.1：运行 `program/cov.exe`，或双击 `Open-*.cmd` 打开样本。
+1. 下载并解压 Windows ZIP。v0.3.0：运行 `cov.exe`。v0.4.0-pre.2：运行 `program/cov.exe`，或双击 `Open-*.cmd` 打开样本。
 2. 打开 Gaussian FCHK/FCH 或兼容的 Molden 文件，也可以将文件拖入窗口。
 3. 在轨道列表和能级图中查看能量与占据情况。选择一个能级以查看对应轨道，或导出能级图。
 4. 使用 v0.4 预览版时，可以打开计算文件夹，一并加载其中的波函数和 NBO 文件。如果文件夹中有多次计算，请选择要打开的一次。
@@ -52,7 +52,7 @@ v0.4 预览版加入了 NBO 分析。配合计算生成的 NBO 文件，可以�
 - [使用 NBO 结果](docs/AOMO_NBO.zh-CN.md) — v0.4 预览版
 - [准备计算文件](docs/NBO_ONE_JOB.zh-CN.md) — 含源码树中的单次作业模板
 - [源码编译](docs/BUILD.zh-CN.md)
-- [稳定版发布说明](docs/releases/v0.3.0.md) · [预览版发布说明](docs/releases/v0.4.0-pre.1.md) · [旧版 v0.3 预览](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
+- [稳定版发布说明](docs/releases/v0.3.0.md) · [预览版发布说明](docs/releases/v0.4.0-pre.2.zh-CN.md) · [旧版 v0.3 预览](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
 [反馈问题或建议功能](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose)。
 

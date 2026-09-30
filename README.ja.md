@@ -24,15 +24,15 @@ v0.4 プレビュー版では NBO 解析にも対応しました。同じ計算�
 | バージョン | 主な内容 | Windows 用ダウンロード |
 |---|---|---|
 | [安定版 v0.3.0](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0) | 軌道のエネルギーと占有数、エネルギー準位図、3D 表示 | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.3.0/CUDA-Orbital-Visualisation-v0.3.0-Windows-sm120.zip) |
-| [プレビュー版 v0.4.0-pre.1](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.4.0-pre.1) | NBO 解析、軌道の組成とつながりを追加 | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.4.0-pre.1/CUDA-Orbital-Visualisation-v0.4.0-pre.1-Windows-sm120.zip) |
+| [プレビュー版 v0.4.0-pre.2](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.4.0-pre.2) | NBO 解析、軌道の組成とつながりを追加 | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.4.0-pre.2/Chemical-Orbital-Visualiser-v0.4.0-pre.2-Windows-sm120.zip) |
 
-現在配布中のファイルには旧製品名が表示されます。
+v0.3.0 の配布ファイルには旧製品名が残っています。
 
 現在の Windows パッケージは RTX 50 シリーズに対応しています。ほかのアーキテクチャ用のパッケージはまだ提供していません。
 
 ## はじめに
 
-1. Windows 用 ZIP をダウンロードして展開します。v0.3.0 は `cov.exe`、v0.4.0-pre.1 は `program/cov.exe` を起動します。プレビュー版のサンプルは `Open-*.cmd` をダブルクリックして開くこともできます。
+1. Windows 用 ZIP をダウンロードして展開します。v0.3.0 は `cov.exe`、v0.4.0-pre.2 は `program/cov.exe` を起動します。プレビュー版のサンプルは `Open-*.cmd` をダブルクリックして開くこともできます。
 2. Gaussian の FCHK/FCH ファイルか互換性のある Molden ファイルを開くか、ウィンドウにドラッグします。
 3. 軌道一覧とエネルギー準位図でエネルギーと占有数を確認します。準位を選んで対応する軌道を表示するか、図を書き出します。
 4. v0.4 プレビュー版では、計算フォルダーを開くと波動関数と NBO ファイルをまとめて読み込めます。フォルダーに複数の計算がある場合は、開く計算を選んでください。
@@ -52,7 +52,7 @@ v0.4 プレビュー版では NBO 解析にも対応しました。同じ計算�
 - [NBO の結果を使う](docs/AOMO_NBO.ja.md) — v0.4 プレビュー版
 - [計算ファイルの準備](docs/NBO_ONE_JOB.ja.md) — ソースツリーの実行テンプレートを含みます
 - [ソースからのビルド（英語）](docs/BUILD.md)
-- [安定版のリリースノート](docs/releases/v0.3.0.md) · [プレビュー版のリリースノート](docs/releases/v0.4.0-pre.1.md) · [過去の v0.3 プレビュー版](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
+- [安定版のリリースノート](docs/releases/v0.3.0.md) · [プレビュー版のリリースノート](docs/releases/v0.4.0-pre.2.ja.md) · [過去の v0.3 プレビュー版](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
 [問題の報告・機能の提案](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose)。
 
