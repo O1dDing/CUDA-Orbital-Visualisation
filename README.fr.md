@@ -24,15 +24,15 @@ Sélectionnez une orbitale pour voir sa forme en 3D. Le rendu utilise un GPU NVI
 | Version | Contenu | Téléchargement Windows |
 |---|---|---|
 | [Version stable v0.3.0](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0) | Énergies et occupations des orbitales, diagrammes de niveaux d’énergie et vues 3D | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.3.0/CUDA-Orbital-Visualisation-v0.3.0-Windows-sm120.zip) |
-| [Préversion v0.4.0-pre.1](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.4.0-pre.1) | Ajoute l’analyse NBO, la composition des orbitales et leurs liens | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.4.0-pre.1/CUDA-Orbital-Visualisation-v0.4.0-pre.1-Windows-sm120.zip) |
+| [Préversion v0.4.0-pre.2](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.4.0-pre.2) | Ajoute l’analyse NBO, la composition des orbitales et leurs liens | [ZIP](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/download/v0.4.0-pre.2/Chemical-Orbital-Visualiser-v0.4.0-pre.2-Windows-sm120.zip) |
 
-Les téléchargements actuels affichent encore l’ancien nom du produit.
+Le téléchargement de v0.3.0 conserve l’ancien nom du produit.
 
 Les paquets Windows actuels sont destinés à la série RTX 50 ; les paquets pour les autres architectures ne sont pas encore disponibles.
 
 ## Premiers pas
 
-1. Téléchargez et extrayez une archive ZIP pour Windows. Pour v0.3.0, lancez `cov.exe`. Pour v0.4.0-pre.1, lancez `program/cov.exe`, ou double-cliquez sur un fichier `Open-*.cmd` pour ouvrir un exemple.
+1. Téléchargez et extrayez une archive ZIP pour Windows. Pour v0.3.0, lancez `cov.exe`. Pour v0.4.0-pre.2, lancez `program/cov.exe`, ou double-cliquez sur un fichier `Open-*.cmd` pour ouvrir un exemple.
 2. Ouvrez un fichier Gaussian FCHK/FCH ou un fichier Molden compatible, ou glissez-le dans la fenêtre.
 3. Parcourez les énergies et les occupations dans la liste des orbitales et le diagramme. Sélectionnez un niveau pour voir son orbitale, ou exportez le diagramme.
 4. Dans la préversion v0.4, ouvrez le dossier du calcul pour charger ensemble les fichiers de fonction d’onde et NBO. Si le dossier contient plusieurs calculs, choisissez celui à ouvrir.
@@ -52,7 +52,7 @@ Si `formchk` est installé, COV peut convertir les fichiers Gaussian CHK en FCHK
 - [Utiliser les résultats NBO](docs/AOMO_NBO.fr.md) — préversion v0.4
 - [Préparer les fichiers de calcul](docs/NBO_ONE_JOB.fr.md) — inclut le modèle de travail dans l’arborescence des sources
 - [Compiler depuis les sources (en anglais)](docs/BUILD.md)
-- [Notes de la version stable](docs/releases/v0.3.0.md) · [Notes de la préversion](docs/releases/v0.4.0-pre.1.md) · [Anciennes préversions v0.3](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
+- [Notes de la version stable](docs/releases/v0.3.0.md) · [Notes de la préversion](docs/releases/v0.4.0-pre.2.fr.md) · [Anciennes préversions v0.3](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
 [Signaler un problème ou proposer une fonction](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose).
 
