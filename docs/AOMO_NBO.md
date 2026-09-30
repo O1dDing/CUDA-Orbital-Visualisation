@@ -10,17 +10,21 @@ COV reads results that already exist; it does not run Gaussian or NBO. Drop the 
 
 | What you want to see | Files to provide |
 | --- | --- |
-| MO energies, occupations, energy diagram and 3D MO | Gaussian FCHK/FCH, or a Molden wavefunction. |
-| Values in the NBO report | A Gaussian FCHK and the corresponding NBO report containing those sections: a Gaussian `.log`/`.out` or standalone NBO output. |
-| NBO orbital shapes | The matching FCHK and NBO report, the NBO `.47` archive, and an AONBO matrix. |
-| Canonical MO–NBO connections | The files for NBO orbital shapes, plus an NBOMO matrix. |
-| NAO contributions to an MO | The matching FCHK, report and `.47` archive, plus AONAO and NAOMO matrices together. AONBO and NBOMO are not required for this view. |
+| MO energies, occupations, energy diagram, Gaussian AO–MO coefficient links and 3D MO | Gaussian FCHK/FCH; Molden supports basic MO views. |
+| Values printed in the NBO report | FCHK and an NBO report containing those sections. |
+| NAO shapes, NPA charge and Wiberg colouring | Matching FCHK, report, `.47` archive and AONAO; colouring also needs matching density. |
+| MO composition in NAOs | Matching FCHK, report, archive, AONAO and NAOMO; NAONBO provides another transform. |
+| NBO shapes and canonical MO–NBO links | Matching FCHK, report, archive and AONBO; MO–NBO links also need NBOMO. |
+| NHO shapes and components | Base files, AONAO, AONHO and NAONHO; NHO–NBO links also use NHONBO and AONBO. |
+| NLMO shapes, main NBO and tail | Base files, AONBO, AONLMO, NBONLMO and matching report entries; NLMO–MO links also use NLMOMO. |
+| PNAO shapes | Base files, AONAO and AOPNAO. |
+| E(2) donor–acceptor orbitals | Matching report, archive Fock data and AONBO. |
 
-The files must come from the same calculation. The `.47` archive needs overlap, density and MO data. Reading report values and using them in the molecule view require different inputs: charge and spin colouring and Wiberg annotations also need matching NAO matrices and density data; the E(2) donor–acceptor view needs the corresponding NBO orbitals and Fock data. NHO and NLMO views need their own report entries and matrices.
+Base files mean the matching FCHK, NBO report and `.47` archive. The FCHK and NBO data must describe the same calculation step. The NBO report and orbital matrices must come from the same analysis; use a GenNBO reanalysis report and its matrices together. The archive needs the overlap, density, canonical MO and Fock data used by the selected view. Spin colouring also needs complete spin-resolved density and report data.
 
-Matrix file numbers are chosen when the NBO calculation is produced; they are not fixed by COV. For example, a calculation requesting `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` would write files with those numbers if the producer follows the requests. Check the matrix headings and your calculation output rather than assuming that `FILE.37` or another numbered file has a particular role. Some detailed NHO and NLMO views also need the relevant orbital data in the report and matrices.
+Matrix file numbers are chosen when the NBO calculation is produced; they are not fixed by COV. For example, a calculation requesting `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` would write files with those numbers if the producer follows the requests. Check the matrix headings and your calculation output rather than assuming that `FILE.37` or another numbered file has a particular role. This five-matrix example covers MO composition in NAOs and MO–NBO links. For the full file set, see the [one-job template](NBO_ONE_JOB.md).
 
-If you start with a CHK file, use an installed `formchk` to create an FCHK, or let COV call the installed converter. Use the checkpoint from the calculation that produced the NBO results. If NBO files are missing, the ordinary MO view still works; an analysis that needs missing data will be unavailable.
+If you start with a CHK file, use an installed `formchk` to create an FCHK, or let COV call the installed converter. Use that step's canonical checkpoint. A checkpoint whose orbitals were replaced by SaveNBOs or SaveNLMOs is not the canonical MO input. If NBO files are missing, the ordinary MO view still works; an analysis that needs missing data will be unavailable.
 
 ## Follow an orbital through the diagram
 

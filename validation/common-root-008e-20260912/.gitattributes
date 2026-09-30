@@ -1,2 +1,0 @@
-# Preserve frozen receipt byte identities.
-*.json -text

@@ -10,17 +10,21 @@ COV 读取已有结果，不会运行 Gaussian 或 NBO。把文件一起拖入�
 
 | 想查看的内容 | 需要提供的文件 |
 | --- | --- |
-| MO 能量、占据、能级图和三维 MO | Gaussian FCHK/FCH，或 Molden 波函数文件。 |
-| NBO 报告中的数值 | Gaussian FCHK，以及包含相应内容的 NBO 报告，可以是 Gaussian `.log`/`.out` 或独立 NBO 输出。 |
-| NBO 轨道形状 | 对应的 FCHK、NBO 报告、NBO `.47` 档案，以及 AONBO 矩阵。 |
-| canonical MO–NBO 联系 | NBO 轨道形状所需的文件，再加 NBOMO 矩阵。 |
-| MO 的 NAO 组成 | 对应的 FCHK、报告、`.47` 档案，以及成对的 AONAO 与 NAOMO 矩阵；不要求同时提供 AONBO 和 NBOMO。 |
+| MO 能量、占据、能级图、Gaussian AO–MO 系数联系和三维 MO | Gaussian FCHK/FCH；Molden 支持基础 MO。 |
+| NBO 报告中的数值 | FCHK 和包含相应段落的 NBO 报告。 |
+| NAO 形状、NPA 电荷和 Wiberg 着色 | 对应 FCHK、报告、`.47` 档案和 AONAO；着色还需对应密度。 |
+| MO 的 NAO 组成 | 对应 FCHK、报告、档案及 AONAO、NAOMO；NAONBO 提供额外变换。 |
+| NBO 形状和 canonical MO–NBO 联系 | 对应 FCHK、报告、档案及 AONBO；MO–NBO 联系另需 NBOMO。 |
+| NHO 形状和组成 | 基础文件、AONAO、AONHO、NAONHO；NHO–NBO 联系另需 NHONBO 和 AONBO。 |
+| NLMO 形状、主要 NBO 与尾部 | 基础文件、AONBO、AONLMO、NBONLMO，以及报告中的对应条目；NLMO–MO 联系另需 NLMOMO。 |
+| PNAO 形状 | 基础文件、AONAO 和 AOPNAO。 |
+| E(2) 供体–受体轨道 | 对应报告、档案 Fock 数据和 AONBO。 |
 
-这些文件须来自同一计算。`.47` 档案需要包含重叠矩阵、密度和 MO 数据。读取报告数值与在图中使用它们所需的数据不同：原子电荷、自旋着色和 Wiberg 标注还需配套的 NAO 矩阵及密度数据；E(2) 供受体视图还需相应 NBO 轨道及 Fock 数据。NHO、NLMO 则需要各自的报告条目和矩阵。
+基础文件指对应的 FCHK、NBO 报告和 `.47` 档案。FCHK 与 NBO 数据须对应同一步波函数；NBO 报告和轨道矩阵须来自同一次分析，从 `.47` 重新生成的报告和矩阵一起使用。档案需包含所用视图的重叠、密度、canonical MO 和 Fock 数据。自旋布居着色另需完整的分自旋密度与报告。
 
-矩阵文件编号由生成 NBO 数据时的设置决定，COV 不把编号当作文件类型。例如，要求 `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` 的计算，在生成程序遵循这些设置时会得到相应编号的文件。请看矩阵标题和计算输出，不要单凭 `FILE.37` 等名称判断内容。部分 NHO、NLMO 细节还需要报告和矩阵中有相应轨道数据。
+矩阵文件编号由生成 NBO 数据时的设置决定，COV 不把编号当作文件类型。例如，要求 `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` 的计算，在生成程序遵循这些设置时会得到相应编号的文件。请看矩阵标题和计算输出，不要单凭 `FILE.37` 等名称判断内容。这组五矩阵用于 MO 的 NAO 组成与 MO–NBO 联系；完整文件准备见[单次作业模板](NBO_ONE_JOB.zh-CN.md)。
 
-如果只有 CHK，先用已安装的 `formchk` 生成 FCHK，或由 COV 调用本机安装的转换器。应使用产生这些 NBO 结果的计算对应的 checkpoint。缺少 NBO 文件时，普通 MO 视图仍可使用；依赖缺失数据的分析会显示不可用。
+如果只有 CHK，先用已安装的 `formchk` 生成 FCHK，或由 COV 调用本机安装的转换器。使用这一步的 canonical checkpoint；保存 NBO/NLMO 后替换了轨道的 checkpoint 不能用作 canonical MO 输入。缺少 NBO 文件时，普通 MO 视图仍可使用；依赖缺失数据的分析会显示不可用。
 
 ## 从能级图进入轨道组成
 

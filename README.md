@@ -8,7 +8,7 @@ COV displays orbital energies and occupations in interactive energy-level diagra
 
 The v0.4 preview adds NBO analysis. With the calculation's NBO output, you can see how atomic and localised orbitals contribute to molecular orbitals, follow their connections in the diagram, and inspect charge and bonding information.
 
-Select an orbital to view its shape in 3D. Rendering uses NVIDIA CUDA, and the interface is available in English, Simplified Chinese, Japanese and French.
+Select an orbital to view its shape in 3D. Rendering uses an NVIDIA GPU, and the interface is available in English, Simplified Chinese, Japanese and French.
 
 ## What you can do
 
@@ -28,20 +28,20 @@ Select an orbital to view its shape in 3D. Rendering uses NVIDIA CUDA, and the i
 
 Existing downloads still show the earlier product name.
 
-The current Windows downloads are built for NVIDIA GeForce RTX 50-series GPUs. Other NVIDIA architectures need a suitable build; see [Building from source](docs/BUILD.md). Install a compatible NVIDIA driver. The CUDA Toolkit is only needed when building from source.
+The current Windows packages support RTX 50-series GPUs; packages for other architectures are not yet available.
 
 ## Get started
 
-1. Download and extract a Windows ZIP, then run `cov.exe`.
+1. Download and extract a Windows ZIP. For v0.3.0, run `cov.exe`. For v0.4.0-pre.1, run `program/cov.exe`, or double-click an `Open-*.cmd` launcher to open an example.
 2. Open a Gaussian FCHK/FCH or compatible Molden file, or drag it into the window.
 3. Browse the energies and occupations in the orbital list and energy diagram. Select a level to view its orbital, or export the diagram.
 4. In the v0.4 preview, open the calculation folder to load its wavefunction and NBO files together. If the folder contains several calculations, choose the one to open.
 
-Convert a Gaussian `.chk` file to `.fchk` with Gaussian's `formchk` before opening it. For NBO features, use files for the same geometry and electronic state as the wavefunction. COV reads the results; it does not run Gaussian or NBO.
+With `formchk` installed, you can open CHK files directly; FCHK/FCH files open directly. The NBO files and FCHK must describe the same calculation step. For a GenNBO reanalysis, use its report, archive and orbital matrices together.
 
 ## Input and requirements
 
-- **Wavefunctions:** Gaussian `.fchk` / `.fch`, or compatible `.molden` / `.mol` / `.input` files. Gaussian `.chk` needs conversion first.
+- **Wavefunctions:** Gaussian `.fchk` / `.fch`, or compatible `.molden` / `.mol` / `.input` files. Gaussian `.chk` can be opened with an installed `formchk`.
 - **NBO files — v0.4 preview:** the report, archive and orbital matrices provide different parts of the analysis. See [Using NBO results](docs/AOMO_NBO.md) for the files each view needs.
 - **Molecule size:** up to 100 atoms per input.
 - **Graphics:** an NVIDIA GPU, a compatible driver and OpenGL 2.1 or newer. Use a build made for your GPU architecture.
@@ -50,10 +50,11 @@ Convert a Gaussian `.chk` file to `.fchk` with Gaussian's `formchk` before openi
 
 - [Using COV](docs/UI.md)
 - [Using NBO results](docs/AOMO_NBO.md) — v0.4 preview
+- [Prepare one calculation](docs/NBO_ONE_JOB.md) — source-tree template
 - [Building from source](docs/BUILD.md)
 - [Stable release notes](docs/releases/v0.3.0.md) · [Preview release notes](docs/releases/v0.4.0-pre.1.md)
 
-Problems and suggestions: [Issues](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues).
+[Report a problem or suggest a feature](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose).
 
 ## Licence
 

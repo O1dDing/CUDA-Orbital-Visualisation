@@ -1,10 +1,16 @@
 # Using Chemical Orbital Visualiser
 
+[简体中文](UI.zh-CN.md)
+
+This guide follows the NBO development version. The [download instructions](../README.md#download) cover the published packages.
+
 Chemical Orbital Visualiser (COV) brings orbital energies, occupations and relationships into one view. Open an existing Gaussian FCHK/FCH or Molden file, choose an orbital from the list, compare levels in the energy diagram, and export a figure or data table. The molecule and selected orbital can also be inspected in 3D.
 
 ## Open a calculation
 
 Use **Open File**, drag a file into the window, or enter its path. COV reads calculation results; it does not run Gaussian. A Gaussian CHK file can be converted locally if `formchk` is installed. If COV cannot find the converter, create an FCHK file with `formchk` first and open that file instead.
+
+If COV cannot find `formchk`, set `COV_FORMCHK` to its full executable path and restart COV.
 
 The current input limit is 100 atoms per molecule.
 
@@ -14,13 +20,13 @@ Search the orbital list, jump to HOMO or LUMO, or use the core, valence and virt
 
 Choose the energy unit that suits your work: Ha, eV, J/mol, kJ/mol, cal/mol or kcal/mol. The original energy is kept in Hartree; changing the displayed unit does not change the calculation.
 
-Orbital names such as `2a₁` appear wherever the symmetry and occurrence order are available. Otherwise, COV shows the original MO number and spin. Both names and source numbers are searchable. Levels with close energies may be grouped at their mean energy; each member keeps its own energy and identity in the details. The grouping tolerance starts at `1e-5 Ha` and can be adjusted.
+In the current source version, orbital names such as `2a₁` appear wherever the symmetry and occurrence order are available. Otherwise, COV shows the original MO number and spin. Both names and source numbers are searchable. Levels with close energies may be grouped at their mean energy; each member keeps its own energy and identity in the details. The grouping tolerance starts at `1e-5 Ha` and can be adjusted.
 
 ## Compare levels in the diagram
 
 The central diagram shows occupied valence levels and nearby unoccupied levels, with electron occupations. Deep core and distant virtual levels can be hidden to keep the figure readable; they remain in the imported orbital list. Selecting an orbital for 3D inspection does not add it to or reorder the compact diagram.
 
-The energy axis can be linear or nonlinear. The nonlinear view spreads crowded levels apart and is labelled **Nonlinear energy axis**, with energy values and units on the ticks. Grouped levels use the members’ mean energy.
+In the current source version, the energy axis can be linear or nonlinear. The nonlinear view spreads crowded levels apart and is labelled **Nonlinear energy axis**, with energy values and units on the ticks. Grouped levels use the members’ mean energy.
 
 **Export diagram + metadata** saves PNG and SVG figures together with JSON and CSV data. Figures use the displayed orbital names and the current interface language. The data includes orbital numbers, energies, occupations, spin, grouping and which levels appeared in the figure.
 

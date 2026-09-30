@@ -65,4 +65,4 @@ python -B -X utf8 helper_deployment.py apply --home <Resume> --fast <待退役�
 
 Helper 部署要求运行时身份与已验收身份一致、RPBE1PBE 和 UPBE1PBE 的 RAM 验收均有效，且没有 Gaussian、协调器或已打开的 Helper。清理计划先固定文件身份，迁移并核验冻结材料，再退役旧目录。恢复旧文件前同样应关闭 Helper 并确认计算闲置；不要覆盖后续修改。所有计算记录和快照保留。
 
-单任务输入24GB、Job树32GiB，Opt/Freq/Stable分开；candidate_collected仍不等于科学验收通过。273例完整分类及历史审计见[本次交付证据](../adaptive-scheduling-20260913/README.md)。原暂停机制背景见[暂停和恢复说明](FAST_PAUSE.md)及[日常操作](WORK_PROMPT.md)。
+单任务输入24GB、Job树32GiB，Opt/Freq/Stable分开。历史运行记录存放在开发归档中。暂停机制见[暂停和恢复说明](FAST_PAUSE.md)及[日常操作](WORK_PROMPT.md)。

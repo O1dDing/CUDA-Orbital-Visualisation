@@ -8,7 +8,7 @@ COV 可以用交互式能级图查看轨道能量和电子占据，并导出图�
 
 v0.4 预览版加入了 NBO 分析。配合计算生成的 NBO 文件，可以查看原子轨道和局域轨道怎样组成分子轨道，沿着图中的连线查看各项贡献，以及电荷和成键信息。
 
-选中轨道后，还可以查看它的三维形状。轨道显示由 NVIDIA CUDA 加速，界面支持中文、英文、日文和法文。
+选中轨道后，还可以查看它的三维形状。轨道显示由 NVIDIA GPU 加速，界面支持中文、英文、日文和法文。
 
 ## 功能
 
@@ -28,32 +28,33 @@ v0.4 预览版加入了 NBO 分析。配合计算生成的 NBO 文件，可以�
 
 现有下载包仍显示旧产品名称。
 
-目前的 Windows 下载包面向 NVIDIA GeForce RTX 50 系列 GPU。其他 NVIDIA 架构需要适配的程序版本；源码编译方法见[编译说明](docs/BUILD.md)。请安装兼容的 NVIDIA 驱动程序。只有从源代码构建时才需要 CUDA Toolkit。
+现有 Windows 包适用于 RTX 50 系列；其他架构的安装包尚未提供。
 
 ## 开始使用
 
-1. 下载并解压 Windows ZIP 文件，然后运行 `cov.exe`。
+1. 下载并解压 Windows ZIP。v0.3.0：运行 `cov.exe`。v0.4.0-pre.1：运行 `program/cov.exe`，或双击 `Open-*.cmd` 打开样本。
 2. 打开 Gaussian FCHK/FCH 或兼容的 Molden 文件，也可以将文件拖入窗口。
 3. 在轨道列表和能级图中查看能量与占据情况。选择一个能级以查看对应轨道，或导出能级图。
 4. 使用 v0.4 预览版时，可以打开计算文件夹，一并加载其中的波函数和 NBO 文件。如果文件夹中有多次计算，请选择要打开的一次。
 
-打开 Gaussian `.chk` 文件前，请先用 Gaussian 的 `formchk` 将其转换为 `.fchk`。使用 NBO 功能时，NBO 文件与波函数应对应相同的几何结构和电子态。COV 只读取计算结果，不运行 Gaussian 或 NBO。
+已安装 `formchk` 时可直接打开 CHK；FCHK/FCH 可直接打开。NBO 文件与 FCHK 应来自同一步计算；采用 GenNBO 重新分析时，报告、档案和轨道矩阵应来自该次分析。
 
 ## 输入文件与运行要求
 
-- **波函数：** Gaussian `.fchk` / `.fch`，或兼容的 `.molden` / `.mol` / `.input` 文件。Gaussian `.chk` 文件需要先转换。
+- **波函数：** Gaussian `.fchk` / `.fch`，或兼容的 `.molden` / `.mol` / `.input` 文件。已安装 `formchk` 时也可打开 Gaussian `.chk`。
 - **NBO 文件 — v0.4 预览版：** 报告、归档文件和轨道矩阵分别提供分析的不同部分。各视图所需的文件详见[使用 NBO 结果](docs/AOMO_NBO.zh-CN.md)。
 - **分子大小：** 每个输入最多包含 100 个原子。
 - **图形环境：** NVIDIA GPU、兼容的驱动程序，以及 OpenGL 2.1 或更新版本。请使用适合显卡架构的程序版本。
 
 ## 文档
 
-- [使用 COV（英文）](docs/UI.md)
+- [使用 COV](docs/UI.zh-CN.md)
 - [使用 NBO 结果](docs/AOMO_NBO.zh-CN.md) — v0.4 预览版
-- [源码编译（英文）](docs/BUILD.md)
+- [一次提交准备计算文件](docs/NBO_ONE_JOB.zh-CN.md) — 源码树模板
+- [源码编译](docs/BUILD.zh-CN.md)
 - [稳定版发布说明](docs/releases/v0.3.0.md) · [预览版发布说明](docs/releases/v0.4.0-pre.1.md)
 
-问题和建议：[Issues](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues)。
+[反馈问题或建议功能](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose)。
 
 ## 许可证
 
