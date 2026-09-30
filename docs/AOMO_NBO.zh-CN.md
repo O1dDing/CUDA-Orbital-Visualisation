@@ -1,6 +1,6 @@
 # 在 COV 中查看 AO–MO 与 NBO
 
-[English](AOMO_NBO.md)
+[English](AOMO_NBO.md) · **简体中文** · [日本語](AOMO_NBO.ja.md) · [Français](AOMO_NBO.fr.md)
 
 Chemical Orbital Visualiser（COV）的预览版把分子轨道的能量、占据和组成关系放在一起查看。打开已有的 Gaussian FCHK 和对应的 NBO 数据后，可以从 MO、原子或键出发，追踪相关轨道及其贡献，再查看所选轨道的三维形状。
 
@@ -11,24 +11,30 @@ COV 读取已有结果，不会运行 Gaussian 或 NBO。把文件一起拖入�
 | 想查看的内容 | 需要提供的文件 |
 | --- | --- |
 | MO 能量、占据、能级图、Gaussian AO–MO 系数联系和三维 MO | Gaussian FCHK/FCH；Molden 支持基础 MO。 |
-| NBO 报告中的数值 | FCHK 和包含相应段落的 NBO 报告。 |
-| NAO 形状、NPA 电荷和 Wiberg 着色 | 对应 FCHK、报告、`.47` 档案和 AONAO；着色还需对应密度。 |
-| MO 的 NAO 组成 | 对应 FCHK、报告、档案及 AONAO、NAOMO；NAONBO 提供额外变换。 |
-| NBO 形状和 canonical MO–NBO 联系 | 对应 FCHK、报告、档案及 AONBO；MO–NBO 联系另需 NBOMO。 |
-| NHO 形状和组成 | 基础文件、AONAO、AONHO、NAONHO；NHO–NBO 联系另需 NHONBO 和 AONBO。 |
-| NLMO 形状、主要 NBO 与尾部 | 基础文件、AONBO、AONLMO、NBONLMO，以及报告中的对应条目；NLMO–MO 联系另需 NLMOMO。 |
+| 报告中的 NPA 电荷、Wiberg 指数和 E₂ 数值 | FCHK 和包含相应段落的 NBO 报告。 |
+| NAO 形状、NPA 电荷和 Wiberg 着色 | 基础文件和 AONAO，包含相应密度。 |
+| MO 的 NAO 组成 | 基础文件、AONAO 和 NAOMO；NAONBO 提供额外变换。 |
+| NBO 形状和正则 MO–NBO 联系 | 基础文件和 AONBO；MO 联系使用 FCHK 中相应的正则轨道系数。 |
+| NHO 形状和组成 | 基础文件、AONAO、AONHO、NAONHO；NHO–NBO 联系另用 NHONBO 和 AONBO。 |
+| NLMO 形状、主要 NBO 与尾部 | 基础文件、AONBO、AONLMO、NBONLMO，以及报告中的对应条目。MO 联系使用 FCHK 中相应的正则轨道系数。 |
 | PNAO 形状 | 基础文件、AONAO 和 AOPNAO。 |
-| E(2) 供体–受体轨道 | 对应报告、档案 Fock 数据和 AONBO。 |
+| SALC 形状 | 基础文件、AONAO，以及支持该对称组合的几何和所选轨道空间。 |
+| 从算符计算 NAO 和 SALC 能量 | 对应轨道及 Fock 数据，包含该计算所需的自旋分量。 |
+| E₂ 供体–受体轨道 | 基础文件、AONBO，以及标明供体和受体的报告条目。 |
 
-基础文件指对应的 FCHK、NBO 报告和 `.47` 档案。FCHK 与 NBO 数据须对应同一步波函数；NBO 报告和轨道矩阵须来自同一次分析，从 `.47` 重新生成的报告和矩阵一起使用。档案需包含所用视图的重叠、密度、canonical MO 和 Fock 数据。自旋布居着色另需完整的分自旋密度与报告。
+基础文件指配套的 FCHK、NBO 报告和 `.47` 档案。FCHK 与 NBO 数据应描述同一份波函数。报告和轨道矩阵来自同一次 NBO 分析；采用 GenNBO 重新分析时，使用该次生成的报告和矩阵。档案提供结构、基组、重叠、密度和正则 MO 系数。自旋布居着色还需对应的分自旋密度与报告数据。
 
-矩阵文件编号由生成 NBO 数据时的设置决定，COV 不把编号当作文件类型。例如，要求 `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` 的计算，在生成程序遵循这些设置时会得到相应编号的文件。请看矩阵标题和计算输出，不要单凭 `FILE.37` 等名称判断内容。这组五矩阵用于 MO 的 NAO 组成与 MO–NBO 联系；完整文件准备见[单次作业模板](NBO_ONE_JOB.zh-CN.md)。
+NBOMO 和 NLMOMO 可以提供额外的变换关系。COV 也能从局域轨道系数、重叠和正则 MO 系数计算联系，因此这两个文件不总是必需的。若 FCHK 缺少某一自旋的正则轨道系数，就不能建立与这些 MO 的联系。
 
-如果只有 CHK，先用已安装的 `formchk` 生成 FCHK，或由 COV 调用本机安装的转换器。使用这一步的 canonical checkpoint；保存 NBO/NLMO 后替换了轨道的 checkpoint 不能用作 canonical MO 输入。缺少 NBO 文件时，普通 MO 视图仍可使用；依赖缺失数据的分析会显示不可用。
+读取报告中的 E₂ 数值、显示对应的供体和受体轨道，并不一律需要 Fock。提供了 Fock 时，COV 还会将报告中的耦合和能差与矩阵对照。档案没有 Fock 时，报告中已打印的 NAO/NBO 能量仍可能可用。SALC 形状与其计算能量也有各自的数据要求。
+
+矩阵编号由 NBO 的输出设置决定，COV 根据矩阵标题识别内容。`canonical.fchk` 和 `analysis.nbo` 是模板采用的文件名，不要求所有输入都这样命名。`.covnbopkg` 是打开文件的清单，也可以直接打开目录或选择文件。
+
+计算顺序、输出选项和缺失文件的处理见[准备计算文件](NBO_ONE_JOB.zh-CN.md)。当前 NBO 关联使用 Gaussian FCHK/FCH 数据；Molden 可用于普通 MO 视图。缺少 NBO 数据时，普通 MO 视图仍可使用。
 
 ## 从能级图进入轨道组成
 
-先在轨道浏览器或能级图中选一个 MO。能级图着重显示价层和附近的虚轨道；浏览器的 **All** 可显示完整轨道列表。点击 MO 可突出它与 Gaussian 原子轨道（AO）、自然原子轨道（NAO）及原子组之间可用的联系。点击 AO、NAO 或连线，可查看单项贡献或反向查找相关 MO。也可选择多项，在三维视图中查看带符号部分和或逐项叠加。折叠分组只整理画面，不会删除成员。
+先在轨道浏览器或能级图中选一个 MO。能级图着重显示价层和附近的虚轨道；浏览器的 **全部** 可显示完整轨道列表。点击 MO 可突出它与 Gaussian 原子轨道（AO）、自然原子轨道（NAO）及原子组之间可用的联系。点击 AO、NAO 或连线，可查看单项贡献或反向查找相关 MO。也可选择多项，在三维视图中查看带符号部分和或逐项叠加。折叠分组只整理画面，不会删除成员。
 
 NAO 是正交表示，因此 NAO 系数平方可以表示该表示下的权重。原始 Gaussian AO 通常并不正交，其系数平方不能直接当作原子布居。有 NAO 或 SALC 能量数据时，它们可以和 MO 共用数值轴。侧边数值是分子环境中算符的期望值，中央是正则 MO 能量。“侧栏示意”则按示意布局排列轨道，不按能量定位。只有数据支持相应对称性含义时，轨道组合才应称作 SALC。
 

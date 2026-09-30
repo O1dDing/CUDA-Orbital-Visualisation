@@ -37,12 +37,12 @@ v0.4 预览版加入了 NBO 分析。配合计算生成的 NBO 文件，可以�
 3. 在轨道列表和能级图中查看能量与占据情况。选择一个能级以查看对应轨道，或导出能级图。
 4. 使用 v0.4 预览版时，可以打开计算文件夹，一并加载其中的波函数和 NBO 文件。如果文件夹中有多次计算，请选择要打开的一次。
 
-已安装 `formchk` 时可直接打开 CHK；FCHK/FCH 可直接打开。NBO 文件与 FCHK 应来自同一步计算；采用 GenNBO 重新分析时，报告、档案和轨道矩阵应来自该次分析。
+已安装 `formchk` 时，COV 可以将 Gaussian CHK 转换为 FCHK。FCHK/FCH 或 Molden 文件可用于查看 MO 的能量、占据和形状；NBO 的轨道形状与组成分析还需要配套的报告、`.47` 档案和轨道矩阵。
 
 ## 输入文件与运行要求
 
 - **波函数：** Gaussian `.fchk` / `.fch`，或兼容的 `.molden` / `.mol` / `.input` 文件。已安装 `formchk` 时也可打开 Gaussian `.chk`。
-- **NBO 文件 — v0.4 预览版：** 报告、归档文件和轨道矩阵分别提供分析的不同部分。各视图所需的文件详见[使用 NBO 结果](docs/AOMO_NBO.zh-CN.md)。
+- **NBO 文件 — v0.4 预览版：** [准备计算文件](docs/NBO_ONE_JOB.zh-CN.md)说明怎样生成文件；[使用 NBO 结果](docs/AOMO_NBO.zh-CN.md)列出各视图需要哪些文件。
 - **分子大小：** 每个输入最多包含 100 个原子。
 - **图形环境：** NVIDIA GPU、兼容的驱动程序，以及 OpenGL 2.1 或更新版本。请使用适合显卡架构的程序版本。
 
@@ -50,7 +50,7 @@ v0.4 预览版加入了 NBO 分析。配合计算生成的 NBO 文件，可以�
 
 - [使用 COV](docs/UI.zh-CN.md)
 - [使用 NBO 结果](docs/AOMO_NBO.zh-CN.md) — v0.4 预览版
-- [一次提交准备计算文件](docs/NBO_ONE_JOB.zh-CN.md) — 源码树模板
+- [准备计算文件](docs/NBO_ONE_JOB.zh-CN.md) — 含源码树中的单次作业模板
 - [源码编译](docs/BUILD.zh-CN.md)
 - [稳定版发布说明](docs/releases/v0.3.0.md) · [预览版发布说明](docs/releases/v0.4.0-pre.1.md) · [旧版 v0.3 预览](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
