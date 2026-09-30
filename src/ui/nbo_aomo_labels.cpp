@@ -40,6 +40,11 @@ std::size_t dimension(const std::string& group,const std::string& label){
     const auto* pg=find_point_group(group);if(pg)for(const auto& ir:pg->irreps)if(normalized(std::string(ir.label))==normalized(label))return ir.dimension;
     return 0;
 }
+struct CanonicalActionCache {
+    const Wavefunction* wavefunction=nullptr;
+    std::vector<double> packed,metric_packed;
+    std::vector<std::vector<double>> transformed,metric_transformed;
+};
 struct Frame {
     std::string group, detail;
     std::vector<SymmetryOperation> ops;
@@ -47,6 +52,7 @@ struct Frame {
     bool valid=false, mirrors_named=false, linear=false;
     Vec axis{};
     unsigned lmax=0, rotation_order=0;
+    mutable std::shared_ptr<CanonicalActionCache> canonical_action;
 };
 Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
     Frame f;
@@ -119,6 +125,25 @@ Frame canonical_frame(const Wavefunction& w){
     frame.point_group=frame.used_group=geometry.point_group;
     frame.group_verified=!geometry.operations.empty();
     frame.operations=geometry.operations;
+    if(!geometry.linear&&frame.group_verified){
+        // Geometry supplies validated generators, not necessarily every group
+        // element. Complete their finite closure before the full-frame gate.
+        SymmetryOperation e;e.atom_permutation.resize(w.atoms.size());
+        std::iota(e.atom_permutation.begin(),e.atom_permutation.end(),0);
+        frame.operations={e};
+        for(std::size_t i=0;i<frame.operations.size();++i)for(const auto& generator:geometry.operations){
+            if(generator.atom_permutation.size()!=w.atoms.size()){frame.group_verified=false;return frame_for(w,&frame);}
+            SymmetryOperation product;product.matrix=multiply(frame.operations[i].matrix,generator.matrix);
+            product.atom_permutation.resize(w.atoms.size());
+            for(std::size_t a=0;a<w.atoms.size();++a){const auto b=generator.atom_permutation[a];if(b>=w.atoms.size()){frame.group_verified=false;return frame_for(w,&frame);}product.atom_permutation[a]=frame.operations[i].atom_permutation[b];}
+            if(std::any_of(frame.operations.begin(),frame.operations.end(),[&](const auto& op){return op.atom_permutation==product.atom_permutation&&matrix_error(op.matrix,product.matrix)<metric_tolerance;}))continue;
+            if(frame.operations.size()>=256){frame.group_verified=false;return frame_for(w,&frame);}
+            double mapping_error=0;
+            for(std::size_t a=0;a<w.atoms.size();++a){const auto& from=w.atoms[a];const auto& to=w.atoms[product.atom_permutation[a]];const Vec x{from.x-geometry.centre_bohr[0],from.y-geometry.centre_bohr[1],from.z-geometry.centre_bohr[2]},y{to.x-geometry.centre_bohr[0],to.y-geometry.centre_bohr[1],to.z-geometry.centre_bohr[2]};Vec difference{};for(int r=0;r<3;++r){difference[r]=-y[r];for(int c=0;c<3;++c)difference[r]+=product.matrix[3*r+c]*x[c];}mapping_error=std::max(mapping_error,std::sqrt(dot(difference,difference)));}
+            if(mapping_error>geometry.tolerance_bohr){frame.group_verified=false;return frame_for(w,&frame);}
+            product.max_mapping_error_bohr=mapping_error;frame.operations.push_back(std::move(product));
+        }
+    }
     if(geometry.linear){
         Vec axis{};double length2=0;
         for(const auto& atom:w.atoms){
@@ -209,7 +234,28 @@ std::string match_frame(const Frame& f,const std::vector<double>& chars,std::siz
     return {};
 }
 double metric(const Wavefunction& w,const std::vector<double>& a,const std::vector<double>& b){
-    const auto n=std::size_t(w.basis_count);double v=0;for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)v+=a[i]*w.ao_overlap[i*n+j]*b[j];return v;
+    const auto n=std::size_t(w.basis_count);double v=0;for(std::size_t i=0;i<n;++i){double row=0;for(std::size_t j=0;j<n;++j)row+=w.ao_overlap[i*n+j]*b[j];v+=a[i]*row;}return v;
+}
+const CanonicalActionCache& canonical_action(const Wavefunction& w,const Frame& f,std::size_t operation){
+    const auto n=std::size_t(w.basis_count),m=w.orbitals.size();
+    const auto metric_columns=[&](const std::vector<double>& packed){
+        std::vector<double> result(n*m,0);
+        // Contiguous column updates share each S entry and let the compiler
+        // vectorise the independent columns of the complete immutable set.
+        for(std::size_t row=0;row<n;++row)for(std::size_t j=0;j<n;++j){const auto s=w.ao_overlap[row*n+j];for(std::size_t col=0;col<m;++col)result[row*m+col]+=s*packed[j*m+col];}
+        return result;
+    };
+    if(!f.canonical_action||f.canonical_action->wavefunction!=&w){
+        f.canonical_action=std::make_shared<CanonicalActionCache>();auto& cache=*f.canonical_action;cache.wavefunction=&w;cache.packed.assign(n*m,0);
+        for(std::size_t col=0;col<m;++col)if(w.orbitals[col].coefficients.size()==n)for(std::size_t row=0;row<n;++row)cache.packed[row*m+col]=w.orbitals[col].coefficients[row];
+        cache.metric_packed=metric_columns(cache.packed);cache.transformed.resize(f.ops.size());cache.metric_transformed.resize(f.ops.size());
+    }
+    auto& cache=*f.canonical_action;
+    if(cache.transformed[operation].empty()){
+        cache.transformed[operation]=apply_orbital_symmetry_operation(w,f.ops[operation],cache.packed,m);
+        if(cache.transformed[operation].size()==n*m)cache.metric_transformed[operation]=metric_columns(cache.transformed[operation]);
+    }
+    return cache;
 }
 // Complete S-orthonormal subspace character and leakage test. This examines
 // the actual canonical coefficients, including core and all virtual rows.
@@ -217,12 +263,15 @@ std::vector<double> characters(const Wavefunction& w,const Frame& f,const std::v
     const auto n=std::size_t(w.basis_count),k=indices.size();if(!f.valid||!n||!k||w.ao_overlap.size()!=n*n)return {};
     std::vector<std::vector<double>> q;std::vector<double> packed(n*k);
     for(std::size_t col=0;col<k;++col){const auto index=indices[col];if(index>=w.orbitals.size()||w.orbitals[index].coefficients.size()!=n)return {};q.push_back(w.orbitals[index].coefficients);for(std::size_t row=0;row<n;++row)packed[row*k+col]=q.back()[row];}
-    for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<k;++b){const double g=metric(w,q[a],q[b]);if(!std::isfinite(g)||std::abs(g-(a==b?1.:0.))>metric_tolerance)return {};}
+    const auto m=w.orbitals.size();const auto& action=canonical_action(w,f,0);
+    std::vector<std::vector<double>> sq(k,std::vector<double>(n,0));
+    for(std::size_t col=0;col<k;++col)for(std::size_t row=0;row<n;++row)sq[col][row]=action.metric_packed[row*m+indices[col]];
+    for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<k;++b){const double g=std::inner_product(q[a].begin(),q[a].end(),sq[b].begin(),0.);if(!std::isfinite(g)||std::abs(g-(a==b?1.:0.))>metric_tolerance)return {};}
     std::vector<double> result;
-    for(const auto& op:f.ops){const auto tq=apply_orbital_symmetry_operation(w,op,packed,k);if(tq.size()!=packed.size())return {};double chi=0;
-        for(std::size_t col=0;col<k;++col){std::vector<double> t(n);for(std::size_t row=0;row<n;++row)t[row]=tq[row*k+col];const double norm=metric(w,t,t);if(!std::isfinite(norm)||std::abs(norm-1)>metric_tolerance)return {};auto residual=t;
-            for(std::size_t a=0;a<k;++a){const double v=metric(w,q[a],t);if(a==col)chi+=v;for(std::size_t row=0;row<n;++row)residual[row]-=v*q[a][row];}
-            const double leakage=metric(w,residual,residual);if(!std::isfinite(leakage)||leakage< -1e-10||leakage>character_tolerance*character_tolerance)return {};
+    for(std::size_t g=0;g<f.ops.size();++g){const auto& cache=canonical_action(w,f,g);const auto& tq=cache.transformed[g];const auto& stq=cache.metric_transformed[g];if(tq.size()!=n*m||stq.size()!=n*m)return {};double chi=0;
+        for(std::size_t col=0;col<k;++col){std::vector<double> t(n),st(n);for(std::size_t row=0;row<n;++row){t[row]=tq[row*m+indices[col]];st[row]=stq[row*m+indices[col]];}const double norm=std::inner_product(t.begin(),t.end(),st.begin(),0.);if(!std::isfinite(norm)||std::abs(norm-1)>metric_tolerance)return {};auto residual=t,residual_metric=st;
+            for(std::size_t a=0;a<k;++a){const double v=std::inner_product(sq[a].begin(),sq[a].end(),t.begin(),0.);if(a==col)chi+=v;for(std::size_t row=0;row<n;++row){residual[row]-=v*q[a][row];residual_metric[row]-=v*sq[a][row];}}
+            const double leakage=std::inner_product(residual.begin(),residual.end(),residual_metric.begin(),0.);if(!std::isfinite(leakage)||leakage< -1e-10||leakage>character_tolerance*character_tolerance)return {};
         }result.push_back(chi);
     }return result;
 }
@@ -232,13 +281,15 @@ std::vector<std::vector<std::size_t>> connected_blocks(const Wavefunction& w,con
     const auto n=std::size_t(w.basis_count),k=rows.size();std::vector<std::vector<std::size_t>> result;
     if(!k)return result;
     const auto singles=[&](){std::vector<std::vector<std::size_t>> v;for(auto i:rows)v.push_back({i});return v;};
+    if(k==1)return singles();
     if(!f.valid||!n||w.ao_overlap.size()!=n*n)return singles();
     std::vector<double> packed(n*k),sq(n*k,0);
     for(std::size_t col=0;col<k;++col){if(rows[col]>=w.orbitals.size()||w.orbitals[rows[col]].coefficients.size()!=n)return singles();for(std::size_t a=0;a<n;++a)packed[a*k+col]=w.orbitals[rows[col]].coefficients[a];}
-    for(std::size_t a=0;a<n;++a)for(std::size_t b=0;b<n;++b)for(std::size_t col=0;col<k;++col)sq[a*k+col]+=w.ao_overlap[a*n+b]*packed[b*k+col];
+    const auto m=w.orbitals.size();const auto& action=canonical_action(w,f,0);
+    for(std::size_t a=0;a<n;++a)for(std::size_t col=0;col<k;++col)sq[a*k+col]=action.metric_packed[a*m+rows[col]];
     for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<k;++b){double g=0;for(std::size_t row=0;row<n;++row)g+=packed[row*k+a]*sq[row*k+b];if(!std::isfinite(g)||std::abs(g-(a==b?1.:0.))>metric_tolerance)return singles();}
     std::vector<std::size_t> parent(k);std::iota(parent.begin(),parent.end(),0);auto root=[&](std::size_t a){while(parent[a]!=a)a=parent[a];return a;};
-    for(const auto& op:f.ops){const auto tq=apply_orbital_symmetry_operation(w,op,packed,k);if(tq.size()!=packed.size())return singles();for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<a;++b){double ab=0,ba=0;for(std::size_t row=0;row<n;++row){ab+=sq[row*k+a]*tq[row*k+b];ba+=sq[row*k+b]*tq[row*k+a];}if(std::max(std::abs(ab),std::abs(ba))>character_tolerance)parent[root(b)]=root(a);}}
+    for(std::size_t g=0;g<f.ops.size();++g){const auto& cache=canonical_action(w,f,g);const auto& tq=cache.transformed[g];if(tq.size()!=n*m)return singles();for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<a;++b){double ab=0,ba=0;for(std::size_t row=0;row<n;++row){ab+=sq[row*k+a]*tq[row*m+rows[b]];ba+=sq[row*k+b]*tq[row*m+rows[a]];}if(std::max(std::abs(ab),std::abs(ba))>character_tolerance)parent[root(b)]=root(a);}}
     std::map<std::size_t,std::vector<std::size_t>> groups;for(std::size_t a=0;a<k;++a)groups[root(a)].push_back(rows[a]);for(auto& [key,members]:groups)result.push_back(std::move(members));return result;
 }
 std::vector<std::vector<std::size_t>> canonical_blocks(const Wavefunction& w,const Frame& f){

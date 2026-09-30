@@ -1,5 +1,6 @@
 #include "cov/ui.hpp"
 #include "cov/nbo_aomo_ui.hpp"
+#include "cov/ui_raster_text.hpp"
 
 #include <imgui.h>
 
@@ -244,7 +245,15 @@ int main() {
         }
     }
 
-    ImGui::DestroyContext();
+    auto& io=ImGui::GetIO();io.DisplaySize={320,160};io.DeltaTime=1.0f/60;
+    ImGui::NewFrame();
+    std::vector<std::uint8_t> lower(96*32*4,255),upper=lower;
+    cov::ui::raster_text(lower,96,32,0,0,"1a",0,0,0,1);
+    cov::ui::raster_text(upper,96,32,0,0,"1A",0,0,0,1);
+    if(lower==upper || cov::ui::raster_text_width("1a",1)<=0) {
+        std::cerr<<"raster export lost lowercase orbital notation\n";return 16;
+    }
+    ImGui::EndFrame();ImGui::DestroyContext();
     std::cout << "ui_smoke ok\n";
     return 0;
 }

@@ -533,6 +533,8 @@ if(COV_BUILD_TESTS)
 
     add_executable(cov_mo_diagram_snapshot_smoke tests/mo_diagram_snapshot_smoke.cpp)
     target_link_libraries(cov_mo_diagram_snapshot_smoke PRIVATE cov_ui)
+    target_compile_options(cov_mo_diagram_snapshot_smoke PRIVATE
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
     add_test(NAME mo_diagram_snapshot_smoke COMMAND cov_mo_diagram_snapshot_smoke)
     add_executable(cov_nbo_aomo_labels_smoke tests/nbo_aomo_labels_smoke.cpp)
     target_link_libraries(cov_nbo_aomo_labels_smoke PRIVATE cov_ui)

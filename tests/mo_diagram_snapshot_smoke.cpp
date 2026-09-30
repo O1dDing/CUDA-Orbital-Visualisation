@@ -57,6 +57,9 @@ int main() {
     options.selected_index=5; options.energy_axis_mode=cov::EnergyAxisMode::Linear;
     options.energy_unit=cov::EnergyUnit::ElectronVolt;
     options.include_hidden_in_metadata=false;
+    options.display_names={"1a₁ [alpha]","1b₂ [alpha]","1a₁ [beta]","1b₂ [beta]"};
+    options.figure_title="分子轨道能级";
+    options.axis_title="能量";
     auto snapshot=cov::make_mo_diagram_view_snapshot(data,options,3,"interactive-canvas");
     const auto members=cov::mo_diagram_member_views(snapshot.data,snapshot.data.levels[0]);
     require(members.size()==2 && !members[0].selected && members[1].selected &&
@@ -77,6 +80,10 @@ int main() {
     const auto result=cov::export_mo_diagram_bundle(snapshot,root/"captured");
     require(result.svg&&result.png&&result.json&&result.csv,"snapshot export failed");
     const auto svg=read(result.svg_path),png=read(result.png_path),json=read(result.json_path),csv=read(result.csv_path);
+    require(svg.find("1a₁ [alpha]")!=std::string::npos &&
+        svg.find("1b₂ [alpha]")!=std::string::npos && svg.find("分子轨道能级")!=std::string::npos &&
+        svg.find("能量 (eV)")!=std::string::npos && svg.find("support (not probability)")==std::string::npos,
+        "figure must preserve supplied orbital names, language and axis units without scores");
     const auto& id=snapshot.data.view->id;
     require(svg.find(id)!=std::string::npos && png.find(id)!=std::string::npos &&
         json.find(id)!=std::string::npos && csv.find(id)!=std::string::npos,

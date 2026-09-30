@@ -86,7 +86,9 @@ int main(){try {
     NboAomoNode sn;sn.label="1a1";sn.salc_index=0;sn.symmetry_irrep="a1";sn.symmetry_name_verified=true;
     const auto phase=render(sn,&model);
     require(phase.find("H2, H3 1s")!=std::string::npos,"SALC atom/shell identity missing");
-    require(phase.find("In-phase basis")!=std::string::npos && phase.find("not a bond assignment")!=std::string::npos,"basis phase confused with bonding");
+    require(phase.find("In-phase basis")!=std::string::npos &&
+        phase.find("NAO basis phases alone do not determine bonding")!=std::string::npos,
+        "basis phase confused with bonding");
     for(auto& term:model.orbitals[0].terms)term.coefficient=-term.coefficient;
     require(render(sn,&model)==phase,"global SALC phase changed its chemical description");
     model.orbitals[0].terms[1].coefficient*=-1;

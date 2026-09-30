@@ -2158,7 +2158,8 @@ int main(int argc,char** argv) {
     svg_buffer << svg_file.rdbuf();
     const std::string svg = svg_buffer.str();
     if (svg.find("Valence MO diagram") == std::string::npos ||
-        svg.find("MO numbering is intentionally omitted") == std::string::npos ||
+        svg.find("MO numbering is intentionally omitted") != std::string::npos ||
+        svg.find("data-orbital-index=") == std::string::npos ||
         svg.find(">3-a<") != std::string::npos) {
         std::cerr << "human export policy failed\n";
         return 9;

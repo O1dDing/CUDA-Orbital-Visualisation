@@ -89,6 +89,9 @@ NboUIActions draw_nbo_panel(NboUIState& state, Language language,
                             const Wavefunction* canonical, std::size_t canonical_index,
                             const MODiagramViewSnapshot* diagram);
 std::string nbo_glyph_seed(Language language);
+std::string nbo_structure_display_label(const NboStructureEvidence& record,
+                                        const Wavefunction* canonical,
+                                        Language language);
 
 void draw_nbo_focus_view(NboFocusUIState& focus, const NboDataset& dataset,
                          const Wavefunction& canonical,
@@ -104,6 +107,7 @@ void export_nbo_bundle(const NboDataset& dataset, std::size_t selected_orbital,
                        const ActiveOrbitalView& active_view,
                        const NboIntegration* integration,
                        const MODiagramViewSnapshot* diagram,
-                       const NboFocusUIState* focus);
+                       const NboFocusUIState* focus,
+                       Language language = Language::English);
 
 } // namespace cov::ui

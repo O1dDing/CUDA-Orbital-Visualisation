@@ -304,12 +304,45 @@ std::vector<std::vector<std::size_t>> local_unions(
         suffix_dimension[index] = suffix_dimension[index + 1u] +
             source[pool[index].group].members.size();
     }
-    std::set<std::vector<std::size_t>> completed;
+    struct RankedUnion {
+        std::vector<std::size_t> groups;
+        double score = 0.0;
+    };
+    std::vector<RankedUnion> ranked;
+    const auto ranked_before = [](const auto& left, const auto& right) {
+        if (left.score != right.score) return left.score > right.score;
+        return left.groups < right.groups;
+    };
+    // Every increasing-index subset is visited exactly once. Score it when
+    // complete and retain only the exact best K under the existing score and
+    // lexicographic tie order; no full subset set or full ranking is needed.
+    const auto retain = [&](const std::vector<std::size_t>& groups) {
+        const auto combined = combine_subspaces(source, groups);
+        if (combined.descriptor.empty() || combined.members.size() !=
+                                               target_dimension) return;
+        if (std::abs(anchor.energy - combined.energy) >
+            options.composite_energy_window_hartree) return;
+        const double dimension = static_cast<double>(target_dimension);
+        if (std::abs(anchor.occupation - combined.occupation) / dimension >
+            options.composite_occupation_window) return;
+        double similarity = 0.0;
+        const double score = match_score(anchor, combined, options, similarity);
+        if (!std::isfinite(score) || score <= 0.0 ||
+            similarity < options.minimum_composite_similarity) return;
+        RankedUnion item{groups, score};
+        const auto position = std::lower_bound(ranked.begin(), ranked.end(),
+                                               item, ranked_before);
+        if (ranked.size() == options.maximum_composite_candidates_per_anchor &&
+            position == ranked.end()) return;
+        ranked.insert(position, std::move(item));
+        if (ranked.size() > options.maximum_composite_candidates_per_anchor)
+            ranked.pop_back();
+    };
     std::vector<std::size_t> chosen;
     const auto extend = [&](const auto& self, const std::size_t position,
                             const std::size_t accumulated) -> void {
         if (accumulated == target_dimension) {
-            if (chosen.size() >= 2u) completed.insert(chosen);
+            if (chosen.size() >= 2u) retain(chosen);
             return;
         }
         if (position >= pool.size() ||
@@ -337,41 +370,6 @@ std::vector<std::vector<std::size_t>> local_unions(
     };
     extend(extend, 0u, 0u);
 
-    struct RankedUnion {
-        std::vector<std::size_t> groups;
-        double score = 0.0;
-    };
-    std::vector<RankedUnion> ranked;
-    for (const auto& groups : completed) {
-        const auto combined = combine_subspaces(source, groups);
-        if (combined.descriptor.empty() || combined.members.size() !=
-                                               target_dimension) {
-            continue;
-        }
-        if (std::abs(anchor.energy - combined.energy) >
-            options.composite_energy_window_hartree) {
-            continue;
-        }
-        const double dimension = static_cast<double>(target_dimension);
-        if (std::abs(anchor.occupation - combined.occupation) / dimension >
-            options.composite_occupation_window) {
-            continue;
-        }
-        double similarity = 0.0;
-        const double score = match_score(anchor, combined, options, similarity);
-        if (std::isfinite(score) && score > 0.0 &&
-            similarity >= options.minimum_composite_similarity) {
-            ranked.push_back({groups, score});
-        }
-    }
-    std::stable_sort(ranked.begin(), ranked.end(), [](const auto& left,
-                                                       const auto& right) {
-        if (left.score != right.score) return left.score > right.score;
-        return left.groups < right.groups;
-    });
-    if (ranked.size() > options.maximum_composite_candidates_per_anchor) {
-        ranked.resize(options.maximum_composite_candidates_per_anchor);
-    }
     std::vector<std::vector<std::size_t>> result;
     result.reserve(ranked.size());
     for (auto& item : ranked) result.push_back(std::move(item.groups));
@@ -888,7 +886,7 @@ OrbitalTrackingResult track_orbital_subspaces(
         return result;
     }
 
-    // TODO(perf): Profile local-union enumeration before adding an end-to-end
+    // ✳ TODO(perf): Profile local-union enumeration before adding an end-to-end
     // budget. The current DP limits apply separately to each conflict component
     // and do not bound candidate generation or final assignment. Any future
     // truncation must preserve explicit unmatched/ambiguous results.

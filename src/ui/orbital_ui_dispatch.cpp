@@ -2,6 +2,7 @@
 #include "cov/nbo_ui.hpp"
 #include "cov/nbo_aomo_text.hpp"
 #include "cov/orbital_ui_text.hpp"
+#include "cov/nbo_aomo_labels.hpp"
 #include "cov/numerical_diagnostics.hpp"
 #include "cov/overlap.hpp"
 #include "cov/orbital_chemistry_summary.hpp"
@@ -156,32 +157,27 @@ void provenance_strip(const Wavefunction& wf, const Language language) {
             orbital_tr(OrbitalText::PointGroup,language),
         point_group_suffix.c_str());
 
-    const bool chinese=language==Language::ChineseSimplified;
     const auto density_status=[&](NumericalStatus status) {
         switch(status) {
-            case NumericalStatus::Available:return chinese?"可用":"available";
-            case NumericalStatus::MissingInput:return chinese?"信息不足":"missing information";
-            case NumericalStatus::InvalidInput:return chinese?"输入无效":"invalid input";
-            case NumericalStatus::Failed:return chinese?"计算失败":"calculation failed";
-            default:return chinese?"未计算":"not computed";
+            case NumericalStatus::Available:return orbital_tr(OrbitalText::AvailableData,language);
+            case NumericalStatus::MissingInput:return orbital_tr(OrbitalText::InsufficientData,language);
+            case NumericalStatus::InvalidInput:return orbital_tr(OrbitalText::IncompatibleData,language);
+            case NumericalStatus::Failed:return orbital_tr(OrbitalText::ComputationFailed,language);
+            default:return orbital_tr(OrbitalText::NotAnalysed,language);
         }
     };
-    ImGui::TextWrapped(chinese?"总密度：%s（%s）；自旋密度：%s（%s）":
-        "Total density: %s (%s); spin density: %s (%s)",
+    ImGui::TextWrapped("%s: %s (%s)",orbital_tr(OrbitalText::TotalDensity,language),
         density_status(wf.total_density_diagnostics.status),
-        localised_data_provenance(wf.total_density_provenance,language),
+        localised_data_provenance(wf.total_density_provenance,language));
+    ImGui::TextWrapped("%s: %s (%s)",orbital_tr(OrbitalText::SpinDensity,language),
         density_status(wf.spin_density_diagnostics.status),
         localised_data_provenance(wf.spin_density_provenance,language));
     if(wf.spin_density_diagnostics.occupation_model==OrbitalOccupationModel::SharedIntegerDeterminant &&
        wf.spin_density_diagnostics.status==NumericalStatus::Available) {
-        ImGui::TextWrapped("%s",chinese?
-            "自旋密度按共享整数占据解释：双占据成对，单占据归入 α 自旋。":
-            "Spin density assumes shared integer occupations: double occupation is paired; single occupation is alpha.");
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::SharedSpinDescription,language));
     } else if(wf.total_density_diagnostics.status==NumericalStatus::Available &&
               wf.spin_density_diagnostics.status==NumericalStatus::MissingInput) {
-        ImGui::TextWrapped("%s",chinese?
-            "输入可以确定总密度，但不能确定自旋分配；完整 Mayer 键级暂不可用。":
-            "The input determines total density but not its spin partition; full Mayer bond orders are unavailable.");
+        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::MissingSpinDescription,language));
     }
 
     if (!wf.enrichment_source.empty()) {
@@ -191,14 +187,10 @@ void provenance_strip(const Wavefunction& wf, const Language language) {
     if (wf.ao_metric_diagnostics.status!=NumericalStatus::NotComputed) {
         if (wf.ao_metric_diagnostics.status!=NumericalStatus::Available ||
             (!wf.orbitals.empty() && !orbital_metric_usable(wf))) {
-            ImGui::TextWrapped("%s",chinese
-                ?"基组与轨道数值检查未通过；成键和派生轨道标签暂不可用。原始轨道数据保留。"
-                :"Basis/orbital numerical checks failed; bonding and derived orbital labels are unavailable. Original orbital data are retained.");
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::MetricDataUnavailable,language));
         }
         if (wf.producer_ao_overlap_basis_status==NumericalStatus::InvalidInput) {
-            ImGui::TextWrapped("%s",chinese
-                ?"输入中的重叠矩阵与基组不一致；分析使用独立基组积分，原矩阵保留供核查。"
-                :"The input overlap matrix is inconsistent with the basis; analysis uses independent basis integrals and retains the original matrix for inspection.");
+            ImGui::TextWrapped("%s",orbital_tr(OrbitalText::IndependentOverlap,language));
         }
     }
     ImGui::Spacing();
@@ -324,7 +316,7 @@ void draw_channel_value(const char* label, const OrbitalChannelDistribution& val
     component("φ", kPhiColour, value.phi, true);
     if (value.undetermined > 0.005) {
         inline_plain(" · ");
-        inline_text("UND", kUnavailableColour);
+        inline_text(orbital_tr(OrbitalText::NotDetermined,language), kUnavailableColour);
         inline_plain(" ");
         inline_text(percent_text(value.undetermined), kNumericColour);
     }
@@ -359,7 +351,7 @@ void draw_bonding_value(const char* label, const OrbitalBondingDistribution& val
     component(orbital_tr(OrbitalText::Nonbonding,language), kNonbondingColour, value.nonbonding, true);
     if (value.undetermined > 0.005) {
         inline_plain(" · ");
-        inline_text("UND", kUnavailableColour);
+        inline_text(orbital_tr(OrbitalText::NotDetermined,language), kUnavailableColour);
         inline_plain(" ");
         inline_text(percent_text(value.undetermined), kNumericColour);
     }
@@ -406,26 +398,37 @@ std::string delocalised_descriptor(const OrbitalChemistry& chemistry,
     return symbol+" · "+orbital_tr(OrbitalText::DelocalisedPi,language);
 }
 
-std::string delocalised_orbital_members(const OrbitalChemistry& chemistry) {
+std::string delocalised_orbital_members(const Wavefunction& wf,const OrbitalChemistry& chemistry) {
     std::ostringstream result;
     for (const auto orbital_index : chemistry.delocalised_family_orbitals) {
         if (result.tellp() > 0) result << ", ";
-        result << "MO" << orbital_index + 1u;
+        result << canonical_mo_display_label(wf,orbital_index);
     }
     return result.str();
 }
 
 const char* unresolved_canonical_assignment(const Language language) {
-    switch(language) {
-    case Language::ChineseSimplified:
-        return "此方法未建立正则轨道归属；请查看上方关系证据";
-    case Language::Japanese:
-        return "この方法では正準軌道への帰属は未確定です。上の関係証拠を参照";
-    case Language::French:
-        return "Attribution à l'orbitale canonique non établie par cette méthode ; voir les relations ci-dessus";
-    default:
-        return "No canonical assignment established by this method; see relation evidence above";
+    return orbital_tr(OrbitalText::NotDetermined,language);
+}
+
+const char* routed_status_ui(RoutedStatus status,Language language) {
+    switch(status) {
+        case RoutedStatus::Available:return orbital_tr(OrbitalText::AvailableData,language);
+        case RoutedStatus::NotAnalysed:return orbital_tr(OrbitalText::NotAnalysed,language);
+        case RoutedStatus::Insufficient:return orbital_tr(OrbitalText::InsufficientData,language);
+        case RoutedStatus::Rejected:return orbital_tr(OrbitalText::IncompatibleData,language);
+        case RoutedStatus::Unsupported:return orbital_tr(OrbitalText::UnsupportedData,language);
+        case RoutedStatus::NotApplicable:return orbital_tr(OrbitalText::NotApplicableData,language);
+        case RoutedStatus::NotReportedAboveThreshold:return orbital_tr(OrbitalText::BelowReportThreshold,language);
     }
+    return orbital_tr(OrbitalText::NotDetermined,language);
+}
+
+const char* coupling_direction_ui(const std::string& direction,Language language) {
+    const auto key=direction=="symmetric_coupled"?OrbitalText::SymmetricCoupling:
+        direction=="ligand_to_centre"?OrbitalText::LigandToMetal:
+        direction=="centre_to_ligand"?OrbitalText::MetalToLigand:OrbitalText::NotDetermined;
+    return orbital_tr(key,language);
 }
 
 std::string atom_members(const Wavefunction& wf,
@@ -459,12 +462,12 @@ void draw_participation(const Wavefunction& wf,
     }
 }
 
-void draw_routed_subspaces(const RoutedAnalysis& routed,const std::size_t selected_index) {
+void draw_routed_subspaces(const RoutedAnalysis& routed,const std::size_t selected_index,Language language) {
     if(selected_index<routed.mo_relations.size()){
         const auto& relations=routed.mo_relations[selected_index];
-        ImGui::SeparatorText("Related localized subspaces");
+        ImGui::SeparatorText(orbital_tr(OrbitalText::RelatedLocalOrbitals,language));
         if(relations.available()){
-            ImGui::TextDisabled("%zu actual projected relations; source records retained in export",
+            ImGui::TextDisabled(orbital_tr(OrbitalText::ProjectionRelations,language),
                                 relations.value->size());
             std::map<std::string,const RoutedLocalRelation*> registry;
             for(const auto& row:routed.local_relation_registry)
@@ -487,30 +490,30 @@ void draw_routed_subspaces(const RoutedAnalysis& routed,const std::size_t select
                 for(std::size_t k=0;k<relation.orbitals.size();++k)
                     if(k<projection.canonical_projection_weights.size() &&
                        projection.canonical_projection_weights[k])
-                        ImGui::TextDisabled("%s %zu: %.2f%% canonical projection",
+                        ImGui::TextDisabled("%s %zu: %.2f%% · %s",
                             nbo_orbital_kind_name(relation.orbitals[k].kind),
                             relation.orbitals[k].index+1,
-                            100* *projection.canonical_projection_weights[k]);
+                            100* *projection.canonical_projection_weights[k],
+                            orbital_tr(OrbitalText::CanonicalProjection,language));
                 if(relation.kind=="donor_acceptor")
-                    ImGui::TextDisabled("Localized E(2); not an allocated canonical MO energy");
+                    ImGui::TextDisabled("%s",orbital_tr(OrbitalText::LocalizedE2,language));
             };
             for(std::size_t k=0;k<std::min<std::size_t>(6,ranked.size());++k)
                 draw_relation(*ranked[k]);
-            if(ranked.size()>6 && ImGui::TreeNode("All related source records")){
+            if(ranked.size()>6 && ImGui::TreeNode(orbital_tr(OrbitalText::AllRelatedOrbitals,language))){
                 ImGui::BeginChild("##related_local_records",ImVec2(0,240),false);
                 ImGuiListClipper clipper;clipper.Begin(static_cast<int>(ranked.size()));
                 while(clipper.Step())for(int k=clipper.DisplayStart;k<clipper.DisplayEnd;++k)
                     draw_relation(*ranked[static_cast<std::size_t>(k)]);
                 ImGui::EndChild();ImGui::TreePop();
             }
-        }else ImGui::TextDisabled("Localized relations: %s (%s)",
-            routed_status_name(relations.status),relations.reason.c_str());
+        }else ImGui::TextDisabled("%s",routed_status_ui(relations.status,language));
     }
     bool mapped_pi=false,available_pi=false;
     for(const auto& coupling:routed.pi_couplings){
         if(!coupling.available()){
-            ImGui::TextDisabled("Same-operator π coupling: %s (%s)",
-                routed_status_name(coupling.status),coupling.reason.c_str());
+            ImGui::TextDisabled("%s: %s",orbital_tr(OrbitalText::PiCoupling,language),
+                routed_status_ui(coupling.status,language));
             continue;
         }
         available_pi=true;
@@ -518,19 +521,21 @@ void draw_routed_subspaces(const RoutedAnalysis& routed,const std::size_t select
         for(const auto& group:record.groups)
             if(std::find(group.members.begin(),group.members.end(),selected_index)!=group.members.end()){
                 mapped_pi=true;
-                ImGui::SeparatorText("Same-operator π subspace");
-                ImGui::Text("%s · %s · %zu coupled dimensions",
-                    group.character.c_str(),record.direction.c_str(),record.coupled_rank);
-                ImGui::TextDisabled("Cross-Fock range %.5f to %.5f Ha; partition support %.1f%% / %.1f%%",
-                    group.cross_fock_min_hartree,group.cross_fock_max_hartree,
+                ImGui::SeparatorText(orbital_tr(OrbitalText::PiCoupling,language));
+                const auto character=group.character=="bonding_mixing"?OrbitalText::BondingMixing:
+                    group.character=="antibonding_mixing"?OrbitalText::AntibondingMixing:OrbitalText::NotDetermined;
+                ImGui::Text("%s · %s",orbital_tr(character,language),coupling_direction_ui(record.direction,language));
+                ImGui::Text(orbital_tr(OrbitalText::PiCoupledDimensions,language),record.coupled_rank);
+                ImGui::TextDisabled("%s: %.5f – %.5f Ha",orbital_tr(OrbitalText::CrossFockRange,language),
+                    group.cross_fock_min_hartree,group.cross_fock_max_hartree);
+                ImGui::TextDisabled("%s: %.1f%% / %.1f%%",orbital_tr(OrbitalText::PartitionWeights,language),
                     100*group.centre_weight,100*group.ligand_weight);
-                ImGui::TextWrapped("%s",record.direction_evidence.c_str());
             }
     }
     if(routed.pi_couplings.empty())
-        ImGui::TextDisabled("Same-operator π coupling: not analysed");
+        ImGui::TextDisabled("%s: %s",orbital_tr(OrbitalText::PiCoupling,language),orbital_tr(OrbitalText::NotAnalysed,language));
     else if(available_pi && !mapped_pi)
-        ImGui::TextDisabled("No verified π coupling subspace maps to this canonical MO");
+        ImGui::TextDisabled("%s",orbital_tr(OrbitalText::PiNoRelation,language));
 }
 
 void draw_selected_chemistry(const Wavefunction& wf,
@@ -547,23 +552,29 @@ void draw_selected_chemistry(const Wavefunction& wf,
     if(!show_chemistry)return;
     if(routed && selected_index<routed->mo_composition.size()){
         const auto& composition=routed->mo_composition[selected_index];
-        ImGui::TextDisabled("Composition route: %s via %s · %s",
-            routed_status_name(composition.status),
-            routed_provider_name(composition.provider),composition.method.c_str());
-        if(!composition.reason.empty())ImGui::TextWrapped("%s",composition.reason.c_str());
-        if(!composition.fallback_reason.empty())
-            ImGui::TextWrapped("NBO fallback: %s",composition.fallback_reason.c_str());
+        if(!composition.available())
+            ImGui::TextDisabled("%s: %s",orbital_tr(OrbitalText::OrbitalComposition,language),
+                routed_status_ui(composition.status,language));
+        else if(composition.provider==RoutedProvider::Legacy) {
+            ImGui::TextDisabled("%s: %s",text.method,orbital_tr(OrbitalText::AOReferenceProjection,language));
+            if(!composition.fallback_reason.empty()) {
+                const auto status=composition.fallback_reason=="NBO analysis has not been attached"?OrbitalText::NotAnalysed:
+                    composition.fallback_reason=="NBO association does not match this canonical wavefunction"?
+                        OrbitalText::IncompatibleData:OrbitalText::Unavailable;
+                ImGui::TextDisabled("%s: %s",orbital_tr(OrbitalText::NAOProjection,language),orbital_tr(status,language));
+            }
+        }
     }
-    if(routed)draw_routed_subspaces(*routed,selected_index);
+    if(routed)draw_routed_subspaces(*routed,selected_index,language);
     if(routed && selected_index<routed->mo_composition.size()){
         const auto& composition=routed->mo_composition[selected_index];
         if(composition.available() && composition.provider==RoutedProvider::Nbo){
             const auto& value=*composition.value;
-            ImGui::TextWrapped("%s: %s",text.method,"validated NAO projection");
-            if(value.retained_norm)ImGui::Text("Retained NAO norm: %.6f",*value.retained_norm);
-            else ImGui::TextDisabled("Retained NAO norm: unavailable");
-            if(value.residual_norm)ImGui::Text("AO-metric reconstruction residual: %.3g",*value.residual_norm);
-            else ImGui::TextDisabled("AO-metric reconstruction residual: unavailable");
+            ImGui::TextWrapped("%s: %s",text.method,orbital_tr(OrbitalText::NAOProjection,language));
+            if(value.retained_norm)ImGui::Text("%s: %.6f",orbital_tr(OrbitalText::RetainedNAONorm,language),*value.retained_norm);
+            else ImGui::TextDisabled("%s: %s",orbital_tr(OrbitalText::RetainedNAONorm,language),orbital_tr(OrbitalText::Unavailable,language));
+            if(value.residual_norm)ImGui::Text("%s: %.3g",orbital_tr(OrbitalText::ReconstructionResidual,language),*value.residual_norm);
+            else ImGui::TextDisabled("%s: %s",orbital_tr(OrbitalText::ReconstructionResidual,language),orbital_tr(OrbitalText::Unavailable,language));
             if(!value.complete)
                 ImGui::TextDisabled("%s",aomo_text(language,"Showing partial orbital composition."));
             std::vector<const NboNaoGroupContribution*> shells;
@@ -610,7 +621,7 @@ void draw_selected_chemistry(const Wavefunction& wf,
     if (has_delocalised) {
         if (!chemistry.delocalised_family_orbitals.empty()) {
             draw_label_value(text.members,
-                             delocalised_orbital_members(chemistry),
+                             delocalised_orbital_members(wf,chemistry),
                              kPiColour);
         }
         draw_participation(
@@ -683,9 +694,7 @@ void draw_selected_chemistry(const Wavefunction& wf,
                          unresolved_canonical_assignment(language):chemistry.donor_acceptor,
                      chemistry.donor_acceptor == "UND" ? kUnavailableColour : kMulticentreColour);
     const std::string method=localised_chemistry_method(chemistry.method,language);
-    ImGui::TextDisabled("%s: %s · classification support (legacy AO model)", text.method, method.c_str());
-    continue_text(percent_text(chemistry.confidence),ImGui::GetStyle().ItemSpacing.x);
-    ImGui::TextColored(text_colour(kNumericColour), "%.0f%%", 100.0 * chemistry.confidence);
+    ImGui::TextDisabled("%s: %s", text.method, method.c_str());
     if (!chemistry.note.empty()) {
         const std::string note=localised_chemistry_note(chemistry.note,language);
         ImGui::TextDisabled("%s",note.c_str());

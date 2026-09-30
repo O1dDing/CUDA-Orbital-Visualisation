@@ -15,6 +15,7 @@
 #include "cov/nbo_aomo_labels.hpp"
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
+#include "cov/ui_raster_text.hpp"
 #include "cov/volume_renderer.hpp"
 #include "cov/validation.hpp"
 #include "cov/viewer_layout.hpp"
@@ -29,6 +30,8 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <chrono>
+#include <cstdlib>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
@@ -307,6 +310,19 @@ int main(int argc, char** argv) {
         cov::OrbitalSurfaceMode orbital_surface_mode = cov::OrbitalSurfaceMode::Solid;
         StatusKind status = StatusKind::Ready;
         std::string status_detail;
+        std::string status_error_detail;
+        const bool profile_open=std::getenv("COV_PROFILE_OPEN")!=nullptr;
+        bool profile_frame_pending=false;
+        auto profile_start=std::chrono::steady_clock::now();
+        auto profile_previous=profile_start;
+        const auto profile_stage=[&](const char* stage) {
+            if(!profile_open)return;
+            const auto now=std::chrono::steady_clock::now();
+            std::fprintf(stderr,"COV open: %s stage=%.3f total=%.3f seconds\n",stage,
+                std::chrono::duration<double>(now-profile_previous).count(),
+                std::chrono::duration<double>(now-profile_start).count());
+            std::fflush(stderr);profile_previous=now;
+        };
 
         std::size_t mo_index = 0;
         std::optional<std::size_t> pending_mo_index;
@@ -509,7 +525,10 @@ int main(int argc, char** argv) {
             identity();
             cov::validation::evaluated(mo_index,"set-switch",evaluator->last_kernel_ms());
             status=StatusKind::GridUpdated;
-            status_detail=(use_nbo?"NBO ":"Canonical MO ")+std::to_string(next_index+1);
+            status_detail=use_nbo ? "NBO "+std::to_string(next_index+1) :
+                cov::ui::canonical_mo_display_label(*wavefunction,next_index,
+                    nbo_ui.aomo.names && next_index<nbo_ui.aomo.names->canonical.size()
+                        ? &nbo_ui.aomo.names->canonical[next_index] : nullptr);
             recompute = false;
         };
 
@@ -543,11 +562,13 @@ int main(int argc, char** argv) {
             try {
                 status = StatusKind::Parsing;
                 status_detail = path_to_utf8(path);
+                status_error_detail.clear();
 
                 cov::MoldenParseOptions options;
                 options.max_atoms = 100;
                 options.require_orbitals = true;
                 auto next_wavefunction=std::make_unique<cov::Wavefunction>(cov::parse_molden(path, options));
+                profile_stage("wavefunction");
                 auto& wf=*next_wavefunction;
                 if (cov::validation::active()) {
                     std::ostringstream diagnostics;
@@ -569,10 +590,12 @@ int main(int argc, char** argv) {
                     // new frame still resets selection to that frame's own HOMO.
                     // ✳ TODO: Profile slow frame opens and bound search work per conflict group.
                     new_tracking = cov::track_orbital_subspaces(*wavefunction, wf);
+                    profile_stage("frame-matching");
                 }
 
                 auto next_route=cov::route_chemistry(wf);
                 auto next_graph=*next_route.interaction_graph.value;
+                profile_stage("orbital-analysis");
                 auto next_evaluator=std::make_unique<cov::CudaOrbitalEvaluator>(wf);
                 if (evaluator) evaluator->detach_gl_texture();
                 try {
@@ -586,6 +609,7 @@ int main(int argc, char** argv) {
                     throw;
                 }
                 evaluator=std::move(next_evaluator);
+                profile_stage("orbital-grid");
                 additional_fields.clear();
                 inspection.reset();
                 nbo_ui.integration=nullptr;
@@ -629,7 +653,10 @@ int main(int argc, char** argv) {
                 status_detail = path_to_utf8(path.filename());
             } catch (const std::exception& e) {
                 status = StatusKind::Error;
-                status_detail = e.what();
+                status_error_detail=e.what();
+                status_detail=scene_text(language,"The calculation file could not be read.",
+                    "无法读取计算文件。","計算ファイルを読み込めません。",
+                    "Impossible de lire le fichier de calcul.");
             }
         };
 
@@ -671,8 +698,9 @@ int main(int argc, char** argv) {
             if(selection.terms.size()==1 &&
                selection.terms.front().orbital.kind==cov::NboOrbitalKind::Canonical) {
                 const auto& ref=selection.terms.front().orbital;
-                status_detail="MO "+std::to_string(ref.index+1)+" ["+
-                    cov::nbo_spin_name(ref.spin)+"]";
+                status_detail=cov::ui::canonical_mo_display_label(*wavefunction,ref.index,
+                    nbo_ui.aomo.names && ref.index<nbo_ui.aomo.names->canonical.size()
+                        ? &nbo_ui.aomo.names->canonical[ref.index] : nullptr);
             }
             nbo_ui.aomo.status=status_detail;
             nbo_ui.error.clear();status=StatusKind::GridUpdated;
@@ -749,24 +777,35 @@ int main(int argc, char** argv) {
             if(!wavefunction)throw std::runtime_error("The package has no loaded canonical wavefunction");
             if(candidate.report.empty()){
                 clear_integration();
-                nbo_ui.input_status="NBO data missing — Gaussian molecular orbitals remain available";
+                nbo_ui.input_status=scene_text(language,"NBO data could not be located.",
+                    "无法定位 NBO 数据。","NBO データが見つかりません。","Données NBO introuvables.");
                 status=StatusKind::Loaded;
                 status_detail=nbo_ui.input_status;
                 return;
             }
-            attach_integration(cov::read_nbo_integration(*wavefunction,candidate),true);
+            auto next_integration=cov::read_nbo_integration(*wavefunction,candidate);
+            profile_stage("nbo-read-and-association");
+            attach_integration(std::move(next_integration),true);
+            profile_stage("nbo-analysis");
             nbo_ui.input_status=candidate.label;
             if(const auto* matched=cov::nbo_capability(*integration,"source_association");
                matched && matched->state==cov::NboCapabilityState::Rejected){
-                nbo_ui.error="Gaussian / NBO mismatch: "+matched->detail;
-                nbo_ui.input_status=nbo_ui.error+". Gaussian molecular orbitals remain available.";
+                nbo_ui.error="NBO data mismatch: "+matched->detail;
+                nbo_ui.input_status=scene_text(language,"The NBO data does not match this calculation.",
+                    "NBO 数据与当前计算不匹配。","NBO データが現在の計算と一致しません。",
+                    "Les données NBO ne correspondent pas à ce calcul.");
+                status_error_detail=matched->detail;
                 status=StatusKind::Error;status_detail=nbo_ui.input_status;
             }
         };
         auto load_inputs = [&](const std::vector<std::filesystem::path>& paths) {
+            profile_start=profile_previous=std::chrono::steady_clock::now();
+            profile_frame_pending=true;
             try {
                 nbo_ui.error.clear();
+                status_error_detail.clear();
                 auto found=cov::discover_nbo_inputs(paths);
+                profile_stage("input-discovery");
                 nbo_ui.pending_candidate.reset();
                 if(found.candidates.size()==1 && !found.selection_required) {
                     apply_candidate(found.candidates.front());
@@ -776,16 +815,19 @@ int main(int argc, char** argv) {
                         load_file(paths.front());
                         if(status==StatusKind::Error)throw std::runtime_error(status_detail);
                     }
-                    nbo_ui.input_status="No unique NBO calculation found. Gaussian view is retained.";
+                    nbo_ui.input_status=scene_text(language,"NBO data could not be located.",
+                        "无法定位 NBO 数据。","NBO データが見つかりません。","Données NBO introuvables.");
                 } else {
-                    nbo_ui.input_status="Multiple calculations found — choose the matching calculation below";
+                    nbo_ui.input_status=scene_text(language,"Multiple calculations found.",
+                        "找到多个计算。","複数の計算が見つかりました。","Plusieurs calculs trouvés.");
                 }
                 nbo_ui.input_discovery=std::move(found);
             } catch(const std::exception& e){
                 clear_integration();
                 nbo_ui.input_discovery.reset();
-                nbo_ui.error=e.what();nbo_ui.input_status="NBO association failed; Gaussian view is retained";
-                status=StatusKind::Error;status_detail=nbo_ui.error;
+                nbo_ui.error=e.what();nbo_ui.input_status=scene_text(language,"NBO data could not be loaded.",
+                    "无法载入 NBO 数据。","NBO データを読み込めません。","Impossible de charger les données NBO.");
+                status=StatusKind::Error;status_detail=nbo_ui.input_status;
                 cov::validation::record("input.package.error","{\"reason\":"+cov::validation::quote(e.what())+"}");
             }
         };
@@ -810,7 +852,7 @@ int main(int argc, char** argv) {
             // are released. Reuse the package loader and native picker.
             if(choose_nbo_input){
                 choose_nbo_input=false;
-                const auto dialog=cov::open_molden_file_dialog();
+                const auto dialog=cov::open_wavefunction_file_dialog(language,true);
                 if(dialog.selected())load_inputs({dialog.path});
                 else if(!dialog.cancelled&&!dialog.error.empty()){
                     status=StatusKind::Error;
@@ -1030,10 +1072,10 @@ int main(int argc, char** argv) {
                 if(overlay && std::any_of(overlay->bonds.begin(),overlay->bonds.end(),[](const auto& bond){
                     return bond.style==cov::OverlayBondStyle::Unresolved;}))
                     ImGui::TextWrapped("%s",scene_text(language,
-                        "Grey dotted links: connectivity is evidenced; integer bond order is unresolved. Click for orbital details and indices.",
-                        "灰色点划线：连接证据存在，整数键型未确定；点选查看轨道详情和键级指数。",
-                        "灰色の点線：結合の証拠はありますが、整数結合次数は未確定です。クリックして軌道と指数を確認できます。",
-                        "Traits pointillés gris : connexion attestée, ordre entier non résolu. Cliquez pour les orbitales et les indices."));
+                        "Grey dotted links: connectivity without an assigned integer bond order.",
+                        "灰色点划线：已识别的连接，整数键级未确定。",
+                        "灰色の点線：整数結合次数が未確定の結合。",
+                        "Pointillés gris : connexion sans ordre de liaison entier attribué."));
                 if(overlay && overlay->colour_mode!=cov::AtomScalarMode::Element){
                     ImGui::Text("%s: -%.3f ... 0 ... +%.3f",
                         overlay->colour_mode==cov::AtomScalarMode::NaturalCharge?
@@ -1060,7 +1102,8 @@ int main(int argc, char** argv) {
                 }
                 if(integration && nbo_ui.selected_structure && *nbo_ui.selected_structure<integration->structure.size()){
                     const auto& evidence=integration->structure[*nbo_ui.selected_structure];
-                    ImGui::TextWrapped("%s",evidence.label.c_str());
+                    ImGui::TextWrapped("%s",cov::ui::nbo_structure_display_label(
+                        evidence,wavefunction.get(),language).c_str());
                     if(evidence.value)ImGui::Text("%.5g %s",*evidence.value,evidence.units.c_str());
                 }
                 if(overlay)for(auto atom:nbo_ui.selected_atoms)if(atom<overlay->atom_values.size() && overlay->atom_values[atom])
@@ -1189,6 +1232,11 @@ int main(int argc, char** argv) {
             } else {
                 disabled_wrapped(cov::ui::tr(cov::ui::Text::IdleHint, language));
             }
+            if(status==StatusKind::Error && !status_error_detail.empty() &&
+               ImGui::TreeNode(scene_text(language,"Error details","错误详情","エラーの詳細","Détails de l’erreur"))) {
+                disabled_wrapped(status_error_detail.c_str());
+                ImGui::TreePop();
+            }
             ImGui::Separator();
             ImGui::Spacing();
 
@@ -1202,7 +1250,7 @@ int main(int argc, char** argv) {
             std::optional<std::filesystem::path> recent_to_load;
             if (ImGui::Button(cov::ui::tr(cov::ui::Text::OpenFile, language),
                               ImVec2(150.0f * ui_scale, 0.0f))) {
-                const cov::FileDialogResult dialog = cov::open_molden_file_dialog();
+                const cov::FileDialogResult dialog = cov::open_wavefunction_file_dialog(language);
                 if (dialog.selected()) {
                     load_inputs({dialog.path});
                 } else if (!dialog.cancelled && !dialog.error.empty()) {
@@ -1434,7 +1482,23 @@ int main(int argc, char** argv) {
                     base = cov::validation::export_base(base);
                     const auto snapshot=diagram_actions.drawn_diagram;
                     cov::MODiagramExportResult result;
-                    if (snapshot) result=cov::export_mo_diagram_bundle(*snapshot,base);
+                    if (snapshot) {
+                        auto presentation=snapshot->options;
+                        presentation.display_names.reserve(wavefunction->orbitals.size());
+                        for(std::size_t i=0;i<wavefunction->orbitals.size();++i)
+                            presentation.display_names.push_back(cov::ui::canonical_mo_display_label(*wavefunction,i,
+                                nbo_ui.aomo.names && i<nbo_ui.aomo.names->canonical.size()
+                                    ? &nbo_ui.aomo.names->canonical[i] : nullptr));
+                        presentation.figure_title=scene_text(language,"Molecular orbital energies","分子轨道能级",
+                            "分子軌道のエネルギー","Énergies des orbitales moléculaires");
+                        presentation.axis_title=presentation.energy_axis_mode==cov::EnergyAxisMode::Linear
+                            ? scene_text(language,"Energy","能量","エネルギー","Énergie")
+                            : scene_text(language,"Nonlinear energy axis","非线性能量轴",
+                                "非線形エネルギー軸","Axe d’énergie non linéaire");
+                        presentation.raster_text=cov::ui::raster_text;
+                        presentation.raster_text_width=cov::ui::raster_text_width;
+                        result=cov::export_mo_diagram_bundle({snapshot->data,std::move(presentation)},base);
+                    }
                     else result.error="No current diagram view is available for export";
     #ifdef COV_ENABLE_VALIDATION
                     cov::validation::record("export.actual","{\"base\":"+cov::validation::quote(path_to_utf8(base))+
@@ -1451,9 +1515,8 @@ int main(int argc, char** argv) {
                             result.svg_path.stem()) + ".{png,svg,json,csv}";
                     } else {
                         status = StatusKind::Error;
-                        status_detail = result.error.empty()
-                                            ? cov::ui::tr(cov::ui::Text::ExportFailed, language)
-                                            : result.error;
+                        status_detail=cov::ui::tr(cov::ui::Text::ExportFailed,language);
+                        status_error_detail=result.error;
                     }
                 }
             }
@@ -1490,7 +1553,7 @@ int main(int argc, char** argv) {
                                                wavefunction ? &*wavefunction : nullptr,
                                                canonical_mo_index,nbo_ui.contribution_threshold,
                                                active_view(),integration?&*integration:nullptr,
-                                               orbital_ui.diagram_cache.snapshot.get(),&nbo_ui.focus);
+                                               orbital_ui.diagram_cache.snapshot.get(),&nbo_ui.focus,language);
                     export_analysis_companions(base);
                     nbo_ui.export_status=path_to_utf8(base)+".{nbo.json,npa.csv,nao.csv,nbo.csv,wiberg.csv,e2.csv,e2-sections.csv,view.json,view.svg,view.png,focus.json,focus.csv,focus.groups.csv,focus.svg,focus.png}";
                     cov::validation::record("nbo.export","{\"base\":"+
@@ -1630,7 +1693,7 @@ int main(int argc, char** argv) {
             }
             ImGui::TextDisabled("%s: %s",
                                 cov::ui::tr(cov::ui::Text::FontStatus, language),
-                                cov::ui::font_status());
+                                cov::ui::font_status(language));
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::InteractionHint, language));
             ImGui::TextDisabled("%s", cov::ui::tr(cov::ui::Text::IsovalueHint, language));
             cov::ui::end_card();
@@ -1646,6 +1709,7 @@ int main(int argc, char** argv) {
             cov::validation::end_frame(fb_w,fb_h,mo_index,orbital_ui,active_wavefunction());
 
             glfwSwapBuffers(window);
+            if(profile_frame_pending){profile_stage("first-frame");profile_frame_pending=false;}
             if (attach_requested) {
                 try {
                     cov::NboReadOptions options;

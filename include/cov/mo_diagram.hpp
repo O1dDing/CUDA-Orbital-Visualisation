@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <cstddef>
 #include <filesystem>
+#include <functional>
+#include <cstdint>
 #include <limits>
 #include <optional>
 #include <string>
@@ -177,6 +179,13 @@ struct DiagramSelectionPlan {
 };
 
 struct MODiagramOptions {
+    // Presentation supplied by the viewer; no dependency on its font library.
+    std::vector<std::string> display_names;
+    std::string figure_title;
+    std::string axis_title;
+    std::function<void(std::vector<std::uint8_t>&,int,int,int,int,const std::string&,
+                       std::uint8_t,std::uint8_t,std::uint8_t,int)> raster_text;
+    std::function<int(const std::string&,int)> raster_text_width;
     const RoutedAnalysis* routed = nullptr; // immutable, same canonical fingerprint
     std::string routed_identity; // cache generation; changes on every reattachment
     MODiagramMode mode = MODiagramMode::ValenceCentral;

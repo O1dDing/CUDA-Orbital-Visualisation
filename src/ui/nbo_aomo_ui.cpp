@@ -63,7 +63,7 @@ std::string percent(double value) {
 std::array<std::string,3> coverage_lines(const NboAomoViewSnapshot& view) {
     if(!view.focused_display_weight)return {"","",""};
     return {
-        aomo_text(view.language,"Lines show orbital contributions; click a level for its own 3D orbital."),
+        aomo_text(view.language,"Lines show orbital contributions."),
         (!view.show_core || !view.show_rydberg)?aomo_text(view.language,
             "Some core or Rydberg orbitals are hidden."):std::string{},
         view.hide_h_orbitals?aomo_text(view.language,"H orbitals are hidden from this view."):
@@ -1604,9 +1604,9 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
     float header_y=30;
     wrapped("axis","E ("+view.display_energy_unit+"): "+
         (diagram.options.energy_axis_mode==EnergyAxisMode::NonlinearFocus?
-            aomo_text(state.language,"amber ticks: adaptive spacing, not energy gaps"):
-            aomo_text(state.language,"linear energy scale")),12,header_y);
-    wrapped("semantics",aomo_text(state.language,"Group means / shell stacks; raw energies retained."),12,header_y);
+            aomo_text(state.language,"Nonlinear energy axis"):
+            aomo_text(state.language,"Energy axis")),12,header_y);
+    wrapped("semantics",aomo_text(state.language,"Grouped levels use mean energy."),12,header_y);
     // Reserve the caption area even when a narrow chart wraps its header.
     const float caption_padding=std::max(0.0f,header_y+8.0f-view.numeric_top);
     if(caption_padding>0) {
@@ -1810,7 +1810,7 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
             ++state.revision;
         validation::item("aomo.hide_h_orbitals");
         if(ImGui::CollapsingHeader(aomo_text(language,"User atom sets (advanced)"))) {
-            ImGui::TextWrapped("%s",aomo_text(language,"An atom set organizes folded channels. It is not a fixed SALC or a single orbital. Its 3D partial sum is explicitly MO-dependent."));
+            ImGui::TextWrapped("%s",aomo_text(language,"Atom sets organize the view. Their partial sums depend on the selected MO, rather than defining a fixed SALC."));
             std::set<std::size_t> available_atoms;
             for(const auto& orbital:data.orbitals)
                 if(orbital.ref.kind==state.basis_kind)
@@ -2038,7 +2038,7 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
     ImGui::EndChild();
     if(snapshot->canvas_width>ImGui::GetContentRegionAvail().x+2.0f)
         ImGui::TextDisabled("%s",aomo_text(language,"Protected orbital partners need more width; scroll the diagram horizontally."));
-    ImGui::TextDisabled("%s",aomo_text(language,"Scroll to explore; Ctrl+wheel zooms. Click a real orbital to inspect it."));
+    ImGui::TextDisabled("%s",aomo_text(language,"Scroll to explore; Ctrl+wheel zooms. Click an orbital to inspect it."));
     if(hover && ImGui::GetIO().KeyCtrl && ImGui::GetIO().MouseWheel!=0){
         state.zoom=std::clamp(state.zoom*(ImGui::GetIO().MouseWheel>0?1.12f:0.89f),0.35f,3.0f);++state.revision;
     }
@@ -2109,7 +2109,7 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         }
     }
     if(ImGui::BeginPopup("##aomo.overlapping.nodes")) {
-        ImGui::TextUnformatted(aomo_text(language,"Choose the actual canonical MO"));
+        ImGui::TextUnformatted(aomo_text(language,"Choose an MO"));
         for(const auto& id:state.ambiguous_node_ids) {
             const auto it=std::find_if(snapshot->nodes.begin(),snapshot->nodes.end(),
                 [&](const auto& node){return node.id==id;});
@@ -2237,8 +2237,7 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
             selection.group_id="mo:"+std::to_string(snapshot->focused_canonical_index)+
                 ":"+nbo_orbital_kind_name(state.basis_kind);
             selection.target_canonical_index=snapshot->focused_canonical_index;
-            selection.label="Signed partial sum of "+std::to_string(terms.size())+
-                " actual "+nbo_orbital_kind_name(state.basis_kind)+" components of "+
+            selection.label=std::string(aomo_text(language,"Selected-component sum of "))+
                 canonical_mo_display_label(canonical,snapshot->focused_canonical_index,
                     state.names&&snapshot->focused_canonical_index<state.names->canonical.size()
                         ?&state.names->canonical[snapshot->focused_canonical_index]:nullptr);
@@ -2253,7 +2252,7 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
             selection.group_id="mo:"+std::to_string(snapshot->focused_canonical_index)+
                 ":"+nbo_orbital_kind_name(state.basis_kind);
             selection.target_canonical_index=snapshot->focused_canonical_index;
-            selection.label="Separate signed components of "+
+            selection.label=std::string(aomo_text(language,"Selected-component overlay of "))+
                 canonical_mo_display_label(canonical,snapshot->focused_canonical_index,
                     state.names&&snapshot->focused_canonical_index<state.names->canonical.size()
                         ?&state.names->canonical[snapshot->focused_canonical_index]:nullptr);
@@ -2315,7 +2314,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
     result.json_path=file(".aomo.json");result.csv_path=file(".aomo.csv");
     result.svg_path=file(".aomo.svg");result.png_path=file(".aomo.png");
     if(view.integration_id!=data.id || view.capability_status!="available") {
-        result.error="AO–MO snapshot does not match verified integration";return result;
+        result.error=aomo_text(view.language,"The diagram does not match the loaded data.");return result;
     }
     try {
         std::set<std::string> visible_nodes;
@@ -2324,7 +2323,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             if(node.orbital)visible_orbitals.insert(key(*node.orbital));}
         {
             std::ofstream out(result.csv_path,std::ios::binary);
-            if(!out)throw std::runtime_error("Cannot write AO–MO CSV");
+            if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
             out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id\n";
             const auto display_columns=[&](const NboAomoEdge* edge,
@@ -2400,12 +2399,12 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 display_columns(edge!=view.edges.end()?&*edge:nullptr,
                     orbital.energy_hartree,link.canonical_index);
             }
-            if(!out)throw std::runtime_error("AO–MO CSV write failed");
+            if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
         }
         result.csv=true;
         {
             std::ofstream out(result.json_path,std::ios::binary);
-            if(!out)throw std::runtime_error("Cannot write AO–MO JSON");
+            if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
             out<<"{\"schema\":\"cov_aomo_unified_view_v3\",\"snapshot_id\":"<<quote(view.id)
                <<",\"integration_id\":"<<quote(data.id)<<",\"mo_snapshot_id\":"<<quote(view.mo_snapshot_id)
@@ -2608,7 +2607,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 out<<"]}";
             }else out<<"null";
             out<<"}";
-            if(!out)throw std::runtime_error("AO–MO JSON write failed");
+            if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
         }
         result.json=true;
         float max_y=0,max_x=0;
@@ -2622,7 +2621,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
         const bool paper=view.paper_export;
         {
             std::ofstream out(result.svg_path,std::ios::binary);
-            if(!out)throw std::runtime_error("Cannot write AO–MO SVG");
+            if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram image."));
             out<<std::setprecision(9);
             out<<"<svg xmlns=\"http://www.w3.org/2000/svg\" font-family=\"Segoe UI, Arial, sans-serif\" width=\""<<width
                <<"\" height=\""<<height<<"\" viewBox=\"0 0 "<<width<<' '<<height<<"\">\n";
@@ -2671,9 +2670,10 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                    <<"\" stroke=\""<<stroke<<"\" stroke-opacity=\""
                    <<static_cast<double>(style.alpha)/255.0<<"\" stroke-width=\""<<style.width
                    <<"\" stroke-dasharray=\"5 5\"><title>";
-                if(a.fragment_group_id)out<<"external factor="<<edge.coefficient
-                    <<"; actual partial metric norm²="<<(a.metric_norm2?number(*a.metric_norm2):"unavailable");
-                else out<<"c="<<edge.coefficient<<" "<<xml(source_name(edge.source));
+                out<<xml(aomo_text(view.language,"Coefficient: "))<<edge.coefficient;
+                if(a.fragment_group_id && a.metric_norm2)
+                    out<<"; "<<xml(aomo_text(view.language,"Component norm squared: "))<<number(*a.metric_norm2);
+                else out<<" "<<xml(source_name(edge.source));
                 out<<"</title></line>\n";
             }
             for_each_node_text_background(view,[&](const std::string& node_id,const char* role,
@@ -2697,7 +2697,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                    <<"\" data-spatial-pair=\""<<xml(node.spatial_pair_id)
                    <<"\" data-energy-hartree=\""<<(node.energy_hartree?number(*node.energy_hartree):"")
                    <<"\" data-display-energy-hartree=\""<<(node.display_energy_hartree?number(*node.display_energy_hartree):"")
-                   <<"\" data-display-offset-y=\""<<node.display_offset_y<<"\"><title>"<<xml(node.detail)
+                   <<"\" data-display-offset-y=\""<<node.display_offset_y<<"\"><title>"<<xml(node.individual_label.empty()?node.label:node.individual_label)
                    <<"</title>";
                 if(folded_group)
                     out<<"<rect x=\""<<node.x<<"\" y=\""<<node.y
@@ -2730,11 +2730,11 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 out<<"</g>\n";
             }
             out<<"</svg>\n";
-            if(!out)throw std::runtime_error("AO–MO SVG write failed");
+            if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram image."));
         }
         result.svg=true;
         // PNG uses the same frozen graph geometry and IDs as SVG/JSON.
-        if(height>16000)throw std::runtime_error("AO–MO PNG exceeds supported raster height");
+        if(height>16000)throw std::runtime_error(aomo_text(view.language,"The image exceeds the supported height."));
         std::vector<unsigned char> rgba(static_cast<std::size_t>(width)*height*4,255);
         for(std::size_t p=0;p<rgba.size();p+=4){
             rgba[p]=paper?255:24;rgba[p+1]=paper?255:32;rgba[p+2]=paper?255:45;}
@@ -2900,8 +2900,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 view.energy_tick_export_rgb[0],view.energy_tick_export_rgb[1],
                 view.energy_tick_export_rgb[2]);
         if(missing_glyphs)
-            draw_text(12,height-20,"Missing font glyphs: "+
-                std::to_string(missing_glyphs),view.label_font_size,255,181,100);
+            draw_text(12,height-20,aomo_text(view.language,"Some characters could not be drawn."),
+                view.label_font_size,255,181,100);
         auto put32=[](std::vector<unsigned char>& out,std::uint32_t v){
             out.push_back(static_cast<unsigned char>(v>>24));out.push_back(static_cast<unsigned char>(v>>16));
             out.push_back(static_cast<unsigned char>(v>>8));out.push_back(static_cast<unsigned char>(v));
@@ -2935,9 +2935,9 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
         ihdr.insert(ihdr.end(),{8,6,0,0,0});
         chunk(png,"IHDR",ihdr);chunk(png,"IDAT",z);chunk(png,"IEND",{});
         std::ofstream out(result.png_path,std::ios::binary);
-        if(!out)throw std::runtime_error("Cannot write AO–MO PNG");
+        if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram image."));
         out.write(reinterpret_cast<const char*>(png.data()),static_cast<std::streamsize>(png.size()));
-        if(!out)throw std::runtime_error("AO–MO PNG write failed");
+        if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram image."));
         result.png=true;
     }catch(const std::exception& error){result.error=error.what();}
     return result;

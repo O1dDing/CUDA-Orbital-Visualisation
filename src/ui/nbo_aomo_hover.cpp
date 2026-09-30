@@ -23,7 +23,7 @@ constexpr std::array<Row,static_cast<std::size_t>(Word::Count)> words{{
     Row{"Atomic NAO combination", "原子 NAO 组合", "原子 NAO の組合せ", "Combinaison de NAO atomiques"},
     Row{"Direction: calculation frame", "方向：计算坐标系", "方向：計算の座標系", "Direction : repère du calcul"},
     Row{"Spherical s component", "球对称 s 分量", "球対称の s 成分", "Composante s sphérique"},
-    Row{"Verified symmetry: ", "已验证对称性：", "検証済み対称性：", "Symétrie vérifiée : "},
+    Row{"Symmetry: ", "对称类型：", "対称性：", "Symétrie : "},
     Row{"Orbital subspace; expand to inspect members", "轨道子空间；展开查看成员", "軌道部分空間：展開して各軌道を確認", "Sous-espace orbital ; développer pour voir les membres"},
     Row{"Mainly ", "主要为 ", "主に ", "Principalement "},
     Row{"Mixed angular character", "混合角向性质", "混合した角度特性", "Caractère angulaire mixte"},
@@ -38,7 +38,7 @@ constexpr std::array<Row,static_cast<std::size_t>(Word::Count)> words{{
     Row{"Out-of-phase basis combination", "基函数反相组合", "基底関数の逆位相の組合せ", "Combinaison de base en opposition de phase"},
     Row{"Mixed basis phases", "基函数相位混合", "基底関数の位相が混在", "Phases de base mixtes"},
     Row{"Basis phase unresolved", "基函数相位未确定", "基底関数の位相は未確定", "Phase de base indéterminée"},
-    Row{"NAO phase convention; not a bond assignment", "NAO 相位约定；不代表成键判断", "NAO の位相規約：結合性の判定ではない", "Convention de phase NAO ; sans attribution de liaison"}
+    Row{"NAO basis phases alone do not determine bonding", "仅凭 NAO 基底相位不能判断成键", "NAO 基底の位相だけでは結合性を判断できません", "Les phases des NAO seules ne déterminent pas le caractère liant"}
 }};
 std::size_t language_index(Language language) {
     const auto i=static_cast<std::size_t>(language);

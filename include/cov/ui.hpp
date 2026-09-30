@@ -136,7 +136,6 @@ enum class Text {
     MulticentreBond,
     DelocalisedPiSystem,
     ClassificationSource,
-    Confidence,
     DegenerateMembers,
     Count,
 };
@@ -159,6 +158,7 @@ enum class Tone {
 void apply_theme(float scale = 1.0f);
 bool configure_fonts(float pixel_size = 17.0f);
 [[nodiscard]] const char* font_status() noexcept;
+[[nodiscard]] const char* font_status(Language language);
 
 void section_title(const char* label);
 void begin_card(const char* id, float height);

@@ -52,7 +52,7 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Unmatched previous / current", "未匹配（前帧 / 当前帧）", "未対応（前 / 現在）", "Non appariés précédent / actuel"},
     {"Composite matching", "复合子空间匹配", "複合部分空間の対応", "Appariement des sous-espaces"},
     {"Exact / not needed", "精确 / 无需优化", "厳密 / 不要", "Exact / non requis"},
-    {"Conservative fallback", "保守回退", "保守的フォールバック", "Repli conservateur"},
+    {"Simplified matching", "已使用简化匹配", "簡略化した対応付け", "Appariement simplifié"},
     {"Compatible", "兼容", "互換", "Compatible"},
     {"Incompatible", "不兼容", "非互換", "Incompatible"},
     {"No previous frame", "尚无前一帧", "前のフレームなし", "Aucune géométrie précédente"},
@@ -125,7 +125,7 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Show polyhedral cage support", "显示多面体笼骨架支撑", "多面体ケージ骨格を表示", "Afficher le support de cage polyédrique"},
     {"Show weak interactions", "显示弱相互作用", "弱い相互作用を表示", "Afficher les interactions faibles"},
     {"Hydrogen-bond, non-covalent and ionic contacts only; ambiguous contacts stay hidden.", "仅显示氢键、非共价和离子接触；歧义接触仍保持隐藏。", "水素結合・非共有結合・イオン接触のみ。曖昧な接触は表示しません。", "Contacts hydrogène, non covalents et ioniques uniquement ; les contacts ambigus restent masqués."},
-    {"Dashed bonds use a conservative delocalisation heuristic.", "虚线键使用保守的离域启发式判断。", "破線結合は保守的な非局在化ヒューリスティックです。", "Les liaisons en pointillés utilisent une heuristique prudente de délocalisation."},
+    {"Delocalised bonds: dashed lines.", "离域键：虚线。", "非局在化結合：破線。", "Liaisons délocalisées : pointillés."},
     {"Central valence layout", "中央价电子层布局", "中央価電子層レイアウト", "Disposition centrale de valence"},
     {"Valence-grouped levels", "价电子层分组能级", "価電子層のグループ準位", "Niveaux groupés de valence"},
     {"Valence MO diagram", "价电子层 MO 图", "価電子層 MO 図", "Diagramme MO de valence"},
@@ -140,17 +140,16 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Native Open File is unavailable on this platform.", "当前平台不支持原生“打开文件”。", "このプラットフォームではネイティブのファイル選択を利用できません。", "La boîte de dialogue native n’est pas disponible sur cette plateforme."},
     {"Copy metadata", "复制元数据", "メタデータをコピー", "Copier les métadonnées"},
     {"No orbitals", "无轨道", "軌道がありません", "Aucune orbitale"},
-    {"Adaptive nonlinear energy scale (log-gap v3)", "自适应非线性能量轴（log-gap v3）", "適応型非線形エネルギー軸（log-gap v3）", "Échelle d’énergie non linéaire adaptative (log-gap v3)"},
+    {"Nonlinear energy axis", "非线性能量轴", "非線形エネルギー軸", "Axe d’énergie non linéaire"},
     {"Energy scale", "能量轴", "エネルギー軸", "Échelle d’énergie"},
     {"Linear", "线性", "線形", "Linéaire"},
-    {"Adaptive nonlinear", "自适应非线性", "適応型非線形", "Non linéaire adaptative"},
+    {"Nonlinear", "非线性", "非線形", "Non linéaire"},
     {"Orbital family", "轨道类型", "軌道タイプ", "Famille orbitale"},
     {"Bonding class", "成键类别", "結合分類", "Classe de liaison"},
     {"Exact energy", "精确能量", "正確なエネルギー", "Énergie exacte"},
     {"Multicentre bond", "多中心键", "多中心結合", "Liaison multicentrique"},
     {"Delocalised π system", "离域 π 体系", "非局在化 π 系", "Système π délocalisé"},
     {"Classification source", "分类来源", "分類の出典", "Source de classification"},
-    {"Confidence", "置信度", "信頼度", "Confiance"},
     {"Degenerate members", "简并成员", "縮退メンバー", "Membres dégénérés"},
 }};
 
@@ -160,6 +159,7 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
 // omit characters in labels such as “轨道材质” and “柔和自动打光”, which made
 // Dear ImGui display '?' even though the operating-system CJK font was loaded.
 constexpr const char* kSupplementalChinese =
+    "无法定位载入数据当前计算不匹配找到多个文件读取失败详细错误字体缺少中文日文字形分子轨道能级已识别的连接整数键级未确定 "
     "轨道材质 标准 玻璃 表面模式 实体 线框 实体 + 线框 柔和自动打光 "
     "波函数文件（FCHK 优先；Molden 兼容） "
     "可拖入 .fchk/.fch/.chk 或兼容的 .molden 文件，也可直接输入路径。 "
@@ -172,6 +172,8 @@ constexpr const char* kSupplementalChinese =
     "UND / 最小价层参考之外 CUDA 设备 CUDA设备";
 
 constexpr const char* kSupplementalJapanese =
+    "互換性のないデータです "
+    "データが見つかりません現在の計算と一致しません複数読み込めませんファイル読込失敗エラー詳細中国語日本語のフォントがありません分子軌道のエネルギー整数結合次数が未確定 "
     "軌道マテリアル 標準 ガラス 表示モード ソリッド ワイヤー "
     "ソリッド + ワイヤー ソフト自動照明 "
     "波動関数ファイル（FCHK 優先・Molden 互換） "
@@ -464,6 +466,21 @@ bool configure_fonts(const float pixel_size) {
 }
 
 const char* font_status() noexcept { return g_font_status.c_str(); }
+const char* font_status(Language language) {
+    static std::string display;
+    display=g_font_status;
+    const char* zh=language==Language::ChineseSimplified?"缺少中文字体":
+        language==Language::Japanese?"中国語フォントなし":
+        language==Language::French?"Police chinoise absente":"Chinese font unavailable";
+    const char* ja=language==Language::ChineseSimplified?"缺少日文字体":
+        language==Language::Japanese?"日本語フォントなし":
+        language==Language::French?"Police japonaise absente":"Japanese font unavailable";
+    for(const auto& pair:{std::pair{"ZH fallback missing",zh},std::pair{"JA fallback missing",ja}}) {
+        if(const auto pos=display.find(pair.first);pos!=std::string::npos)
+            display.replace(pos,std::char_traits<char>::length(pair.first),pair.second);
+    }
+    return display.c_str();
+}
 
 void section_title(const char* label) {
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.68f, 0.82f, 1.0f));
