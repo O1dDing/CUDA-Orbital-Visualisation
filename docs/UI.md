@@ -14,15 +14,15 @@ Search the orbital list, jump to HOMO or LUMO, or use the core, valence and virt
 
 Choose the energy unit that suits your work: Ha, eV, J/mol, kJ/mol, cal/mol or kcal/mol. The original energy is kept in Hartree; changing the displayed unit does not change the calculation.
 
-Orbital names such as `2a₁` appear wherever the symmetry and occurrence order are available. Otherwise, COV shows the original MO number and spin. Details retain the source number. Levels with close energies may also be grouped; group labels such as `17-a` and `17-b` describe their display grouping, not their symmetry. The default grouping tolerance is `1e-5 Ha`; a grouped label does not mean the energies are identical.
+Orbital names such as `2a₁` appear wherever the symmetry and occurrence order are available. Otherwise, COV shows the original MO number and spin. Both names and source numbers are searchable. Levels with close energies may be grouped at their mean energy; each member keeps its own energy and identity in the details. The grouping tolerance starts at `1e-5 Ha` and can be adjusted.
 
 ## Compare levels in the diagram
 
 The central diagram shows occupied valence levels and nearby unoccupied levels, with electron occupations. Deep core and distant virtual levels can be hidden to keep the figure readable; they remain in the imported orbital list. Selecting an orbital for 3D inspection does not add it to or reorder the compact diagram.
 
-The ordinary energy axis preserves energy spacing. A focus view spreads crowded levels apart so their labels can be read; its visual gaps are no longer proportional to energy differences. Use the displayed energy values for comparisons. A grouped row can show a representative energy while its individual members retain their exact values.
+The energy axis can be linear or nonlinear. The nonlinear view spreads crowded levels apart and is labelled **Nonlinear energy axis**, with energy values and units on the ticks. Grouped levels use the members’ mean energy.
 
-**Export diagram + metadata** saves PNG and SVG figures together with JSON and CSV data. The data includes orbital numbers, energies, occupations, spin, grouping and which levels appeared in the figure.
+**Export diagram + metadata** saves PNG and SVG figures together with JSON and CSV data. Figures use the displayed orbital names and the current interface language. The data includes orbital numbers, energies, occupations, spin, grouping and which levels appeared in the figure.
 
 ## Inspect the molecule and orbital
 
