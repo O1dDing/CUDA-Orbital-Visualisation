@@ -159,6 +159,9 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
     target_include_directories(cov_imgui_core PUBLIC
         ${imgui_SOURCE_DIR}
     )
+    # All consumers and backends must share the same index ABI. Large complete
+    # AO/MO diagrams exceed 65535 vertices in a single ImGui draw list.
+    target_compile_definitions(cov_imgui_core PUBLIC "ImDrawIdx=unsigned int")
 
     add_library(cov_validation_navigation STATIC src/validation/navigation.cpp)
     target_include_directories(cov_validation_navigation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -301,7 +304,12 @@ if(COV_ENABLE_CUDA)
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
     if(WIN32)
-        set_property(TARGET cov PROPERTY WIN32_EXECUTABLE FALSE)
+        set_property(TARGET cov PROPERTY WIN32_EXECUTABLE TRUE)
+        if(MSVC)
+            target_link_options(cov PRIVATE /ENTRY:mainCRTStartup)
+        else()
+            target_link_options(cov PRIVATE -Wl,-e,mainCRTStartup)
+        endif()
     endif()
     if(COV_ENABLE_VALIDATION)
         execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

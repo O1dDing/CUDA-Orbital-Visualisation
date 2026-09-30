@@ -8,6 +8,9 @@
 namespace cov::ui {
 struct NboAomoName {
     std::string label, irrep;
+    // Group actually used for the verified character comparison; never a
+    // dimension/energy guess or a group inferred from the label spelling.
+    std::string point_group;
     // Zero means that a complete, unambiguous ordinal could not be established.
     std::size_t ordinal=0;
     // Irrep evidence only: true with ordinal==0 means the symmetry is known
@@ -36,4 +39,6 @@ std::string canonical_mo_source_label(const Wavefunction&,std::size_t);
 std::string canonical_mo_display_label(const Wavefunction&,std::size_t,
                                      const NboAomoName* = nullptr);
 std::string orbital_irrep_display_label(const NboAomoName&);
+std::string canonical_mo_current_irrep(const Wavefunction&,std::size_t,
+                                     const NboAomoName* = nullptr);
 } // namespace cov::ui

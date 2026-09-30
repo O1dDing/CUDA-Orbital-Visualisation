@@ -4,6 +4,7 @@
 
 #include <imgui.h>
 
+#include <algorithm>
 #include <cstring>
 #include <initializer_list>
 #include <iostream>
@@ -167,6 +168,7 @@ int main() {
         0x2192, // →: NPA colour legend
         0x2013, // –: AO/NAO–MO title
         0x00B2, // ²: numerical component weight
+        0x221E, // ∞: continuous point-group display
     };
     if (!expect_glyphs(primary, scientific_glyphs,
                        sizeof(scientific_glyphs) / sizeof(scientific_glyphs[0]),
@@ -253,7 +255,17 @@ int main() {
     if(lower==upper || cov::ui::raster_text_width("1a",1)<=0) {
         std::cerr<<"raster export lost lowercase orbital notation\n";return 16;
     }
-    ImGui::EndFrame();ImGui::DestroyContext();
+    // Dense Full/Research diagrams previously wrapped 16-bit draw indices.
+    // Exercise actual tessellation and inspect the generated high indices.
+    static_assert(sizeof(ImDrawIdx)==4,"Dense orbital diagrams require 32-bit draw indices");
+    auto* dense=ImGui::GetForegroundDrawList();
+    for(int i=0;i<20000;++i)dense->AddRectFilled({4,4},{8,8},IM_COL32_WHITE);
+    ImGui::Render();
+    if(dense->VtxBuffer.Size<80000 || dense->IdxBuffer.empty() ||
+       *std::max_element(dense->IdxBuffer.begin(),dense->IdxBuffer.end())<=65535u) {
+        std::cerr<<"dense diagram indices lost high vertices\n";return 17;
+    }
+    ImGui::DestroyContext();
     std::cout << "ui_smoke ok\n";
     return 0;
 }

@@ -3,6 +3,7 @@
 #include "cov/nbo_aomo_ui.hpp"
 #include "cov/validation.hpp"
 #include "cov/orbital_ui_text.hpp"
+#include "cov/orbital_inspection_ui.hpp"
 
 #include <imgui.h>
 
@@ -228,7 +229,7 @@ constexpr const char* kOrbitalDiagramLatinGlyphs =
 // families from atlas-range regressions.
 constexpr const char* kScientificGlyphs =
     "● · – — − ± × → ← ↔ ↑ ↓ "
-    "α β σ π δ φ Σ Π Δ Φ Γ Π⁵₆ "
+    "α β σ π δ φ Σ Π Δ Φ Γ Π⁵₆ ∞ "
     "⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ "
     "₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ′ ″";
 
@@ -416,6 +417,8 @@ bool configure_fonts(const float pixel_size) {
     latin_builder.AddText(aomo_en.c_str());
     latin_builder.AddText(aomo_fr.c_str());
     latin_builder.AddText(scientific_glyph_seed());
+    const auto inspection_seed=inspection_glyph_seed();
+    latin_builder.AddText(inspection_seed.c_str());
     latin_builder.AddText(kIntegrationLatinGlyphs);
     latin_builder.AddText(kOrbitalDiagramLatinGlyphs);
     ImVector<ImWchar> latin_ranges;
@@ -446,6 +449,8 @@ bool configure_fonts(const float pixel_size) {
     zh_builder.AddText(aomo_zh.c_str());
     ja_builder.AddText(aomo_ja.c_str());
     zh_builder.AddText(scientific_glyph_seed());
+    zh_builder.AddText(inspection_seed.c_str());
+    ja_builder.AddText(inspection_seed.c_str());
     ja_builder.AddText(scientific_glyph_seed());
     ImVector<ImWchar> zh_ranges;
     ImVector<ImWchar> ja_ranges;

@@ -156,7 +156,7 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
         result.bonding_confidence=chemistry.confidence;
     }
 
-    if (!chemistry.multicentre_label.empty()) {
+    if (chemistry.multicentre_assignment_available && !chemistry.multicentre_label.empty()) {
         result.multicentre.available=true;
         result.multicentre.centres=
             chemistry.multicentre_participating_atoms;
@@ -176,8 +176,10 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
         result.multicentre.heuristic=false;
     }
 
-    if (chemistry.channel.dominant==OrbitalAngularFamily::Pi &&
+    if (std::isfinite(chemistry.delocalised_pi_weight) &&
+        chemistry.delocalised_pi_weight>0.0 &&
         chemistry.delocalised_participating_atoms>1u &&
+        !chemistry.delocalised_family_orbitals.empty() &&
         !chemistry.delocalised_family_id.empty()) {
         result.delocalised_pi.available=true;
         result.delocalised_pi.participating_atoms=

@@ -3,7 +3,10 @@
 namespace cov::ui {
 namespace {
 const char* const rows[][4]={
-    {"Side orbitals: spin average","侧轨道：自旋平均","側方軌道：スピン平均","Orbitales latérales : moyenne de spin"},
+    {"Full MO symmetry","完整 MO 对称性","MO 全体の対称性","Symétrie de l’OM entière"},
+    {"Local coordination symmetry","局部配位对称性","局所配位の対称性","Symétrie de coordination locale"},
+    {"All-pair angular character","各原子对的综合角向成分","全原子対の角成分","Caractère angulaire de l’ensemble des paires"},
+    {"All-pair bonding character","各原子对的综合成键作用","全原子対の結合性","Caractère liant de l’ensemble des paires"},
     {"Original-channel components","原始通道组成","元のスピンチャネルの成分","Composantes des canaux d’origine"},
     {"Copy orbital metadata","复制轨道元数据","軌道メタデータをコピー","Copier les métadonnées orbitalaires"},
     {"Source spin values","原始自旋数据","元のスピンデータ","Valeurs de spin originales"},
@@ -74,7 +77,7 @@ const char* aomo_text(Language language,const char* english) {
     return english;
 }
 std::string nbo_aomo_text_glyph_seed(Language language) {
-    std::string seed="AO NAO MO SALC Gaussian αβ ↑↓ Σσπδφγ − 总全体轨道组成軌道成分Composantes orbitales de";
+    std::string seed="AO NAO MO SALC Gaussian αβ ↑↓ Σσπδφγ ∞ − 总全体轨道组成軌道成分Composantes orbitales de";
     seed+=" 轨道范围 价层轨道（σ 与 π） 仅离域 π 子集 仅多中心活性空间";
     seed+=" 軌道の範囲 価電子軌道（σ と π） 非局在 π 部分集合のみ 多中心活性空間のみ";
     seed+=" Ensemble orbital Orbitales de valence (σ et π) Sous-ensemble π délocalisé Espace actif multicentrique";

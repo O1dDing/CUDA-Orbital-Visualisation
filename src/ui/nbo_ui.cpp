@@ -1074,7 +1074,8 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                 const std::string label=(orbital.display_label.empty()?orbital.label:orbital.display_label)+
                     " ["+nbo_spin_ui(language,orbital.ref.spin)+"]"+
                     "##nbo.typed."+orbital.id;
-                const bool selected=s.aomo.selection && s.aomo.selection->terms.size()==1 &&
+                const bool selected=s.aomo.selection && s.aomo.selection->mode==NboSelectionMode::Orbital &&
+                    s.aomo.selection->terms.size()==1 &&
                     s.aomo.selection->terms.front().orbital==orbital.ref;
                 if(ImGui::Selectable(label.c_str(),selected)) {
                     s.aomo.pending_selection=nbo_single_selection(integrated,orbital.ref);

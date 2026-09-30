@@ -1,4 +1,5 @@
 #include "cov/orbital_ui.hpp"
+#include "cov/orbital_inspection_ui.hpp"
 #include "cov/nbo_ui.hpp"
 #include "cov/nbo_aomo_text.hpp"
 #include "cov/orbital_ui_text.hpp"
@@ -600,12 +601,9 @@ void draw_selected_chemistry(const Wavefunction& wf,
     draw_channel_value(text.family, chemistry.channel,language);
     draw_bonding_value(text.bonding, chemistry.bonding,language);
 
-    const bool has_multicentre=!chemistry.multicentre_label.empty();
-    draw_label_value(text.multicentre,
-                     has_multicentre?multicentre_descriptor(chemistry):
-                         unresolved_canonical_assignment(language),
-                     has_multicentre?kMulticentreColour:kUnavailableColour);
+    const bool has_multicentre=chemistry.multicentre_assignment_available && !chemistry.multicentre_label.empty();
     if (has_multicentre) {
+        draw_label_value(text.multicentre,multicentre_descriptor(chemistry),kMulticentreColour);
         draw_participation(
             wf,text,chemistry.multicentre_participating_atoms,
             chemistry.multicentre_participating_electrons,
@@ -613,12 +611,11 @@ void draw_selected_chemistry(const Wavefunction& wf,
             kMulticentreColour);
     }
 
-    const bool has_delocalised=!chemistry.delocalised_family_id.empty();
-    draw_label_value(text.delocalised,
-                     has_delocalised?delocalised_descriptor(chemistry,language):
-                         unresolved_canonical_assignment(language),
-                     has_delocalised?kPiColour:kUnavailableColour);
+    const bool has_delocalised=!chemistry.delocalised_family_id.empty() &&
+        !chemistry.delocalised_family_orbitals.empty() && std::isfinite(chemistry.delocalised_pi_weight) &&
+        chemistry.delocalised_pi_weight>0;
     if (has_delocalised) {
+        draw_label_value(text.delocalised,delocalised_descriptor(chemistry,language),kPiColour);
         if (!chemistry.delocalised_family_orbitals.empty()) {
             draw_label_value(text.members,
                              delocalised_orbital_members(wf,chemistry),
@@ -721,7 +718,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                          OrbitalUIActions& actions) {
     draw_energy_diagram_legacy(
         wavefunction,selected_index,state,language,ui_scale,actions);
-    draw_selected_chemistry(wavefunction,selected_index,
+    if(!uses_inspection_details(state))draw_selected_chemistry(wavefunction,selected_index,
         state.nbo_ui?state.nbo_ui->routed:nullptr,language);
 }
 

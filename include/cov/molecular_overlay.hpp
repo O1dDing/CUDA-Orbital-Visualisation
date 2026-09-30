@@ -20,6 +20,8 @@ struct MoleculeOverlayGroup {
     std::size_t evidence_index=0;
     std::vector<std::size_t> atoms;
     bool selected=false;
+    // Several spin/channel records may support the same spatial hyperedge.
+    std::vector<std::size_t> evidence_indices;
 };
 struct MoleculeOverlayRelation {
     std::size_t evidence_index=0;

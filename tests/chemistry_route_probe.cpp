@@ -1,5 +1,6 @@
 #include "cov/chemistry_route.hpp"
 #include "cov/nbo_channels.hpp"
+#include "cov/nbo_molecular_overlay.hpp"
 #include "cov/wavefunction_io.hpp"
 
 #include <filesystem>
@@ -95,6 +96,24 @@ int main(int argc,char** argv) {try {
        <<",\"beta_orbitals\":"<<nbo_beta
        <<",\"total_orbitals\":"<<(nbo_alpha+nbo_beta)
        <<",\"recheck_scope\":\"matched archive plus the AONBO matrix family\"}";
+    if(integration) {
+        const auto overlay=cov::make_nbo_molecule_overlay(*integration,*route.interaction_graph.value,
+            canonical.atoms.size(),{},std::nullopt,cov::AtomScalarMode::Element,false,false,&route);
+        out<<",\"molecule_overlay\":{\"bonds\":[";
+        bool comma=false;
+        for(const auto& bond:overlay.bonds){
+            if(comma)out<<',';comma=true;
+            out<<"{\"atoms\":["<<bond.atom_a<<','<<bond.atom_b<<"],\"style\":"
+               <<static_cast<int>(bond.style)<<",\"multiplicity\":"<<bond.multiplicity<<'}';
+        }
+        out<<"],\"multicentre\":[";comma=false;
+        for(const auto& group:overlay.multicentre){
+            if(comma)out<<',';comma=true;out<<"{\"atoms\":[";
+            for(std::size_t i=0;i<group.atoms.size();++i){if(i)out<<',';out<<group.atoms[i];}
+            out<<"],\"supporting_records\":"<<group.evidence_indices.size()<<'}';
+        }
+        out<<"]}";
+    }
     out<<",\"canonical_immutable\":"
        <<(before==cov::nbo_canonical_fingerprint(canonical)?"true":"false")<<'}';
     if(!out)throw std::runtime_error("Routed observation write failed");

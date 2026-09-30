@@ -332,6 +332,9 @@ bool write_mo_diagram_svg(const MODiagramData& data,
             const double x=item.x+(static_cast<double>(member_index)-
                 0.5*static_cast<double>(members.size()-1))*31.0;
             out << "<line class=\"mo-member\" data-orbital-index=\"" << member.orbital_index
+                << "\" data-current-name=\"" << xml_escape(member.orbital_index<options.display_names.size()?options.display_names[member.orbital_index]:"")
+                << "\" data-current-irrep=\"" << xml_escape(member.orbital_index<options.display_irreps.size()?options.display_irreps[member.orbital_index]:"?")
+                << "\" data-current-point-group=\"" << xml_escape(member.orbital_index<options.display_point_groups.size()?point_group_display(options.display_point_groups[member.orbital_index]):"")
                 << "\" data-inspected-orbital-index=\"" << member.inspected_orbital_index
                 << "\" data-selected=\"" << (member.selected?"true":"false")
                 << "\" x1=\"" << x-12.0 << "\" y1=\"" << item.y

@@ -148,7 +148,7 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
     if(node.spatial_spin){
         const auto value=[&](const std::optional<double>& v){if(!v)return std::string(aomo_text(language,"Unavailable"));
             std::ostringstream out;out<<std::setprecision(9)<<*v;return out.str();};
-        lines={title,aomo_text(language,"Side orbitals: spin average")};
+        lines={title};
         for(const auto& channel:node.spatial_spin->channels){
             lines.push_back(std::string(nbo_spin_name(channel.spin))+": E="+value(channel.energy_hartree)+" Ha; n="+value(channel.occupation));
             // Rotated source diagonals differ from the common-basis expectation.
@@ -244,7 +244,7 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
 std::string nbo_aomo_hover_glyph_seed(Language language) {
     // Common scientific names use Unicode subscripts and spectroscopic signs;
     // source-number fallback and known-irrep auxiliary lines share this font.
-    std::string result="MO NAO SALC AO PNAO α β σ π δ φ γ Σ Π Δ Φ Γ · + − ? [] () 0123456789 ₀₁₂₃₄₅₆₇₈₉ ′ ″";
+    std::string result="MO NAO SALC AO PNAO α β σ π δ φ γ Σ Π Δ Φ Γ ∞ · + − ? [] () 0123456789 ₀₁₂₃₄₅₆₇₈₉ ′ ″";
     for(const auto& row:words){result+=' ';result+=row[language_index(language)];}
     return result;
 }

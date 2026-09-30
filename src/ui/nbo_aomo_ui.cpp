@@ -233,7 +233,7 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
     view.zoom=state.zoom;view.pan_x=state.pan_x;view.pan_y=state.pan_y;
     view.show_core=state.show_core;view.show_rydberg=state.show_rydberg;
     view.hide_h_orbitals=state.hide_h_orbitals;
-    view.selection=state.selection;view.fragment_groups=state.fragment_groups;
+    view.selection=state.selection;view.active_view=state.active_view;view.fragment_groups=state.fragment_groups;
     view.selected_side_node_id=state.selected_side_node_id;
     view.sum_component_ids.assign(state.sum_component_ids.begin(),state.sum_component_ids.end());
     if(const auto* cap=nbo_capability(data,"aomo")) {
@@ -1088,7 +1088,7 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
         const bool selected=source.id==state.selected_side_node_id;
         if(!focused && !selected && !state.overview)continue;
         std::string channel=source.id;
-        if(use_salc && source.salc_index)
+        if(use_salc && source.salc_index && !selected)
             channel=state.salc_model->orbitals[*source.salc_index].subspace_id;
         const std::string group_key=std::to_string(mo_level[mo])+":"+channel;
         auto& unit=units[group_key];
@@ -1607,8 +1607,6 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
         (diagram.options.energy_axis_mode==EnergyAxisMode::NonlinearFocus?
             aomo_text(state.language,"Nonlinear energy axis"):
             aomo_text(state.language,"Energy axis")),12,header_y);
-    if(view.salc_model && view.salc_model->spin_averaged && state.basis_kind==NboOrbitalKind::NAO)
-        wrapped("spin-average",aomo_text(state.language,"Side orbitals: spin average"),12,header_y);
     // Reserve the caption area even when a narrow chart wraps its header.
     const float caption_padding=std::max(0.0f,header_y+8.0f-view.numeric_top);
     if(caption_padding>0) {
@@ -1632,7 +1630,7 @@ struct GraphAppearance {
     const NboAomoViewSnapshot& view;
     std::set<RefKey> selected_basis;
     std::map<RefKey,double> basis_to_focus;
-    std::map<std::size_t,double> mo_from_selection;
+    std::map<std::size_t,double> mo_from_selection,salc_to_focus;
     double max_focus=0,max_selected=0;
     explicit GraphAppearance(const NboAomoViewSnapshot& snapshot):view(snapshot) {
         if(view.selection)for(const auto& term:view.selection->terms)
@@ -1645,6 +1643,8 @@ struct GraphAppearance {
             if(*b.canonical_index==view.focused_canonical_index) {
                 if(a.orbital)basis_to_focus[key(*a.orbital)]=
                     std::max(basis_to_focus[key(*a.orbital)],magnitude);
+                if(a.salc_index && edge.visible)salc_to_focus[*a.salc_index]=
+                    std::max(salc_to_focus[*a.salc_index],magnitude);
                 max_focus=std::max(max_focus,magnitude);
             }
             if((a.orbital && selected_basis.contains(key(*a.orbital))) ||
@@ -1662,12 +1662,8 @@ struct GraphAppearance {
         if(node.orbital&&view.selection)for(const auto& term:view.selection->terms)
             if(term.orbital==*node.orbital)return 1.0f;
         if(node.id==view.selected_side_node_id)return 1.0f;
-        if(node.salc_index) {
-            for(const auto& edge:view.edges)if(edge.visible && edge.source_node<view.nodes.size() &&
-                &view.nodes[edge.source_node]==&node &&
-                view.nodes[edge.target_node].canonical_index==view.focused_canonical_index)
-                return relative(std::abs(edge.coefficient),max_focus);
-        }
+        if(node.salc_index)if(const auto it=salc_to_focus.find(*node.salc_index);
+                              it!=salc_to_focus.end())return relative(it->second,max_focus);
         if(node.canonical_index) {
             if(*node.canonical_index==view.focused_canonical_index)return 1.0f;
             if(const auto it=mo_from_selection.find(*node.canonical_index);
@@ -1972,10 +1968,42 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         origin.y+state.pan_y+y*state.zoom);};
     const bool hover=ImGui::IsItemHovered();
     auto* draw=ImGui::GetWindowDrawList();
+    draw->PushClipRect(origin,canvas_max,true);
+    const auto clip_min=draw->GetClipRectMin(),clip_max=draw->GetClipRectMax();
+    const auto visible_rect=[&](ImVec2 a,ImVec2 b){return b.x>=clip_min.x && a.x<=clip_max.x &&
+        b.y>=clip_min.y && a.y<=clip_max.y;};
     const auto text_at=[&](float x,float y,ImU32 colour,const std::string& text,float size=14.0f){
-        draw->AddText(ImGui::GetFont(),size*state.zoom,point(x,y),colour,text.c_str());
+        if(text.empty())return;
+        const auto p=point(x,y);
+        const auto extent=ImGui::GetFont()->CalcTextSizeA(size*state.zoom,
+            std::numeric_limits<float>::max(),0.0f,text.c_str());
+        if(visible_rect(p,ImVec2(p.x+extent.x,p.y+extent.y)))
+            draw->AddText(ImGui::GetFont(),size*state.zoom,p,colour,text.c_str());
     };
-    draw->PushClipRect(origin,ImGui::GetItemRectMax(),true);
+    // Restrict CPU tessellation to the viewport while preserving the original dash phase.
+    // The immutable snapshot and all exports retain every node and raw link.
+    const auto paint_connection=[&](ImVec2 a,ImVec2 b,ImU32 colour,float stroke){
+        const float dx=b.x-a.x,dy=b.y-a.y,length=std::hypot(dx,dy);
+        if(length<0.01f)return;
+        float first=0,last=1;
+        const auto boundary=[&](float p,float q){
+            if(std::abs(p)<1e-8f)return q>=0;
+            const float r=q/p;
+            if(p<0){if(r>last)return false;first=std::max(first,r);}
+            else {if(r<first)return false;last=std::min(last,r);}
+            return true;
+        };
+        const float margin=stroke+1;
+        if(!boundary(-dx,a.x-clip_min.x+margin) || !boundary(dx,clip_max.x-a.x+margin) ||
+           !boundary(-dy,a.y-clip_min.y+margin) || !boundary(dy,clip_max.y-a.y+margin))return;
+        const float period=10.0f*state.zoom,on=5.0f*state.zoom;
+        for(float d=std::floor(first*length/period)*period;d<last*length;d+=period){
+            const float start=std::max(d,first*length),end=std::min(d+on,last*length);
+            if(end<=start)continue;
+            draw->AddLine(ImVec2(a.x+dx*start/length,a.y+dy*start/length),
+                ImVec2(a.x+dx*end/length,a.y+dy*end/length),colour,stroke);
+        }
+    };
     draw->AddRectFilled(origin,ImGui::GetItemRectMax(),IM_COL32(24,31,44,255),6*scale);
     const bool has_nonquant=std::any_of(snapshot->nodes.begin(),snapshot->nodes.end(),
         [](const auto& node){return node.lane!=NboAomoLane::Centre &&
@@ -1996,6 +2024,8 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
     }
     for(const auto& tick:snapshot->energy_ticks) {
         const float y=origin.y+state.pan_y+(tick.y+11.0f)*state.zoom;
+        if(y+snapshot->label_font_size*state.zoom<clip_min.y ||
+           y-snapshot->label_font_size*state.zoom>clip_max.y)continue;
         draw->AddLine(ImVec2(origin.x+20,y),ImVec2(canvas_max.x-20,y),
             IM_COL32(72,87,108,32),1.0f*scale);
         const auto label=format_energy(tick.energy_hartree,diagram.options.energy_unit,3);
@@ -2011,19 +2041,16 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         const auto pa=transform(a),pb=transform(b);
         const float ax=a.lane==NboAomoLane::Right?pa.x:pa.x+node_width(a)*state.zoom;
         const float bx=a.lane==NboAomoLane::Right?pb.x+node_width(b)*state.zoom:pb.x;
-        dashed_segments(ax/state.zoom,(pa.y+a.height*0.5f*state.zoom)/state.zoom,
-            bx/state.zoom,(pb.y+b.height*0.5f*state.zoom)/state.zoom,
-            [&](float x1,float y1,float x2,float y2) {
-                draw->AddLine(ImVec2(x1*state.zoom,y1*state.zoom),
-                    ImVec2(x2*state.zoom,y2*state.zoom),
-                    IM_COL32(style.red,style.green,style.blue,style.alpha),style.width*scale);
-            });
+        paint_connection(ImVec2(ax,pa.y+a.height*0.5f*state.zoom),
+            ImVec2(bx,pb.y+b.height*0.5f*state.zoom),
+            IM_COL32(style.red,style.green,style.blue,style.alpha),style.width*scale);
     }
     // Paint every text mask after edges, before any orbital bars or labels.
     // This removes edge/glyph crossings without shifting a physical level or
     // allowing a later node's mask to erase an earlier node's orbital bar.
     for_each_node_text_background(*snapshot,[&](const std::string&,const char*,
         float x,float y,float width,float height,bool qualitative) {
+        if(!visible_rect(point(x,y),point(x+width,y+height)))return;
         draw->AddRectFilled(point(x,y),point(x+width,y+height),qualitative?
             IM_COL32(35,41,52,255):IM_COL32(24,31,44,255));
     });
@@ -2037,8 +2064,8 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         const float line_y=p.y+height*0.5f;
         const float hit_half=node.shell_member_count>1?
             snapshot->label_font_size*0.85f*0.4f*state.zoom:height*0.5f;
-        const ImVec2 hit_min(std::max(origin.x,p.x),std::max(origin.y,line_y-hit_half));
-        const ImVec2 hit_max(std::min(canvas_max.x,q.x),std::min(canvas_max.y,line_y+hit_half));
+        const ImVec2 hit_min(std::max(clip_min.x,p.x),std::max(clip_min.y,line_y-hit_half));
+        const ImVec2 hit_max(std::min(clip_max.x,q.x),std::min(clip_max.y,line_y+hit_half));
         if(hit_min.x<hit_max.x && hit_min.y<hit_max.y)
             validation::hit("aomo.node."+node.id,hit_min,hit_max);
         const float strength=appearance.node_strength(node);
@@ -2047,22 +2074,25 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
             node.group_header?IM_COL32(143,161,187,255):
             node.quantitative_energy?IM_COL32(228,239,249,255):IM_COL32(174,189,207,255);
         const bool folded_group=node.group_header;
-        if(folded_group) {
+        if(folded_group && visible_rect(p,q)) {
             draw->AddRectFilled(p,q,IM_COL32(57,70,91,255),4*scale);
             draw->AddRect(p,q,IM_COL32(110,137,166,255),4*scale);
-        } else draw->AddLine(ImVec2(p.x,line_y),ImVec2(q.x,line_y),colour,
+        } else if(!folded_group && visible_rect(ImVec2(p.x,line_y-2),ImVec2(q.x,line_y+2)))draw->AddLine(ImVec2(p.x,line_y),ImVec2(q.x,line_y),colour,
             snapshot->orbital_bar_stroke_width*state.zoom);
         text_at(node.label_x,node.label_y,colour,node.label,snapshot->label_font_size);
         if(node.occupation_on_bar)
             electron_strokes(node,[&](float x1,float y1,float x2,float y2) {
-                draw->AddLine(point(x1,y1),point(x2,y2),colour,1.5f*state.zoom);
+                const auto a=point(x1,y1),b=point(x2,y2);
+                if(visible_rect(ImVec2(std::min(a.x,b.x)-2,std::min(a.y,b.y)-2),
+                    ImVec2(std::max(a.x,b.x)+2,std::max(a.y,b.y)+2)))
+                    draw->AddLine(a,b,colour,1.5f*state.zoom);
             });
         else if(!node.occupation_label.empty())
             text_at(node.occupation_x,node.occupation_y,IM_COL32(194,209,225,255),
                 node.occupation_label,snapshot->label_font_size);
         const bool bar_hover=hit_min.x<hit_max.x && hit_min.y<hit_max.y &&
             ImGui::IsMouseHoveringRect(hit_min,hit_max);
-        const bool label_hover=!node.label.empty() && ImGui::IsMouseHoveringRect(
+        const bool label_hover=!node.label.empty() && visible_rect(point(node.label_x,node.label_y),point(node.label_x+node.label_width,node.label_y+node.label_height)) && ImGui::IsMouseHoveringRect(
             point(node.label_x,node.label_y),point(node.label_x+node.label_width,node.label_y+node.label_height));
         const float distance=bar_hover?std::abs(ImGui::GetIO().MousePos.y-line_y):1000.0f;
         if(hover && (bar_hover || label_hover) && distance<best){clicked=i;best=distance;
@@ -2083,8 +2113,14 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         ImGui::TextDisabled("%s",aomo_text(language,"Protected orbital partners need more width; scroll the diagram horizontally."));
     ImGui::TextDisabled("%s",aomo_text(language,"Scroll to explore; Ctrl+wheel zooms. Click an orbital to inspect it."));
     if(state.selection){
-        if(ImGui::Button((std::string(aomo_text(language,"Copy orbital metadata"))+"###aomo.copy").c_str()))
-            ImGui::SetClipboardText(serialize_nbo_orbital_selection_json(*state.selection).c_str());
+        if(ImGui::Button((std::string(aomo_text(language,"Copy orbital metadata"))+"###aomo.copy").c_str())) {
+            const auto copied=state.active_view?serialize_active_orbital_view_json(*state.active_view):
+                serialize_nbo_orbital_selection_json(*state.selection);
+            ImGui::SetClipboardText(copied.c_str());
+            const char* clipboard=ImGui::GetClipboardText();
+            validation::record("aomo.copy","{\"text\":"+validation::quote(copied)+
+                ",\"clipboard_matches\":"+(clipboard && copied==clipboard?"true":"false")+"}");
+        }
         validation::item("aomo.copy");
         if(state.selection->spatial_spin && ImGui::CollapsingHeader(aomo_text(language,"Source spin values"))){
             const auto& info=*state.selection->spatial_spin;
@@ -2387,7 +2423,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             std::ofstream out(result.csv_path,std::ios::binary);
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
-            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode\n";
+            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode,source_display_name,target_display_name,active_view_json\n";
             const auto display_columns=[&](const NboAomoEdge* edge,
                 std::optional<double> source_energy,std::size_t canonical_index,
                 const NboSpatialSpinInfo* spin_info=nullptr,std::optional<double> occupation=std::nullopt) {
@@ -2411,7 +2447,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 // each link refers to that stable ID, including hidden members.
                 out<<','<<csv(spin_info?spin_info->id:"")<<",,";
                 if(source && source->occupation)out<<*source->occupation;else if(occupation)out<<*occupation;
-                out<<','<<csv(spin_info?"spin_averaged_spatial":"source_channel")<<'\n';
+                out<<','<<csv(spin_info?"spin_averaged_spatial":"source_channel")
+                   <<','<<csv(source?source->label:"")<<','<<csv(target?target->label:"")<<",\n";
             };
             for(const auto& link:data.links){
                 const bool central=in(view.central_mo_indices,link.canonical_index);
@@ -2471,7 +2508,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             // Include every active-model side identity once, even hidden/no-link
             // members, so source_spatial_id is always resolvable within the CSV.
             const auto side_row=[&](const NboAomoNode& node,bool shown){
-                std::vector<std::string> row(32);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                std::vector<std::string> row(35);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
                 row[5]=node.spatial_spin?"spatial":"SALC";if(node.salc_index)row[6]=std::to_string(*node.salc_index);
                 row[7]=node.spatial_spin?"total":node.salc_index&&view.salc_model?nbo_spin_name(view.salc_model->orbitals[*node.salc_index].spin):node.orbital?nbo_spin_name(node.orbital->spin):"";
                 row[16]=node.id;row[17]=shown?"true":"false";row[19]="side_orbital";
@@ -2482,6 +2519,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 if(node.spatial_spin){row[28]=node.spatial_spin->id;row[29]=serialize_nbo_spatial_spin_json(*node.spatial_spin);}
                 if(node.occupation)row[30]=precise(*node.occupation);
                 row[31]=node.spatial_spin?"spin_averaged_spatial":"source_channel";
+                row[32]=node.label;
                 for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
             };
             if(view.basis_kind==NboOrbitalKind::NAO&&view.salc_model&&view.salc_model->available){
@@ -2493,6 +2531,11 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                         hidden.occupation=orbital.occupation;hidden.spatial_spin=orbital.spatial_spin;side_row(hidden,false);}
                 }
             }else for(const auto& node:view.nodes)if(node.lane!=NboAomoLane::Centre&&!node.group_header)side_row(node,true);
+            if(view.active_view){
+                std::vector<std::string> row(35);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                row[19]="active_view";row[34]=serialize_active_orbital_view_json(*view.active_view);
+                for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
+            }
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
         }
         result.csv=true;
@@ -2693,6 +2736,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             else out<<"null";
             out<<",\"selection\":";
             out<<(view.selection?serialize_nbo_orbital_selection_json(*view.selection):"null");
+            out<<",\"active_view\":"<<(view.active_view?serialize_active_orbital_view_json(*view.active_view):"null");
             out<<"}";
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
         }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/nbo_integration.hpp"
+#include "cov/chemistry_route.hpp"
 #include "cov/nbo_salc.hpp"
 #include "cov/nbo_aomo_labels.hpp"
 #include "cov/mo_diagram.hpp"
@@ -97,6 +98,7 @@ struct NboAomoViewSnapshot {
     std::string energy_tick_semantics="linear-neutral";
     std::vector<NboAomoCaption> captions;
     std::optional<NboOrbitalSelection> selection;
+    std::optional<ActiveOrbitalView> active_view;
     std::vector<NboAomoFragmentGroup> fragment_groups;
     std::vector<std::string> sum_component_ids;
     std::size_t hidden_basis_count=0,hidden_mo_count=0;
@@ -162,6 +164,7 @@ struct NboAomoUIState {
     std::optional<std::size_t> last_inspected;
     std::optional<NboOrbitalSelection> pending_selection;
     std::optional<NboOrbitalSelection> selection; // last applied 3D identity; root updates
+    std::optional<ActiveOrbitalView> active_view; // same presentation identity as details/export
     bool export_requested=false;
     bool show_full_numeric=false;
     std::string source_id,status,export_status;

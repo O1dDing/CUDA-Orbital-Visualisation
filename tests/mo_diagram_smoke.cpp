@@ -1747,6 +1747,7 @@ int main(int argc,char** argv) {
         chemistry.channel.dominant=cov::OrbitalAngularFamily::Pi;
         chemistry.channel.status=cov::ChemistryStatus::Determined;
         chemistry.multicentre_label="3c2e";
+        chemistry.multicentre_assignment_available=true;
         chemistry.multicentre_participating_atoms=3u;
         chemistry.multicentre_participating_electrons=2.0;
         chemistry.multicentre_participating_atom_indices={0u,1u,3u};
@@ -1757,6 +1758,7 @@ int main(int argc,char** argv) {
         chemistry.delocalised_participating_electrons=4.0;
         chemistry.delocalised_participating_atom_indices={0u,1u,2u,3u};
         chemistry.delocalised_pi_confidence=0.93;
+        chemistry.delocalised_pi_weight=0.8;
         const auto annotation=cov::annotate_orbital(overlap);
         if (!annotation.multicentre.available ||
             annotation.multicentre.centres!=3u ||

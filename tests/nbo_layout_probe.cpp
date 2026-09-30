@@ -1,4 +1,5 @@
 #include "cov/chemistry_route.hpp"
+#include "cov/orbital_inspection_ui.hpp"
 #include "cov/nbo_aomo_ui.hpp"
 #include "cov/wavefunction_io.hpp"
 #include <imgui.h>
@@ -14,6 +15,25 @@
 // remain separate from these exported layout measurements.
 int main(int argc,char** argv) {try {
     if(argc<4)throw std::runtime_error("Usage: cov_nbo_layout_probe canonical.fchk analysis_directory output.json [export_base]");
+    // Routing must depend on the displayed object, not its target or first source term.
+    cov::ActiveOrbitalView active;active.kind=cov::ActiveOrbitalKind::Inspection;
+    active.label="verified display";active.source_label="producer";
+    active.display_name_evidence="independent proof";
+    cov::NboOrbitalSelection typed;typed.mode=cov::NboSelectionMode::Combination;
+    typed.semantic_kind="salc";typed.terms={{{cov::NboOrbitalKind::NAO,cov::NboSpin::Total,0},1}};
+    active.selection=typed;
+    if(!cov::ui::uses_inspection_details(active))throw std::runtime_error("SALC routed to canonical details");
+    active.selection->mode=cov::NboSelectionMode::WeightedComponent;
+    active.selection->target_canonical_index=0;
+    active.selection->terms[0].orbital.kind=cov::NboOrbitalKind::Canonical;
+    if(!cov::ui::uses_inspection_details(active))throw std::runtime_error("Component inherited target details");
+    const auto copied=cov::ui::inspection_copy_metadata(active);
+    if(copied!=cov::serialize_active_orbital_view_json(active) || copied.find("independent proof")==std::string::npos)
+        throw std::runtime_error("Inspection copy lost display identity or selection");
+    active.selection->mode=cov::NboSelectionMode::Orbital;
+    if(cov::ui::uses_inspection_details(active))throw std::runtime_error("Canonical source lost canonical details");
+    active.selection.reset();active.kind=cov::ActiveOrbitalKind::NboSet;
+    if(!cov::ui::uses_inspection_details(active))throw std::runtime_error("NBO set inherited canonical details");
     const auto start=std::chrono::steady_clock::now();
     auto wf=cov::parse_wavefunction(argv[1]);
     const auto original=wf;
@@ -103,7 +123,7 @@ int main(int argc,char** argv) {try {
                 throw std::runtime_error("Detailed spin switch left a stale spatial selection");
             state.selection=state.pending_selection;state.pending_selection.reset();draw(cov::ui::Language::English);
             const auto detailed=cov::ui::export_nbo_aomo_bundle(*state.drawn_snapshot,integration,std::string(argv[4])+"-detailed");
-            if(!detailed.json||!detailed.csv||!detailed.png||!detailed.svg)throw std::runtime_error("Detailed export failed");
+            if(!detailed.json||!detailed.csv||!detailed.png||!detailed.svg)throw std::runtime_error("Detailed export failed: "+detailed.error);
             state.preset=cov::ui::NboAomoPreset::Teaching;
             if(!cov::ui::prepare_nbo_aomo_state(state,integration,wf)||state.salc_model!=simplified)
                 throw std::runtime_error("Simplified mode failed to restore immutable cached model");

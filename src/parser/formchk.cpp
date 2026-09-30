@@ -7,6 +7,10 @@
 #include <filesystem>
 #include <stdexcept>
 #include <string>
+#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#endif
 
 namespace cov {
 namespace {
@@ -56,12 +60,42 @@ Wavefunction parse_gaussian_chk_via_formchk(const std::filesystem::path& chk_pat
         ("cov_formchk_" + std::to_string(stamp) + ".fchk")
     };
 
+#ifdef _WIN32
+    // Invoke the converter directly: no cmd.exe, no console window, and no
+    // shell expansion of user-selected paths. Quote using Windows argv rules.
+    const auto quote = [](const std::wstring& value) {
+        std::wstring result=L"\"";
+        std::size_t slashes=0;
+        for(wchar_t ch:value) {
+            if(ch==L'\\') { ++slashes; continue; }
+            result.append(ch==L'"'?slashes*2+1:slashes,L'\\');
+            result+=ch;slashes=0;
+        }
+        result.append(slashes*2,L'\\');result+=L'"';return result;
+    };
+    std::wstring command=quote(std::filesystem::path(executable).wstring())+L" "+
+        quote(chk_path.wstring())+L" "+quote(output.path.wstring());
+    STARTUPINFOW startup{};startup.cb=sizeof(startup);
+    PROCESS_INFORMATION process{};
+    if(!CreateProcessW(nullptr,command.data(),nullptr,nullptr,FALSE,
+                       CREATE_NO_WINDOW,nullptr,nullptr,&startup,&process))
+        throw std::runtime_error("Cannot start Gaussian formchk (Windows error "+
+            std::to_string(GetLastError())+"). Set COV_FORMCHK to its executable path.");
+    CloseHandle(process.hThread);
+    const DWORD wait=WaitForSingleObject(process.hProcess,INFINITE);
+    DWORD exit_code=1;
+    const bool obtained=wait==WAIT_OBJECT_0 && GetExitCodeProcess(process.hProcess,&exit_code);
+    CloseHandle(process.hProcess);
+    if(!obtained)throw std::runtime_error("Cannot obtain Gaussian formchk exit status");
+    const auto code=exit_code;
+#else
     const std::string command =
         quoted_shell_argument(executable, "formchk executable") + " " +
         quoted_shell_argument(chk_path.string(), "CHK path") + " " +
         quoted_shell_argument(output.path.string(), "temporary FCHK path");
 
     const int code = std::system(command.c_str());
+#endif
     if (code != 0) {
         throw std::runtime_error(
             "Gaussian formchk failed with exit code " + std::to_string(code) +

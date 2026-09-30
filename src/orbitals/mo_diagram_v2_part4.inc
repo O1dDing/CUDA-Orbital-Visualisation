@@ -314,6 +314,12 @@ SymmetryNotation parse_symmetry_notation(std::string_view raw_view) {
     return result;
 }
 
+std::string point_group_display(std::string_view raw) {
+    if(raw=="Dinfh")return "D∞h";
+    if(raw=="Cinfv")return "C∞v";
+    return std::string(raw);
+}
+
 std::string format_symmetry_unicode(std::string_view raw) {
     const SymmetryNotation notation = parse_symmetry_notation(raw);
     if (notation.base.empty()) return notation.raw.empty() ? std::string{"N/A"} : notation.raw;

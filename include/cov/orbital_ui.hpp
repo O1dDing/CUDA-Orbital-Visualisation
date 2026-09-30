@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cov/model.hpp"
+#include "cov/chemistry_route.hpp"
 #include "cov/mo_diagram.hpp"
 #include "cov/orbital_view.hpp"
 #include "cov/ui.hpp"
@@ -38,6 +39,8 @@ struct OrbitalUIBrowserCache {
 };
 
 struct OrbitalUIState {
+    std::optional<ActiveOrbitalView> active_view; // current scene identity, refreshed before drawing
+    const NboSelectionView* inspection = nullptr; // main-owned; refreshed with active_view
     NboUIState* nbo_ui = nullptr; // owned by the application; same lifetime as this UI state
     EnergyUnit energy_unit = EnergyUnit::Hartree;
     EnergyAxisMode energy_axis_mode = EnergyAxisMode::NonlinearFocus;

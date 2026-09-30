@@ -411,7 +411,9 @@ bool write_mo_diagram_json(const MODiagramData& data,
         out << "    {\n";
         out << "      \"index\": " << item.orbital_index << ",\n";
         out << "      \"raw_mo\": " << item.raw_mo_number << ",\n";
-        out << "      \"label\": \"" << json_escape(item.display_label) << "\",\n";
+        out << "      \"label\": \"" << json_escape(i<options.display_names.size()?options.display_names[i]:item.display_label) << "\",\n";
+        out << "      \"current_display_irrep\": \"" << json_escape(i<options.display_irreps.size()?options.display_irreps[i]:"?") << "\",\n";
+        out << "      \"current_display_point_group\": \"" << json_escape(i<options.display_point_groups.size()?point_group_display(options.display_point_groups[i]):"") << "\",\n";
         out << "      \"energy_hartree\": " << std::setprecision(17) << item.energy_hartree << ",\n";
         out << "      \"source_energy_hartree\": " << item.energy_hartree << ",\n";
         out << "      \"energy_display\": " << convert_hartree(item.energy_hartree, options.energy_unit) << ",\n";
@@ -538,7 +540,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "multicentre_source_subspace_id,multicentre_source_subspace_electron_count,"
            "stability_detail,source_title,source_route,enrichment_source,"
            "view_snapshot_id,view_origin,view_selection_anchor,view_inspected_orbital_index,"
-           "diagram_row_index,coordinate_scope,row_member_orbitals,row_spin_counterparts,delocalised_pi_topology_graph,crystal_field_gap_count,crystal_field_gaps_json,pi_partner_evidence_json\n";
+           "diagram_row_index,coordinate_scope,row_member_orbitals,row_spin_counterparts,delocalised_pi_topology_graph,crystal_field_gap_count,crystal_field_gaps_json,pi_partner_evidence_json,current_display_irrep,current_display_point_group\n";
     const std::string ligand_atoms = csv_index_list(data.ligand_field_ligand_atoms);
     const std::string pi_interactions = csv_pi_interaction_summary(data);
     const std::string local_geometries = csv_local_geometry_summary(data);
@@ -554,7 +556,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             data.energy_transform);
         out << mo_diagram_mode_name(data.mode) << ','
             << item.orbital_index << ',' << item.raw_mo_number << ','
-            << csv_escape(item.display_label) << ',' << std::setprecision(17) << item.energy_hartree << ','
+            << csv_escape(i<options.display_names.size()?options.display_names[i]:item.display_label) << ',' << std::setprecision(17) << item.energy_hartree << ','
             << convert_hartree(item.energy_hartree, options.energy_unit) << ','
             << csv_escape(energy_unit_symbol(options.energy_unit)) << ',' << coordinate << ','
             << energy_axis_mode_name(options.energy_axis_mode) << ','
@@ -671,7 +673,9 @@ bool write_mo_diagram_csv(const MODiagramData& data,
         out << ',' << csv_escape(topology_evidence.str());
         out << ',' << data.crystal_field_gaps.size()
             << ',' << csv_escape(orbital_energy_gap_array_json(data.crystal_field_gaps,options.energy_unit))
-            << ',' << csv_escape(orbital_energy_gap_array_json(data.pi_interactions,options.energy_unit));
+            << ',' << csv_escape(orbital_energy_gap_array_json(data.pi_interactions,options.energy_unit))
+            << ',' << csv_escape(i<options.display_irreps.size()?options.display_irreps[i]:"?")
+            << ',' << csv_escape(i<options.display_point_groups.size()?point_group_display(options.display_point_groups[i]):"");
         out << '\n';
     }
     if (!out) {

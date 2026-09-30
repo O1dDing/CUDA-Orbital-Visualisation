@@ -23,9 +23,23 @@ MoleculeOverlay make_nbo_molecule_overlay(const NboIntegration& data,const Inter
                 out.scalar_range=std::max(out.scalar_range,std::abs(*out.atom_values[atom]));
             }
     }
-    std::map<std::pair<std::size_t,std::size_t>,InteractionKind> connectivity;
-    for(const auto& e:graph.edges)if(e.strength==InteractionStrength::StrongConnectivity)
-        connectivity[std::minmax(e.atom_a,e.atom_b)]=e.kind;
+    struct Connectivity { bool covalent=false,coordination=false; };
+    std::map<std::pair<std::size_t,std::size_t>,Connectivity> connectivity;
+    for(const auto& e:graph.edges)if(e.strength==InteractionStrength::StrongConnectivity) {
+        auto& pair=connectivity[std::minmax(e.atom_a,e.atom_b)];
+        pair.covalent|=e.kind==InteractionKind::CovalentConnectivity;
+        pair.coordination|=e.kind==InteractionKind::CoordinationContact;
+    }
+    std::map<std::pair<NboSpin,std::size_t>,const std::string*> raw_types;
+    for(const auto& row:data.dataset.orbitals)if(row.id)raw_types[{row.spin,row.id-1}]=&row.kind;
+    const auto has_type=[&](const NboStructureEvidence& e,const char* kind) {
+        return std::any_of(e.orbitals.begin(),e.orbitals.end(),[&](const auto& ref) {
+            if(ref.kind!=NboOrbitalKind::NBO)return false;
+            const auto found=raw_types.find({ref.spin,ref.index});
+            return found!=raw_types.end() && *found->second==kind;
+        });
+    };
+    std::map<std::vector<std::size_t>,std::size_t> hyperedges;
     for(std::size_t i=0;i<data.structure.size();++i){
         const auto& e=data.structure[i];const bool selected=selected_structure && *selected_structure==i;
         if(!routed &&
@@ -40,19 +54,28 @@ MoleculeOverlay make_nbo_molecule_overlay(const NboIntegration& data,const Inter
             }
         }else if(e.kind=="bond" && e.atoms.size()==2){
             const auto key=std::minmax(e.atoms[0],e.atoms[1]);const auto found=connectivity.find(key);
-            // A continuous index between distant atoms is not a new covalent bond.
-            if(!e.lewis_bond_count && found==connectivity.end())continue;
+            // A continuous index or membership in a multicentre group does not
+            // create a two-centre bond. Conversely, absent total BD counts do
+            // not invalidate existing connectivity or validated spin BD records.
+            const bool lewis=(e.lewis_bond_count && *e.lewis_bond_count>0) || has_type(e,"BD");
+            const bool covalent=found!=connectivity.end() && found->second.covalent;
+            const bool coordination=found!=connectivity.end() && found->second.coordination;
+            if(!lewis && !covalent && !coordination)continue;
             MoleculeOverlayBond b;b.atom_a=e.atoms[0];b.atom_b=e.atoms[1];b.evidence_index=i;
             b.continuous_index=e.wiberg;b.selected=selected;
             b.multiplicity=static_cast<int>(e.lewis_bond_count.value_or(1));
-            if(found!=connectivity.end() && found->second==InteractionKind::CoordinationContact &&
+            if(!covalent && coordination &&
                (!e.lewis_bond_count || *e.lewis_bond_count==1))b.style=OverlayBondStyle::Coordination;
-            else if(found!=connectivity.end() && found->second==InteractionKind::MulticentreSupport)
-                b.style=OverlayBondStyle::Multicentre;
-            else if(!e.lewis_bond_count)b.style=OverlayBondStyle::Unresolved;
             out.bonds.push_back(b);
         }else if(e.kind=="multicentre" && e.atoms.size()>2){
-            out.multicentre.push_back({i,e.atoms,selected});
+            // 3Cn and 3C* remain inspectable orbitals, not extra chemical bonds.
+            if(!has_type(e,"3C"))continue;
+            auto atoms=e.atoms;std::sort(atoms.begin(),atoms.end());
+            atoms.erase(std::unique(atoms.begin(),atoms.end()),atoms.end());
+            if(atoms.size()<3 || atoms.back()>=atom_count)continue;
+            const auto [it,inserted]=hyperedges.emplace(atoms,out.multicentre.size());
+            if(inserted)out.multicentre.push_back({i,atoms,selected,{i}});
+            else {auto& group=out.multicentre[it->second];group.selected|=selected;group.evidence_indices.push_back(i);}
         }else if(e.kind=="donor_acceptor" && (show_e2 || selected) && e.orbitals.size()>=2){
             const auto* donor=nbo_orbital(data,e.orbitals[0]);const auto* acceptor=nbo_orbital(data,e.orbitals[1]);
             if(donor && acceptor && !donor->atoms.empty() && !acceptor->atoms.empty())

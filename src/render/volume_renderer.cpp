@@ -737,11 +737,12 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
         return count?result/static_cast<float>(count):Vec3{0.5f,0.5f,0.5f};
     };
     std::map<std::pair<std::size_t,std::size_t>,const MoleculeOverlayBond*> enhanced;
-    std::set<std::pair<std::size_t,std::size_t>> multicentre_pairs;
     if(overlay) {
-        for(const auto& bond:overlay->bonds)enhanced[ordered_atom_pair(bond.atom_a,bond.atom_b)]=&bond;
-        for(const auto& group:overlay->multicentre)for(auto a:group.atoms)for(auto c:group.atoms)
-            if(a<c)multicentre_pairs.insert({a,c});
+        for(const auto& bond:overlay->bonds) {
+            if(bond.style==OverlayBondStyle::Coordination && !settings.show_coordination_contacts)continue;
+            if(bond.style==OverlayBondStyle::Multicentre && !settings.show_multicentre_support)continue;
+            enhanced[ordered_atom_pair(bond.atom_a,bond.atom_b)]=&bond;
+        }
     }
 
     for (const auto& interaction : interactions.edges) {
@@ -750,7 +751,14 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
             continue;
         }
         const auto pair=ordered_atom_pair(interaction.atom_a,interaction.atom_b);
-        if(enhanced.contains(pair) || multicentre_pairs.contains(pair))continue;
+        // A hyperedge is an additional analysis layer, not an all-pairs mask
+        // that erases ordinary connectivity between its members.
+        if(const auto replacement=enhanced.find(pair);replacement!=enhanced.end()) {
+            const auto style=replacement->second->style;
+            if((interaction.kind==InteractionKind::CovalentConnectivity &&
+                (style==OverlayBondStyle::Covalent || style==OverlayBondStyle::Delocalised)) ||
+               (interaction.kind==InteractionKind::CoordinationContact && style==OverlayBondStyle::Coordination))continue;
+        }
         const auto visual_style = interaction_visual_style(interaction.kind, settings);
         if (visual_style == InteractionVisualStyle::Hidden) continue;
 
@@ -822,6 +830,8 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
 
     if(overlay) {
         for(const auto& bond:overlay->bonds) {
+            if(bond.style==OverlayBondStyle::Coordination && !settings.show_coordination_contacts)continue;
+            if(bond.style==OverlayBondStyle::Multicentre && !settings.show_multicentre_support)continue;
             if(bond.atom_a>=points.size() || bond.atom_b>=points.size())continue;
             if(!settings.show_hydrogens && (wavefunction.atoms[bond.atom_a].atomic_number==1 ||
                                            wavefunction.atoms[bond.atom_b].atomic_number==1))continue;
@@ -856,10 +866,12 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
             target(GeometryTargetKind::Bond,bond.evidence_index,a,c,10.0f,true);
         }
         for(const auto& group:overlay->multicentre) {
+            if(!settings.show_multicentre_support)continue;
             if(group.atoms.size()<3)continue;
             const auto hub=center(group.atoms);
             const auto colour=group.selected?Vec3{1,0.85f,0.2f}:multicentre_colour;
-            for(auto atom:group.atoms)if(atom<points.size())
+            for(auto atom:group.atoms)if(atom<points.size() &&
+                (settings.show_hydrogens || wavefunction.atoms[atom].atomic_number!=1))
                 draw_dashed_cylinder(points[atom],hub,bond_radius*0.7f,colour,opacity,b,9,0.55f);
             draw_sphere(hub,bond_radius*1.8f,colour,opacity,b);
             target(GeometryTargetKind::Multicentre,group.evidence_index,hub,hub,14.0f,false);

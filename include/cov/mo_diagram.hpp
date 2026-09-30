@@ -165,6 +165,8 @@ struct SymmetryNotation {
 
 [[nodiscard]] SymmetryNotation parse_symmetry_notation(std::string_view raw);
 [[nodiscard]] std::string format_symmetry_unicode(std::string_view raw);
+// Display only: preserve machine group keys and never convert group irreps.
+[[nodiscard]] std::string point_group_display(std::string_view raw);
 
 struct DiagramSelectionPlan {
     std::vector<std::size_t> included_indices;
@@ -181,6 +183,10 @@ struct DiagramSelectionPlan {
 struct MODiagramOptions {
     // Presentation supplied by the viewer; no dependency on its font library.
     std::vector<std::string> display_names;
+    // Full canonical MO labels supplied by the same verified naming table.
+    // Separate from row/local symmetry_view and immutable producer labels.
+    std::vector<std::string> display_irreps;
+    std::vector<std::string> display_point_groups;
     std::string figure_title;
     std::string axis_title;
     std::function<void(std::vector<std::uint8_t>&,int,int,int,int,const std::string&,
