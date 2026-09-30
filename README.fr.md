@@ -37,19 +37,20 @@ Les paquets Windows actuels sont destinés à la série RTX 50 ; les paquets pou
 3. Parcourez les énergies et les occupations dans la liste des orbitales et le diagramme. Sélectionnez un niveau pour voir son orbitale, ou exportez le diagramme.
 4. Dans la préversion v0.4, ouvrez le dossier du calcul pour charger ensemble les fichiers de fonction d’onde et NBO. Si le dossier contient plusieurs calculs, choisissez celui à ouvrir.
 
-Si `formchk` est installé, vous pouvez ouvrir directement les fichiers CHK. Les fichiers FCHK/FCH s’ouvrent directement. Les fichiers NBO et FCHK doivent provenir de la même étape de calcul. Après une nouvelle analyse GenNBO, utilisez ensemble son rapport, son archive et ses matrices orbitalaires.
+Si `formchk` est installé, COV peut convertir les fichiers Gaussian CHK en FCHK. Les fichiers FCHK/FCH et Molden fournissent les énergies, les occupations et les formes des MO. Les formes des orbitales NBO et l’analyse de leur composition nécessitent aussi le rapport, l’archive `.47` et les matrices orbitalaires correspondants.
 
 ## Fichiers d’entrée et configuration requise
 
 - **Fonctions d’onde :** fichiers Gaussian `.fchk` / `.fch`, ou fichiers compatibles `.molden` / `.mol` / `.input`. Les fichiers Gaussian `.chk` peuvent être ouverts avec un utilitaire `formchk` installé.
-- **Fichiers NBO — préversion v0.4 :** le rapport, l’archive et les matrices orbitalaires fournissent différentes parties de l’analyse. Pour savoir quels fichiers sont nécessaires à chaque vue, consultez [Utiliser les résultats NBO (en anglais)](docs/AOMO_NBO.md).
+- **Fichiers NBO — préversion v0.4 :** [Préparer les fichiers de calcul](docs/NBO_ONE_JOB.fr.md) explique comment les produire ; [Utiliser les résultats NBO](docs/AOMO_NBO.fr.md) indique les fichiers nécessaires à chaque vue.
 - **Taille des molécules :** jusqu’à 100 atomes par fichier d’entrée.
 - **Affichage :** un GPU NVIDIA, un pilote compatible et OpenGL 2.1 ou une version ultérieure. Utilisez une version compilée pour l’architecture de votre GPU.
 
 ## Documentation
 
 - [Utiliser COV (en anglais)](docs/UI.md)
-- [Utiliser les résultats NBO (en anglais)](docs/AOMO_NBO.md) — préversion v0.4
+- [Utiliser les résultats NBO](docs/AOMO_NBO.fr.md) — préversion v0.4
+- [Préparer les fichiers de calcul](docs/NBO_ONE_JOB.fr.md) — inclut le modèle de travail dans l’arborescence des sources
 - [Compiler depuis les sources (en anglais)](docs/BUILD.md)
 - [Notes de la version stable](docs/releases/v0.3.0.md) · [Notes de la préversion](docs/releases/v0.4.0-pre.1.md) · [Anciennes préversions v0.3](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 

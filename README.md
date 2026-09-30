@@ -37,12 +37,12 @@ The current Windows packages support RTX 50-series GPUs; packages for other arch
 3. Browse the energies and occupations in the orbital list and energy diagram. Select a level to view its orbital, or export the diagram.
 4. In the v0.4 preview, open the calculation folder to load its wavefunction and NBO files together. If the folder contains several calculations, choose the one to open.
 
-With `formchk` installed, you can open CHK files directly; FCHK/FCH files open directly. The NBO files and FCHK must describe the same calculation step. For a GenNBO reanalysis, use its report, archive and orbital matrices together.
+With `formchk` installed, COV can convert Gaussian CHK files to FCHK. FCHK/FCH and Molden files provide MO energies, occupations and shapes. NBO orbital shapes and composition analysis also need the matching report, `.47` archive and orbital matrices.
 
 ## Input and requirements
 
 - **Wavefunctions:** Gaussian `.fchk` / `.fch`, or compatible `.molden` / `.mol` / `.input` files. Gaussian `.chk` can be opened with an installed `formchk`.
-- **NBO files — v0.4 preview:** the report, archive and orbital matrices provide different parts of the analysis. See [Using NBO results](docs/AOMO_NBO.md) for the files each view needs.
+- **NBO files — v0.4 preview:** [Prepare calculation files](docs/NBO_ONE_JOB.md) explains how to produce them; [Using NBO results](docs/AOMO_NBO.md) lists the files for each view.
 - **Molecule size:** up to 100 atoms per input.
 - **Graphics:** an NVIDIA GPU, a compatible driver and OpenGL 2.1 or newer. Use a build made for your GPU architecture.
 
@@ -50,7 +50,7 @@ With `formchk` installed, you can open CHK files directly; FCHK/FCH files open d
 
 - [Using COV](docs/UI.md)
 - [Using NBO results](docs/AOMO_NBO.md) — v0.4 preview
-- [Prepare one calculation](docs/NBO_ONE_JOB.md) — source-tree template
+- [Prepare calculation files](docs/NBO_ONE_JOB.md) — includes the source-tree job template
 - [Building from source](docs/BUILD.md)
 - [Stable release notes](docs/releases/v0.3.0.md) · [Preview release notes](docs/releases/v0.4.0-pre.1.md) · [Older v0.3 previews](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
