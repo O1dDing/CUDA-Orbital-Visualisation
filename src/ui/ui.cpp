@@ -90,7 +90,7 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Orbital browser", "轨道浏览器", "軌道ブラウザ", "Explorateur d’orbitales"},
     {"Search", "搜索", "検索", "Rechercher"},
     {"Filter", "筛选", "フィルター", "Filtre"},
-    {"Auto · reasonable", "自动 · 合理范围", "自動 · 妥当範囲", "Auto · plage raisonnable"},
+    {"Auto", "自动", "自動", "Auto"},
     {"All", "全部", "すべて", "Toutes"},
     {"Occupied", "已占据", "占有", "Occupées"},
     {"Virtual", "虚轨道", "仮想", "Virtuelles"},
