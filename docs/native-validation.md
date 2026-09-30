@@ -13,16 +13,10 @@ Normal builds use
 Use the existing CUDA 12.8 / Visual Studio 2022 / ImGui 1.90.9 / OpenGL 2.1
 configuration. Configure `COV_ENABLE_CUDA=ON`, `COV_BUILD_TESTS=ON`, and
 `COV_ENABLE_VALIDATION=ON`. An independent OFF build is used by the checker.
-No ImGui upgrade, server, or ImGui Test Engine dependency is introduced.
 
-Commit the intended source, then reconfigure and rebuild the validation target.
-CMake embeds the current Git commit and appends `-dirty` for modified tracked
-files. Committing after a build does not update that binary. Before freezing a
-round, run a short native plan and verify that its `identity.json.git_commit`
-matches the intended source commit and that the executable SHA-256 matches the
-program inventory. Preserve the source, inputs, plans, criteria and build receipt.
-A mismatch invalidates the round even if its actions succeed; rebuild and create
-a new round instead of editing the old manifest or identity output.
+CMake embeds the Git commit in the executable and adds `-dirty` when tracked
+files have local changes. Rebuild after changing the source. The run's
+`identity.json` records the executable's source version.
 
 ```
 cov_validation.exe input.fch --validation-plan case.plan --validation-output new-directory
@@ -74,38 +68,23 @@ ledgers. Pillow is installed in the build's `python-deps` directory only.
 It checks direct coefficients/energies, independent overlap/density/Mayer,
 symmetry operations, all-MO sampled actual textures, individually selectable
 compact members, expansion/restoration, units/languages and actual exports.
-The output includes a review page, raw evidence and phase-specific timings.
+The output includes a review page, captured data and timings for each stage.
 No file in an existing output directory is overwritten.
 
-## Evidence and limits
+## Reading the output
 
 - All-MO means every MO is selected in the actual browser, then sampled at
-  up to 8192 deterministic texture indices (duplicates removed). It does not
-  mean every voxel or an integral over all space.
-- A reference-only odd-|m| phase experiment can explain the known failure;
-  it never changes a production failure into a pass.
-- The independent checker owns the verdict. Native collector success is
-  distinct from scientific success. The checker returns failure for known
-  scientific failures instead of counting expected failures as passing cases.
-- Scientific scope is the supplied wavefunction and calculation. A fixed
-  geometry single point is not evidence of an optimized stable ground state.
-- Image review is a separate measured stage; machine-only timings exclude
-  development, compilation, and subsequent review/reporting.
-- ON/OFF science data and original regressions are compared. This first
-  implementation is not a complete certification of non-interference across
-  every UI timing, resolution, degenerate group and molecule.
-- Tooltip and details-window defects are adjudicated individually in the dated
-  run records, including actual resize, scroll, close and language checks.
-  Those checks do not cover every possible term, point group, active space or
-  display environment. Unsupported or insufficient checks remain explicit.
-  This single-case command does not automatically start the 273-case queue or
-  new Gaussian calculations.
+  up to 8192 distinct texture positions.
+- The collector records input, actions and renderer output. The separate
+  checker compares those results with the supplied reference data.
+- Image review has its own timing. Program timings exclude builds and review.
+- The single-case command uses the supplied files and does not start Gaussian.
 
 References: the installed Gaussian `doc/formchk.txt`,
 [GBasis evaluation documentation](https://gbasis.qcdevs.org/tutorial/Evaluations_basis_and_potential.html),
 and the [D2h character table](https://www.staff.ncl.ac.uk/j.p.goss/symmetry/D2h.html).
 
-## Corpus collection without scientific analysis
+## Batch collection
 
 `tests/native_collection_batch.py` recursively inventories `.fch` and `.fchk`,
 then uses a thread pool to launch independent COV processes. Its raw default is
@@ -120,9 +99,8 @@ converted and checked. See the [GLFW offscreen-context documentation](https://ww
 
 Collection includes every alpha/beta MO texture and the current compact
 members, including spin counterparts reached through the actual browser.
-Only collection integrity is checked at this stage. The scientific and image
-review fields remain deferred, even for a completely collected case.
-`progress.json` is updated atomically, failures retain their evidence, and
+The numerical and image checks run separately from collection.
+`progress.json` records progress, failures retain their output, and
 `COMPLETED.json` is written only after all cases return and the index is saved.
 The final summary distinguishes complete collection, collection with gaps,
-and runtime errors. Completion does not imply scientific correctness.
+and runtime errors.
