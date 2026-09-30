@@ -180,7 +180,7 @@ int main() {
             "orbital bonding role is not localised");
     require(std::string_view(cov::ui::localised_pi_interaction_kind(
                 PiInteractionKind::Acceptor,
-                Language::Japanese)).find("アクセプター") != std::string_view::npos,
+                Language::Japanese)).find("逆供与") != std::string_view::npos,
             "pi interaction is not localised");
 
     require(cov::ui::localised_geometry_name(
@@ -239,7 +239,7 @@ int main() {
                          Language::ChineseSimplified),
                      "斯芬诺冠形", "Chinese glyph seed");
     require_contains(cov::ui::orbital_ui_glyph_seed(Language::Japanese),
-                     "アクセプター", "Japanese glyph seed");
+                     "逆供与", "Japanese glyph seed");
     require_contains(cov::ui::orbital_ui_glyph_seed(Language::French),
                      "tétradécaédrique", "French glyph seed");
 

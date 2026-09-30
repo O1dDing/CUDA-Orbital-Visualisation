@@ -178,7 +178,7 @@ OrbitalAnnotation chemistry_annotation(const MolecularOrbital& orbital) {
 
     if (std::isfinite(chemistry.delocalised_pi_weight) &&
         chemistry.delocalised_pi_weight>0.0 &&
-        chemistry.delocalised_participating_atoms>1u &&
+        chemistry.delocalised_participating_atoms>2u &&
         !chemistry.delocalised_family_orbitals.empty() &&
         !chemistry.delocalised_family_id.empty()) {
         result.delocalised_pi.available=true;
@@ -1560,7 +1560,8 @@ std::vector<RawPiPair> find_pi_pairs(
     std::vector<GroupCandidate>& groups,
     const MODiagramOptions& options,
     const std::string& point_group,
-    const LigandScope* scope) {
+    const LigandScope* scope,
+    std::vector<PiPartnerAssessment>& candidate_evidence) {
     struct ScoredPair { RawPiPair pair; double score=0.0; };
     std::vector<ScoredPair> scored;
     const LocalLigandPiRole role=scope!=nullptr
@@ -1569,21 +1570,38 @@ std::vector<RawPiPair> find_pi_pairs(
         role==LocalLigandPiRole::Donor?LigandPiPrior::Donor:
         role==LocalLigandPiRole::Acceptor?LigandPiPrior::Acceptor:
         role==LocalLigandPiRole::Ambiguous?LigandPiPrior::Ambiguous:LigandPiPrior::Unresolved;
+    const bool matched_route=options.routed &&
+        options.routed->canonical_fingerprint==nbo_canonical_fingerprint(wavefunction);
+    const auto same_members=[](std::vector<std::size_t> a,std::vector<std::size_t> b) {
+        std::sort(a.begin(),a.end());std::sort(b.begin(),b.end());return a==b;
+    };
+    const auto routed_members=[&](const auto& a,const auto* b) {
+        if(!matched_route||scope==nullptr||!scope->available)return false;
+        for(const auto& routed:options.routed->pi_couplings) {
+            if(!routed.available()||routed.provider!=RoutedProvider::Nbo)continue;
+            const auto& channel=*routed.value;
+            if(channel.centre_atoms.size()!=1||channel.centre_atoms.front()!=scope->metal)continue;
+            const auto contains=[&](const auto& level){return std::any_of(channel.groups.begin(),channel.groups.end(),
+                [&](const auto& group){return same_members(group.members,level.member_indices);});};
+            if(contains(a)&&(b==nullptr||contains(*b)))return true;
+        }
+        return false;
+    };
     for (std::size_t lower=0;lower<groups.size();++lower) {
         if (groups[lower].suppressed_spin_counterpart) continue;
         const auto& a=groups[lower].level;
-        if (a.pi_fraction<0.60 ||
-            a.metal_d_weight+a.ligand_p_weight<0.18) continue;
+        if (!routed_members(a,static_cast<const MODiagramLevel*>(nullptr)) &&
+            (a.pi_fraction<0.60 || a.metal_d_weight+a.ligand_p_weight<0.18)) continue;
         const std::string symmetry_a=normalised_symmetry(a.metadata.symmetry_view.label);
         for (std::size_t upper=lower+1u;upper<groups.size();++upper) {
             if (groups[upper].suppressed_spin_counterpart) continue;
             const auto& b=groups[upper].level;
+            const bool routed_pair=routed_members(a,&b);
             if (b.layout_energy_hartree<=a.layout_energy_hartree ||
-                b.metadata.degeneracy_size!=a.metadata.degeneracy_size ||
                 group_spin(wavefunction,groups[upper])!=
                     group_spin(wavefunction,groups[lower]) ||
-                b.pi_fraction<0.60 ||
-                b.metal_d_weight+b.ligand_p_weight<0.18) continue;
+                (!routed_pair&&(b.metadata.degeneracy_size!=a.metadata.degeneracy_size ||
+                 b.pi_fraction<0.60 || b.metal_d_weight+b.ligand_p_weight<0.18))) continue;
             const std::string symmetry_b=normalised_symmetry(
                 b.metadata.symmetry_view.label);
             const bool a_known=orbital_symmetry_is_local(a.metadata.symmetry_view) &&
@@ -1603,19 +1621,88 @@ std::vector<RawPiPair> find_pi_pairs(
                        (symmetry_a.empty() || symmetry_a=="?" ||
                         symmetry_a=="n/a")) {
                 symmetry=symmetry_b;
-            } else {
+            } else if(!routed_pair) {
                 continue;
             }
-            if (!local_pi_irrep(point_group,symmetry)) continue;
-            auto evidence=std::make_shared<const PiPartnerAssessment>(assess_pi_partner(
+            if(routed_pair) {
+                const bool a_local=orbital_symmetry_is_local(a.metadata.symmetry_view);
+                const bool b_local=orbital_symmetry_is_local(b.metadata.symmetry_view);
+                if(a_local&&b_local&&(!compatible_symmetry_scopes(a.metadata.symmetry_view,b.metadata.symmetry_view)||
+                   symmetry_a!=symmetry_b))continue;
+                // A common multi-rank channel is not a proof of an unknown
+                // row's irrep. Keep the relation independent of label recovery.
+                if(!a_known||!b_known||symmetry_a!=symmetry_b)symmetry.clear();
+            } else if (!local_pi_irrep(point_group,symmetry)) continue;
+            std::vector<PiPartnerAssessment> assessments;
+            if(matched_route)for(const auto& routed:options.routed->pi_couplings) {
+                if(!routed.available()||routed.provider!=RoutedProvider::Nbo)continue;
+                const auto& channel=*routed.value;
+                if(scope==nullptr||!scope->available||channel.centre_atoms.size()!=1||
+                   channel.centre_atoms.front()!=scope->metal)continue;
+                const auto first=std::find_if(channel.groups.begin(),channel.groups.end(),
+                    [&](const auto& g){return same_members(g.members,a.member_indices);});
+                const auto second=std::find_if(channel.groups.begin(),channel.groups.end(),
+                    [&](const auto& g){return same_members(g.members,b.member_indices);});
+                if(first==channel.groups.end()||second==channel.groups.end()||first->spin!=second->spin) {
+                    PiPartnerAssessment missing;
+                    missing.input_valid=true;missing.prior=prior;
+                    missing.lower={a.layout_energy_hartree,a.metal_d_weight,a.ligand_p_weight,a.pi_fraction,a.metal_ligand_overlap};
+                    missing.upper={b.layout_energy_hartree,b.metal_d_weight,b.ligand_p_weight,b.pi_fraction,b.metal_ligand_overlap};
+                    missing.splitting_hartree=b.layout_energy_hartree-a.layout_energy_hartree;
+                    missing.detail="complete-canonical-member-set-not-matched-in-local-channel";
+                    missing.channel.channel_id=channel.id;
+                    missing.channel.canonical_fingerprint=options.routed->canonical_fingerprint;
+                    missing.channel.spin=nbo_spin_name(channel.spin);
+                    missing.channel.operator_kind=channel.operator_kind;
+                    assessments.push_back(std::move(missing));continue;
+                }
+                PiPartnerChannelEvidence provenance;
+                provenance.channel_id=channel.id;
+                provenance.canonical_fingerprint=options.routed->canonical_fingerprint;
+                provenance.spin=nbo_spin_name(channel.spin);
+                provenance.lower_members=a.member_indices;provenance.upper_members=b.member_indices;
+                provenance.same_operator_verified=true;
+                provenance.operator_kind=channel.operator_kind;
+                const auto valid_members=[&](const auto& level) {
+                    return level.member_indices.size()==level.metadata.degeneracy_size &&
+                        std::all_of(level.member_indices.begin(),level.member_indices.end(),[&](auto i){
+                            return i<wavefunction.orbitals.size() &&
+                                (channel.canonical_members_are_verified_shared_spatial?
+                                    wavefunction.orbitals[i].spin==Spin::Alpha:
+                                    ((channel.spin==NboSpin::Beta)==(wavefunction.orbitals[i].spin==Spin::Beta)));});
+                };
+                provenance.complete_membership_verified=valid_members(a)&&valid_members(b);
+                provenance.occupations_verified=channel.occupation_status=="available";
+                provenance.direction=channel.direction;
+                provenance.lower_character=first->character;provenance.upper_character=second->character;
+                provenance.lower_cross_fock_max_hartree=first->cross_fock_max_hartree;
+                provenance.upper_cross_fock_min_hartree=second->cross_fock_min_hartree;
+                provenance.operator_error_hartree=channel.operator_max_error_hartree;
+                provenance.operator_tolerance_hartree=channel.operator_validation_tolerance_hartree;
+                assessments.push_back(assess_pi_channel_partner(
+                    {a.layout_energy_hartree,a.metal_d_weight,a.ligand_p_weight,a.pi_fraction,a.metal_ligand_overlap},
+                    {b.layout_energy_hartree,b.metal_d_weight,b.ligand_p_weight,b.pi_fraction,b.metal_ligand_overlap},
+                    prior,provenance));
+            }
+            if(assessments.empty())assessments.push_back(assess_pi_partner(
                 {a.layout_energy_hartree,a.metal_d_weight,a.ligand_p_weight,a.pi_fraction,a.metal_ligand_overlap},
                 {b.layout_energy_hartree,b.metal_d_weight,b.ligand_p_weight,b.pi_fraction,b.metal_ligand_overlap},
                 prior,options.weak_pi_split_hartree,options.weak_metal_ligand_overlap));
+            for(auto& assessment:assessments) {
+            assessment.channel.lower_members=a.member_indices;
+            assessment.channel.upper_members=b.member_indices;
+            if(assessment.channel.canonical_fingerprint.empty())
+                assessment.channel.canonical_fingerprint=matched_route?
+                    options.routed->canonical_fingerprint:nbo_canonical_fingerprint(wavefunction);
+            if(assessment.channel.spin.empty())assessment.channel.spin=
+                group_spin(wavefunction,groups[lower])==Spin::Beta?"beta":"alpha";
+            candidate_evidence.push_back(assessment);
+            auto evidence=std::make_shared<const PiPartnerAssessment>(std::move(assessment));
             if(!evidence->accepted)continue;
             const double score=evidence->ranking_score;
             RawPiPair pair;pair.evidence=evidence;
             pair.lower=lower;pair.upper=upper;pair.split=evidence->splitting_hartree;
-            pair.symmetry=a_known?a.metadata.symmetry_view.label:b.metadata.symmetry_view.label;
+            pair.symmetry=symmetry.empty()?"":(a_known?a.metadata.symmetry_view.label:b.metadata.symmetry_view.label);
             switch(evidence->direction) {
                 case PiPairDirection::Donor:pair.kind=PiInteractionKind::Donor;break;
                 case PiPairDirection::Acceptor:pair.kind=PiInteractionKind::Acceptor;break;
@@ -1627,6 +1714,7 @@ std::vector<RawPiPair> find_pi_pairs(
             const double b_metal=b.metal_s_weight+b.metal_p_weight+b.metal_d_weight;
             pair.retained=b_metal>a_metal?upper:lower;
             scored.push_back({pair,score});
+            }
         }
     }
 
@@ -1683,18 +1771,28 @@ std::vector<RawPiPair> find_pi_pairs(
     }
 
     std::sort(scored.begin(),scored.end(),[](const auto& a,const auto& b) {
-        return a.score>b.score;
+        if(a.score!=b.score)return a.score>b.score;
+        const std::string a_id=a.pair.evidence?a.pair.evidence->channel.channel_id:"";
+        const std::string b_id=b.pair.evidence?b.pair.evidence->channel.channel_id:"";
+        if(a_id!=b_id)return a_id<b_id;
+        if(a.pair.lower!=b.pair.lower)return a.pair.lower<b.pair.lower;
+        return a.pair.upper<b.pair.upper;
     });
-    std::set<std::size_t> used_pi,used_crystal_field;
+    std::set<std::size_t> used_crystal_field;
     std::vector<RawPiPair> result;
     for (const auto& item:scored) {
-        auto& used=item.pair.gap_kind==OrbitalEnergyGapKind::CrystalField?used_crystal_field:used_pi;
-        if (used.count(item.pair.lower) || used.count(item.pair.upper)) continue;
-        used.insert(item.pair.lower);
-        used.insert(item.pair.upper);
+        // A canonical group can participate in more than one physical channel.
+        // Only the independent weak crystal-field screen is a disjoint match.
+        if(item.pair.gap_kind==OrbitalEnergyGapKind::CrystalField) {
+            if(used_crystal_field.count(item.pair.lower)||used_crystal_field.count(item.pair.upper))continue;
+            used_crystal_field.insert(item.pair.lower);used_crystal_field.insert(item.pair.upper);
+        }
         groups[item.pair.lower].include=true;
         groups[item.pair.upper].include=true;
         for (const auto group_index:{item.pair.lower,item.pair.upper}) {
+            // Shared participation in a multi-rank Fock channel cannot
+            // independently establish a missing row symmetry label.
+            if(item.pair.evidence&&!item.pair.evidence->channel.channel_id.empty())continue;
             auto& symmetry=groups[group_index].level.metadata.symmetry_view.label;
             const std::string current=normalised_symmetry(symmetry);
             if ((current.empty() || current=="?" || current=="n/a") &&
@@ -1886,11 +1984,11 @@ MODiagramMode preferred_compact_mo_diagram_mode(
 
 const char* pi_interaction_kind_name(const PiInteractionKind kind) noexcept {
     switch (kind) {
-        case PiInteractionKind::Donor: return "pi-donor splitting";
-        case PiInteractionKind::Acceptor: return "pi-acceptor splitting";
+        case PiInteractionKind::Donor: return "pi donation";
+        case PiInteractionKind::Acceptor: return "pi back-donation";
         case PiInteractionKind::WeakNearNonbonding:
-            return "weak-field split; approximately nonbonding";
-        default: return "pi-coupled splitting";
+            return "weak pi interaction; approximately nonbonding";
+        default: return "pi coupling";
     }
 }
 
@@ -2362,7 +2460,7 @@ MODiagramData build_mo_diagram_data(
     if (!active_space_mode) {
         raw_pairs=find_pi_pairs(
             wavefunction,groups,options,data.ligand_field_point_group,
-            ligand_scope.available?&ligand_scope:nullptr);
+            ligand_scope.available?&ligand_scope:nullptr,data.pi_partner_candidates);
     } else {
         // Pair detection may enrich labels and, in the ordinary valence view,
         // deliberately brings both sides of a ligand-field interaction into
@@ -2374,7 +2472,7 @@ MODiagramData build_mo_diagram_data(
         auto paired_groups=groups;
         const auto candidates=find_pi_pairs(
             wavefunction,paired_groups,options,data.ligand_field_point_group,
-            ligand_scope.available?&ligand_scope:nullptr);
+            ligand_scope.available?&ligand_scope:nullptr,data.pi_partner_candidates);
         for (const auto& pair:candidates) {
             if (pair.lower>=groups.size() || pair.upper>=groups.size() ||
                 !groups[pair.lower].include || !groups[pair.upper].include) {
@@ -2632,7 +2730,7 @@ MODiagramData build_mo_diagram_data(
             ?retained:upper;
         descriptor.lower_orbitals=groups[pair.lower].level.member_indices;
         descriptor.upper_orbitals=groups[pair.upper].level.member_indices;
-        descriptor.symmetry=pair.symmetry.empty()
+        descriptor.symmetry=pair.symmetry.empty()&&(!pair.evidence||pair.evidence->channel.channel_id.empty())
             ?groups[pair.lower].level.metadata.symmetry_view.label:pair.symmetry;
         descriptor.kind=pair.kind;
         descriptor.orbital_evidence=pair.evidence;

@@ -604,7 +604,7 @@ int main() {
             orbital.spin=cov::NboSpin::Alpha;orbital.symmetry_adapted=true;
             partner_model->orbitals.push_back(orbital);
             cov::ui::NboAomoName name;name.verified=true;name.irrep="T1u";
-            name.label="?t₁u [alpha]";name.ordinal=0;
+            name.label="t₁u [SALC "+std::to_string(partner_names->salc.size()+1)+"] [alpha]";name.ordinal=0;
             name.partner_block_id="block-"+std::to_string(block);
             name.partner_block_size=3;partner_names->salc.push_back(name);
         }
@@ -626,7 +626,7 @@ int main() {
         for(const auto* n:partners[block]) {
             labels+=!n->label.empty();
             require(n->shell_member_count==3&&n->symmetry_ordinal==0&&
-                n->shell_label=="?t₁u [alpha]"&&n->x==partners[block][0]->x&&
+                n->shell_label=="t₁u [alpha]"&&n->x==partners[block][0]->x&&
                 std::abs(*n->display_energy_hartree-(-0.42+0.04*block+1e-6))<1e-12&&
                 n->energy_hartree==partner_model->orbitals[*n->salc_index].energy_hartree,
                 "unknown ordinal must not suppress a proved SALC stack or change raw values");

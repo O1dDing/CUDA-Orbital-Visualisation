@@ -48,6 +48,7 @@ struct InteractionEdge {
     // Distinct validated NBO observable; never substituted for Mayer order.
     std::optional<double> wiberg_index;
     std::string wiberg_source_path;
+    std::string connectivity_method, connectivity_source_path;
 };
 
 // A multicentre assignment is a hyperedge. Pairwise MulticentreSupport edges
@@ -99,9 +100,17 @@ struct FragmentAnalysis {
 // Charges are optional analysis evidence, not inferred from element names or
 // from the total molecular charge. This keeps isolated weakly coordinating
 // anions and contact ion pairs representation-independent.
+struct InteractionBondEvidence {
+    std::size_t atom_a=0, atom_b=0;
+    // Only associated, independently validated total WBI records belong here.
+    // A missing pair is absent, never an implicit zero or a spin sum.
+    double wiberg_index=0;
+    std::string source_path;
+};
 struct InteractionEvidence {
     std::vector<double> atomic_partial_charges;
     DataProvenance atomic_charge_provenance = DataProvenance::Unavailable;
+    std::vector<InteractionBondEvidence> bonds;
 
     [[nodiscard]] bool has_atomic_charges(std::size_t atom_count) const noexcept;
 };

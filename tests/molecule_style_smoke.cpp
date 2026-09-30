@@ -86,7 +86,7 @@ int main(const int argc, char** argv) {
             cov::InteractionVisualStyle::OrdinaryBond ||
         cov::interaction_visual_style(cov::InteractionKind::CoordinationContact,
                                       defaults) !=
-            cov::InteractionVisualStyle::CoordinationDash ||
+            cov::InteractionVisualStyle::OrdinaryBond ||
         cov::interaction_visual_style(cov::InteractionKind::MulticentreSupport,
                                        defaults) !=
             cov::InteractionVisualStyle::Hidden ||

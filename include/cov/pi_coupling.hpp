@@ -47,6 +47,15 @@ struct NboPiCoupling {
     std::vector<NboPiAngularEvidence> angular_projector_evidence;
     std::vector<NboPiDirectionProjection> direction_projection_evidence;
     std::vector<NboPiCanonicalGroup> groups;
+    // Empty for the broad atom-pi projector. Nonempty families retain full
+    // ligand support and independently assigned internal pi/antipi character.
+    std::string ligand_family;
+    std::vector<std::size_t> ligand_family_nbo_ids;
+    bool localized_family_verified=false;
+    std::string operator_kind="canonical-same-operator";
+    double canonical_operator_residual_hartree=0;
+    double operator_validation_tolerance_hartree=2e-5;
+    bool canonical_members_are_verified_shared_spatial=false;
     NboSource source;
 };
 struct NboPiCouplingAnalysis {

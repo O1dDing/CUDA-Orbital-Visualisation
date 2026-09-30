@@ -1,4 +1,5 @@
 #include "cov/pi_coupling.hpp"
+#include "cov/nbo_salc.hpp"
 #include "cov/local_angular_projection.hpp"
 #include <Eigen/Dense>
 #include <algorithm>
@@ -295,6 +296,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         const std::vector<std::pair<std::size_t,std::size_t>>& strong_connectivity){
     NboPiCouplingAnalysis out;
     std::vector<std::string> projection_failures;
+    std::optional<NboSalcModel> physical_operator_model;
     if(!data.dataset.association.compatible||data.canonical_fingerprint!=nbo_canonical_fingerprint(w)){
         out.status="rejected";out.reason="NBO association does not match immutable canonical identity";
         return out;
@@ -303,6 +305,10 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
     if(!n||!data.dataset.archive){out.reason="Complete same-source archive is unavailable";return out;}
     const auto* s=unique_matrix(data.dataset.archive->matrices,"OVERLAP",NboSpin::Total);
     if(!full(s,n)){out.reason="Complete archive AO overlap is unavailable";return out;}
+    const auto ro=verify_nbo_restricted_open_shell(w,data);
+    const bool shared_ro=ro.verified&&
+        (w.orbital_occupation_model==OrbitalOccupationModel::CanonicalShared||
+         w.orbital_occupation_model==OrbitalOccupationModel::SharedIntegerDeterminant);
     for(auto spin:{NboSpin::Total,NboSpin::Alpha,NboSpin::Beta}){
         const auto* a=unique_matrix(data.dataset.matrices,"AONAO",spin);
         if(!a&&spin!=NboSpin::Total)
@@ -312,7 +318,8 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         if(!full(a,n)||!full(u,n)||!full(f,n))continue;
         const NboNaoValidation* validation=nullptr;
         for(const auto& candidate:data.dataset.nao_validation)
-            if(candidate.spin==spin&&candidate.available&&candidate.direct_fchk_coefficients)
+            if(candidate.spin==spin&&candidate.available&&
+               (candidate.direct_fchk_coefficients||(shared_ro&&spin==NboSpin::Beta)))
                 validation=&candidate;
         if(!validation||validation->effective_mo_columns!=n)continue;
         const M an=mat(*a),un=mat(*u),fn=an.transpose()*mat(*f)*an;
@@ -321,7 +328,8 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         V energies(n),occupations(n);std::vector<bool> seen(n,false);
         bool occupation_provenance=true;
         for(const auto& mo:w.orbitals){
-            if((spin==NboSpin::Beta)!=(mo.spin==Spin::Beta))continue;
+            if(!shared_ro&&(spin==NboSpin::Beta)!=(mo.spin==Spin::Beta))continue;
+            if(shared_ro&&mo.spin!=Spin::Alpha)continue;
             const auto index=mo.source_orbital_index;
             if(index>=n||seen[index])continue;
             seen[index]=true;energies[index]=mo.energy_hartree;
@@ -330,9 +338,33 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
                  w.electron_counts_provenance!=DataProvenance::Unavailable);
         }
         if(!std::all_of(seen.begin(),seen.end(),[](bool yes){return yes;}))continue;
-        const double operator_error=maxabs(fn-un*energies.asDiagonal()*un.transpose());
-        if(operator_error>2e-5)continue;
-        const bool density_validated=occupation_provenance &&
+        const double canonical_operator_residual=maxabs(fn-un*energies.asDiagonal()*un.transpose());
+        double operator_error=canonical_operator_residual;
+        std::string operator_kind="canonical-same-operator";
+        double operator_validation_tolerance=2e-5;
+        if(operator_error>2e-5) {
+            if(!physical_operator_model)physical_operator_model=build_nbo_salc_model(w,data);
+            const auto physical=std::find_if(physical_operator_model->energies.begin(),
+                physical_operator_model->energies.end(),[&](const auto& e){
+                    return e.spin==spin&&e.available&&e.printed_operator_verified;});
+            const auto op=std::find_if(physical_operator_model->spin_operators.begin(),
+                physical_operator_model->spin_operators.end(),[&](const auto& e){return e.spin==spin;});
+            if(physical==physical_operator_model->energies.end()||
+               op==physical_operator_model->spin_operators.end()||op->fock.size()!=n*n||
+               op->basis.size()!=n) {
+                projection_failures.push_back(std::string(nbo_spin_name(spin))+": canonical operator differs and independent printed physical-spin Fock validation is unavailable");
+                continue;
+            }
+            bool same_basis=true;for(std::size_t i=0;i<n;++i)
+                same_basis=same_basis&&op->basis[i].kind==NboOrbitalKind::NAO&&
+                    op->basis[i].spin==spin&&op->basis[i].index==i;
+            const M verified=Eigen::Map<const RM>(op->fock.data(),n,n);
+            if(!same_basis||maxabs(fn-verified)>2e-5)continue;
+            operator_error=std::max(maxabs(fn-verified),physical->hermiticity_error);
+            operator_kind="independently-verified-physical-spin-fock";
+            operator_validation_tolerance=5.1e-6;
+        }
+        bool density_validated=occupation_provenance &&
             validation->occupation_density_verified &&
             validation->canonical_occupations.size()==n &&
             std::all_of(validation->canonical_occupations.begin(),
@@ -342,6 +374,19 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             for(std::size_t col=0;col<n;++col)
                 occupations[col]=validation->canonical_occupations[col];
             density=un*occupations.asDiagonal()*un.transpose();
+        }
+        if(!density_validated&&shared_ro&&physical_operator_model) {
+            const auto op=std::find_if(physical_operator_model->spin_operators.begin(),
+                physical_operator_model->spin_operators.end(),[&](const auto& e){return e.spin==spin;});
+            if(op!=physical_operator_model->spin_operators.end()&&op->density.size()==n*n) {
+                const std::size_t electrons=spin==NboSpin::Beta?w.beta_electrons:w.alpha_electrons;
+                for(std::size_t i=0;i<n;++i)occupations[i]=i<electrons?1.0:0.0;
+                const M reconstructed=un*occupations.asDiagonal()*un.transpose();
+                const M independently_verified=Eigen::Map<const RM>(op->density.data(),n,n);
+                if(maxabs(reconstructed-independently_verified)<=2e-5) {
+                    density=independently_verified;density_validated=true;
+                }
+            }
         }
         std::optional<M> nbo_transform;
         const auto* naob=unique_matrix(data.dataset.matrices,"NAONBO",spin);
@@ -354,6 +399,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         std::set<std::pair<std::size_t,std::size_t>> bonded;
         for(const auto& edge:strong_connectivity)bonded.emplace(std::minmax(edge.first,edge.second));
         struct Candidate{std::vector<std::size_t> centre,ligand,ci,li;M qc,ql;
+            std::string ligand_family;std::vector<std::size_t> family_nbo_ids;
             std::vector<NboPiAngularEvidence> angular;};
         std::vector<Candidate> candidates;
         const auto add_angular=[&](Candidate& c,std::size_t atom,const PiFrame& frame){
@@ -385,6 +431,64 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
                 candidate.ql.middleCols(2*k,2)=parts[k];
             candidates.push_back(std::move(candidate));
         }
+        // Resolve the complete ligand's internal occupied pi and antibonding
+        // pi families before reducing the d--ligand coupling. Atom-pi alone
+        // combines these physically distinct spaces (e.g. both ends of any
+        // heteronuclear multiple bond). This uses no ligand-name catalogue or
+        // E2 printing threshold, and never assumes BD ordinal 1 means sigma.
+        if(nbo_transform) {
+            const std::size_t broad_count=candidates.size();
+            for(std::size_t cindex=0;cindex<broad_count;++cindex) {
+                const auto broad=candidates[cindex];
+                std::set<std::size_t> fragment(broad.ligand.begin(),broad.ligand.end());
+                bool changed=true;
+                while(changed) {
+                    changed=false;
+                    for(const auto& [a,b]:bonded) {
+                        if(family.d.count(a)||family.d.count(b))continue;
+                        if(fragment.count(a)&&fragment.insert(b).second)changed=true;
+                        if(fragment.count(b)&&fragment.insert(a).second)changed=true;
+                    }
+                }
+                std::set<std::size_t> fragment_p_rows;
+                for(const auto& row:data.dataset.naos)
+                    if(row.spin==spin&&row.id&&row.atom&&fragment.count(row.atom-1)&&valence(row,'p'))
+                        fragment_p_rows.insert(row.id-1);
+                for(const bool antibonding:{false,true}) {
+                    std::vector<V> columns;std::vector<std::size_t> ids;
+                    for(const auto& local:data.dataset.orbitals) {
+                        if(local.spin!=spin||!local.id||local.id>static_cast<std::size_t>(nbo_transform->cols())||
+                           local.kind!=(antibonding?"BD*":"BD"))continue;
+                        const auto* desc=nbo_orbital(data,{NboOrbitalKind::NBO,spin,local.id-1});
+                        if(!desc||desc->atoms.size()<2||
+                           !std::all_of(desc->atoms.begin(),desc->atoms.end(),[&](auto atom){return fragment.count(atom);})||
+                           !std::any_of(desc->channels.begin(),desc->channels.end(),[](const auto& evidence){
+                               return evidence.status=="available"&&evidence.channel=="pi";}))continue;
+                        const V original=nbo_transform->col(local.id-1);
+                        double direct_p=0;for(auto id:broad.li)direct_p+=original[id-1]*original[id-1];
+                        const double transverse=(broad.ql.transpose()*original).squaredNorm();
+                        // Establish that this internal pi family belongs to the
+                        // metal-facing pi geometry, not a sigma-facing orbital.
+                        if(direct_p<1e-4||transverse/direct_p<0.9)continue;
+                        V projected=V::Zero(n);for(auto row:fragment_p_rows)projected[row]=original[row];
+                        if(projected.squaredNorm()<0.7)continue;
+                        columns.push_back(std::move(projected));ids.push_back(local.id);
+                    }
+                    if(columns.empty())continue;
+                    M raw(n,columns.size());for(std::size_t i=0;i<columns.size();++i)raw.col(i)=columns[i];
+                    Eigen::JacobiSVD<M> basis(raw,Eigen::ComputeThinU);
+                    const double cutoff=std::max(1e-8,1e-8*basis.singularValues()[0]);
+                    std::size_t rank=0;for(double value:basis.singularValues())if(value>cutoff)++rank;
+                    if(!rank||rank!=columns.size())continue; // incomplete dependent family is not silently truncated
+                    Candidate split=broad;split.ligand.assign(fragment.begin(),fragment.end());
+                    split.li.clear();for(auto row:fragment_p_rows)split.li.push_back(row+1);
+                    split.ql=basis.matrixU().leftCols(rank);
+                    split.ligand_family=antibonding?"internal-pi-antibonding":"internal-pi-bonding";
+                    split.family_nbo_ids=std::move(ids);
+                    candidates.push_back(std::move(split));
+                }
+            }
+        }
         for(const auto& [atom,other]:bonded){
             const auto ca=family.p.find(atom),lb=family.p.find(other);
             if(ca==family.p.end()||lb==family.p.end())continue;
@@ -414,9 +518,16 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             if(!rank)continue;
             NboPiCoupling record;
             record.spin=spin;record.centre_atoms=candidate.centre;
+            record.ligand_family=candidate.ligand_family;
+            record.ligand_family_nbo_ids=candidate.family_nbo_ids;
+            record.localized_family_verified=!candidate.ligand_family.empty();
             record.ligand_atoms=candidate.ligand;
             record.centre_nao_ids=candidate.ci;record.ligand_nao_ids=candidate.li;
             record.coupled_rank=rank;record.operator_max_error_hartree=operator_error;
+            record.operator_kind=operator_kind;
+            record.canonical_operator_residual_hartree=canonical_operator_residual;
+            record.operator_validation_tolerance_hartree=operator_validation_tolerance;
+            record.canonical_members_are_verified_shared_spatial=shared_ro;
             record.nao_orthogonality_error=orth;record.source=f->source;
             record.angular_projector_evidence=candidate.angular;
             record.minimum_centre_projection=1;
@@ -429,7 +540,8 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
                 record.singular_values_hartree.push_back(value);
             std::ostringstream id;id<<"pi:"<<nbo_spin_name(spin)<<":";
             for(auto atom:candidate.centre)id<<atom<<',';id<<":";
-            for(auto atom:candidate.ligand)id<<atom<<',';record.id=id.str();
+            for(auto atom:candidate.ligand)id<<atom<<',';
+            id<<":"<<candidate.ligand_family;record.id=id.str();
             const M qc=candidate.qc*svd.matrixU().leftCols(rank);
             const M ql=candidate.ql*svd.matrixV().leftCols(rank);
             const M pc=qc*qc.transpose(),pl=ql*ql.transpose();
@@ -462,7 +574,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
                 record.occupation_reason="Validated same-spin canonical occupations reconstruct NAO density";
             }else record.occupation_reason=
                 "Occupation provenance or independent canonical-to-NAO density validation unavailable; coupling retained without direction";
-            for(const auto& group:canonical_groups(w,spin))
+            for(const auto& group:canonical_groups(w,shared_ro?NboSpin::Alpha:spin))
                 append_group(record,w,un,fn,qc,ql,pc,pl,
                     density_validated?&occupations:nullptr,group);
             if(record.groups.empty())continue;
@@ -501,7 +613,13 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
                          (*record.ligand_occupation_range)[0])<0.05 &&
                 std::abs((*record.centre_occupation_range)[1]-
                          (*record.ligand_occupation_range)[1])<0.05;
-            if(symmetric_onsite&&symmetric_occupation){
+            if(candidate.ligand_family=="internal-pi-antibonding"&&centre_lower&&centre_more){
+                record.direction="centre_to_ligand";
+                record.direction_evidence="Verified full-ligand internal pi-antibonding family, same-operator Fock coupling and concordant occupied centre; independent of E2 printing threshold";
+            }else if(candidate.ligand_family=="internal-pi-bonding"&&ligand_lower&&ligand_more){
+                record.direction="ligand_to_centre";
+                record.direction_evidence="Verified full-ligand internal pi-bonding family, same-operator Fock coupling and concordant occupied ligand; independent of E2 printing threshold";
+            }else if(symmetric_onsite&&symmetric_occupation){
                 record.direction="symmetric_coupled";
                 record.direction_evidence="Coupled-projector on-site and occupation ranges are symmetric; no directional donor assignment";
             }else if(ligand_lower&&ligand_more&&
@@ -532,7 +650,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             "No supported bonded valence p-pi or d-to-ligand-p-pi coupling block";
     }else{
         out.status="available";
-        out.reason="Same-operator coupled NAO projectors; canonical groups retain source identities and complete eigenvalue intervals";
+        out.reason="Independently verified local-operator NAO projectors; each channel declares canonical or physical-spin operator identity; canonical groups and eigenvalue intervals remain separate";
     }
     if(!projection_failures.empty()){
         out.reason+="; candidate pi subspaces could not be verified";

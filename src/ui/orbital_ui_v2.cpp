@@ -64,14 +64,8 @@ void labelled_value(const char* label, const std::string& value, const ImU32 col
     ImGui::TextColored(text_colour(colour), "%s", value.c_str());
 }
 
-const char* localised_catalogue_prior(LigandPiPrior prior, Language language) {
-    switch(prior) {
-        case LigandPiPrior::SigmaOnly:return orbital_tr(OrbitalText::CatalogueSigmaOnly,language);
-        case LigandPiPrior::Donor:return orbital_tr(OrbitalText::CatalogueDonor,language);
-        case LigandPiPrior::Acceptor:return orbital_tr(OrbitalText::CatalogueAcceptor,language);
-        case LigandPiPrior::Ambiguous:return orbital_tr(OrbitalText::CatalogueAmbiguous,language);
-        default:return orbital_tr(OrbitalText::UnknownSource,language);
-    }
+bool usable_symmetry_text(const std::string& label) {
+    return !label.empty() && label!="?" && label!="N/A" && label!="UND";
 }
 void labelled_number(const char* label, const std::string& value) {
     cov::validation::field(label,value);
@@ -178,7 +172,14 @@ const char* intermediate_toggle_label(const Language language) {
 void draw_pi_ring_evidence(const DelocalisedPiDescriptor& descriptor,
                           const Language language) {
     const auto& graph=descriptor.topology_graph;
-    if(graph.source==PiTopologyGraphSource::Unavailable)return;
+    // A molecule-wide connectivity graph is not evidence for a ring in this
+    // selected electronic family. Do not emit an empty template for acyclic
+    // families (including an ordinary two-centre pi bond).
+    if(graph.source==PiTopologyGraphSource::Unavailable ||
+       (!descriptor.cyclic_topology && graph.channel_ring_witnesses.empty() &&
+        !std::any_of(descriptor.orientation_channel_details.begin(),
+                     descriptor.orientation_channel_details.end(),
+                     [](const auto& channel){return channel.cyclic;})))return;
     const auto source=graph.source==PiTopologyGraphSource::MayerDistanceModel
         ?OrbitalText::MayerDistanceModel:OrbitalText::CovalentDistanceModel;
     ImGui::Separator();
@@ -520,9 +521,12 @@ void draw_level_details(const MODiagramData& data,
     ImGui::Text("%s: %s", tr(Text::Spin, language),
         actual && actual->spin_provenance!=DataProvenance::Unavailable?spin_name_ui(actual->spin,language):"N/A");
 
-    labelled_value(aomo_text(language,"Full MO symmetry"),displayed_symmetry,kSymmetryColour);
-    cov::validation::item("details.symmetry.current-label");
-    if(verified_name && verified_name->verified && !verified_name->point_group.empty())
+    if(usable_symmetry_text(displayed_symmetry)) {
+        labelled_value(aomo_text(language,"Full MO symmetry"),displayed_symmetry,kSymmetryColour);
+        cov::validation::item("details.symmetry.current-label");
+    }
+    if(usable_symmetry_text(displayed_symmetry) && verified_name &&
+       verified_name->verified && !verified_name->point_group.empty())
         labelled_value(orbital_tr(OrbitalText::PointGroup,language),
                        point_group_display(verified_name->point_group),kSymmetryColour);
     // The row may additionally have a local coordination interpretation.
@@ -548,27 +552,36 @@ void draw_level_details(const MODiagramData& data,
                         std::to_string(data.ligand_field_coordination_number));
     }
     if (!data.local_geometries.empty()) {
-        labelled_number(orbital_tr(OrbitalText::LocalMolecularGeometries, language),
-                        std::to_string(data.local_geometries.size()));
         std::set<std::size_t> relevant_centres;
-        for (const auto& contribution:level.chemistry.ao_contributions) {
-            if (contribution.weight>=0.08) {
-                relevant_centres.insert(contribution.atom_index);
+        const auto* routed=state.nbo_ui?state.nbo_ui->routed:nullptr;
+        const bool use_nao=routed && orbital_index<routed->mo_composition.size() &&
+            routed->mo_composition[orbital_index].available() &&
+            routed->mo_composition[orbital_index].provider==RoutedProvider::Nbo;
+        if(use_nao) {
+            for(const auto& atom:routed->mo_composition[orbital_index].value->atoms)
+                if(atom.weight>=0.08)relevant_centres.insert(atom.atom);
+        } else if(actual) {
+            std::map<std::size_t,double> atom_weights;
+            for(const auto& contribution:actual->chemistry.ao_contributions)
+                atom_weights[contribution.atom_index]+=contribution.weight;
+            for(const auto& [atom,weight]:atom_weights)
+                if(weight>=0.08)relevant_centres.insert(atom);
+        }
+        std::vector<const LocalGeometryDiagramDescriptor*> relevant_geometries;
+        for(const auto& geometry:data.local_geometries) {
+            if(relevant_centres.contains(geometry.centre_atom) &&
+               !geometry.geometry_name.empty() && !geometry.geometry_id.empty() &&
+               usable_symmetry_text(geometry.point_group)) {
+                relevant_geometries.push_back(&geometry);
             }
         }
-        std::size_t relevant_geometry_count=0u;
-        for (const auto& geometry:data.local_geometries) {
-            if (relevant_centres.empty() ||
-                relevant_centres.contains(geometry.centre_atom)) {
-                ++relevant_geometry_count;
-            }
-        }
+        const auto relevant_geometry_count=relevant_geometries.size();
+        if(relevant_geometry_count)
+            labelled_number(orbital_tr(OrbitalText::LocalMolecularGeometries,language),
+                            std::to_string(relevant_geometry_count));
         std::size_t shown=0u;
-        for (const auto& geometry:data.local_geometries) {
-            if (!relevant_centres.empty() &&
-                !relevant_centres.contains(geometry.centre_atom)) {
-                continue;
-            }
+        for(const auto* geometry_ptr:relevant_geometries) {
+            const auto& geometry=*geometry_ptr;
             std::ostringstream value;
             value << orbital_tr(OrbitalText::Atom, language) << ' '
                   << (geometry.centre_atom+1u) << ": "
@@ -581,11 +594,7 @@ void draw_level_details(const MODiagramData& data,
                            value.str(),kSymmetryColour);
             if (++shown==6u) break;
         }
-        if (shown==0u) {
-            labelled_value(orbital_tr(OrbitalText::LocalGeometry, language),
-                           orbital_tr(OrbitalText::NotCentredOnThisMO, language),
-                           kUnavailableColour);
-        } else if (shown<relevant_geometry_count) {
+        if (shown<relevant_geometry_count) {
             ImGui::TextDisabled("…");
         }
     }
@@ -656,19 +665,7 @@ void draw_level_details(const MODiagramData& data,
                         format_energy(interaction.splitting_hartree,
                                       state.energy_unit,6));
         cov::validation::item(prefix+".splitting");
-        if(interaction.orbital_evidence && !cf) {
-            const auto& evidence=*interaction.orbital_evidence;
-            labelled_value(orbital_tr(OrbitalText::CataloguePrior,language),
-                           localised_catalogue_prior(evidence.prior,language),kUnavailableColour);
-            cov::validation::item(prefix+".prior");
-            const auto relation=evidence.prior_relation=="contradicted"?OrbitalText::CatalogueContradicted:
-                evidence.prior_relation=="consistent"?OrbitalText::CatalogueConsistent:OrbitalText::UnknownSource;
-            labelled_value(orbital_tr(OrbitalText::CatalogueEvidenceRelation,language),
-                           orbital_tr(relation,language),relation==OrbitalText::CatalogueContradicted?kPiColour:kNumericColour);
-            cov::validation::item(prefix+".prior-relation");
-        }
-        ImGui::TextWrapped("%s",orbital_tr(OrbitalText::GapLocalScopeExplanation,language));
-        cov::validation::item(prefix+".scope");
+        // Catalogue priors stay in the structured result, not the details UI.
         cov::validation::record("details.energy-gap",orbital_energy_gap_json(interaction,state.energy_unit));
     }
 
@@ -729,9 +726,10 @@ void draw_level_tooltip(const MODiagramData& data,
         actual.occupation_provenance!=DataProvenance::Unavailable && std::isfinite(actual.occupation)?fixed_number(actual.occupation,6):"N/A");
     ImGui::Text("%s: %s",tr(Text::Spin,language),
         actual.spin_provenance!=DataProvenance::Unavailable?spin_name_ui(actual.spin,language):"N/A");
-    labelled_value(aomo_text(language,"Full MO symmetry"),
-        canonical_mo_current_irrep(wavefunction,orbital_index,
-            canonical_name_for(wavefunction,orbital_index,state)),kSymmetryColour);
+    const auto symmetry=canonical_mo_current_irrep(wavefunction,orbital_index,
+        canonical_name_for(wavefunction,orbital_index,state));
+    if(usable_symmetry_text(symmetry))
+        labelled_value(aomo_text(language,"Full MO symmetry"),symmetry,kSymmetryColour);
     if(orbital_index<data.annotations.size()) {
         const auto& annotation=data.annotations[orbital_index];
         labelled_value(aomo_text(language,"All-pair angular character"),
@@ -1318,6 +1316,48 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     validation::item("browser.copy");
 }
 
+void draw_pi_counterpart_navigation(const MODiagramData& data,
+    const Wavefunction& wavefunction, const OrbitalUIState& state,
+    Language language, OrbitalUIActions& actions) {
+    if(data.pi_interactions.empty())return;
+    const bool open=ImGui::TreeNode(aomo_text(language,"Pi counterparts"));
+    validation::item("pi.navigation");
+    if(!open)return;
+    // Display grouping uses the verified channel ID. Navigation always uses
+    // the frozen canonical members; display labels never resolve identities.
+    std::map<std::string,std::vector<const PiInteractionDescriptor*>> channels;
+    for(const auto& pair:data.pi_interactions) {
+        if(!pair.orbital_evidence || pair.orbital_evidence->channel.channel_id.empty())continue;
+        channels[pair.orbital_evidence->channel.channel_id].push_back(&pair);
+    }
+    std::size_t ordinal=0;
+    for(const auto& [id,pairs]:channels) {
+        const auto& channel=pairs.front()->orbital_evidence->channel;
+        const bool star=id.find("internal-pi-antibonding")!=std::string::npos;
+        const bool internal=id.find("internal-pi-bonding")!=std::string::npos;
+        ImGui::Text("%s%s%s",aomo_text(language,star?"Ligand pi*":internal?"Ligand pi":"Metal-ligand pi"),
+            channel.spin=="total"?"":" · ",channel.spin=="total"?"":channel.spin.c_str());
+        for(const auto* pair:pairs) {
+            ImGui::PushID(id.c_str());ImGui::PushID(static_cast<int>(ordinal));
+            for(const bool upper:{false,true}) {
+                const auto& members=upper?pair->upper_orbitals:pair->lower_orbitals;
+                if(members.empty() || members.front()>=wavefunction.orbitals.size())continue;
+                if(upper){ImGui::SameLine();ImGui::TextUnformatted("↔");ImGui::SameLine();}
+                const auto label=displayed_canonical_name(wavefunction,members.front(),state)+
+                    (upper?"##upper":"##lower");
+                if(ImGui::SmallButton(label.c_str())) {
+                    actions.select_orbital=members.front();
+                    validation::record("pi.navigation.selection",orbital_energy_gap_json(*pair,state.energy_unit));
+                }
+                validation::item(std::string("pi.navigation.")+(upper?"upper.":"lower.")+std::to_string(ordinal));
+            }
+            ImGui::SameLine();ImGui::TextDisabled("%s",localised_pi_interaction_kind(pair->kind,language));
+            ImGui::PopID();ImGui::PopID();++ordinal;
+        }
+    }
+    ImGui::TreePop();
+}
+
 void draw_energy_diagram(const Wavefunction& wavefunction,
                          const std::size_t selected_index,
                          OrbitalUIState& state,
@@ -1464,6 +1504,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         }
     }
     if(integrated_aomo){
+        draw_pi_counterpart_navigation(data,wavefunction,state,language,actions);
         // The same canonical details remain reachable from the unified canvas;
         // its levels are already drawn there and must not be drawn a second time.
         if(ImGui::Button(orbital_tr(OrbitalText::OrbitalDetails,language),ImVec2(-1.0f,0.0f)))

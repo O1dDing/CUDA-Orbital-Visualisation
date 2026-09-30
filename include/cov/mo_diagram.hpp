@@ -384,6 +384,8 @@ struct MODiagramData {
     std::vector<OrbitalMetadata> metadata;
     std::vector<OrbitalAnnotation> annotations;
     std::vector<PiInteractionDescriptor> pi_interactions;
+    // Includes rejected counterparts with their original member identities.
+    std::vector<PiPartnerAssessment> pi_partner_candidates;
     ElectronicStateDiagramMetadata electronic_state;
     // Every unambiguous Mayer-supported CN2--CN10 centre, including main-group
     // and non-metal centres.  This is structural metadata and never creates a
@@ -416,6 +418,8 @@ struct MODiagramData {
 
 [[nodiscard]] std::vector<const OrbitalEnergyGapDescriptor*> orbital_energy_gaps(
     const MODiagramData& data);
+[[nodiscard]] std::string pi_partner_candidates_json(
+    const std::vector<PiPartnerAssessment>& candidates);
 
 struct MODiagramViewSnapshot {
     const MODiagramData data;

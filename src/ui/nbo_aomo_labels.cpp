@@ -1,4 +1,5 @@
 #include "cov/nbo_aomo_labels.hpp"
+#include "cov/d2h_orbital_characters.hpp"
 #include "cov/open_profile.hpp"
 #include "cov/orbital_symmetry_scope.hpp"
 #include "cov/orbital_symmetry.hpp"
@@ -53,6 +54,7 @@ struct Frame {
     bool valid=false, mirrors_named=false, linear=false;
     Vec axis{};
     unsigned lmax=0, rotation_order=0;
+    orbital_characters::D2hAxes d2h_axes;
     mutable std::shared_ptr<CanonicalActionCache> canonical_action;
 };
 Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
@@ -115,6 +117,7 @@ Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
         if(f.mirrors_named){f.yz=mirrors[support[0]>support[1]?0:1];const auto& normal=normals[support[0]>support[1]?0:1];std::ostringstream s;s<<"C2v: yz is the uniquely maximal fixed-atom mirror; x normal in input frame=("<<normal[0]<<','<<normal[1]<<','<<normal[2]<<"); z is C2 axis; B1 transforms as x, B2 as y";f.detail=s.str();}
         else f.detail="C2v mirror-axis convention unresolved (equal fixed-atom support); B1/B2 not assigned";
     }
+    if(f.group=="D2h"){const auto geometry=analyse_molecular_symmetry(w);f.d2h_axes=orbital_characters::d2h_axes(w,f.ops,geometry.centre_bohr,geometry.tolerance_bohr);f.detail=f.d2h_axes.detail;}
     if(f.detail.empty())f.detail=f.linear?"Validated angular-momentum-resolving sampling of "+f.group:"Validated full finite "+f.group+" operation matrices";
     return f;
 }
@@ -212,6 +215,7 @@ std::string match_simple(const Frame& f,const std::vector<double>& chars,std::si
     if(!f.valid||chars.size()!=f.ops.size()||d!=1)return {};
     const auto near=[&](std::size_t i,double target){return std::isfinite(chars[i])&&std::abs(chars[i]-target)<=character_tolerance;};
     if(!near(f.e,1))return {};
+    if(f.group=="D2h")return orbital_characters::match_d2h(f.d2h_axes,f.ops,chars,d,character_tolerance);
     if(f.group=="C1")return "A";
     if(f.group=="Ci")return near(f.inv,1)?"Ag":near(f.inv,-1)?"Au":"";
     if(f.group=="Cs")return near(f.mirror0,1)?"A'":near(f.mirror0,-1)?"A''":"";
@@ -367,7 +371,7 @@ void assign_ordinals(std::vector<Unit> units,std::vector<NboAomoName>& names){
                 else if(v.energy<u.energy)ordinal+=v.copies;
             }else resolved=false;
         }
-        for(auto index:u.members){auto& name=names[index];name.irrep=u.irrep;name.verified=true;name.ordinal=resolved?ordinal:0;name.label=(name.ordinal?std::to_string(name.ordinal):"?")+orbital_label(u.irrep);name.detail=u.detail+"; ordinal scope="+u.scope+"; complete-set counts with certified subspace energy ordering"+(name.ordinal?"":"; irrep known; missing energy evidence or overlapping/unresolved earlier representation counts");}
+        for(auto index:u.members){auto& name=names[index];name.irrep=u.irrep;name.verified=true;name.ordinal=resolved?ordinal:0;name.representation_multiplicity=u.copies;name.label=(name.ordinal?std::to_string(name.ordinal):std::string{})+orbital_label(u.irrep);name.detail=u.detail+"; ordinal scope="+u.scope+"; complete-set counts with certified subspace energy ordering"+(name.ordinal?"":"; irrep known; missing energy evidence or overlapping/unresolved earlier representation counts");}
     }
 }
 } // namespace
@@ -378,12 +382,12 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     const bool associated=!salc || ((salc->dataset_id.empty()||data.id.empty()||salc->dataset_id==data.id)&&
         (salc->canonical_fingerprint.empty()||data.canonical_fingerprint.empty()||salc->canonical_fingerprint==data.canonical_fingerprint));
     const auto frame=salc?frame_for(w,associated?salc:nullptr):canonical_frame(w);std::vector<Unit> units;std::vector<bool> taken(w.orbitals.size(),false);
-    const bool simple=frame.group=="C1"||frame.group=="Ci"||frame.group=="Cs"||frame.group=="C2"||frame.group=="C2h"||frame.group=="C2v";
+    const bool simple=frame.group=="C1"||frame.group=="Ci"||frame.group=="Cs"||frame.group=="C2"||frame.group=="C2h"||frame.group=="C2v"||frame.group=="D2h";
     struct NamedCharacters {std::string label;std::size_t dimension;std::vector<double> values;};std::vector<NamedCharacters> known;
     // Complete small Abelian tables are already defined by match_simple.
     // This also allows a mixed closed block to be counted when no separate
     // pure orbital happens to supply a named exemplar of one component.
-    if(simple&&frame.valid&&frame.ops.size()<=4)for(std::size_t mask=0;mask<(std::size_t(1)<<frame.ops.size());++mask){std::vector<double> values(frame.ops.size());for(std::size_t g=0;g<values.size();++g)values[g]=(mask&(std::size_t(1)<<g))?-1:1;const auto label=match_simple(frame,values,1);bool representation=!label.empty();for(std::size_t a=0;representation&&a<values.size();++a)for(std::size_t b=0;b<values.size();++b){const auto product=multiply(frame.ops[a].matrix,frame.ops[b].matrix);for(std::size_t c=0;c<values.size();++c)if(matrix_error(product,frame.ops[c].matrix)<metric_tolerance&&values[c]!=values[a]*values[b])representation=false;}if(representation&&std::none_of(known.begin(),known.end(),[&](const auto& x){return x.label==label;}))known.push_back({label,1,std::move(values)});}
+    if(simple&&frame.valid&&frame.ops.size()<=8)for(std::size_t mask=0;mask<(std::size_t(1)<<frame.ops.size());++mask){std::vector<double> values(frame.ops.size());for(std::size_t g=0;g<values.size();++g)values[g]=(mask&(std::size_t(1)<<g))?-1:1;const auto label=match_simple(frame,values,1);bool representation=!label.empty();for(std::size_t a=0;representation&&a<values.size();++a)for(std::size_t b=0;b<values.size();++b){const auto product=multiply(frame.ops[a].matrix,frame.ops[b].matrix);for(std::size_t c=0;c<values.size();++c)if(matrix_error(product,frame.ops[c].matrix)<metric_tolerance&&values[c]!=values[a]*values[b])representation=false;}if(representation&&std::none_of(known.begin(),known.end(),[&](const auto& x){return x.label==label;}))known.push_back({label,1,std::move(values)});}
     const auto blocks=canonical_blocks(w,frame);
     const auto derived=(simple||frame.linear)?std::vector<std::string>(blocks.size()):native_labels(w,frame,blocks);
     for(std::size_t b=0;b<blocks.size();++b){const auto& members=blocks[b];const auto values=characters(w,frame,members);if(values.empty())continue;
@@ -404,12 +408,16 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
         // Keep its literal source record intact, but do not mix its labels
         // with calculated full-group labels and their occurrence counters.
         if(!frame.group.empty()&&group!=frame.group)solid=false;
+        // Native derived assignments use their own retention threshold. They
+        // must pass this naming layer's unchanged complete-span leakage gate
+        // before being excluded from unknown-block representation counting.
+        if(solid&&evidence.origin==OrbitalSymmetryOrigin::MolecularOperations&&dim==1&&characters(w,frame,{i}).empty())solid=false;
         if(solid&&dim>1){std::vector<std::size_t> members;
             if(evidence.molecular_assignment)members=evidence.molecular_assignment->orbital_indices;
             else for(std::size_t j=0;j<w.orbitals.size();++j)if(w.orbitals[j].spin==mo.spin&&std::abs(w.orbitals[j].energy_hartree-mo.energy_hartree)<=1e-5&&normalized(w.orbitals[j].symmetry)==normalized(mo.symmetry))members.push_back(j);
             if(members.size()!=dim)solid=false;
             for(auto j:members)if(j>=w.orbitals.size()||taken[j]||w.orbitals[j].spin!=mo.spin||normalized(w.orbitals[j].symmetry)!=normalized(mo.symmetry))solid=false;
-            if(solid&&evidence.origin==OrbitalSymmetryOrigin::Producer&&characters(w,frame,members).empty())solid=false;
+            if(solid&&characters(w,frame,members).empty())solid=false;
             if(solid){u.members=members;u.energy=0;for(auto j:members)u.energy+=w.orbitals[j].energy_hartree/double(members.size());}
         }
         // Producer B1/B2 can use another axis convention. In the simple groups
@@ -445,7 +453,7 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     std::vector<Unit> counted;for(std::size_t i=0;i<units.size();++i)if(!replaced[i])counted.push_back(std::move(units[i]));counted.insert(counted.end(),count_units.begin(),count_units.end());
     assign_ordinals(std::move(counted),out.canonical);
     for(auto& name:out.canonical) if(name.verified) name.point_group=frame.group;
-    for(std::size_t i=0;i<out.canonical.size();++i)if(open)out.canonical[i].label+=w.orbitals[i].spin==Spin::Beta?" [beta]":" [alpha]";
+    for(std::size_t i=0;i<out.canonical.size();++i){auto& name=out.canonical[i];if(name.verified&&!name.ordinal)name.label=canonical_mo_display_label(w,i,&name);else if(open)name.label+=w.orbitals[i].spin==Spin::Beta?" [beta]":" [alpha]";}
     if(!salc)return out;
     Wavefunction side;side.atoms=w.atoms;side.shells=w.shells;side.primitives=w.primitives;side.basis_count=w.basis_count;side.ao_overlap=w.ao_overlap;side.orbitals.resize(salc->orbitals.size());
     for(std::size_t i=0;i<salc->orbitals.size();++i){const auto& orbital=salc->orbitals[i];auto& mo=side.orbitals[i];mo.energy_hartree=orbital.energy_hartree.value_or(std::numeric_limits<double>::quiet_NaN());mo.spin=orbital.spin==NboSpin::Beta?Spin::Beta:Spin::Alpha;
@@ -486,6 +494,7 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     }
     for(std::size_t i=0;i<out.salc.size();++i)if(!used[i]){const auto& o=salc->orbitals[i];Unit u;u.members={i};u.scope=o.fragment_id+":"+nbo_spin_name(o.spin);u.energy=o.energy_hartree.value_or(0);u.energy_available=o.energy_hartree&&std::isfinite(*o.energy_hartree);units.push_back(u);out.salc[i].label="?";out.salc[i].detail="No validated containing SALC subspace";}
     assign_ordinals(std::move(units),out.salc);
+    for(std::size_t i=0;i<out.salc.size();++i)if(out.salc[i].verified&&!out.salc[i].ordinal)out.salc[i].label+=" [SALC "+std::to_string(i+1)+"]";
     for(std::size_t i=0;i<out.salc.size();++i)if(open && !salc->orbitals[i].spatial_spin)out.salc[i].label+=salc->orbitals[i].spin==NboSpin::Beta?" [beta]":salc->orbitals[i].spin==NboSpin::Alpha?" [alpha]":" [total]";
     for(auto& name:out.salc) if(name.verified) name.point_group=frame.group;
     (void)data; // Identity is immutable and belongs to the caller's attachment.
@@ -545,6 +554,11 @@ std::string canonical_mo_display_label(const Wavefunction& w,std::size_t index,c
         if(explicit_spin)
             label+=w.orbitals[index].spin==Spin::Beta?" [beta]":" [alpha]";
         return label;
+    }
+    if(name&&name->verified&&!name->irrep.empty()){
+        auto source=canonical_mo_source_label(w,index);std::string suffix;
+        for(const std::string spin:{" [alpha]"," [beta]"})if(source.ends_with(spin)){source.resize(source.size()-spin.size());suffix=spin;break;}
+        return orbital_label(name->irrep)+" ["+source+"]"+suffix;
     }
     return canonical_mo_source_label(w,index);
 }

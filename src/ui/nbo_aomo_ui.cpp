@@ -214,6 +214,8 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
     NboAomoViewSnapshot view;
     view.integration_id=data.id;
     view.language=state.language;
+    view.pi_partner_candidates=diagram.data.pi_partner_candidates;
+    view.pi_interactions=diagram.data.pi_interactions;
     view.mo_snapshot_id=diagram.data.view?diagram.data.view->id:"no-mo-snapshot";
     view.id=view.mo_snapshot_id+":unified:"+std::to_string(state.revision)+
         ":lang:"+std::to_string(static_cast<int>(state.language));
@@ -482,6 +484,7 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
             if(state.names && index<state.names->canonical.size()) {
                 const auto& name=state.names->canonical[index];
                 node.symmetry_irrep=name.irrep;node.symmetry_ordinal=name.ordinal;
+                node.symmetry_multiplicity=name.representation_multiplicity;
                 node.symmetry_name_verified=name.verified;node.name_detail=name.detail;
                 node.detail+="; original MO "+std::to_string(index+1)+"; "+name.detail;
             }
@@ -656,6 +659,7 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
                     std::to_string(i+1)+(orbital.spin==NboSpin::Total?std::string{}:
                         " ["+std::string(nbo_spin_name(orbital.spin))+"]");
                 node.symmetry_irrep=name.irrep;node.symmetry_ordinal=name.ordinal;
+                node.symmetry_multiplicity=name.representation_multiplicity;
                 node.symmetry_name_verified=name.verified;node.name_detail=name.detail;
                 node.detail+="; "+name.detail;
             }
@@ -687,7 +691,9 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
                         name.partner_block_size>1 && it!=named_partners.end() &&
                         it->second.size()==name.partner_block_size;
                     if(shared_name)for(const auto member:it->second)
-                        if(state.names->salc[member].label!=name.label ||
+                        if(state.names->salc[member].irrep!=name.irrep ||
+                           state.names->salc[member].ordinal!=name.ordinal ||
+                           state.names->salc[member].partner_block_id!=name.partner_block_id ||
                            state.names->salc[member].partner_block_size!=name.partner_block_size) {
                             shared_name=false;break;
                         }
@@ -699,7 +705,9 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
                     node.display_group_id="verified-salc:"+orbital.subspace_id+
                         ":"+name.partner_block_id+
                         ":"+nbo_spin_name(orbital.spin);
-                    node.shell_label=name.label;
+                    node.shell_label=name.ordinal?name.label:orbital_irrep_display_label(name);
+                    if(!name.ordinal && orbital.spin!=NboSpin::Total)
+                        node.shell_label+=" ["+std::string(nbo_spin_name(orbital.spin))+"]";
                 }
             }
             salc_nodes[i]=add_side(std::move(node));
@@ -739,6 +747,12 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
             NboAomoNode header;
             header.id="salc-group:"+id;header.subspace_id=id;
             header.label="+ "+first.type+" ("+std::to_string(members.size())+")";
+            if(state.names && members.front()<state.names->salc.size()) {
+                const auto& name=state.names->salc[members.front()];
+                if(name.verified && name.representation_multiplicity>1)
+                    header.label="+ "+std::to_string(name.representation_multiplicity)+
+                        "×"+orbital_irrep_display_label(name)+" ("+std::to_string(members.size())+")";
+            }
             header.detail=(fragment!=state.salc_model->fragments.end()?
                 fragment->label:std::string("fragment"))+": collapsed subspace, not an orbital; click to show actual members. "
                 "Focused raw orthogonal weight="+percent(weight)+"%.";
@@ -2423,7 +2437,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             std::ofstream out(result.csv_path,std::ios::binary);
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
-            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode,source_display_name,target_display_name,active_view_json\n";
+            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode,source_display_name,target_display_name,active_view_json,pi_partner_evidence_json\n";
             const auto display_columns=[&](const NboAomoEdge* edge,
                 std::optional<double> source_energy,std::size_t canonical_index,
                 const NboSpatialSpinInfo* spin_info=nullptr,std::optional<double> occupation=std::nullopt) {
@@ -2448,7 +2462,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 out<<','<<csv(spin_info?spin_info->id:"")<<",,";
                 if(source && source->occupation)out<<*source->occupation;else if(occupation)out<<*occupation;
                 out<<','<<csv(spin_info?"spin_averaged_spatial":"source_channel")
-                   <<','<<csv(source?source->label:"")<<','<<csv(target?target->label:"")<<",\n";
+                   <<','<<csv(source?source->label:"")<<','<<csv(target?target->label:"")<<",,\n";
             };
             for(const auto& link:data.links){
                 const bool central=in(view.central_mo_indices,link.canonical_index);
@@ -2508,7 +2522,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             // Include every active-model side identity once, even hidden/no-link
             // members, so source_spatial_id is always resolvable within the CSV.
             const auto side_row=[&](const NboAomoNode& node,bool shown){
-                std::vector<std::string> row(35);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                std::vector<std::string> row(36);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
                 row[5]=node.spatial_spin?"spatial":"SALC";if(node.salc_index)row[6]=std::to_string(*node.salc_index);
                 row[7]=node.spatial_spin?"total":node.salc_index&&view.salc_model?nbo_spin_name(view.salc_model->orbitals[*node.salc_index].spin):node.orbital?nbo_spin_name(node.orbital->spin):"";
                 row[16]=node.id;row[17]=shown?"true":"false";row[19]="side_orbital";
@@ -2531,8 +2545,14 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                         hidden.occupation=orbital.occupation;hidden.spatial_spin=orbital.spatial_spin;side_row(hidden,false);}
                 }
             }else for(const auto& node:view.nodes)if(node.lane!=NboAomoLane::Centre&&!node.group_header)side_row(node,true);
+            for(const auto& candidate:view.pi_partner_candidates) {
+                std::vector<std::string> row(36);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                row[7]=candidate.channel.spin;row[16]=candidate.channel.channel_id;
+                row[19]="pi_partner_candidate";row[35]=pi_partner_assessment_json(candidate);
+                for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
+            }
             if(view.active_view){
-                std::vector<std::string> row(35);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                std::vector<std::string> row(36);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
                 row[19]="active_view";row[34]=serialize_active_orbital_view_json(*view.active_view);
                 for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
             }
@@ -2548,6 +2568,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 <<",\"mo_energy_axis_mode\":"<<quote(view.mo_energy_axis_mode)
                 <<",\"display_energy_unit\":"<<quote(view.display_energy_unit)
                 <<",\"mo_energy_axis_detail\":"<<quote(view.mo_energy_axis_detail)
+                <<",\"pi_partner_candidates\":"<<pi_partner_candidates_json(view.pi_partner_candidates)
+                <<",\"pi_interactions\":"<<orbital_energy_gap_array_json(view.pi_interactions,view.energy_unit)
                 <<",\"preset\":"<<static_cast<int>(view.preset)
                 <<",\"overview\":"<<(view.overview?"true":"false")
                 <<",\"illustrative_side_layout\":"<<(view.illustrative_side_layout?"true":"false")
@@ -2659,6 +2681,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                    <<",\"detail\":"<<quote(node.detail)
                    <<",\"symmetry_irrep\":"<<quote(node.symmetry_irrep)
                    <<",\"symmetry_ordinal\":"<<node.symmetry_ordinal
+                   <<",\"symmetry_multiplicity\":"<<node.symmetry_multiplicity
                    <<",\"symmetry_name_verified\":"<<(node.symmetry_name_verified?"true":"false")
                    <<",\"name_detail\":"<<quote(node.name_detail)
                    <<",\"individual_label\":"<<quote(node.individual_label)

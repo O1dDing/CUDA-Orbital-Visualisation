@@ -32,6 +32,7 @@ struct NboAomoNode {
     std::string id,label,detail,energy_semantics;
     std::string symmetry_irrep,name_detail;
     std::size_t symmetry_ordinal=0;
+    std::size_t symmetry_multiplicity=1;
     bool symmetry_name_verified=false;
     std::optional<NboOrbitalRef> orbital;
     std::optional<std::size_t> canonical_index;
@@ -97,6 +98,8 @@ struct NboAomoViewSnapshot {
     std::array<std::uint8_t,3> energy_tick_export_rgb{139,157,178};
     std::string energy_tick_semantics="linear-neutral";
     std::vector<NboAomoCaption> captions;
+    std::vector<PiPartnerAssessment> pi_partner_candidates;
+    std::vector<PiInteractionDescriptor> pi_interactions;
     std::optional<NboOrbitalSelection> selection;
     std::optional<ActiveOrbitalView> active_view;
     std::vector<NboAomoFragmentGroup> fragment_groups;

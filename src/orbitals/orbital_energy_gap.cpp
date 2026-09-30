@@ -5,6 +5,14 @@
 #include <sstream>
 
 namespace cov {
+std::string pi_partner_candidates_json(const std::vector<PiPartnerAssessment>& candidates) {
+    std::ostringstream out;out << '[';
+    for(std::size_t i=0;i<candidates.size();++i) {
+        if(i)out << ',';
+        out << pi_partner_assessment_json(candidates[i]);
+    }
+    out << ']';return out.str();
+}
 namespace {
 void number(std::ostream& out, double value) {
     if (std::isfinite(value)) out << value;

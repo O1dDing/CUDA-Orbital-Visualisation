@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iomanip>
 #include <map>
+#include <set>
 #include <sstream>
 #include <tuple>
 
@@ -368,26 +369,36 @@ RoutedAnalysis route_chemistry(const Wavefunction& canonical,
         graph_evidence.atomic_charge_provenance=out.total_atomic_charge.provider==RoutedProvider::Nbo?
             DataProvenance::Derived:canonical.atomic_partial_charge_provenance;
     }
-    out.interaction_graph.value=build_interaction_graph(canonical,graph_evidence);
+    std::string bond_fallback="No validated NBO Wiberg capability; per-pair Mayer/geometry fallback";
     if(associated)if(const auto* cap=nbo_capability(*integration,"wiberg");
                    cap && cap->available()) {
-        for(auto& edge:out.interaction_graph.value->edges)
-            for(const auto& row:integration->structure)
-                if(row.kind=="bond" && row.atoms.size()==2 && row.wiberg &&
-                   std::minmax(row.atoms[0],row.atoms[1])==
-                       std::minmax(static_cast<std::size_t>(edge.atom_a),
-                                   static_cast<std::size_t>(edge.atom_b))) {
-                    edge.wiberg_index=row.wiberg;
-                    edge.wiberg_source_path=row.source.path;
-                    break;
-                }
+        using Pair=std::pair<std::size_t,std::size_t>;
+        std::map<Pair,InteractionBondEvidence> pairs;
+        std::set<Pair> conflicting;
+        for(const auto& row:integration->structure)
+            if(row.kind=="bond" && row.spin==NboSpin::Total && row.atoms.size()==2 && row.wiberg &&
+               std::isfinite(*row.wiberg) && *row.wiberg>=0 && row.atoms[0]!=row.atoms[1] &&
+               row.atoms[0]<canonical.atoms.size() && row.atoms[1]<canonical.atoms.size()) {
+                const Pair pair=std::minmax(row.atoms[0],row.atoms[1]);
+                if(const auto old=pairs.find(pair);old!=pairs.end() &&
+                   std::abs(old->second.wiberg_index-*row.wiberg)>1e-7)conflicting.insert(pair);
+                else pairs[pair]={pair.first,pair.second,*row.wiberg,row.source.path};
+            }
+        for(auto& [pair,record]:pairs)
+            if(!conflicting.contains(pair))graph_evidence.bonds.push_back(std::move(record));
+        bond_fallback=conflicting.empty()?
+            "Pairs without a validated total Wiberg record use Mayer/geometry":
+            "Conflicting total Wiberg records rejected per pair; Mayer/geometry fallback";
     }
+    out.interaction_graph.value=build_interaction_graph(canonical,graph_evidence);
     out.interaction_graph.status=RoutedStatus::Available;
-    out.interaction_graph.provider=out.total_atomic_charge.provider==RoutedProvider::Nbo?
+    out.interaction_graph.provider=(!graph_evidence.bonds.empty() || out.total_atomic_charge.provider==RoutedProvider::Nbo)?
         RoutedProvider::Nbo:RoutedProvider::Legacy;
-    out.interaction_graph.method="legacy Mayer/geometry graph with routed atom-charge evidence";
-    out.interaction_graph.reason="Mayer and Wiberg remain separate electronic observables";
-    out.interaction_graph.fallback_reason=out.total_atomic_charge.fallback_reason;
+    out.interaction_graph.method=graph_evidence.bonds.empty()?
+        "Mayer/geometry graph with routed atom-charge evidence":
+        "per-pair validated total Wiberg connectivity with structural-neighbour geometry";
+    out.interaction_graph.reason="Continuous indices support connectivity, not integer bond multiplicity; Mayer and Wiberg retained separately";
+    out.interaction_graph.fallback_reason=bond_fallback;
     out.interaction_graph.evidence=out.total_atomic_charge.evidence;
     if(!integration){
         RoutedResult<NboPiCoupling> result;
@@ -567,7 +578,11 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
         indices(value.centre_atoms);out<<",\"ligand_atoms\":[";
         indices(value.ligand_atoms);out<<",\"centre_nao_ids\":[";
         indices(value.centre_nao_ids);out<<",\"ligand_nao_ids\":[";
-        indices(value.ligand_nao_ids);out<<",\"singular_values_hartree\":[";
+        indices(value.ligand_nao_ids);
+        out<<",\"ligand_family\":"<<quoted(value.ligand_family)
+           <<",\"localized_family_verified\":"<<(value.localized_family_verified?"true":"false")
+           <<",\"ligand_family_nbo_ids\":[";
+        indices(value.ligand_family_nbo_ids);out<<",\"singular_values_hartree\":[";
         indices(value.singular_values_hartree);
         out<<",\"coupled_rank\":"<<value.coupled_rank
            <<",\"centre_onsite_hartree\":"<<value.centre_onsite_hartree
@@ -587,7 +602,11 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
         };
         out<<",\"centre_occupation_range\":";optional_range(value.centre_occupation_range);
         out<<",\"ligand_occupation_range\":";optional_range(value.ligand_occupation_range);
-        out<<",\"operator_max_error_hartree\":"<<value.operator_max_error_hartree
+        out<<",\"operator_kind\":"<<quoted(value.operator_kind)
+           <<",\"canonical_operator_residual_hartree\":"<<value.canonical_operator_residual_hartree
+           <<",\"operator_validation_tolerance_hartree\":"<<value.operator_validation_tolerance_hartree
+           <<",\"canonical_members_are_verified_shared_spatial\":"<<(value.canonical_members_are_verified_shared_spatial?"true":"false")
+           <<",\"operator_max_error_hartree\":"<<value.operator_max_error_hartree
            <<",\"nao_orthogonality_error\":"<<value.nao_orthogonality_error
            <<",\"angular_leakage\":"<<value.angular_leakage
            <<",\"minimum_centre_projection\":"<<value.minimum_centre_projection
@@ -657,6 +676,8 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
            <<",\"wiberg_index\":";
         if(edge.wiberg_index)out<<*edge.wiberg_index;else out<<"null";
         out<<",\"wiberg_source_path\":"<<quoted(edge.wiberg_source_path)
+           <<",\"connectivity_method\":"<<quoted(edge.connectivity_method)
+           <<",\"connectivity_source_path\":"<<quoted(edge.connectivity_source_path)
            <<",\"distance_bohr\":"<<edge.distance_bohr<<'}';
     }
     out<<"],\"fragments\":[";

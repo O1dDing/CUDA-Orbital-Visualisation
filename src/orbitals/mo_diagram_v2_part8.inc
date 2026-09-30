@@ -300,6 +300,7 @@ bool write_mo_diagram_json(const MODiagramData& data,
             << (index+1u<data.local_geometries.size()?",":"") << "\n";
     }
     out << "  ],\n";
+    out << "  \"pi_partner_candidates\": " << pi_partner_candidates_json(data.pi_partner_candidates) << ",\n";
     out << "  \"pi_interactions\": " << orbital_energy_gap_array_json(data.pi_interactions,options.energy_unit) << ",\n";
     out << "  \"crystal_field_gaps\": " << orbital_energy_gap_array_json(data.crystal_field_gaps,options.energy_unit) << ",\n";
     out << "  \"delocalised_pi_families\": [\n";
@@ -540,7 +541,7 @@ bool write_mo_diagram_csv(const MODiagramData& data,
            "multicentre_source_subspace_id,multicentre_source_subspace_electron_count,"
            "stability_detail,source_title,source_route,enrichment_source,"
            "view_snapshot_id,view_origin,view_selection_anchor,view_inspected_orbital_index,"
-           "diagram_row_index,coordinate_scope,row_member_orbitals,row_spin_counterparts,delocalised_pi_topology_graph,crystal_field_gap_count,crystal_field_gaps_json,pi_partner_evidence_json,current_display_irrep,current_display_point_group\n";
+           "diagram_row_index,coordinate_scope,row_member_orbitals,row_spin_counterparts,delocalised_pi_topology_graph,crystal_field_gap_count,crystal_field_gaps_json,pi_partner_evidence_json,current_display_irrep,current_display_point_group,pi_partner_candidates_json\n";
     const std::string ligand_atoms = csv_index_list(data.ligand_field_ligand_atoms);
     const std::string pi_interactions = csv_pi_interaction_summary(data);
     const std::string local_geometries = csv_local_geometry_summary(data);
@@ -675,7 +676,8 @@ bool write_mo_diagram_csv(const MODiagramData& data,
             << ',' << csv_escape(orbital_energy_gap_array_json(data.crystal_field_gaps,options.energy_unit))
             << ',' << csv_escape(orbital_energy_gap_array_json(data.pi_interactions,options.energy_unit))
             << ',' << csv_escape(i<options.display_irreps.size()?options.display_irreps[i]:"?")
-            << ',' << csv_escape(i<options.display_point_groups.size()?point_group_display(options.display_point_groups[i]):"");
+            << ',' << csv_escape(i<options.display_point_groups.size()?point_group_display(options.display_point_groups[i]):"")
+            << ',' << csv_escape(pi_partner_candidates_json(data.pi_partner_candidates));
         out << '\n';
     }
     if (!out) {

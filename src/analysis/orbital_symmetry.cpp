@@ -1,4 +1,5 @@
 #include "cov/orbital_symmetry.hpp"
+#include "cov/d2h_orbital_characters.hpp"
 
 #include "cov/symmetry.hpp"
 
@@ -436,6 +437,20 @@ SymmetryOperation squared_operation(const SymmetryOperation& op) {
     return out;
 }
 
+std::optional<std::string> classify_d2h(const Wavefunction& wf,const MolecularSymmetry& symmetry,const std::vector<std::size_t>& group,const OrbitalSymmetryOptions& options,double& retention,DerivedOrbitalSymmetryAssignment& evidence){
+    if(symmetry.point_group!="D2h"||group.size()!=1)return std::nullopt;
+    const auto ops=orbital_characters::d2h_operations(wf,symmetry.operations);
+    const auto axes=orbital_characters::d2h_axes(wf,ops,symmetry.centre_bohr,symmetry.tolerance_bohr);
+    std::vector<double> characters;retention=1.;
+    for(const auto& op:ops){const auto value=evaluate_character(wf,op,group);if(!value.valid)return std::nullopt;retention=std::min(retention,value.retention);characters.push_back(value.character);}
+    if(retention<options.minimum_subspace_retention)return std::nullopt;
+    const auto label=orbital_characters::match_d2h(axes,ops,characters,group.size(),options.character_tolerance);
+    if(label.empty())return std::nullopt;
+    evidence.centre_bohr=symmetry.centre_bohr;evidence.axes_available=axes.resolved;evidence.axis_convention=axes.detail;
+    if(axes.resolved){evidence.principal_axis=axes.xyz[2];evidence.secondary_axis=axes.xyz[0];}
+    return label;
+}
+
 std::optional<std::string> classify_dnh(const Wavefunction& wf,
                                         const MolecularSymmetry& symmetry,
                                         const std::vector<std::size_t>& group,
@@ -666,7 +681,9 @@ OrbitalSymmetryResult derive_orbital_symmetry(Wavefunction& wavefunction,
         double retention=1.0;
         DerivedOrbitalSymmetryAssignment evidence;
         std::optional<std::string> label;
-        if (symmetry.point_group=="Td") {
+        if (symmetry.point_group=="D2h") {
+            label=classify_d2h(wavefunction,symmetry,group,options,retention,evidence);
+        } else if (symmetry.point_group=="Td") {
             label=classify_td(wavefunction,symmetry,group,options,retention);
         } else if (symmetry.point_group=="Oh") {
             label=classify_oh(wavefunction,symmetry,group,options,retention);

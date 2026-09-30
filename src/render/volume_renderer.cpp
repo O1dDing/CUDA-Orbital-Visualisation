@@ -847,7 +847,7 @@ void VolumeRenderer::render_geometry(const Wavefunction& wavefunction,
             Vec3 transverse=cross(c-a,b.forward);
             if(length(transverse)<1e-6f)transverse=b.right;
             transverse=normalise(transverse);
-            if(bond.style==OverlayBondStyle::Coordination || bond.style==OverlayBondStyle::Multicentre ||
+            if(bond.style==OverlayBondStyle::Multicentre ||
                (bond.style==OverlayBondStyle::Unresolved && !delocalised)) {
                 draw_dashed_cylinder(a,c,r,colour,opacity,b,8,
                     bond.style==OverlayBondStyle::Unresolved?0.35f:0.6f);

@@ -16,6 +16,9 @@ struct NboAomoName {
     // Irrep evidence only: true with ordinal==0 means the symmetry is known
     // while occurrence order / repeated-copy membership remains unresolved.
     bool verified=false;
+    // Number of irreducible copies in the measured containing span.
+    // This does not assign an individual copy or occurrence ordinal.
+    std::size_t representation_multiplicity=1;
     std::string detail;
     // A verified single irrep occurrence, independent of whether its position
     // among other occurrences can be numbered. Empty means unproved partners.

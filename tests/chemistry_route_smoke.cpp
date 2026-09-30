@@ -82,10 +82,50 @@ void connectivity_overlay_regression(){
     check();std::reverse(graph.edges.begin(),graph.edges.end());
     std::reverse(data.structure.begin(),data.structure.end());check();
 }
+void validated_bond_route_regression(){
+    auto wf=canonical();
+    wf.bond_order_provenance=cov::DataProvenance::Derived;
+    wf.bond_orders={{0,1,0.002,cov::DataProvenance::Derived}};
+    cov::NboIntegration data;
+    data.canonical_fingerprint=cov::nbo_canonical_fingerprint(wf);
+    data.dataset.association.compatible=true;
+    data.capabilities={{"wiberg",cov::NboCapabilityState::Available,"complete",{}}};
+    cov::NboStructureEvidence bond;
+    bond.kind="bond";bond.atoms={0,1};bond.wiberg=1.1;bond.source.path="validated.nbo";
+    data.structure={bond};
+    const auto has_strong=[](const auto& route){
+        return std::any_of(route.interaction_graph.value->edges.begin(),
+            route.interaction_graph.value->edges.end(),[](const auto& edge){
+                return edge.strength==cov::InteractionStrength::StrongConnectivity;
+            });
+    };
+    const auto actual=cov::route_chemistry(wf,&data);
+    require(has_strong(actual),"validated WBI must participate in connectivity, not just overlay text");
+    const auto& edge=actual.interaction_graph.value->edges.front();
+    require(edge.wiberg_index && std::abs(*edge.wiberg_index-1.1)<1e-12 &&
+            std::abs(edge.mayer_order-.002)<1e-12 &&
+            edge.connectivity_method.find("Wiberg")!=std::string::npos,
+            "NBO bond route must preserve distinct physical indices and provenance");
+    data.capabilities[0].state=cov::NboCapabilityState::Rejected;
+    require(!has_strong(cov::route_chemistry(wf,&data)),"rejected WBI enabled false connectivity");
+    data.capabilities[0].state=cov::NboCapabilityState::Available;
+    data.canonical_fingerprint="wrong-source";
+    require(!has_strong(cov::route_chemistry(wf,&data)),"unassociated WBI enabled connectivity");
+    data.canonical_fingerprint=cov::nbo_canonical_fingerprint(wf);
+    data.structure[0].wiberg=0.0;
+    require(!has_strong(cov::route_chemistry(wf,&data)),"actual zero WBI replaced by geometry");
+    data.structure[0].wiberg=1.1;
+    bond.wiberg=.1;data.structure.push_back(bond);
+    require(!has_strong(cov::route_chemistry(wf,&data)),"conflicting duplicate WBI not rejected");
+    std::reverse(data.structure.begin(),data.structure.end());
+    require(!has_strong(cov::route_chemistry(wf,&data)),"WBI conflict depends on input order");
+    require(wf.bond_orders[0].mayer_order==.002,"source Mayer modified by routing");
+}
 } // namespace
 
 int main(){
     connectivity_overlay_regression();
+    validated_bond_route_regression();
     const auto wf=canonical();
     cov::NboIntegration data;
     data.canonical_fingerprint=cov::nbo_canonical_fingerprint(wf);

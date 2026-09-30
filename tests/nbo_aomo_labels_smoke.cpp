@@ -1,4 +1,5 @@
 #include "cov/nbo_aomo_labels.hpp"
+#include "cov/orbital_symmetry.hpp"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -121,9 +122,9 @@ int main(){try{
     require(cov::ui::canonical_mo_display_label(alpha_only,0,&alpha_name)=="2a\xE2\x82\x81 [alpha]",
             "an explicit alpha-only orbital set must retain its spin on scientific labels");
     auto known_without_order=a.canonical[1];known_without_order.ordinal=0;known_without_order.label="?a1";
-    require(cov::ui::canonical_mo_display_label(fallback,0,&known_without_order)=="MO 7 [alpha]"&&
+    require(cov::ui::canonical_mo_display_label(fallback,0,&known_without_order)=="a\xE2\x82\x81 [MO 7] [alpha]"&&
             cov::ui::orbital_irrep_display_label(known_without_order)=="a\xE2\x82\x81",
-            "a known irrep must remain auxiliary without inventing an occurrence ordinal");
+            "a known irrep must lead the stable source identity without inventing an occurrence ordinal");
     auto reloaded=f.w;
     require(cov::ui::canonical_mo_names(reloaded)->canonical[0].ordinal==1,"initial reload fixture label missing");
     reloaded.orbitals[1].energy_hartree=reloaded.orbitals[0].energy_hartree;
@@ -143,6 +144,18 @@ int main(){try{
             mixed_standalone->canonical[1].verified&&mixed_standalone->canonical[1].ordinal==0,
             "standalone naming must preserve mixed-orbital and incomplete ordinal gates");
     auto low_mixed=mixed;low_mixed.w.orbitals[4].energy_hartree=-19;const double mild=.0003,mild_p=std::sqrt(1-mild*mild);for(std::size_t j=0;j<7;++j){low_mixed.w.orbitals[0].coefficients[j]=mild_p*x[j]+mild*y[j];low_mixed.w.orbitals[4].coefficients[j]=-mild*x[j]+mild_p*y[j];}const auto counted_core=cov::ui::build_nbo_aomo_names(low_mixed.w,low_mixed.data,&low_mixed.salc);require(!counted_core.canonical[0].verified&&!counted_core.canonical[4].verified&&counted_core.canonical[1].ordinal==2&&counted_core.canonical[2].ordinal==1,"complete invariant mixed core must supply integer counts without relabelling its individual members");
+    auto reused_derived=low_mixed;
+    for(const auto index:{std::size_t(0),std::size_t(4)}){
+        const std::string label=index==0?"A1":"B1";
+        reused_derived.w.orbitals[index].symmetry=label;
+        reused_derived.w.orbitals[index].symmetry_provenance=cov::DataProvenance::Derived;
+        cov::DerivedOrbitalSymmetryAssignment proof;proof.point_group="C2v";proof.label=label;proof.orbital_indices={index};proof.subspace_retention=.999;
+        reused_derived.w.derived_orbital_symmetry_assignments.push_back(proof);
+    }
+    const auto recounted=cov::ui::build_nbo_aomo_names(reused_derived.w,reused_derived.data,&reused_derived.salc);
+    require(!recounted.canonical[0].verified&&!recounted.canonical[4].verified&&recounted.canonical[1].ordinal==2&&recounted.canonical[2].ordinal==1,
+            "looser native derived labels must not remove mixed partners from complete-set counting");
+    require(reused_derived.w.orbitals[0].symmetry=="A1"&&reused_derived.w.orbitals[4].symmetry=="B1","strict naming changed literal derived records");
     auto reducible=f;reducible.salc.subspaces.resize(1);auto& red=reducible.salc.subspaces[0];red.orbital_indices={0,1};red.dimension=2;red.irrep_dimension=0;red.multiplicity=0;red.characters={2,2,0,0};const auto bad=cov::ui::build_nbo_aomo_names(reducible.w,reducible.data,&reducible.salc);require(!bad.salc[0].verified&&!bad.salc[1].verified,"reducible SALC must not get a dimension-derived irrep");
     auto open=f;for(auto mo:before){mo.spin=cov::Spin::Beta;mo.energy_hartree+=.01;open.w.orbitals.push_back(mo);}const auto spin=cov::ui::build_nbo_aomo_names(open.w,open.data,&open.salc);require(spin.canonical[1].ordinal==2&&spin.canonical[8].ordinal==2&&spin.canonical[1].label.find("[alpha]")!=std::string::npos&&spin.canonical[8].label.find("[beta]")!=std::string::npos,"spin counters must be independent");
     auto unsupported=f;unsupported.salc.used_group="finite sampling subgroup of Cinfv";const auto u=cov::ui::build_nbo_aomo_names(unsupported.w,unsupported.data,&unsupported.salc);require(!u.canonical[0].verified&&!u.salc[0].verified&&u.canonical[0].label=="?","unsupported subgroup must remain unknown without inventing an irrep ordinal");
@@ -190,5 +203,13 @@ int main(){try{
     auto missing_metric=lin;missing_metric.w.ao_overlap.clear();const auto absent=cov::ui::build_nbo_aomo_names(missing_metric.w,missing_metric.data,&missing_metric.salc);require(!absent.canonical[3].verified,"missing S must not be guessed");
     const auto hex=axial(6,true);const auto hex_names=cov::ui::build_nbo_aomo_names(hex.w,hex.data,&hex.salc);require(hex_names.canonical[0].verified&&hex_names.canonical[0].irrep=="E1u"&&hex_names.canonical[1].ordinal==1&&hex_names.canonical[2].irrep=="A2u","Dnh must not depend on the smaller central-metal group catalogue");
     const auto pyramid=axial(3,false);const auto pyramid_names=cov::ui::build_nbo_aomo_names(pyramid.w,pyramid.data,&pyramid.salc);require(pyramid_names.canonical[0].verified&&pyramid_names.canonical[0].irrep=="E"&&pyramid_names.canonical[1].ordinal==1&&pyramid_names.canonical[2].irrep=="A1","source-free Cnv A1 and E must follow actual rotation/reflection characters");
+    Fixture orthorhombic;
+    orthorhombic.w.atoms={{"C",6,0,0,0},{"H",1,3,0,0},{"H",1,-3,0,0},{"H",1,0,1,0},{"H",1,0,-1,0},{"H",1,0,0,2},{"H",1,0,0,-2}};
+    shell(orthorhombic.w,0,1,1);orthorhombic.w.ao_overlap={1,0,0,0,1,0,0,0,1};
+    for(std::size_t i=0;i<3;++i){cov::MolecularOrbital mo;mo.coefficients.assign(3,0);mo.coefficients[i]=1;mo.energy_hartree=-.8+.2*double(i);orthorhombic.w.orbitals.push_back(mo);}
+    const auto native_d2h=cov::derive_orbital_symmetry(orthorhombic.w);
+    require(native_d2h.point_group=="D2h"&&native_d2h.orbitals_labelled==3,"native D2h classifier incomplete");
+    const auto d2h_names=cov::ui::canonical_mo_names(orthorhombic.w);const char* d2h_labels[]={"B3u","B2u","B1u"};
+    for(std::size_t i=0;i<3;++i)require(d2h_names->canonical[i].verified&&d2h_names->canonical[i].ordinal==1&&d2h_names->canonical[i].irrep==d2h_labels[i]&&orthorhombic.w.orbitals[i].symmetry==d2h_labels[i],"native/standalone D2h axis convention mismatch");
     std::cout<<"AO/MO names evidence and invariance smoke passed\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

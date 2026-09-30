@@ -414,6 +414,11 @@ if(COV_BUILD_TESTS)
 
     add_executable(cov_scientific_audit_dump tests/scientific_audit_dump.cpp)
     target_link_libraries(cov_scientific_audit_dump PRIVATE cov_parser cov_molecule cov_orbitals)
+    add_executable(cov_pi_diagram_probe tests/pi_diagram_probe.cpp)
+    target_link_libraries(cov_pi_diagram_probe PRIVATE cov_parser cov_molecule cov_orbitals)
+    add_executable(cov_pi_channel_smoke tests/pi_channel_smoke.cpp)
+    target_link_libraries(cov_pi_channel_smoke PRIVATE cov_orbitals)
+    add_test(NAME pi_channel_smoke COMMAND cov_pi_channel_smoke)
 
     # These collectors emit raw records for independently frozen control
     # reviewers. A successful process alone is not a scientific verdict.
