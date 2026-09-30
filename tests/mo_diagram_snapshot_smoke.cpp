@@ -419,6 +419,8 @@ int main() {
     for(const auto& node:shell_view->nodes)if(node.salc_index) {
         require(*node.salc_index!=4,"Rydberg-dominated virtual MO must not reveal a hidden higher shell");
         if(*node.salc_index<3)alpha_p.push_back(&node);
+        if(*node.salc_index<3)require(node.individual_label.find("3p")!=std::string::npos&&node.individual_label.find("2p")==std::string::npos,
+            "NAO component hover/export must retain its producer principal shell");
         if(*node.salc_index<2)require(node.occupation_label.empty() && !node.occupation_on_bar,
             "fractional side occupations must not be rounded into electron arrows");
         if(*node.salc_index==3)require(node.shell_member_count==1 &&

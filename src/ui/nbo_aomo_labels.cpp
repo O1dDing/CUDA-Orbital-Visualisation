@@ -485,7 +485,7 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     }
     for(std::size_t i=0;i<out.salc.size();++i)if(!used[i]){const auto& o=salc->orbitals[i];Unit u;u.members={i};u.scope=o.fragment_id+":"+nbo_spin_name(o.spin);u.energy=o.energy_hartree.value_or(0);u.energy_available=o.energy_hartree&&std::isfinite(*o.energy_hartree);units.push_back(u);out.salc[i].label="?";out.salc[i].detail="No validated containing SALC subspace";}
     assign_ordinals(std::move(units),out.salc);
-    for(std::size_t i=0;i<out.salc.size();++i)if(open)out.salc[i].label+=salc->orbitals[i].spin==NboSpin::Beta?" [beta]":salc->orbitals[i].spin==NboSpin::Alpha?" [alpha]":" [total]";
+    for(std::size_t i=0;i<out.salc.size();++i)if(open && !salc->orbitals[i].spatial_spin)out.salc[i].label+=salc->orbitals[i].spin==NboSpin::Beta?" [beta]":salc->orbitals[i].spin==NboSpin::Alpha?" [alpha]":" [total]";
     (void)data; // Identity is immutable and belongs to the caller's attachment.
     return out;
 }

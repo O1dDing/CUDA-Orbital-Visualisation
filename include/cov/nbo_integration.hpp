@@ -79,6 +79,33 @@ struct NboMoLink {
 };
 enum class NboSelectionMode { Orbital, WeightedComponent, PartialSum, Combination, Overlay };
 struct NboOrbitalTerm { NboOrbitalRef orbital; double coefficient=1; };
+// Display derivation, separate from every producer orbital. A channel may map
+// several original members onto one verified common spatial direction.
+struct NboSpinSourceMember {
+    std::string id,label;
+    std::vector<NboOrbitalTerm> terms;
+    std::optional<double> energy_hartree,occupation;
+};
+struct NboSpinChannelProjection {
+    NboSpin spin=NboSpin::Total;
+    std::vector<NboSpinSourceMember> members;
+    std::vector<double> mapping; // common chi = sum mapping[i] * source member[i]
+    std::vector<double> fock_matrix,density_matrix; // source-member basis, row-major
+    std::optional<double> energy_hartree,occupation; // expectations on common chi
+    std::string energy_status,occupation_status;
+};
+struct NboSpatialSpinInfo {
+    std::string id,block_id,correspondence,detail,ro_method;
+    std::size_t member_index=0,dimension=1;
+    double tolerance=0,metric_error=0,spatial_residual=0;
+    std::vector<NboSpinChannelProjection> channels;
+    std::vector<NboSpinSourceMember> total_aliases; // provenance only, never counted again
+    std::vector<double> total_alias_mapping; // same common chi in the Total alias basis
+    double total_alias_residual=0,total_alias_metric_error=0;
+    std::optional<double> energy_hartree,occupation;
+    std::string energy_status,occupation_status;
+};
+std::string serialize_nbo_spatial_spin_json(const NboSpatialSpinInfo&);
 struct NboOrbitalSelection {
     std::string dataset_id, label;
     std::string semantic_kind, group_id, source_id;
@@ -86,7 +113,9 @@ struct NboOrbitalSelection {
     std::vector<NboOrbitalTerm> terms;
     std::optional<std::size_t> target_canonical_index;
     bool normalize=false; // raw components/partial sums retain their amplitudes
+    std::optional<NboSpatialSpinInfo> spatial_spin;
 };
+std::string serialize_nbo_orbital_selection_json(const NboOrbitalSelection&);
 struct NboStructureEvidence {
     std::string id, kind, label, detail, style;
     NboSpin spin=NboSpin::Total;

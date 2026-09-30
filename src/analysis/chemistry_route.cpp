@@ -693,23 +693,7 @@ std::string serialize_active_orbital_view_json(const ActiveOrbitalView& view) {
     out<<",\"rendered_index\":";
     if(view.rendered_index)out<<*view.rendered_index;else out<<"null";
     out<<",\"selection\":";
-    if(view.selection) {
-        const auto& selection=*view.selection;
-        out<<"{\"dataset_id\":"<<quoted(selection.dataset_id)
-           <<",\"label\":"<<quoted(selection.label)
-           <<",\"mode\":"<<static_cast<int>(selection.mode)
-           <<",\"normalize\":"<<(selection.normalize?"true":"false")
-           <<",\"target_canonical_index\":";
-        if(selection.target_canonical_index)out<<*selection.target_canonical_index;else out<<"null";
-        out<<",\"terms\":[";
-        for(std::size_t i=0;i<selection.terms.size();++i) {
-            if(i)out<<',';const auto& term=selection.terms[i];
-            out<<"{\"kind\":"<<quoted(nbo_orbital_kind_name(term.orbital.kind))
-               <<",\"spin\":"<<quoted(nbo_spin_name(term.orbital.spin))
-               <<",\"index\":"<<term.orbital.index
-               <<",\"coefficient\":"<<term.coefficient<<'}';
-        }out<<"]}";
-    }else out<<"null";
+    out<<(view.selection?serialize_nbo_orbital_selection_json(*view.selection):"null");
     out<<'}';return out.str();
 }
 

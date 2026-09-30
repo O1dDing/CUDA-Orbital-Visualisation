@@ -11,7 +11,8 @@ struct NboSalcModel;
 namespace ui {
 struct NboAomoNode;
 // Presentation of existing evidence only. No chemistry is derived, and no
-// orbital/selection is modified. At most four concise lines, without energies.
+// orbital/selection is modified. Common spatial nodes also expose both source
+// spin expectations; complete rotated source-member values are in the detail.
 std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode&,
     const Wavefunction&, const NboIntegration&, const NboSalcModel*, Language);
 std::string nbo_aomo_hover_glyph_seed(Language);

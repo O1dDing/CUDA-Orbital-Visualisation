@@ -36,6 +36,7 @@ struct NboAomoNode {
     std::optional<std::size_t> canonical_index;
     std::optional<std::size_t> fragment_group_id;
     std::optional<std::size_t> salc_index;
+    std::optional<NboSpatialSpinInfo> spatial_spin;
     std::string subspace_id;
     std::vector<std::size_t> atoms;
     std::vector<std::size_t> member_canonical_indices;
@@ -113,6 +114,7 @@ struct NboAomoViewSnapshot {
     std::string numerical_zero_reason;
     std::string selected_side_node_id;
     std::shared_ptr<const NboSalcModel> salc_model;
+    std::shared_ptr<const NboSalcModel> source_salc_model;
     std::size_t hidden_numeric_zero_count=0,hidden_readability_count=0;
     std::size_t hidden_group_count=0;
     float canvas_width=0,canvas_height=0;
@@ -166,6 +168,8 @@ struct NboAomoUIState {
     std::array<char,2048> export_path{};
     std::shared_ptr<const NboAomoViewSnapshot> drawn_snapshot;
     std::shared_ptr<const NboSalcModel> salc_model;
+    std::shared_ptr<const NboSalcModel> source_salc_model,spin_averaged_salc_model;
+    std::shared_ptr<const NboAomoNames> source_names,spin_averaged_names;
     std::uint64_t revision=0;
     std::shared_ptr<const NboAomoNames> names;
     const NboSalcModel* names_model=nullptr;

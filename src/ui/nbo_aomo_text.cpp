@@ -3,6 +3,13 @@
 namespace cov::ui {
 namespace {
 const char* const rows[][4]={
+    {"Side orbitals: spin average","侧轨道：自旋平均","側方軌道：スピン平均","Orbitales latérales : moyenne de spin"},
+    {"Original-channel components","原始通道组成","元のスピンチャネルの成分","Composantes des canaux d’origine"},
+    {"Copy orbital metadata","复制轨道元数据","軌道メタデータをコピー","Copier les métadonnées orbitalaires"},
+    {"Source spin values","原始自旋数据","元のスピンデータ","Valeurs de spin originales"},
+    {"Unavailable","不可用","利用不可","Indisponible"},
+    {"Energy","能量","エネルギー","Énergie"},
+    {"Occupation","占据","占有数","Occupation"},
     {"Filter and grouping settings","筛选与分组设置","絞り込みとグループ設定","Réglages du filtre et des groupes"},
     {"spaces","组","群","groupes"},
     {"AO/NAO decomposition unavailable; showing the canonical MO diagram.","AO/NAO 分解暂不可用，显示正则 MO 图。","AO/NAO 分解を利用できないため、正準 MO 図を表示します。","Décomposition AO/NAO indisponible ; affichage des OM canoniques."},

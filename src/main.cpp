@@ -13,6 +13,7 @@
 #include "cov/chemistry_route.hpp"
 #include "cov/orbital_tracking.hpp"
 #include "cov/nbo_aomo_labels.hpp"
+#include "cov/nbo_aomo_text.hpp"
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
 #include "cov/ui_raster_text.hpp"
@@ -357,6 +358,15 @@ int main(int argc, char** argv) {
                     view.spin=inspection->selection.terms.front().orbital.spin;
                 view.source_spin=view.spin;
                 view.spin_semantics="actual selected source orbital spin";
+                if(inspection->selection.spatial_spin){
+                    view.spin=cov::NboSpin::Total;
+                    view.spin_semantics="verified common spatial orbital; both source spins retained in selection; source_spin identifies the rendering basis";
+                    view.display_name_evidence=inspection->selection.spatial_spin->correspondence;
+                    if(inspection->selection.semantic_kind=="salc_component"&&view.canonical_index&&wavefunction&&*view.canonical_index<wavefunction->orbitals.size()){
+                        view.spin=wavefunction->orbitals[*view.canonical_index].spin==cov::Spin::Beta?cov::NboSpin::Beta:cov::NboSpin::Alpha;
+                        view.spin_semantics="target canonical component spin; source_spin identifies the verified common spatial rendering basis";
+                    }
+                }
             }else if(nbo_active && nbo_ui.dataset &&
                      mo_index<nbo_ui.dataset->orbitals.size()) {
                 view.kind=cov::ActiveOrbitalKind::NboSet;
@@ -1030,7 +1040,9 @@ int main(int argc, char** argv) {
                 // Translate presentation only; inspection identities and the actual signed field stay intact.
                 if(inspection) {
                     const auto& selected=inspection->selection;
-                    if(selected.mode==cov::NboSelectionMode::Orbital && selected.terms.size()==1 &&
+                    if(selected.spatial_spin)
+                        label=selected.label+" | "+cov::ui::aomo_text(language,"Side orbitals: spin average");
+                    else if(selected.mode==cov::NboSelectionMode::Orbital && selected.terms.size()==1 &&
                        selected.terms[0].orbital.kind==cov::NboOrbitalKind::Canonical)
                         label=mo_caption(selected.terms[0].orbital.index);
                     else if(selected.target_canonical_index)

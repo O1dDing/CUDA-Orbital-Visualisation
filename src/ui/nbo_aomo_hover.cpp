@@ -1,12 +1,15 @@
 #include "cov/nbo_aomo_hover.hpp"
 #include "cov/nbo_aomo_ui.hpp"
 #include "cov/nbo_aomo_labels.hpp"
+#include "cov/nbo_aomo_text.hpp"
 #include "cov/orbital_chemistry_summary.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <regex>
 #include <utility>
+#include <sstream>
+#include <iomanip>
 
 namespace cov::ui {
 namespace {
@@ -142,6 +145,20 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
     std::vector<std::string> lines;
     const auto title=concise_spin(node.individual_label.empty()?node.label:node.individual_label);
     if(node.group_header) return {title,text(Word::Subspace,language)};
+    if(node.spatial_spin){
+        const auto value=[&](const std::optional<double>& v){if(!v)return std::string(aomo_text(language,"Unavailable"));
+            std::ostringstream out;out<<std::setprecision(9)<<*v;return out.str();};
+        lines={title,aomo_text(language,"Side orbitals: spin average")};
+        for(const auto& channel:node.spatial_spin->channels){
+            lines.push_back(std::string(nbo_spin_name(channel.spin))+": E="+value(channel.energy_hartree)+" Ha; n="+value(channel.occupation));
+            // Rotated source diagonals differ from the common-basis expectation.
+            if(channel.members.size()==1){const auto& source=channel.members.front();
+                lines.push_back(source.id+": E="+value(source.energy_hartree)+" Ha; n="+value(source.occupation));}
+        }
+        lines.push_back("E=(Eα+Eβ)/2: "+value(node.spatial_spin->energy_hartree)+" Ha; n=nα+nβ: "+value(node.spatial_spin->occupation));
+        if(!node.spatial_spin->energy_hartree)lines.push_back(node.spatial_spin->energy_status);
+        return lines;
+    }
     if(node.canonical_index) {
         const auto index=*node.canonical_index;
         if(index>=wf.orbitals.size())return {title,text(Word::Unknown,language)};

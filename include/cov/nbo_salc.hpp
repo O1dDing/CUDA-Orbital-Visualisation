@@ -58,15 +58,34 @@ struct NboSalcOrbital {
     std::size_t partner_index=0, partner_dimension=1;
     std::optional<double> energy_hartree, occupation;
     std::string energy_semantics="unavailable";
+    std::optional<NboSpatialSpinInfo> spatial_spin;
+    std::string spin_correspondence_status;
 };
 struct NboSalcLink {
     std::size_t side_index=0, canonical_index=0;
     double coefficient=0, weight=0;
+    NboSpin source_spin=NboSpin::Total;
+    std::vector<std::size_t> source_side_indices;
+    std::vector<double> source_coefficients,basis_mapping;
 };
 struct NboSalcCoverage {
     std::size_t canonical_index=0;
     double weight_sum=0, residual_norm=0;
     bool available=false;
+};
+struct NboSalcSpinOperator {
+    NboSpin spin=NboSpin::Total;
+    std::vector<NboOrbitalRef> basis;
+    // Row-major matrices in this verified orthonormal NAO basis. Empty means
+    // unavailable, never a zero operator. Reuse the existing independent gates.
+    std::vector<double> fock,density;
+    std::string energy_status,density_status;
+};
+struct NboRestrictedOpenShellEvidence {
+    bool verified=false;
+    std::string status="not_checked",detail,method;
+    std::size_t alpha_electrons=0,beta_electrons=0,shared_columns=0;
+    double coefficient_residual=0,occupation_error=0,density_error=0,tolerance=2e-5;
 };
 struct NboSalcModel {
     std::string dataset_id, canonical_fingerprint, cache_key;
@@ -81,6 +100,10 @@ struct NboSalcModel {
     std::vector<NboSalcCoverage> coverage;
     std::vector<NboSalcEnergyEvidence> energies;
     std::vector<std::string> diagnostics;
+    std::vector<NboSalcSpinOperator> spin_operators;
+    NboRestrictedOpenShellEvidence restricted_open_shell;
+    bool spin_averaged=false;
+    std::size_t merged_spatial_count=0,separate_spin_count=0;
 };
 // Call once when attaching/changing the immutable dataset and cache the result.
 // model.cache_key records dataset+canonical identity and options. No UI state,
@@ -90,6 +113,11 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& canonical,
 NboOrbitalSelection nbo_salc_selection(const NboSalcModel& model,std::size_t side_index);
 NboOrbitalSelection nbo_salc_component_selection(const NboSalcModel& model,const NboSalcLink& link);
 std::string serialize_nbo_salc_json(const NboSalcModel& model);
+NboRestrictedOpenShellEvidence verify_nbo_restricted_open_shell(
+    const Wavefunction&,const NboIntegration&);
+// Independent derived model; the original model and canonical data are immutable.
+NboSalcModel build_nbo_spin_averaged_model(const Wavefunction&,
+    const NboIntegration&,const NboSalcModel&);
 
 // Reuses the existing AO angular transform; coefficients are row-major n x k.
 // No dense n x n operation is retained, and empty means unsupported/invalid.

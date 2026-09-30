@@ -2,6 +2,7 @@
 #include "cov/nbo_aomo_ui.hpp"
 #include "cov/wavefunction_io.hpp"
 #include <imgui.h>
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <iomanip>
@@ -92,6 +93,35 @@ int main(int argc,char** argv) {try {
     for(const auto& c:view.captions){if(comma)out<<',';comma=true;out<<std::quoted(c.text);}
     out<<"]}";out.close();if(!out)throw std::runtime_error("Output write failed");
     if(argc>4) {
+        const auto simplified=state.salc_model;
+        if(simplified->spin_averaged){
+            const auto side=std::find_if(simplified->orbitals.begin(),simplified->orbitals.end(),[](const auto& o){return o.spatial_spin.has_value();});
+            state.selection=cov::nbo_salc_selection(*simplified,std::distance(simplified->orbitals.begin(),side));
+            state.focused_canonical_index=options.selected_index;
+            state.preset=cov::ui::NboAomoPreset::Research;
+            if(!cov::ui::prepare_nbo_aomo_state(state,integration,wf)||state.salc_model->spin_averaged||state.selection||!state.pending_selection||state.pending_selection->semantic_kind!="canonical")
+                throw std::runtime_error("Detailed spin switch left a stale spatial selection");
+            state.selection=state.pending_selection;state.pending_selection.reset();draw(cov::ui::Language::English);
+            const auto detailed=cov::ui::export_nbo_aomo_bundle(*state.drawn_snapshot,integration,std::string(argv[4])+"-detailed");
+            if(!detailed.json||!detailed.csv||!detailed.png||!detailed.svg)throw std::runtime_error("Detailed export failed");
+            state.preset=cov::ui::NboAomoPreset::Teaching;
+            if(!cov::ui::prepare_nbo_aomo_state(state,integration,wf)||state.salc_model!=simplified)
+                throw std::runtime_error("Simplified mode failed to restore immutable cached model");
+            state.selection=cov::nbo_salc_selection(*simplified,std::distance(simplified->orbitals.begin(),side));
+            if(!cov::make_nbo_selection_view(integration,wf,*state.selection).available)
+                throw std::runtime_error("Restored spatial selection unavailable");
+            state.pending_selection=state.selection;state.selection.reset();state.preset=cov::ui::NboAomoPreset::Research;
+            if(!cov::ui::prepare_nbo_aomo_state(state,integration,wf)||!state.pending_selection||state.pending_selection->spatial_spin)
+                throw std::runtime_error("Queued spatial selection survived spin-mode change");
+            state.pending_selection=cov::nbo_salc_selection(*state.salc_model,0);state.selection=state.pending_selection;
+            state.selected_side_node_id="previous-model";
+            state.salc_model=std::make_shared<const cov::NboSalcModel>(*state.source_salc_model);
+            if(!cov::ui::prepare_nbo_aomo_state(state,integration,wf)||state.selection||!state.selected_side_node_id.empty()||!state.pending_selection||state.pending_selection->semantic_kind!="canonical")
+                throw std::runtime_error("Explicit side-model replacement retained old identities");
+            state.preset=cov::ui::NboAomoPreset::Teaching;
+            if(!cov::ui::prepare_nbo_aomo_state(state,integration,wf))throw std::runtime_error("Mode restoration failed");
+            state.pending_selection.reset();state.selection=cov::nbo_salc_selection(*state.salc_model,0);
+        }
         const cov::ui::Language languages[]={cov::ui::Language::English,cov::ui::Language::ChineseSimplified,
             cov::ui::Language::Japanese,cov::ui::Language::French};
         for(std::size_t i=0;i<4;++i) {
@@ -101,6 +131,16 @@ int main(int argc,char** argv) {try {
             if(!exported.svg||!exported.png||!exported.json||!exported.csv)
                 throw std::runtime_error("Bundle export failed: "+exported.error);
         }
+        // Rejected/absent attachment must clear cached models and selections.
+        auto rejected=integration;for(auto& c:rejected.capabilities)if(c.key=="aomo")c.state=cov::NboCapabilityState::Rejected;
+        if(cov::ui::prepare_nbo_aomo_state(state,rejected,wf)||state.selection||state.salc_model||state.drawn_snapshot)
+            throw std::runtime_error("Rejected attachment retained stale derived state");
+        cov::NboIntegration absent;absent.id="no-nbo";
+        if(cov::ui::prepare_nbo_aomo_state(state,absent,wf)||state.pending_selection||state.source_salc_model)
+            throw std::runtime_error("No-NBO transition retained source state");
+        if(!cov::ui::prepare_nbo_aomo_state(state,integration,wf)||state.salc_model->spin_averaged!=simplified->spin_averaged||state.selection)
+            throw std::runtime_error("Reattachment failed to establish fresh mode and identity");
+        std::cerr<<"Mode, selection, rejected/no-NBO and reattachment checks passed\n";
     }
     ImGui::DestroyContext();return preserved?0:2;
 }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}}

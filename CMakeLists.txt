@@ -32,6 +32,7 @@ add_library(cov_parser
     src/parser/nbo.cpp
     src/parser/nbo_integration.cpp
     src/analysis/nbo_salc.cpp
+    src/analysis/nbo_spin_average.cpp
     src/analysis/pi_coupling.cpp
     src/analysis/density.cpp
     src/analysis/overlap.cpp
@@ -332,6 +333,12 @@ if(COV_BUILD_TESTS)
     add_executable(cov_nbo_matrix_equivalence tests/nbo_matrix_equivalence.cpp)
     target_link_libraries(cov_nbo_matrix_equivalence PRIVATE cov_parser)
     add_executable(cov_nbo_salc_smoke tests/test_nbo_salc.cpp)
+    add_executable(cov_nbo_spin_average_smoke tests/nbo_spin_average_smoke.cpp)
+    target_link_libraries(cov_nbo_spin_average_smoke PRIVATE cov_parser)
+    target_include_directories(cov_nbo_spin_average_smoke SYSTEM PRIVATE ${cov_eigen_SOURCE_DIR})
+    add_test(NAME nbo_spin_average_smoke COMMAND cov_nbo_spin_average_smoke)
+    add_executable(cov_nbo_spin_average_probe tests/nbo_spin_average_probe.cpp)
+    target_link_libraries(cov_nbo_spin_average_probe PRIVATE cov_parser)
     target_link_libraries(cov_nbo_salc_smoke PRIVATE cov_parser)
     add_test(NAME nbo_salc_smoke COMMAND cov_nbo_salc_smoke)
     add_executable(cov_nbo_pi_evidence_smoke tests/test_nbo_pi_evidence.cpp)
