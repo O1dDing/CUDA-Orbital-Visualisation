@@ -51,7 +51,7 @@ v0.4 プレビュー版では NBO 解析にも対応しました。同じ計算�
 - [COV の使い方（英語）](docs/UI.md)
 - [NBO の結果を使う（英語）](docs/AOMO_NBO.md) — v0.4 プレビュー版
 - [ソースからのビルド（英語）](docs/BUILD.md)
-- [安定版のリリースノート](docs/releases/v0.3.0.md) · [プレビュー版のリリースノート](docs/releases/v0.4.0-pre.1.md)
+- [安定版のリリースノート](docs/releases/v0.3.0.md) · [プレビュー版のリリースノート](docs/releases/v0.4.0-pre.1.md) · [過去の v0.3 プレビュー版](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
 [問題の報告・機能の提案](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose)。
 

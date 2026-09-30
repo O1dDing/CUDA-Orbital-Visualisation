@@ -52,7 +52,7 @@ With `formchk` installed, you can open CHK files directly; FCHK/FCH files open d
 - [Using NBO results](docs/AOMO_NBO.md) — v0.4 preview
 - [Prepare one calculation](docs/NBO_ONE_JOB.md) — source-tree template
 - [Building from source](docs/BUILD.md)
-- [Stable release notes](docs/releases/v0.3.0.md) · [Preview release notes](docs/releases/v0.4.0-pre.1.md)
+- [Stable release notes](docs/releases/v0.3.0.md) · [Preview release notes](docs/releases/v0.4.0-pre.1.md) · [Older v0.3 previews](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
 [Report a problem or suggest a feature](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose).
 

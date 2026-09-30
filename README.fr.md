@@ -51,7 +51,7 @@ Si `formchk` est installé, vous pouvez ouvrir directement les fichiers CHK. Les
 - [Utiliser COV (en anglais)](docs/UI.md)
 - [Utiliser les résultats NBO (en anglais)](docs/AOMO_NBO.md) — préversion v0.4
 - [Compiler depuis les sources (en anglais)](docs/BUILD.md)
-- [Notes de la version stable](docs/releases/v0.3.0.md) · [Notes de la préversion](docs/releases/v0.4.0-pre.1.md)
+- [Notes de la version stable](docs/releases/v0.3.0.md) · [Notes de la préversion](docs/releases/v0.4.0-pre.1.md) · [Anciennes préversions v0.3](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
 [Signaler un problème ou proposer une fonction](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose).
 
