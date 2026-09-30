@@ -1,10 +1,16 @@
 # Using Chemical Orbital Visualiser
 
+[简体中文](UI.zh-CN.md)
+
+This guide follows the NBO development version. The [download instructions](../README.md#download) cover the published packages.
+
 Chemical Orbital Visualiser (COV) brings orbital energies, occupations and relationships into one view. Open an existing Gaussian FCHK/FCH or Molden file, choose an orbital from the list, compare levels in the energy diagram, and export a figure or data table. The molecule and selected orbital can also be inspected in 3D.
 
 ## Open a calculation
 
 Use **Open File**, drag a file into the window, or enter its path. COV reads calculation results; it does not run Gaussian. A Gaussian CHK file can be converted locally if `formchk` is installed. If COV cannot find the converter, create an FCHK file with `formchk` first and open that file instead.
+
+If COV cannot find `formchk`, set `COV_FORMCHK` to its full executable path and restart COV.
 
 The current input limit is 100 atoms per molecule.
 
@@ -14,21 +20,21 @@ Search the orbital list, jump to HOMO or LUMO, or use the core, valence and virt
 
 Choose the energy unit that suits your work: Ha, eV, J/mol, kJ/mol, cal/mol or kcal/mol. The original energy is kept in Hartree; changing the displayed unit does not change the calculation.
 
-Levels with close energies may appear as a group such as `17-a` and `17-b`. The members keep their own orbital numbers and energies in the details and exported data. The default grouping tolerance is `1e-5 Ha`; a grouped label does not mean the energies are identical.
+In the current source version, orbital names such as `2a₁` appear wherever the symmetry and occurrence order are available. Otherwise, COV shows the original MO number and spin. Both names and source numbers are searchable. Levels with close energies may be grouped at their mean energy; each member keeps its own energy and identity in the details. The grouping tolerance starts at `1e-5 Ha` and can be adjusted.
 
 ## Compare levels in the diagram
 
 The central diagram shows occupied valence levels and nearby unoccupied levels, with electron occupations. Deep core and distant virtual levels can be hidden to keep the figure readable; they remain in the imported orbital list. Selecting an orbital for 3D inspection does not add it to or reorder the compact diagram.
 
-The ordinary energy axis preserves energy spacing. A focus view spreads crowded levels apart so their labels can be read; its visual gaps are no longer proportional to energy differences. Use the displayed energy values for comparisons. A grouped row can show a representative energy while its individual members retain their exact values.
+In the current source version, the energy axis can be linear or nonlinear. The nonlinear view spreads crowded levels apart and is labelled **Nonlinear energy axis**, with energy values and units on the ticks. Grouped levels use the members’ mean energy.
 
-**Export diagram + metadata** saves PNG and SVG figures together with JSON and CSV data. The data includes orbital numbers, energies, occupations, spin, grouping and which levels appeared in the figure.
+**Export diagram + metadata** saves PNG and SVG figures together with JSON and CSV data. Figures use the displayed orbital names and the current interface language. The data includes orbital numbers, energies, occupations, spin, grouping and which levels appeared in the figure.
 
 ## Inspect the molecule and orbital
 
 Rotate the scene and adjust atom, bond, molecule and orbital visibility. The default ball-and-stick view emphasizes the framework; **Stick + delocalisation** reduces atom clutter. Hydrogen visibility can be changed separately. The positive and negative phases of an orbital surface use different colours.
 
-Some bond and contact styles depend on information available in the calculation. A drawn line or colour is a display aid, not a measured bond order by itself. Automatic orbital and bonding labels can be wrong; use the original calculation output when interpreting them.
+Some bond and contact styles depend on information available in the calculation. A drawn line or colour is a display aid, not a measured bond order by itself.
 
 The details window can be moved, resized and reopened. The interface is available in English, 简体中文, 日本語 and Français.
 

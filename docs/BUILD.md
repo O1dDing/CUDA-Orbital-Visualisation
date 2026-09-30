@@ -1,5 +1,7 @@
 # Build Chemical Orbital Visualiser
 
+[简体中文](BUILD.zh-CN.md)
+
 These instructions are for building COV from source. The ordinary Windows download does not require the CUDA Toolkit, CMake or a C++ compiler. The supplied Windows program is built for RTX 50-series GPUs; a suitable source build is needed for another NVIDIA GPU architecture.
 
 ## Requirements
@@ -58,3 +60,5 @@ For each grid point, the evaluator computes
 \]
 
 It does not allocate a full grid-points-by-basis-functions matrix. Available grid resolutions are 64³, 128³, 256³ and 512³.
+
+For Gaussian/NBO file preparation, see the [one-job template](NBO_ONE_JOB.md).

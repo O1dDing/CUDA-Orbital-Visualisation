@@ -1,0 +1,27 @@
+name: Bug report
+description: A problem with COV.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What led to it
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: COV version and operating system
+    validations:
+      required: false
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots or files
+    validations:
+      required: false

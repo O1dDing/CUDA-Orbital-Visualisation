@@ -1,0 +1,15 @@
+name: Feature request
+description: An addition or improvement to COV.
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Feature or improvement
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Use case or example
+    validations:
+      required: false

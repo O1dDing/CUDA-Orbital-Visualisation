@@ -1,0 +1,27 @@
+name: 问题反馈
+description: 使用 COV 时遇到的问题。
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 出现问题时的操作
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: COV 版本与系统
+    validations:
+      required: false
+  - type: textarea
+    id: attachments
+    attributes:
+      label: 截图或文件
+    validations:
+      required: false

@@ -1,0 +1,14 @@
+{
+  "title": "Water; fixed geometry COV input example",
+  "method": "PBE1PBE",
+  "basis": "6-31G(d)",
+  "charge": 0,
+  "multiplicity": 1,
+  "geometry_angstrom": "O 0.000000 0.000000 0.110851\nH 0.000000 0.783837 -0.443405\nH 0.000000 -0.783837 -0.443405",
+  "basis_ecp_tail": "",
+  "nprocshared": 3,
+  "memory": "2GB",
+  "integral": "UltraFine",
+  "scf": "(XQC,Tight)",
+  "symmetry": "NoSymm"
+}

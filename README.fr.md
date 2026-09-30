@@ -8,7 +8,7 @@ COV présente les énergies et les occupations des orbitales dans des diagrammes
 
 La préversion v0.4 ajoute l’analyse NBO. Avec la sortie NBO du calcul, vous pouvez voir comment les orbitales atomiques et localisées contribuent aux orbitales moléculaires, suivre leurs liens dans le diagramme et examiner les charges et les informations sur les liaisons.
 
-Sélectionnez une orbitale pour voir sa forme en 3D. Le rendu utilise NVIDIA CUDA. L’interface est disponible en anglais, chinois simplifié, japonais et français.
+Sélectionnez une orbitale pour voir sa forme en 3D. Le rendu utilise un GPU NVIDIA. L’interface est disponible en anglais, chinois simplifié, japonais et français.
 
 ## Fonctionnalités
 
@@ -28,32 +28,32 @@ Sélectionnez une orbitale pour voir sa forme en 3D. Le rendu utilise NVIDIA CUD
 
 Les téléchargements actuels affichent encore l’ancien nom du produit.
 
-Les téléchargements Windows actuels sont compilés pour les GPU NVIDIA GeForce de la série RTX 50. Les autres architectures NVIDIA nécessitent une version compilée adaptée ; voir [Compiler depuis les sources](docs/BUILD.md). Installez un pilote NVIDIA compatible. Le CUDA Toolkit n’est nécessaire que pour compiler depuis les sources.
+Les paquets Windows actuels sont destinés à la série RTX 50 ; les paquets pour les autres architectures ne sont pas encore disponibles.
 
 ## Premiers pas
 
-1. Téléchargez et extrayez une archive ZIP pour Windows, puis lancez `cov.exe`.
+1. Téléchargez et extrayez une archive ZIP pour Windows. Pour v0.3.0, lancez `cov.exe`. Pour v0.4.0-pre.1, lancez `program/cov.exe`, ou double-cliquez sur un fichier `Open-*.cmd` pour ouvrir un exemple.
 2. Ouvrez un fichier Gaussian FCHK/FCH ou un fichier Molden compatible, ou glissez-le dans la fenêtre.
 3. Parcourez les énergies et les occupations dans la liste des orbitales et le diagramme. Sélectionnez un niveau pour voir son orbitale, ou exportez le diagramme.
 4. Dans la préversion v0.4, ouvrez le dossier du calcul pour charger ensemble les fichiers de fonction d’onde et NBO. Si le dossier contient plusieurs calculs, choisissez celui à ouvrir.
 
-Avant d’ouvrir un fichier Gaussian `.chk`, convertissez-le en `.fchk` avec l’utilitaire Gaussian `formchk`. Pour les fonctions NBO, utilisez des fichiers correspondant à la même géométrie et au même état électronique que la fonction d’onde. COV lit les résultats ; il n’exécute pas Gaussian ni NBO.
+Si `formchk` est installé, vous pouvez ouvrir directement les fichiers CHK. Les fichiers FCHK/FCH s’ouvrent directement. Les fichiers NBO et FCHK doivent provenir de la même étape de calcul. Après une nouvelle analyse GenNBO, utilisez ensemble son rapport, son archive et ses matrices orbitalaires.
 
 ## Fichiers d’entrée et configuration requise
 
-- **Fonctions d’onde :** fichiers Gaussian `.fchk` / `.fch`, ou fichiers compatibles `.molden` / `.mol` / `.input`. Les fichiers Gaussian `.chk` doivent d’abord être convertis.
+- **Fonctions d’onde :** fichiers Gaussian `.fchk` / `.fch`, ou fichiers compatibles `.molden` / `.mol` / `.input`. Les fichiers Gaussian `.chk` peuvent être ouverts avec un utilitaire `formchk` installé.
 - **Fichiers NBO — préversion v0.4 :** le rapport, l’archive et les matrices orbitalaires fournissent différentes parties de l’analyse. Pour savoir quels fichiers sont nécessaires à chaque vue, consultez [Utiliser les résultats NBO (en anglais)](docs/AOMO_NBO.md).
 - **Taille des molécules :** jusqu’à 100 atomes par fichier d’entrée.
 - **Affichage :** un GPU NVIDIA, un pilote compatible et OpenGL 2.1 ou une version ultérieure. Utilisez une version compilée pour l’architecture de votre GPU.
 
-COV lit des résultats de calcul existants. Les étiquettes attribuées automatiquement aux orbitales et aux liaisons peuvent être erronées ; consultez la sortie d’origine pour les interpréter.
-
 ## Documentation
 
-- [Utiliser COV](docs/UI.md)
+- [Utiliser COV (en anglais)](docs/UI.md)
 - [Utiliser les résultats NBO (en anglais)](docs/AOMO_NBO.md) — préversion v0.4
-- [Compiler depuis les sources](docs/BUILD.md)
+- [Compiler depuis les sources (en anglais)](docs/BUILD.md)
 - [Notes de la version stable](docs/releases/v0.3.0.md) · [Notes de la préversion](docs/releases/v0.4.0-pre.1.md)
+
+[Signaler un problème ou proposer une fonction](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose).
 
 ## Licence
 

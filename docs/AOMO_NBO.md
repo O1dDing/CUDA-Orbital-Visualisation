@@ -10,24 +10,35 @@ COV reads results that already exist; it does not run Gaussian or NBO. Drop the 
 
 | What you want to see | Files to provide |
 | --- | --- |
-| MO energies, occupations, energy diagram and 3D MO | Gaussian FCHK/FCH, or a Molden wavefunction. |
-| NPA charges, Wiberg indices and listed E(2) interactions | A Gaussian FCHK and the corresponding NBO report containing those sections: a Gaussian `.log`/`.out` or standalone NBO output. |
-| NBO orbital shapes and canonical MO–NBO connections | The matching FCHK and NBO report, the NBO `.47` archive, and complete AONBO and NBOMO matrices. |
-| NAO contributions to an MO | The matching FCHK, report, archive and matrices above, plus AONAO and NAOMO matrices together. An NAONBO matrix can provide an additional comparison. |
+| MO energies, occupations, energy diagram, Gaussian AO–MO coefficient links and 3D MO | Gaussian FCHK/FCH; Molden supports basic MO views. |
+| Values printed in the NBO report | FCHK and an NBO report containing those sections. |
+| NAO shapes, NPA charge and Wiberg colouring | Matching FCHK, report, `.47` archive and AONAO; colouring also needs matching density. |
+| MO composition in NAOs | Matching FCHK, report, archive, AONAO and NAOMO; NAONBO provides another transform. |
+| NBO shapes and canonical MO–NBO links | Matching FCHK, report, archive and AONBO; MO–NBO links also need NBOMO. |
+| NHO shapes and components | Base files, AONAO, AONHO and NAONHO; NHO–NBO links also use NHONBO and AONBO. |
+| NLMO shapes, main NBO and tail | Base files, AONBO, AONLMO, NBONLMO and matching report entries; NLMO–MO links also use NLMOMO. |
+| PNAO shapes | Base files, AONAO and AOPNAO. |
+| E(2) donor–acceptor orbitals | Matching report, archive Fock data and AONBO. |
 
-Matrix file numbers are chosen when the NBO calculation is produced; they are not fixed by COV. For example, a calculation requesting `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` would write files with those numbers if the producer follows the requests. Check the matrix headings and your calculation output rather than assuming that `FILE.37` or another numbered file has a particular role. Some detailed NHO and NLMO views also need the relevant orbital data in the report and matrices.
+Base files mean the matching FCHK, NBO report and `.47` archive. The FCHK and NBO data must describe the same calculation step. The NBO report and orbital matrices must come from the same analysis; use a GenNBO reanalysis report and its matrices together. The archive needs the overlap, density, canonical MO and Fock data used by the selected view. Spin colouring also needs complete spin-resolved density and report data.
 
-If you start with a CHK file, use an installed `formchk` to create an FCHK, or let COV call the installed converter. Use the checkpoint from the calculation that produced the NBO results. If NBO files are missing, the ordinary MO view still works; an analysis that needs missing data will be unavailable.
+Matrix file numbers are chosen when the NBO calculation is produced; they are not fixed by COV. For example, a calculation requesting `AONBO=W37 NBOMO=W49 NAOMO=W51 AONAO=W52 NAONBO=W53` would write files with those numbers if the producer follows the requests. Check the matrix headings and your calculation output rather than assuming that `FILE.37` or another numbered file has a particular role. This five-matrix example covers MO composition in NAOs and MO–NBO links. For the full file set, see the [one-job template](NBO_ONE_JOB.md).
+
+If you start with a CHK file, use an installed `formchk` to create an FCHK, or let COV call the installed converter. Use that step's canonical checkpoint. A checkpoint whose orbitals were replaced by SaveNBOs or SaveNLMOs is not the canonical MO input. If NBO files are missing, the ordinary MO view still works; an analysis that needs missing data will be unavailable.
 
 ## Follow an orbital through the diagram
 
 Choose an MO in the browser or energy diagram. The diagram focuses on valence and nearby unoccupied levels; **All** in the browser shows the full imported orbital list. Click an MO to highlight its available links to Gaussian atomic orbitals (AO), natural atomic orbitals (NAO) and atom groups. Click an AO, NAO or link to inspect a contribution or find related MOs. You can select several terms and show their signed partial sum or overlay them in 3D. Folding groups tidies the diagram without removing their members.
 
-NAOs form an orthogonal representation, so squared NAO coefficients can describe weights in that representation. Squared coefficients of the original, generally nonorthogonal Gaussian AOs are not atomic populations. AO and NAO nodes do not share the MO energy axis. A group of orbitals is a SALC only when the available data supports that symmetry meaning.
+NAOs form an orthogonal representation, so squared NAO coefficients can describe weights in that representation. Squared coefficients of the original, generally nonorthogonal Gaussian AOs are not atomic populations. When NAO or SALC energies are available, they can use the same numerical axis as the MOs. Their values are operator expectation values in the molecular environment; the central values are canonical MO energies. The illustrative side layout arranges orbitals without using their energies. A group of orbitals is a SALC only when the available data supports that symmetry meaning.
+
+A local basis may contain fewer orbitals than the Gaussian AO basis. The diagram then shows the available contributions and the uncovered part, without rescaling the contributions to 100%.
+
+**Overview** shows a compact view. **Research analysis** adds detail, and **Full basis** includes core and Rydberg orbitals. These presets change what is shown.
 
 ## Start from the molecule
 
-Click an atom or bond in the 3D view to open its related values and orbital links. Where the report provides them, atoms can be coloured by NPA charge or spin population; bonds can show Wiberg indices, bonding and antibonding orbitals, and coordination or multicentre relationships. A Wiberg index is a continuous value, not an integer bond order.
+Click an atom or bond in the 3D view to open its related values and orbital links. With the report and matching matrices available, atoms can be coloured by NPA charge or spin population; bonds can show Wiberg indices, bonding and antibonding orbitals, and coordination or multicentre relationships. A Wiberg index is a continuous value, not an integer bond order.
 
 NHO views can show directional orbital lobes and their angular components. Select an E(2) interaction to see its donor and acceptor orbitals together; the E(2) value is a perturbation estimate, not a bond or reaction energy. NLMO views can separate the full orbital, its main NBO component and the remaining tail when the needed data is available.
 
@@ -36,5 +47,3 @@ A small contribution may be hidden by the current isosurface threshold. Use **Fi
 ## Export
 
 **Export whole diagram** saves `.aomo.svg`, `.aomo.png`, `.aomo.json` and `.aomo.csv`. SVG/PNG are static figures; JSON/CSV retain selections, groups and values. Interactive 3D exploration remains in COV.
-
-COV reads existing calculation results. Automatic orbital and bonding labels can be wrong; use the original output when interpreting them.
