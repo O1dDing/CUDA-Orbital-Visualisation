@@ -82,6 +82,62 @@ int main(){try{
         require(!ro.orbitals[j].energy_hartree,"RO beta fabricated canonical-validated energy");
         for(const auto& link:ro.links)require(link.side_index!=j,"RO beta fabricated canonical link");
     }require(beta_count==3,"RO beta fixed space lost");
+    // Physical spin operators need not diagonalize a shared RO canonical set.
+    // Independently printed diagonals in two full local bases verify their
+    // side expectations without manufacturing canonical beta columns.
+    auto physical=open;
+    physical.i.dataset.orbitals.clear();physical.i.dataset.matrices.clear();
+    for(auto spin:{cov::NboSpin::Alpha,cov::NboSpin::Beta}) {
+        auto fit=std::find_if(physical.i.dataset.archive->matrices.begin(),
+            physical.i.dataset.archive->matrices.end(),[&](const auto& x){return x.kind=="FOCK"&&x.spin==spin;});
+        fit->values[0]+=spin==cov::NboSpin::Alpha?.13:-.09;
+        const double h=std::sqrt(.5);
+        const auto transform=matrix("AONBO",{1,0,0,0,h,h,0,h,-h},spin);
+        physical.i.dataset.matrices.push_back(transform);
+        for(auto& row:physical.i.dataset.naos)if(row.spin==spin)
+            row.energy_hartree=fit->values[(row.id-1)*3+row.id-1];
+        for(std::size_t j=0;j<3;++j) {
+            cov::NboOrbital row;row.id=j+1;row.spin=spin;row.diagonal_fock_hartree=0;
+            for(std::size_t a=0;a<3;++a)for(std::size_t b=0;b<3;++b)
+                *row.diagonal_fock_hartree+=transform.values[a*3+j]*fit->values[a*3+b]*transform.values[b*3+j];
+            physical.i.dataset.orbitals.push_back(row);
+        }
+    }
+    const auto pm=cov::build_nbo_salc_model(physical.w,physical.i);
+    require(pm.energies.size()==2,"physical spin blocks lost");
+    for(const auto& ev:pm.energies)require(ev.available&&ev.printed_operator_verified&&
+        !ev.canonical_same_operator&&!ev.electronic_symmetry_verified&&
+        ev.printed_nao_checked==3&&ev.printed_nbo_checked==3,
+        "physical spin expectations inherited a false canonical same-operator proof");
+    for(std::size_t j=0;j<pm.orbitals.size();++j)if(pm.orbitals[j].spin==cov::NboSpin::Beta){
+        require(pm.orbitals[j].energy_hartree.has_value(),"independently verified RO beta energy lost");
+        for(const auto& link:pm.links)require(link.side_index!=j,"physical beta energy invented canonical beta links");
+    }
+    require(cov::nbo_canonical_fingerprint(physical.w)==physical.i.canonical_fingerprint,
+        "physical operator route altered canonical data");
+    auto absent_print=physical;absent_print.i.dataset.naos.front().energy_hartree.reset();
+    require(!cov::build_nbo_salc_model(absent_print.w,absent_print.i).energies[0].available,
+        "partial printed evidence incorrectly enabled physical spin energy");
+    auto wrong_local=physical;wrong_local.i.dataset.orbitals.front().diagonal_fock_hartree=5;
+    require(!cov::build_nbo_salc_model(wrong_local.w,wrong_local.i).energies[0].available,
+        "NBO second-basis mismatch accepted");
+    auto wrong_spin=physical;
+    std::swap(wrong_spin.i.dataset.archive->matrices[1].values,
+              wrong_spin.i.dataset.archive->matrices[3].values);
+    require(!cov::build_nbo_salc_model(wrong_spin.w,wrong_spin.i).energies[0].available,
+        "swapped physical spin Fock accepted");
+    auto wrong_offdiag=physical;wrong_offdiag.i.dataset.archive->matrices[1].values[5]+=.03;
+    wrong_offdiag.i.dataset.archive->matrices[1].values[7]+=.03;
+    require(!cov::build_nbo_salc_model(wrong_offdiag.w,wrong_offdiag.i).energies[0].available,
+        "Hermitian off-diagonal perturbation escaped independent NBO check");
+    auto bad_coupling=physical;cov::NboE2 e2;e2.spin=cov::NboSpin::Alpha;
+    e2.donor=1;e2.acceptor=2;e2.fock_hartree=2;e2.energy_gap_hartree=.37;
+    bad_coupling.i.dataset.e2.push_back(e2);
+    require(!cov::build_nbo_salc_model(bad_coupling.w,bad_coupling.i).energies[0].available,
+        "printed coupling disagreement accepted");
+    auto wrong_units=physical;for(auto& value:wrong_units.i.dataset.archive->matrices[1].values)value*=27.211386245981;
+    require(!cov::build_nbo_salc_model(wrong_units.w,wrong_units.i).energies[0].available,
+        "incorrect physical Fock units accepted");
     const auto path=std::filesystem::temp_directory_path()/"cov_salc_ev_smoke.47";{std::ofstream o(path);o<<"$GENNBO NATOMS=1 NBAS=1 UPPER OPEN EV $END\n$COORD\nfixture\n1 1 0 0 0\n$END\n$BASIS CENTER=1 LABEL=1 $END\n$CONTRACT NCOMP=1 NPRIM=1 NPTR=1 EXP=1 CS=1 $END\n$FOCK -27.211386245981 -54.422772491962 $END\n";}const auto ar=cov::read_nbo_archive(path);std::filesystem::remove(path);require(ar.fock_input_units=="eV"&&ar.matrices.size()==2,"EV/OPEN archive metadata");near(ar.matrices[0].values[0],-1,"alpha eV conversion");near(ar.matrices[1].values[0],-2,"beta eV conversion");
     std::cout<<"NBO SALC core: fixed SALCs, metric/group closure, signed reconstruction, rotation/permutation/phase invariance, spin, energies and failure gates passed\n";return 0;
 }catch(const std::exception& e){std::cerr<<"NBO SALC core failed: "<<e.what()<<'\n';return 1;}}

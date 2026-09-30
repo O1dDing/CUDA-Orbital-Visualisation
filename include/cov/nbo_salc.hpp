@@ -15,6 +15,13 @@ struct NboSalcOptions {
 struct NboSalcEnergyEvidence {
     NboSpin spin=NboSpin::Total;
     bool available=false;
+    // Physical spin Fock expectations can be verified independently of the
+    // effective canonical operator used by a restricted open-shell producer.
+    bool canonical_same_operator=false, printed_operator_verified=false;
+    std::size_t printed_nao_checked=0,printed_nbo_checked=0,printed_couplings_checked=0;
+    double printed_nao_error_hartree=0,printed_nbo_error_hartree=0;
+    double printed_coupling_error_hartree=0,printed_gap_error_hartree=0;
+    std::string canonical_operator_status;
     std::string status="unavailable", detail, input_units="hartree";
     double hermiticity_error=0, canonical_residual=0, eigenvalue_error_hartree=0;
     double projected_residual=0, nullspace_residual=0, fock_symmetry_error=0;

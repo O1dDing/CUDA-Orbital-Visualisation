@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "E:/Codex/2026-09-27/cov-nbo-thread-01a0da55-c2d2-73b0-2/work/issue-fixes-20260930/build-ordinary/cov.exe",
+    "E:/Codex/COV-data/aomo-library-20260929/packages/OLD-020/drop.covnbopkg"
+  ],
+  "pid": 30604,
+  "exit_code": 0,
+  "timed_out": false,
+  "cpu_mask": 7,
+  "core_count": 3,
+  "memory_limit_gib": 20,
+  "peak_tree_commit_bytes": 1660030976
+}

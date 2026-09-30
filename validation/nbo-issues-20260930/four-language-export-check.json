@@ -1,0 +1,66 @@
+[
+  {
+    "language": 0,
+    "nodes": 104,
+    "captions": [
+      "AO / NAO",
+      "MO",
+      "SALC / AO",
+      "E (Ha): Nonlinear energy axis",
+      "Lines show orbital contributions.",
+      "Orbitals automatically filtered."
+    ],
+    "caption_in_svg": true,
+    "nodes_equal": true,
+    "energy_axis_equal": true,
+    "png_signature": "89504e470d0a1a0a"
+  },
+  {
+    "language": 1,
+    "nodes": 104,
+    "captions": [
+      "AO / NAO",
+      "MO",
+      "SALC / AO",
+      "E (Ha): 非线性能量轴",
+      "连线表示轨道组成。",
+      "已自动筛选轨道。"
+    ],
+    "caption_in_svg": true,
+    "nodes_equal": true,
+    "energy_axis_equal": true,
+    "png_signature": "89504e470d0a1a0a"
+  },
+  {
+    "language": 2,
+    "nodes": 104,
+    "captions": [
+      "AO / NAO",
+      "MO",
+      "SALC / AO",
+      "E (Ha): 非線形エネルギー軸",
+      "線は軌道の構成。",
+      "軌道を自動で絞り込みました。"
+    ],
+    "caption_in_svg": true,
+    "nodes_equal": true,
+    "energy_axis_equal": true,
+    "png_signature": "89504e470d0a1a0a"
+  },
+  {
+    "language": 3,
+    "nodes": 104,
+    "captions": [
+      "AO / NAO",
+      "MO",
+      "SALC / AO",
+      "E (Ha): Axe d’énergie non linéaire",
+      "Les lignes indiquent la composition orbitale.",
+      "Orbitales filtrées automatiquement."
+    ],
+    "caption_in_svg": true,
+    "nodes_equal": true,
+    "energy_axis_equal": true,
+    "png_signature": "89504e470d0a1a0a"
+  }
+]

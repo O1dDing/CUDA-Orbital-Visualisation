@@ -14,6 +14,10 @@ struct NboAomoName {
     // while occurrence order / repeated-copy membership remains unresolved.
     bool verified=false;
     std::string detail;
+    // A verified single irrep occurrence, independent of whether its position
+    // among other occurrences can be numbered. Empty means unproved partners.
+    std::string partner_block_id;
+    std::size_t partner_block_size=0;
 };
 struct NboAomoNames {
     std::vector<NboAomoName> canonical, salc;

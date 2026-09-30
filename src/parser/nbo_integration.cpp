@@ -1,4 +1,5 @@
 #include "cov/nbo_integration.hpp"
+#include "cov/open_profile.hpp"
 #include "cov/ao_angular_basis.hpp"
 #include <algorithm>
 #include <cmath>
@@ -284,12 +285,18 @@ NboInputDiscovery discover_nbo_inputs(const std::vector<std::filesystem::path>& 
 }
 
 NboIntegration read_nbo_integration(const Wavefunction& w,const NboInputCandidate& candidate){NboDataset d;std::vector<std::string> errors=candidate.diagnostics;
+    OpenProfile profile;
     if(!candidate.report.empty()){try{NboReadOptions options;options.analysis_segment=candidate.analysis_segment;d=read_nbo(candidate.report,options);}catch(const std::exception& e){errors.push_back("report: "+std::string(e.what()));}}
+    profile.stage("report-read");
     if(!candidate.archive.empty()){try{d.archive=read_nbo_archive(candidate.archive);}catch(const std::exception& e){errors.push_back("archive: "+std::string(e.what()));}}
+    profile.stage("archive-read");
     if(d.archive){for(auto& p:d.populations)if(p.atom&&p.atom<=d.archive->atoms.size()){const auto& a=d.archive->atoms[p.atom-1];p.effective_core_electrons=(a.atomic_number-a.nuclear_charge)*(p.spin==NboSpin::Total?1.0:.5);p.explicit_population=p.total-*p.effective_core_electrons;}
         std::size_t local_count=0,mo_count=0;const auto primary=d.archive->open_shell?NboSpin::Alpha:NboSpin::Total;for(const auto& row:d.naos)if(row.spin==primary)local_count=std::max(local_count,row.id);if(!local_count)local_count=d.archive->basis_count;for(const auto& m:d.archive->matrices)if(m.kind=="LCAOMO")for(std::size_t j=0;j<m.columns;++j){bool active=false;for(std::size_t i=0;i<m.rows;++i)if(m.values[i*m.columns+j]!=0)active=true;if(active)mo_count=std::max(mo_count,j+1);}if(!mo_count)mo_count=d.archive->basis_count;for(const auto& item:candidate.matrices){try{std::string from,to;for(const auto* p:{"NLMO","NAO","NHO","NBO","AO"})if(item.first.rfind(p,0)==0){from=p;to=item.first.substr(from.size());break;}const auto rows=from=="AO"?d.archive->basis_count:local_count,cols=to=="MO"?mo_count:local_count;auto values=read_nbo_matrix_rectangular(item.second,item.first,rows,cols,d.archive->open_shell);for(auto& m:values){m.source.producer_version=d.producer_version;m.source.analysis_segment=candidate.analysis_segment.value_or(0);}d.matrices.insert(d.matrices.end(),values.begin(),values.end());}catch(const std::exception& e){errors.push_back(item.first+": "+e.what());}}
     }
-    auto out=integrate_nbo(w,d);for(const auto& item:candidate.matrices)if(!supplied(d,item.first))capability(out,"matrix:"+item.first,NboCapabilityState::Rejected,"Explicit supplied matrix could not be read; see diagnostic",{{item.second.string()}});out.diagnostics.insert(out.diagnostics.end(),errors.begin(),errors.end());return out;
+    profile.stage("sidecar-read");
+    auto out=integrate_nbo(w,d);
+    profile.stage("source-and-matrix-association");
+    for(const auto& item:candidate.matrices)if(!supplied(d,item.first))capability(out,"matrix:"+item.first,NboCapabilityState::Rejected,"Explicit supplied matrix could not be read; see diagnostic",{{item.second.string()}});out.diagnostics.insert(out.diagnostics.end(),errors.begin(),errors.end());return out;
 }
 
 NboIntegration integrate_nbo(const Wavefunction& w,const NboDataset& raw){

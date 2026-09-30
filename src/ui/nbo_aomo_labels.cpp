@@ -1,4 +1,5 @@
 #include "cov/nbo_aomo_labels.hpp"
+#include "cov/open_profile.hpp"
 #include "cov/orbital_symmetry_scope.hpp"
 #include "cov/orbital_symmetry.hpp"
 #include "cov/point_group_catalog.hpp"
@@ -473,7 +474,12 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
         }
         if(u.irrep.empty())u.detail+="; unclassified: reducible/mixed span, unsupported action, ambiguous axes, or no measured named signature";
         else u.detail+="; full-subspace characters verified; irrep occurrence count="+std::to_string(u.copies)+(u.copies_resolved?"; one ordinal shared by true partners":"; repeated irrep known but individual copy numbering unresolved");
-        for(auto i:u.members){used[i]=true;const auto& o=salc->orbitals[i];if(o.energy_hartree&&std::isfinite(*o.energy_hartree))u.energy+=*o.energy_hartree/double(u.members.size());else u.energy_available=false;out.salc[i].label="?";out.salc[i].detail=u.detail;}
+        for(auto i:u.members){used[i]=true;const auto& o=salc->orbitals[i];if(o.energy_hartree&&std::isfinite(*o.energy_hartree))u.energy+=*o.energy_hartree/double(u.members.size());else u.energy_available=false;out.salc[i].label="?";out.salc[i].detail=u.detail;
+            if(verified && !u.irrep.empty() && u.copies_resolved) {
+                out.salc[i].partner_block_id="salc-irrep-block:"+std::to_string(b);
+                out.salc[i].partner_block_size=u.members.size();
+            }
+        }
         if(verified&&(u.irrep.empty()||!u.copies_resolved))certify_salc_energy_bounds(u,side,w,*salc);
         units.push_back(std::move(u));
     }
@@ -506,7 +512,9 @@ std::shared_ptr<const NboAomoNames> canonical_mo_names(const Wavefunction& w){
         cache.assignment_count=w.derived_orbital_symmetry_assignments.size();
         cache.group=w.point_group_detected;cache.enrichment=w.enrichment_source;
         cache.revision=canonical_name_revision;
+        OpenProfile profile;
         cache.names=std::make_shared<const NboAomoNames>(build_nbo_aomo_names(w,NboIntegration{},nullptr));
+        profile.stage("standalone-orbital-names");
     }
     return cache.names;
 }

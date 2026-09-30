@@ -742,6 +742,10 @@ int main(int argc, char** argv) {
             const auto suggested=cov::ui::suggest_initial_nbo_index(*integration,orbital_ui.diagram_cache.snapshot.get());
             nbo_ui.selected_orbital=suggested.value_or(std::numeric_limits<std::size_t>::max());
             nbo_mo_index=nbo_ui.selected_orbital;
+            // Prepare the attachment's single name set before the scene asks
+            // for its caption. Otherwise that first caption builds a second,
+            // standalone canonical name set immediately before the attached one.
+            cov::ui::prepare_nbo_aomo_state(nbo_ui.aomo,*integration,*wavefunction);
             status=nbo_ui.error.empty()?StatusKind::Loaded:StatusKind::Error;
             status_detail=nbo_ui.error.empty()?integration->dataset.source.path:nbo_ui.error;
             // Do not build large diagnostic payloads during ordinary viewing.
@@ -946,8 +950,9 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
             identity();
-            cov::validation::field("scene.active_view",
-                cov::serialize_active_orbital_view_json(active_view()));
+            if(cov::validation::active())
+                cov::validation::field("scene.active_view",
+                    cov::serialize_active_orbital_view_json(active_view()));
             if(routed) {
                 cov::validation::field("chemistry.route.charge",
                     std::string(cov::routed_status_name(routed->total_atomic_charge.status))+":"+
@@ -963,7 +968,7 @@ int main(int argc, char** argv) {
                 wavefunction->atoms.size(),{nbo_ui.selected_atoms.begin(),nbo_ui.selected_atoms.end()},
                 nbo_ui.selected_structure,static_cast<cov::AtomScalarMode>(nbo_ui.atom_colour_mode),
                 nbo_ui.show_bond_indices,nbo_ui.show_e2,routed?&*routed:nullptr);
-            if(overlay)cov::validation::field("overlay.scalars",
+            if(overlay && cov::validation::active())cov::validation::field("overlay.scalars",
                 cov::serialize_molecule_overlay_scalars_json(*overlay,routed?&*routed:nullptr));
             if (const auto* active = active_wavefunction();
                 active && viewport.width > 0 && viewport.height > 0) {

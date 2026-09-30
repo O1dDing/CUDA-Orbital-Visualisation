@@ -144,10 +144,11 @@ M verified_density(const Wavefunction& w,const NboIntegration& data,NboSpin spin
     reason="Independently associated same-spin archive density projected in the NAO metric";
     return b.transpose()*density*b;
 }
-Energy check_energy(const Wavefunction& w,const NboIntegration& data,NboSpin spin,const M& a,const NboSalcOptions& options){
+Energy check_canonical_energy(const Wavefunction& w,const NboIntegration& data,NboSpin spin,const M& a,const NboSalcOptions& options){
     Energy e;e.evidence.spin=spin;const auto& d=data.dataset;const auto n=std::size_t(w.basis_count);if(!d.archive){e.evidence.detail="No same-source archive";return e;}
     e.evidence.input_units=d.archive->fock_input_units;const auto* f=find(d.archive->matrices,"FOCK",spin);const auto* s=find(d.archive->matrices,"OVERLAP",NboSpin::Total);
-    if(!complete(f,n)||!complete(s,n)){e.evidence.detail="Missing complete same-spin Fock/overlap";return e;}e.evidence.source=f->source;
+    if(!complete(f,n)){e.evidence.detail="Source does not provide a complete same-spin Fock matrix; side orbital wavefunctions remain available";return e;}
+    if(!complete(s,n)){e.evidence.detail="Source does not provide a complete overlap matrix";return e;}e.evidence.source=f->source;
     const auto& assoc=d.association;const NboCanonicalEvidence* ev=nullptr;for(const auto& x:assoc.canonical_evidence)if(x.spin==spin)ev=&x;
     if(!ev||!ev->direct_fchk_coefficients){e.evidence.detail="No direct same-spin canonical coefficient identity";return e;}
     if(assoc.gaussian_row.size()!=n||assoc.coefficient_scale.size()!=n||w.gaussian_ao_transform.size()!=n){e.evidence.detail="Missing AO convention mapping";return e;}
@@ -174,13 +175,107 @@ Energy check_energy(const Wavefunction& w,const NboIntegration& data,NboSpin spi
     const bool full_ok=e.evidence.canonical_residual<=options.energy_tolerance_hartree;
     if(e.evidence.canonical_null_directions&&e.evidence.outside_canonical_nao_norm>options.metric_tolerance){e.evidence.status="unverified_operator_outside_canonical";e.evidence.detail="NAO space extends beyond validated canonical effective space; exterior Fock action cannot be established from retained canonical eigenpairs; side energies withheld";return e;}
     if(e.evidence.hermiticity_error>options.energy_tolerance_hartree||e.evidence.projected_residual>options.energy_tolerance_hartree||e.evidence.eigenvalue_error_hartree>options.energy_tolerance_hartree||!full_ok){e.evidence.status="rejected_operator";e.evidence.detail=full_ok?"Fock/canonical projected operator mismatch":"Full FC-SC epsilon residual fails; projected/null-space diagnostics retained, side energies withheld";return e;}
-    e.fock=an.transpose()*fock*an;e.evidence.available=true;e.evidence.status="verified_same_operator";e.evidence.detail="Complete Fock, Hermiticity, full and projected canonical equations agree; not isolated-fragment energies";return e;
+    e.fock=an.transpose()*fock*an;e.evidence.available=true;e.evidence.canonical_same_operator=true;e.evidence.status="verified_same_operator";e.evidence.detail="Complete Fock, Hermiticity, full and projected canonical equations agree; not isolated-fragment energies";return e;
+}
+
+Energy check_energy(const Wavefunction& w,const NboIntegration& data,NboSpin spin,
+                    const M& a,const NboSalcOptions& options) {
+    auto e=check_canonical_energy(w,data,spin,a,options);
+    e.evidence.canonical_operator_status=e.evidence.status;
+    if(e.evidence.available)return e;
+    const auto& d=data.dataset;
+    // RO canonical eigenvalues describe an effective shared-spatial operator;
+    // neither physical spin Fock matrix must diagonalize those orbitals.
+    // Accept a distinct physical operator only with independently matched
+    // density, complete local transforms and two printed diagonal checks.
+    if(!d.archive || !d.archive->open_shell || spin==NboSpin::Total ||
+       !d.association.compatible || e.evidence.status=="rejected_canonical_metric")return e;
+    const auto n=static_cast<std::size_t>(w.basis_count);
+    const auto* f=find(d.archive->matrices,"FOCK",spin);
+    const auto* s=find(d.archive->matrices,"OVERLAP",NboSpin::Total);
+    const auto* b=find(d.matrices,"AONBO",spin);
+    if(!complete(f,n)||!complete(s,n)||!complete(b,n)||a.cols()!=Eigen::Index(n))return e;
+    std::string density_reason;
+    const M density=verified_density(w,data,spin,a,options.metric_tolerance,density_reason);
+    if(density.rows()!=a.cols())return e;
+    const M an=archive_coefficients(w,d.association,a);
+    if(an.rows()!=Eigen::Index(n))return e;
+    const M fock=matrix(*f),overlap=matrix(*s),bn=matrix(*b);
+    e.evidence.source=f->source;
+    e.evidence.hermiticity_error=err(fock-fock.transpose());
+    if(e.evidence.hermiticity_error>options.energy_tolerance_hartree ||
+       err(bn.transpose()*overlap*bn-M::Identity(n,n))>options.metric_tolerance)return e;
+    const M fn=an.transpose()*fock*an;
+    const M fb=bn.transpose()*fock*bn;
+    // Producer NAO and NBO energy tables print five decimal places. This is
+    // an independent print-precision gate, not a relaxed canonical residual.
+    constexpr double printed_tolerance=5.1e-6;
+    std::vector<bool> nao_seen(n,false),nbo_seen(n,false);
+    bool valid=true;
+    for(const auto& row:d.naos)if(row.spin==spin) {
+        if(!row.id || row.id>n || nao_seen[row.id-1] || !row.energy_hartree ||
+           !std::isfinite(*row.energy_hartree)){valid=false;continue;}
+        const auto i=row.id-1;nao_seen[i]=true;++e.evidence.printed_nao_checked;
+        e.evidence.printed_nao_error_hartree=std::max(e.evidence.printed_nao_error_hartree,
+            std::abs(fn(i,i)-*row.energy_hartree));
+        if(std::abs(density(i,i)-row.occupation)>4e-5)valid=false;
+    }
+    for(const auto& row:d.orbitals)if(row.spin==spin) {
+        if(!row.id || row.id>n || nbo_seen[row.id-1] || !row.diagonal_fock_hartree ||
+           !std::isfinite(*row.diagonal_fock_hartree)){valid=false;continue;}
+        const auto i=row.id-1;nbo_seen[i]=true;++e.evidence.printed_nbo_checked;
+        e.evidence.printed_nbo_error_hartree=std::max(e.evidence.printed_nbo_error_hartree,
+            std::abs(fb(i,i)-*row.diagonal_fock_hartree));
+    }
+    // Printed off-diagonal magnitudes are additional rejection evidence, not
+    // a claim that a thresholded table uniquely determines the full matrix.
+    for(const auto& row:d.e2)if(row.spin==spin) {
+        if(!row.donor || !row.acceptor || row.donor>n || row.acceptor>n ||
+           !std::isfinite(row.fock_hartree) || !std::isfinite(row.energy_gap_hartree)){
+            valid=false;continue;
+        }
+        const auto i=row.donor-1,j=row.acceptor-1;
+        ++e.evidence.printed_couplings_checked;
+        e.evidence.printed_coupling_error_hartree=std::max(e.evidence.printed_coupling_error_hartree,
+            std::abs(std::abs(fb(i,j))-std::abs(row.fock_hartree)));
+        e.evidence.printed_gap_error_hartree=std::max(e.evidence.printed_gap_error_hartree,
+            std::abs(fb(j,j)-fb(i,i)-row.energy_gap_hartree));
+    }
+    if(!valid || !std::all_of(nao_seen.begin(),nao_seen.end(),[](bool v){return v;}) ||
+       !std::all_of(nbo_seen.begin(),nbo_seen.end(),[](bool v){return v;})) {
+        e.evidence.detail+="; independent physical spin-Fock verification lacks complete matched printed local energies/density";
+        return e;
+    }
+    if(e.evidence.printed_nao_error_hartree>printed_tolerance ||
+       e.evidence.printed_nbo_error_hartree>printed_tolerance ||
+       e.evidence.printed_coupling_error_hartree>0.000501 ||
+       e.evidence.printed_gap_error_hartree>0.00501) {
+        e.evidence.status="rejected_printed_operator";
+        e.evidence.detail+="; physical Fock disagrees with the matched printed NAO/NBO energy or coupling evidence";
+        return e;
+    }
+    e.fock=fn;e.evidence.available=true;e.evidence.printed_operator_verified=true;
+    e.evidence.status="verified_physical_spin_fock";
+    e.evidence.detail="Associated physical spin-Fock expectations verified against complete NAO/NBO printed energies and available couplings; distinct from the effective canonical operator";
+    return e;
 }
 struct Family {std::size_t fragment=0;std::string type,angular;std::vector<std::size_t> indices;};
 std::string quoted(const std::string& s){std::ostringstream o;o<<'"';for(unsigned char c:s){if(c=='"'||c=='\\')o<<'\\'<<char(c);else if(c=='\n')o<<"\\n";else if(c=='\r')o<<"\\r";else if(c=='\t')o<<"\\t";else if(c<32)o<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<int(c)<<std::dec;else o<<char(c);}o<<'"';return o.str();}
 template<class T,class F>void json_array(std::ostream& o,const std::vector<T>& a,F fn){o<<'[';bool first=true;for(const auto& x:a){if(!first)o<<',';first=false;fn(x);}o<<']';}
 void num(std::ostream& o,double x){if(std::isfinite(x))o<<x;else o<<"null";}
 void optional(std::ostream& o,const std::optional<double>& x){if(x)num(o,*x);else o<<"null";}
+void energy_provenance(std::ostream& o,const NboSalcEnergyEvidence& x) {
+    o<<"\"canonical_same_operator\":"<<(x.canonical_same_operator?"true":"false")
+     <<",\"printed_operator_verified\":"<<(x.printed_operator_verified?"true":"false")
+     <<",\"canonical_operator_status\":"<<quoted(x.canonical_operator_status)
+     <<",\"printed_nao_checked\":"<<x.printed_nao_checked
+     <<",\"printed_nbo_checked\":"<<x.printed_nbo_checked
+     <<",\"printed_couplings_checked\":"<<x.printed_couplings_checked
+     <<",\"printed_nao_error_hartree\":";num(o,x.printed_nao_error_hartree);
+    o<<",\"printed_nbo_error_hartree\":";num(o,x.printed_nbo_error_hartree);
+    o<<",\"printed_coupling_error_hartree\":";num(o,x.printed_coupling_error_hartree);
+    o<<",\"printed_gap_error_hartree\":";num(o,x.printed_gap_error_hartree);o<<',';
+}
 } // namespace
 
 NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& data,const NboSalcOptions& options){
@@ -202,7 +297,7 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
         // fields can pass one generator while failing its powers.
         if(transforms)for(const auto& op:group.ops){const auto t=apply_orbital_symmetry_operation(w,op,flat(a),r);if(t.size()!=n*r){transforms=false;out.diagnostics.push_back("Full-group AO action unavailable; fixed NAO fallback");break;}const M ta=Eigen::Map<const RM>(t.data(),n,r);const double metric_error=err(ta.transpose()*s*ta-M::Identity(r,r));out.representation_error=std::max(out.representation_error,metric_error);if(metric_error>options.symmetry_tolerance){transforms=false;out.diagnostics.push_back("AO action fails metric isometry; fixed NAO fallback");break;}transformed_basis.push_back(ta);}
         if(transforms)for(const auto& action:transformed_basis)representations.push_back(sa.transpose()*action);
-        if(energy.evidence.available&&transforms){double e=0;for(const auto& g:representations)e=std::max(e,err(g.transpose()*energy.fock*g-energy.fock));energy.evidence.fock_symmetry_error=e;energy.evidence.electronic_symmetry_verified=r==n&&e<=options.symmetry_tolerance;}
+        if(energy.evidence.available&&transforms){double e=0;for(const auto& g:representations)e=std::max(e,err(g.transpose()*energy.fock*g-energy.fock));energy.evidence.fock_symmetry_error=e;energy.evidence.electronic_symmetry_verified=energy.evidence.canonical_same_operator&&r==n&&e<=options.symmetry_tolerance;}
         std::string density_reason;
         const M density=verified_density(w,data,spin,a,options.metric_tolerance,density_reason);
         out.diagnostics.push_back(std::string(nbo_spin_name(spin))+": SALC occupation: "+density_reason);
@@ -249,7 +344,8 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
                     if(fragment.atoms.size()==1)o.partner_dimension=1;
                     if(o.symmetry_adapted&&b==2&&q.cols()==1&&family.angular=="s"&&o.terms.size()==2)o.label=(o.terms[0].coefficient*o.terms[1].coefficient>0?"In-phase ":"Out-of-phase ")+family.type;
                     if(!o.symmetry_adapted&&o.terms.size()>1)o.label="Fragment combination "+family.type;
-                    if(energy.evidence.available){o.energy_hartree=(global.transpose()*energy.fock*global)(0,0);o.energy_semantics="molecular-environment Fock/KS expectation; not a canonical or isolated-fragment eigenvalue";}
+                    if(energy.evidence.available){o.energy_hartree=(global.transpose()*energy.fock*global)(0,0);o.energy_semantics=energy.evidence.canonical_same_operator?"molecular-environment Fock/KS expectation; not a canonical or isolated-fragment eigenvalue":"physical spin-Fock expectation; distinct from the effective canonical MO operator";}
+                    else o.detail+="; energy: "+energy.evidence.detail;
                     if(density.size())o.occupation=(global.transpose()*density*global)(0,0);else if(o.terms.size()==1){const auto* descriptor=nbo_orbital(data,o.terms[0].orbital);if(descriptor)o.occupation=descriptor->occupation;}
                     const auto index=out.orbitals.size();sub.orbital_indices.push_back(index);out.orbitals.push_back(std::move(o));if(canonical_verified)for(std::size_t j=0;j<canonical_indices.size();++j){const double coefficient=global.dot(projections.col(j));out.links.push_back({index,canonical_indices[j],coefficient,coefficient*coefficient});}
                 }out.subspaces.push_back(std::move(sub));
@@ -269,6 +365,6 @@ std::string serialize_nbo_salc_json(const NboSalcModel& m){std::ostringstream o;
     o<<",\"orbitals\":";json_array(o,m.orbitals,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"fragment_id\":"<<quoted(x.fragment_id)<<",\"subspace_id\":"<<quoted(x.subspace_id)<<",\"type\":"<<quoted(x.type)<<",\"angular\":"<<quoted(x.angular)<<",\"detail\":"<<quoted(x.detail)<<",\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"symmetry_adapted\":"<<(x.symmetry_adapted?"true":"false")<<",\"partner_index\":"<<x.partner_index<<",\"partner_dimension\":"<<x.partner_dimension<<",\"energy_hartree\":";optional(o,x.energy_hartree);o<<",\"occupation\":";optional(o,x.occupation);o<<",\"energy_semantics\":"<<quoted(x.energy_semantics)<<",\"atoms\":";json_array(o,x.atoms,[&](auto i){o<<i;});o<<",\"terms\":";json_array(o,x.terms,[&](const auto& t){o<<"{\"kind\":"<<quoted(nbo_orbital_kind_name(t.orbital.kind))<<",\"spin\":"<<quoted(nbo_spin_name(t.orbital.spin))<<",\"index\":"<<t.orbital.index<<",\"coefficient\":";num(o,t.coefficient);o<<'}';});o<<'}';});
     o<<",\"links\":";json_array(o,m.links,[&](const auto& x){o<<"{\"side_index\":"<<x.side_index<<",\"canonical_index\":"<<x.canonical_index<<",\"coefficient\":";num(o,x.coefficient);o<<",\"weight\":";num(o,x.weight);o<<'}';});
     o<<",\"coverage\":";json_array(o,m.coverage,[&](const auto& x){o<<"{\"canonical_index\":"<<x.canonical_index<<",\"available\":"<<(x.available?"true":"false")<<",\"weight_sum\":";num(o,x.weight_sum);o<<",\"residual_norm\":";num(o,x.residual_norm);o<<'}';});
-    o<<",\"energies\":";json_array(o,m.energies,[&](const auto& x){o<<"{\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"available\":"<<(x.available?"true":"false")<<",\"status\":"<<quoted(x.status)<<",\"detail\":"<<quoted(x.detail)<<",\"input_units\":"<<quoted(x.input_units)<<",\"canonical_columns_checked\":"<<x.canonical_columns_checked<<",\"effective_rank\":"<<x.effective_rank<<",\"effective_rank_semantics\":\"validated canonical column count; not overlap eigenvalue-floor rank\",\"overlap_numerical_rank\":"<<x.overlap_numerical_rank<<",\"canonical_effective_rank\":"<<x.canonical_effective_rank<<",\"canonical_null_directions\":"<<x.canonical_null_directions<<",\"overlap_rank_threshold\":";num(o,x.overlap_rank_threshold);o<<",\"outside_canonical_nao_norm\":";num(o,x.outside_canonical_nao_norm);o<<",\"outside_canonical_fock_coupling\":";num(o,x.outside_canonical_fock_coupling);o<<",\"nullspace_residual_semantics\":\"residual outside canonical dual metric projector\",\"hermiticity_error\":";num(o,x.hermiticity_error);o<<",\"canonical_residual\":";num(o,x.canonical_residual);o<<",\"projected_residual\":";num(o,x.projected_residual);o<<",\"nullspace_residual\":";num(o,x.nullspace_residual);o<<",\"eigenvalue_error_hartree\":";num(o,x.eigenvalue_error_hartree);o<<",\"fock_symmetry_error\":";num(o,x.fock_symmetry_error);o<<",\"density_symmetry_error\":";num(o,x.density_symmetry_error);o<<",\"density_symmetry_checked\":"<<(x.density_symmetry_checked?"true":"false");o<<",\"electronic_symmetry_verified\":"<<(x.electronic_symmetry_verified?"true":"false")<<",\"source_path\":"<<quoted(x.source.path)<<",\"source_line\":"<<x.source.line_begin<<'}';});
+    o<<",\"energies\":";json_array(o,m.energies,[&](const auto& x){o<<'{';energy_provenance(o,x);o<<"\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"available\":"<<(x.available?"true":"false")<<",\"status\":"<<quoted(x.status)<<",\"detail\":"<<quoted(x.detail)<<",\"input_units\":"<<quoted(x.input_units)<<",\"canonical_columns_checked\":"<<x.canonical_columns_checked<<",\"effective_rank\":"<<x.effective_rank<<",\"effective_rank_semantics\":\"validated canonical column count; not overlap eigenvalue-floor rank\",\"overlap_numerical_rank\":"<<x.overlap_numerical_rank<<",\"canonical_effective_rank\":"<<x.canonical_effective_rank<<",\"canonical_null_directions\":"<<x.canonical_null_directions<<",\"overlap_rank_threshold\":";num(o,x.overlap_rank_threshold);o<<",\"outside_canonical_nao_norm\":";num(o,x.outside_canonical_nao_norm);o<<",\"outside_canonical_fock_coupling\":";num(o,x.outside_canonical_fock_coupling);o<<",\"nullspace_residual_semantics\":\"residual outside canonical dual metric projector\",\"hermiticity_error\":";num(o,x.hermiticity_error);o<<",\"canonical_residual\":";num(o,x.canonical_residual);o<<",\"projected_residual\":";num(o,x.projected_residual);o<<",\"nullspace_residual\":";num(o,x.nullspace_residual);o<<",\"eigenvalue_error_hartree\":";num(o,x.eigenvalue_error_hartree);o<<",\"fock_symmetry_error\":";num(o,x.fock_symmetry_error);o<<",\"density_symmetry_error\":";num(o,x.density_symmetry_error);o<<",\"density_symmetry_checked\":"<<(x.density_symmetry_checked?"true":"false");o<<",\"electronic_symmetry_verified\":"<<(x.electronic_symmetry_verified?"true":"false")<<",\"source_path\":"<<quoted(x.source.path)<<",\"source_line\":"<<x.source.line_begin<<'}';});
     o<<",\"diagnostics\":";json_array(o,m.diagnostics,[&](const auto& x){o<<quoted(x);});o<<'}';return o.str();}
 } // namespace cov

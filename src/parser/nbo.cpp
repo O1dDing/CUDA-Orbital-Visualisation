@@ -1,4 +1,5 @@
 #include "cov/nbo.hpp"
+#include "cov/open_profile.hpp"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -66,13 +67,47 @@ NboArchive read_nbo_archive(const std::filesystem::path& path) {
 }
 
 namespace {
+bool matrix_numeric_row(const std::string& line,std::vector<double>& values) {
+    // Keep the anchored producer-number grammar, but avoid two regex walks
+    // for every matrix row. Validate the WHOLE row before converting any
+    // token, so malformed headers and overflow retain the original behavior.
+    const auto digit=[](char c){return c>='0'&&c<='9';};
+    const auto space=[](char c){return c==' '||c=='\t'||c=='\r'||c=='\n'||c=='\f'||c=='\v';};
+    std::vector<std::pair<std::size_t,std::size_t>> tokens;
+    std::size_t i=0;
+    while(i<line.size()) {
+        while(i<line.size()&&space(line[i]))++i;
+        if(i==line.size())break;
+        const auto begin=i;
+        if(line[i]=='+'||line[i]=='-')++i;
+        std::size_t digits=0;
+        while(i<line.size()&&digit(line[i])){++i;++digits;}
+        if(i<line.size()&&line[i]=='.') {
+            ++i;while(i<line.size()&&digit(line[i])){++i;++digits;}
+        }
+        if(!digits)return false;
+        if(i<line.size()&&(line[i]=='E'||line[i]=='e'||line[i]=='D'||line[i]=='d')) {
+            ++i;if(i<line.size()&&(line[i]=='+'||line[i]=='-'))++i;
+            const auto exponent=i;
+            while(i<line.size()&&digit(line[i]))++i;
+            if(i==exponent)return false;
+        }
+        if(i<line.size()&&!space(line[i]))return false;
+        tokens.push_back({begin,i-begin});
+    }
+    if(tokens.empty())return false;
+    values.clear();values.reserve(tokens.size());
+    // Preserve the matrix-specific integer-metadata rule before conversion.
+    if(line.find_first_of(".EeDd")==std::string::npos)return true;
+    for(const auto& token:tokens)values.push_back(number(line.substr(token.first,token.second)));
+    return true;
+}
 std::vector<NboMatrix> read_matrix_file(const std::filesystem::path& p,const std::string& kind,std::size_t n,bool open,std::size_t cols=0) {
     if(!cols)cols=n;
     auto ls=lines(p);
     // W37/PLOT appends occupancies and orbital/atom descriptors to each spin
     // block. Only the first NBAS*NBAS real values belong to the matrix.
     // OPEN files delimit their independent payloads with ALPHA/BETA SPIN.
-    const std::regex numeric("^\\s*"+num+"(?:\\s+"+num+")*\\s*$");
     const std::map<std::string,std::string> headings{{"AONBO","NBOs in the AO basis:"},{"NBOMO","MOs in the NBO basis:"},{"AONAO","NAOs in the AO basis:"},{"NAOMO","MOs in the NAO basis:"},{"NAONBO","NBOs in the NAO basis:"},{"AONHO","NHOs in the AO basis:"},{"AONLMO","NLMOs in the AO basis:"},{"AOPNAO","PNAOs in the AO basis:"},{"NAONHO","NHOs in the NAO basis:"},{"NHONBO","NBOs in the NHO basis:"},{"NBONLMO","NLMOs in the NBO basis:"},{"NLMOMO","MOs in the NLMO basis:"},{"NAONLMO","NLMOs in the NAO basis:"},{"AOMO","MOs in the AO basis:"}};
     const auto hi=headings.find(kind);if(hi==headings.end())throw std::runtime_error("Unsupported explicit NBO matrix kind");const auto& heading=hi->second;
     std::size_t header=ls.size();for(std::size_t i=0;i<ls.size();++i)if(ls[i].find(heading)!=ls[i].npos){if(header!=ls.size())throw std::runtime_error("Repeated matrix header");header=i;}
@@ -82,7 +117,7 @@ std::vector<NboMatrix> read_matrix_file(const std::filesystem::path& p,const std
     if(open&&(kind=="AONAO"||kind=="AOPNAO")){bool spin_header=false;for(const auto& line:ls){const auto u=upper(trim(line));if(u=="ALPHA SPIN"||u=="BETA SPIN"||u=="BETA  SPIN")spin_header=true;}if(!spin_header)open=false;}
     std::vector<std::size_t> starts;if(open){for(std::size_t i=header+1;i<ls.size();++i){auto u=upper(trim(ls[i]));if(u=="ALPHA SPIN"||u=="BETA  SPIN"||u=="BETA SPIN")starts.push_back(i+1);}if(starts.size()!=2||upper(ls[starts[0]-1]).find("ALPHA")==std::string::npos||upper(ls[starts[1]-1]).find("BETA")==std::string::npos)throw std::runtime_error("OPEN matrix requires exactly one alpha and beta block");}else starts={header+1};
     const std::size_t count=n*cols;std::vector<NboMatrix> out;
-    for(std::size_t s=0;s<starts.size();++s){std::vector<double> values;std::size_t first=0,last=0;const auto end=s+1<starts.size()?starts[s+1]-1:ls.size();for(std::size_t i=starts[s];i<end&&values.size()<count;++i){if(!std::regex_match(ls[i],numeric)){if(!values.empty())throw std::runtime_error("Interrupted NBO matrix payload");continue;}if(ls[i].find_first_of(".EeDd")==std::string::npos){if(values.empty())continue;throw std::runtime_error("Integer metadata encountered before complete NBO matrix");}if(!first)first=i+1;auto row=numbers(ls[i]);if(values.size()+row.size()>count)throw std::runtime_error("NBO matrix payload boundary not aligned");values.insert(values.end(),row.begin(),row.end());last=i+1;}if(values.size()!=count)throw std::runtime_error(kind+" incomplete matrix payload");NboMatrix m;m.kind=kind;m.spin=open?(s==0?NboSpin::Alpha:NboSpin::Beta):NboSpin::Total;m.rows=n;m.columns=cols;m.values.resize(count);m.source=source(p,kind,first);m.source.line_end=last;for(std::size_t j=0;j<cols;++j)for(std::size_t i=0;i<n;++i)m.values[i*cols+j]=values[j*n+i];out.push_back(std::move(m));}return out;
+    for(std::size_t s=0;s<starts.size();++s){std::vector<double> values,row;values.reserve(count);std::size_t first=0,last=0;const auto end=s+1<starts.size()?starts[s+1]-1:ls.size();for(std::size_t i=starts[s];i<end&&values.size()<count;++i){if(!matrix_numeric_row(ls[i],row)){if(!values.empty())throw std::runtime_error("Interrupted NBO matrix payload");continue;}if(ls[i].find_first_of(".EeDd")==std::string::npos){if(values.empty())continue;throw std::runtime_error("Integer metadata encountered before complete NBO matrix");}if(!first)first=i+1;if(values.size()+row.size()>count)throw std::runtime_error("NBO matrix payload boundary not aligned");values.insert(values.end(),row.begin(),row.end());last=i+1;}if(values.size()!=count)throw std::runtime_error(kind+" incomplete matrix payload");NboMatrix m;m.kind=kind;m.spin=open?(s==0?NboSpin::Alpha:NboSpin::Beta):NboSpin::Total;m.rows=n;m.columns=cols;m.values.resize(count);m.source=source(p,kind,first);m.source.line_end=last;for(std::size_t j=0;j<cols;++j)for(std::size_t i=0;i<n;++i)m.values[i*cols+j]=values[j*n+i];out.push_back(std::move(m));}return out;
 }
 }
 
@@ -94,12 +129,14 @@ std::vector<NboMatrix> read_nbo_matrix(const std::filesystem::path& path,const s
 std::vector<NboMatrix> read_nbo_matrix_rectangular(const std::filesystem::path& path,const std::string& kind,std::size_t rows,std::size_t columns,bool open_shell){if(!rows||!columns||rows>10000||columns>10000)throw std::runtime_error("Invalid explicit matrix dimensions");return read_matrix_file(path,kind,rows,open_shell,columns);}
 
 NboDataset read_nbo(const std::filesystem::path& path,const NboReadOptions& options) {
+    OpenProfile profile;
     auto ls=lines(path);NboDataset d;std::vector<std::size_t> segments;
     const std::regex banner(R"(\*+\s+NBO\s+[0-9])");for(std::size_t i=0;i<ls.size();++i)if(std::regex_search(ls[i],banner))segments.push_back(i);
     if(segments.empty())segments.push_back(0);if(segments.size()>1&&!options.analysis_segment)throw std::runtime_error("Multiple NBO analyses: explicit analysis_segment is required");
     auto seg=options.analysis_segment.value_or(0);if(seg>=segments.size())throw std::runtime_error("NBO analysis_segment outside available segments");const auto begin=segments[seg],end=seg+1<segments.size()?segments[seg+1]:ls.size();
     d.source=source(path,"NBO",begin+1,{}, {},seg);d.source.line_end=end;
-    std::smatch m;for(std::size_t i=begin;i<end;++i)if(std::regex_search(ls[i],m,std::regex(R"(\[NBO\s+([^\]]+)\])"))){d.producer_version=m[1];break;}if(d.producer_version.empty())for(std::size_t i=begin;i<end;++i)if(std::regex_search(ls[i],m,std::regex(R"(NBO\s+([0-9]+\.[0-9]+))"))){d.producer_version=m[1];break;}d.source.producer_version=d.producer_version;
+    const std::regex full_version(R"(\[NBO\s+([^\]]+)\])"),short_version(R"(NBO\s+([0-9]+\.[0-9]+))");
+    std::smatch m;for(std::size_t i=begin;i<end;++i)if(std::regex_search(ls[i],m,full_version)){d.producer_version=m[1];break;}if(d.producer_version.empty())for(std::size_t i=begin;i<end;++i)if(std::regex_search(ls[i],m,short_version)){d.producer_version=m[1];break;}d.source.producer_version=d.producer_version;
     auto src=[&](const char* block,std::size_t i){return source(path,block,i+1,ls[i],d.producer_version,seg);};
     NboSpin spin=NboSpin::Total;std::string section;std::size_t current=static_cast<std::size_t>(-1);std::vector<std::size_t> columns;bool nao_spin_column=false;
     const std::regex nao("^\\s*(\\d+)\\s+([A-Za-z]+)\\s+(\\d+)\\s+(\\S+)\\s+([A-Za-z]+\\([^)]*\\))\\s+("+num+")(?:\\s+("+num+"))?\\s*$");
@@ -110,6 +147,8 @@ NboDataset read_nbo(const std::filesystem::path& path,const NboReadOptions& opti
     const std::regex e2("^\\s*(\\d+)\\.\\s+.*?\\s+(\\d+)\\.\\s+.*?\\s+("+num+")\\s+("+num+")\\s+("+num+")\\s*$");
     const std::regex nlmo("^\\s*(\\d+)\\.\\s*\\(("+num+")\\)\\s*("+num+")%\\s+(.+?)\\s*$");
     const std::regex nlmo_component("^\\s*("+num+")%\\s+([A-Z][a-z]?)\\s+(\\d+)\\s+(.+?)\\s*$");
+    const std::regex e2_threshold("Threshold for printing:\\s*("+num+")\\s*(\\S+)");
+    const std::regex wiberg_columns(R"(^\s*Atom\s+\d)"),wiberg_row(R"(^\s*(\d+)\.\s+([A-Za-z]+)\s+(.*)$)");
     // Printed occupations have a decimal point; this prevents the final atom
     // index from being mistaken for occupation when summary annotations follow.
     const std::regex summ("^\\s*(\\d+)\\.\\s+([A-Za-z0-9]+\\*?)\\s*\\(\\s*\\d+\\).*?\\s+([0-9]+\\.[0-9]+)\\s+("+num+")(?:\\s+.*)?$");
@@ -123,7 +162,10 @@ NboDataset read_nbo(const std::filesystem::path& path,const NboReadOptions& opti
         if(l.find("NATURAL BOND ORBITALS (Summary)")!=l.npos)section="summary";
         if(l.find("NLMO / Occupancy / Percent from Parent NBO")!=l.npos){section="nlmo";current=-1;}
         if(section=="nlmo"&&(l.find("Individual LMO bond orders")!=l.npos||l.find("Atom-Atom Net")!=l.npos||l.find("DIPOLE MOMENT")!=l.npos))section.clear();
-        if(section=="summary"&&l.find("Total Lewis")!=l.npos)section.clear();
+        // A summary can span several molecular units. Their Total Lewis
+        // subtotals are not the end of the NBO energy table.
+        if(section=="summary"&&(u.find("NATURAL LOCALIZED MOLECULAR ORBITAL")!=u.npos ||
+           u.find("NBO DIPOLE MATRIX")!=u.npos))section.clear();
         if(l.find("Wiberg bond index matrix")!=l.npos){section="wiberg";columns.clear();}
         if(section=="wiberg"&&l.find("Wiberg bond index, Totals")!=l.npos)section.clear();
         if(l.find("CMO: NBO Analysis")!=l.npos){section="cmo";d.cmo_summaries.push_back(src("CMO thresholded summary",i));}
@@ -135,8 +177,8 @@ NboDataset read_nbo(const std::filesystem::path& path,const NboReadOptions& opti
         if(section=="nbo"&&std::regex_match(l,m,orb)){NboOrbital x;x.id=std::stoul(m[1]);x.occupation=number(m[2]);x.kind=m[3];x.ordinal=std::stoul(m[4]);x.label=x.kind+"("+m[4].str()+") "+trim(m[5]);x.spin=spin;x.source=src("NBO",i);auto tail=m[5].str();for(std::sregex_iterator ai(tail.begin(),tail.end(),atom),ae;ai!=ae;++ai)x.atoms.push_back(std::stoul((*ai)[2]));if(x.atoms.size()==1){NboLocalComponent c;c.atom=x.atoms[0];c.percent=100;c.coefficient=1;c.hybrid=trim(std::regex_replace(tail,atom,"",std::regex_constants::format_first_only));c.source=x.source;x.components.push_back(c);}d.orbitals.push_back(x);current=d.orbitals.size()-1;}
         else if(section=="nbo"&&current<d.orbitals.size()&&std::regex_match(l,m,comp)){NboLocalComponent c;c.percent=number(m[1]);c.coefficient=number(m[2]);c.atom=std::stoul(m[4]);c.hybrid=trim(m[5]);c.source=src("NBO hybrid",i);d.orbitals[current].components.push_back(c);}
         if(section=="summary"&&std::regex_match(l,m,summ)){auto id=std::stoul(m[1]);for(auto& o:d.orbitals)if(o.id==id&&o.spin==spin){if(o.energy_source)throw std::runtime_error("Duplicate NBO energy identity inside summary");if(o.kind!=m[2].str()||std::abs(o.occupation-number(m[3]))>1e-5)throw std::runtime_error("NBO summary identity/occupation mismatch");o.diagonal_fock_hartree=number(m[4]);o.energy_source=src("NBO diagonal Fock summary",i);break;}}
-        if(section=="e2") { if(std::regex_search(l,m,std::regex("Threshold for printing:\\s*("+num+")\\s*(\\S+)"))){d.e2_sections.back().printing_threshold=number(m[1]);d.e2_sections.back().units=m[2];}if(std::regex_match(l,m,e2)){NboE2 x;x.donor=std::stoul(m[1]);x.acceptor=std::stoul(m[2]);x.value=number(m[3]);x.energy_gap_hartree=number(m[4]);x.fock_hartree=number(m[5]);x.spin=spin;x.printing_threshold=d.e2_sections.back().printing_threshold;x.units=d.e2_sections.back().units;x.source=src("E2",i);d.e2.push_back(x);}d.e2_sections.back().source.line_end=i+1; }
-        if(section=="wiberg") {if(std::regex_search(l,std::regex(R"(^\s*Atom\s+\d)"))){columns.clear();for(double v:numbers(l))columns.push_back(static_cast<std::size_t>(v));}else if(std::regex_match(l,m,std::regex(R"(^\s*(\d+)\.\s+([A-Za-z]+)\s+(.*)$)"))){auto v=numbers(m[3]);if(v.size()!=columns.size())throw std::runtime_error("Incomplete Wiberg row");for(std::size_t j=0;j<v.size();++j){NboWiberg x;x.atom_a=std::stoul(m[1]);x.atom_b=columns[j];x.value=v[j];x.spin=spin;x.source=src("Wiberg NAO",i);d.wiberg.push_back(x);}}}
+        if(section=="e2") { if(std::regex_search(l,m,e2_threshold)){d.e2_sections.back().printing_threshold=number(m[1]);d.e2_sections.back().units=m[2];}if(std::regex_match(l,m,e2)){NboE2 x;x.donor=std::stoul(m[1]);x.acceptor=std::stoul(m[2]);x.value=number(m[3]);x.energy_gap_hartree=number(m[4]);x.fock_hartree=number(m[5]);x.spin=spin;x.printing_threshold=d.e2_sections.back().printing_threshold;x.units=d.e2_sections.back().units;x.source=src("E2",i);d.e2.push_back(x);}d.e2_sections.back().source.line_end=i+1; }
+        if(section=="wiberg") {if(std::regex_search(l,wiberg_columns)){columns.clear();for(double v:numbers(l))columns.push_back(static_cast<std::size_t>(v));}else if(std::regex_match(l,m,wiberg_row)){auto v=numbers(m[3]);if(v.size()!=columns.size())throw std::runtime_error("Incomplete Wiberg row");for(std::size_t j=0;j<v.size();++j){NboWiberg x;x.atom_a=std::stoul(m[1]);x.atom_b=columns[j];x.value=v[j];x.spin=spin;x.source=src("Wiberg NAO",i);d.wiberg.push_back(x);}}}
     }
     if(d.e2_sections.empty()){NboE2Section s;s.source=d.source;s.missing_reason="E2 analysis not printed or not requested; unavailable, not zero";d.e2_sections.push_back(s);}
     if(!options.archive47.empty())d.archive=read_nbo_archive(options.archive47);
@@ -144,7 +186,34 @@ NboDataset read_nbo(const std::filesystem::path& path,const NboReadOptions& opti
     std::size_t n=d.archive?d.archive->basis_count:0;bool open=d.archive?d.archive->open_shell:false;
     for(const auto& item:std::vector<std::pair<std::filesystem::path,std::string>>{{options.aonbo,"AONBO"},{options.nbomo,"NBOMO"},{options.naomo,"NAOMO"},{options.aonao,"AONAO"},{options.naonbo,"NAONBO"}})if(!item.first.empty()){if(!n)throw std::runtime_error("Complete matrix import requires .47 dimensions/spin metadata");auto v=read_matrix_file(item.first,item.second,n,open);for(auto& mat:v){mat.source.producer_version=d.producer_version;mat.source.analysis_segment=seg;}d.matrices.insert(d.matrices.end(),v.begin(),v.end());}
     std::set<std::pair<NboSpin,std::size_t>> ids;for(auto& o:d.orbitals)if(!ids.insert({o.spin,o.id}).second)throw std::runtime_error("Ambiguous repeated NBO orbital identity in selected analysis");
-    std::set<std::pair<NboSpin,std::size_t>> nlmo_ids;auto label_key=[](const std::string& s){std::smatch m;const std::regex identity(R"(^\s*([A-Za-z0-9]+\*?)\s*\(\s*(\d+)\s*\)\s*(.*)$)");if(!std::regex_match(s,m,identity))return std::string();std::string key=m[1].str()+":"+m[2].str();const auto tail=m[3].str();const std::regex atoms(R"(([A-Z][a-z]?)\s+(\d+))");for(std::sregex_iterator i(tail.begin(),tail.end(),atoms),end;i!=end;++i)key+=":"+(*i)[1].str()+":"+(*i)[2].str();return key;};for(auto& x:d.nlmos){if(!nlmo_ids.insert({x.spin,x.id}).second)throw std::runtime_error("Ambiguous repeated NLMO identity");for(const auto& o:d.orbitals)if(o.spin==x.spin&&!label_key(x.parent_label).empty()&&label_key(o.label)==label_key(x.parent_label)){if(x.parent_nbo)throw std::runtime_error("Ambiguous NLMO parent label");x.parent_nbo=o.id;}}
+    std::set<std::pair<NboSpin,std::size_t>> nlmo_ids;
+    profile.stage("nbo-report-tables");
+    const auto label_key=[](const std::string& s) {
+        std::smatch m;
+        static const std::regex identity(R"(^\s*([A-Za-z0-9]+\*?)\s*\(\s*(\d+)\s*\)\s*(.*)$)");
+        static const std::regex atoms(R"(([A-Z][a-z]?)\s+(\d+))");
+        if(!std::regex_match(s,m,identity))return std::string();
+        std::string key=m[1].str()+":"+m[2].str();const auto tail=m[3].str();
+        for(std::sregex_iterator i(tail.begin(),tail.end(),atoms),end;i!=end;++i)
+            key+=":"+(*i)[1].str()+":"+(*i)[2].str();
+        return key;
+    };
+    std::vector<std::string> orbital_keys;
+    if(!d.nlmos.empty())for(const auto& orbital:d.orbitals)
+        orbital_keys.push_back(label_key(orbital.label));
+    for(auto& x:d.nlmos) {
+        if(!nlmo_ids.insert({x.spin,x.id}).second)
+            throw std::runtime_error("Ambiguous repeated NLMO identity");
+        const auto parent_key=label_key(x.parent_label);
+        if(parent_key.empty())continue;
+        // Preserve producer order and reject every duplicate same-spin key.
+        for(std::size_t i=0;i<d.orbitals.size();++i)
+            if(d.orbitals[i].spin==x.spin && orbital_keys[i]==parent_key) {
+                if(x.parent_nbo)throw std::runtime_error("Ambiguous NLMO parent label");
+                x.parent_nbo=d.orbitals[i].id;
+            }
+    }
+    profile.stage("nbo-nlmo-parent-matching");
     if(!d.cmo_summaries.empty())d.warnings.push_back("CMO printed percentages are thresholded summaries; complete decomposition requires NBOMO matrix");
     return d;
 }

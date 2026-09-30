@@ -497,19 +497,19 @@ int main() {
     const float p_top=std::min(p_a.y,p_b.y);
     const float p_bottom=std::max(p_a.y,p_b.y)+22.0f;
     const float p_c_gap=std::max(p_top-(s_c.y+22.0f),s_c.y-p_bottom);
-    if(p_c_gap<2.9f)
+    if(p_c_gap<11.9f)
         std::cerr<<"p/c physical rows: p_top="<<p_top<<" p_bottom="<<p_bottom
             <<" c_top="<<s_c.y<<" c_bottom="<<s_c.y+22.0f
             <<" gap="<<p_c_gap<<" next_top="<<s_next.y<<'\n';
-    require(p_c_gap>=2.9f,
+    require(p_c_gap>=11.9f,
         "crowded distinct side bar envelopes must retain readable separation");
     const float bar=crowded_view->orbital_bar_width;
     const float right_row_centre=(std::min(s_c.x,s_same.x)+
         std::max(s_c.x,s_same.x)+bar)*0.5f;
     const float physical_row_gap=std::abs(s_next.y-s_c.y)-22.0f;
-    require(physical_row_gap>0.0f && physical_row_gap<11.0f &&
+    require(physical_row_gap>=11.9f &&
         std::abs((s_next.x+bar*0.5f)-right_row_centre)<0.08f,
-        "distinct side bar rows with a narrow visible gap must share a centred anchor");
+        "distinct side bar rows retain readable group spacing and a centred anchor");
     const float mo_mid=crowded_view->lane_x[1]+crowded_view->lane_width[1]*0.5f;
     require(std::abs(side_node(0).x-left.x)<0.08f &&
         std::abs(right_row_centre-(p_a.x+bar*0.5f))<0.08f &&
@@ -543,6 +543,104 @@ int main() {
         read(crowded_export.json_path).find("adaptive-nonlinear-amber")!=std::string::npos &&
         read(crowded_export.svg_path).find("#e1ad59")!=std::string::npos,
         "frozen nonlinear tick color and semantics must reach exported artifacts");
+    // A dense side must grow the scrollable nonlinear axis, even when that
+    // exceeds the old global height cap. Distinct energies below 1e-7 Ha are
+    // still distinct rows; grouping is governed by verified orbital identity.
+    auto dense=std::make_shared<cov::NboSalcModel>();
+    dense->available=true;dense->dataset_id=integration.id;
+    dense->fragments.push_back({"dense-left","left",{0},0});
+    dense->fragments.push_back({"dense-right","right",{1},1});
+    for(std::size_t i=0;i<80;++i)for(unsigned side=0;side<2;++side) {
+        auto orbital=crowded->orbitals.front();
+        orbital.id="dense-"+std::to_string(side)+":"+std::to_string(i);
+        orbital.fragment_id=side?"dense-right":"dense-left";
+        orbital.subspace_id=orbital.id;orbital.atoms={side};
+        orbital.type="Val("+std::to_string(i+1)+"s)";
+        orbital.spin=cov::NboSpin::Alpha;orbital.energy_hartree=-0.4+i*2e-8;
+        dense->orbitals.push_back(orbital);
+    }
+    aomo_state.salc_model=dense;++aomo_state.revision;
+    const auto dense_view=draw_aomo(cov::NboOrbitalKind::NAO,adaptive_graph);
+    std::array<std::vector<const cov::ui::NboAomoNode*>,2> dense_sides;
+    for(const auto& node:dense_view->nodes)if(node.salc_index)
+        dense_sides[node.lane==cov::ui::NboAomoLane::Right?1:0].push_back(&node);
+    for(auto& side:dense_sides) {
+        require(side.size()==80,"dense layout dropped a real side orbital");
+        std::sort(side.begin(),side.end(),[](auto a,auto b){return a->y<b->y;});
+        for(std::size_t i=0;i<side.size();++i) {
+            require(std::abs(side[i]->x-side.front()->x)<0.08f,
+                "distinct dense side rows must stay in one column");
+            require(side[i]->energy_hartree==dense->orbitals[*side[i]->salc_index].energy_hartree,
+                "dense layout altered a source expectation");
+            if(i)require(side[i]->y-side[i-1]->y>=33.9f,
+                "dense side group spacing collapsed to satisfy a height cap");
+        }
+    }
+    require(std::abs((dense_sides[0][0]->x+dense_sides[1][0]->x+
+        dense_view->orbital_bar_width)*0.5f-dense_view->canvas_width*0.5f)<0.08f,
+        "single side columns must mirror around the central MO column");
+    // Verified irrep partners do not lose their shared stack when the global
+    // occurrence number is unknown. Distinct occurrences/scopes stay separate.
+    auto partner_model=std::make_shared<cov::NboSalcModel>();
+    partner_model->available=true;partner_model->dataset_id=integration.id;
+    partner_model->fragments={{"partners-left","left",{0,1},0},
+        {"partners-right","right",{0,1},1}};
+    auto partner_names=std::make_shared<cov::ui::NboAomoNames>();
+    for(std::size_t block=0;block<3;++block) {
+        const std::string space=block<2?"repeated-span":"other-fragment";
+        if(block!=1) {
+            cov::NboSalcSubspace subspace;subspace.id=space;
+            subspace.symmetry_verified=true;subspace.spin=cov::NboSpin::Alpha;
+            partner_model->subspaces.push_back(subspace);
+        }
+        for(std::size_t member=0;member<3;++member) {
+            auto orbital=crowded->orbitals.front();
+            orbital.id="partner-"+std::to_string(block)+":"+std::to_string(member);
+            orbital.fragment_id=block<2?"partners-left":"partners-right";
+            orbital.subspace_id=space;orbital.atoms={0,1};orbital.type="Val(2p)";
+            orbital.energy_hartree=-0.42+0.04*block+1e-6*member;
+            orbital.spin=cov::NboSpin::Alpha;orbital.symmetry_adapted=true;
+            partner_model->orbitals.push_back(orbital);
+            cov::ui::NboAomoName name;name.verified=true;name.irrep="T1u";
+            name.label="?t₁u [alpha]";name.ordinal=0;
+            name.partner_block_id="block-"+std::to_string(block);
+            name.partner_block_size=3;partner_names->salc.push_back(name);
+        }
+    }
+    aomo_state.salc_model=partner_model;aomo_state.names=partner_names;
+    aomo_state.names_model=partner_model.get();++aomo_state.revision;
+    const auto partner_view=draw_aomo(cov::NboOrbitalKind::NAO,adaptive_graph);
+    std::set<std::string> partner_ids,display_groups;
+    std::array<std::vector<const cov::ui::NboAomoNode*>,3> partners;
+    for(const auto& n:partner_view->nodes)if(n.salc_index) {
+        partners[*n.salc_index/3].push_back(&n);partner_ids.insert(n.id);
+        display_groups.insert(n.display_group_id);
+    }
+    require(partner_ids.size()==9&&display_groups.size()==3,
+        "same-label partner blocks must preserve all independent identities and scopes");
+    for(std::size_t block=0;block<3;++block) {
+        require(partners[block].size()==3,"a verified triplet lost a real member");
+        std::size_t labels=0;
+        for(const auto* n:partners[block]) {
+            labels+=!n->label.empty();
+            require(n->shell_member_count==3&&n->symmetry_ordinal==0&&
+                n->shell_label=="?t₁u [alpha]"&&n->x==partners[block][0]->x&&
+                std::abs(*n->display_energy_hartree-(-0.42+0.04*block+1e-6))<1e-12&&
+                n->energy_hartree==partner_model->orbitals[*n->salc_index].energy_hartree,
+                "unknown ordinal must not suppress a proved SALC stack or change raw values");
+            if(!n->label.empty())require(block<2?n->label_x+n->label_width<n->x:
+                n->label_x>n->x+n->width,"SALC shared labels must face outward on each side");
+        }
+        require(labels==1&&partners[block][0]->y<partners[block][1]->y&&
+            partners[block][1]->y<partners[block][2]->y,
+            "verified partners need one label and separate ordered interaction targets");
+    }
+    partner_model->orbitals[2].type="Ryd(4f)";++aomo_state.revision;
+    const auto partial_partners=draw_aomo(cov::NboOrbitalKind::NAO,adaptive_graph);
+    for(const auto& n:partial_partners->nodes)if(n.salc_index&&*n.salc_index<2)
+        require(n.shell_member_count==1&&n.display_group_id.rfind("verified-salc:",0)!=0,
+            "an incomplete filtered occurrence cannot claim a complete SALC partner stack");
+    aomo_state.salc_model=crowded;aomo_state.names.reset();++aomo_state.revision;
     adaptive_options.energy_axis_mode=cov::EnergyAxisMode::Linear;
     const auto linear_graph=cov::make_mo_diagram_view_snapshot(
         sentinel_snapshot.data,adaptive_options,3,"linear-side-fixture");
