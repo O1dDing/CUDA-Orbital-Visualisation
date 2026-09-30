@@ -52,7 +52,7 @@ v0.4 预览版加入了 NBO 分析。配合计算生成的 NBO 文件，可以�
 - [使用 NBO 结果](docs/AOMO_NBO.zh-CN.md) — v0.4 预览版
 - [一次提交准备计算文件](docs/NBO_ONE_JOB.zh-CN.md) — 源码树模板
 - [源码编译](docs/BUILD.zh-CN.md)
-- [稳定版发布说明](docs/releases/v0.3.0.md) · [预览版发布说明](docs/releases/v0.4.0-pre.1.md)
+- [稳定版发布说明](docs/releases/v0.3.0.md) · [预览版发布说明](docs/releases/v0.4.0-pre.1.md) · [旧版 v0.3 预览](https://github.com/O1dDing/Chemical-Orbital-Visualiser/releases/tag/v0.3.0-pre-archive)
 
 [反馈问题或建议功能](https://github.com/O1dDing/Chemical-Orbital-Visualiser/issues/new/choose)。
 
