@@ -1613,6 +1613,7 @@ void export_nbo_bundle(const NboDataset& d,std::size_t selected,const std::files
         if(selected<d.orbitals.size())out<<selected;else out<<"null";
         out<<",\"selected_nbo_id\":";
         if(selected<d.orbitals.size())out<<d.orbitals[selected].id;else out<<"null";
+        out<<",\"selected_nbo_scope\":\"NBO table focus; active_view identifies the current rendered orbital independently\"";
         out<<",\"selected_nbo_spin\":"<<(selected<d.orbitals.size()?json(nbo_spin_name(d.orbitals[selected].spin)):"null")
            <<",\"selected_nbo_occupation_electrons\":";
         if(selected<d.orbitals.size())out<<d.orbitals[selected].occupation;else out<<"null";
@@ -1696,7 +1697,7 @@ void export_nbo_bundle(const NboDataset& d,std::size_t selected,const std::files
         "出典：","Source : "))+source_label(d.source);
     const std::string selected_text=d.orbitals.empty()?nbo_local(language,"No NBO selected","未选择 NBO",
         "NBO 未選択","Aucune NBO sélectionnée"):
-        std::string(nbo_local(language,"Selected: NBO ","已选：NBO ","選択：NBO ","Sélection : NBO "))+
+        std::string(nbo_local(language,"NBO table: ","NBO 表：","NBO 表：","Table NBO : "))+
         std::to_string(d.orbitals[start].id)+" "+nbo_spin_ui(language,d.orbitals[start].spin)+
         " / "+fmt(d.orbitals[start].occupation)+" "+nbo_local(language,"electrons","电子","電子","électrons");
     draw_text(rgba,width,height,28,12,title,2);

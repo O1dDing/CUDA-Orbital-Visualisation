@@ -9,6 +9,21 @@
 namespace {
 using Mat=std::array<double,9>;
 void require(bool value,const char* why){if(!value)throw std::runtime_error(why);}
+void check_components(const cov::ui::NboAomoName& name,const std::vector<std::vector<double>>& source,
+    const std::vector<double>& target,const std::vector<double>& metric){
+    require(name.decomposition_verified&&!name.components.empty(),"complete source symmetry composition missing");
+    const std::size_t n=target.size();std::vector<double> sum(n,0);std::vector<std::vector<double>> vectors;
+    const auto dot=[&](const auto& a,const auto& b){double value=0;for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<n;++j)value+=a[i]*metric[i*n+j]*b[j];return value;};
+    double total=0;for(const auto& component:name.components){
+        require(component.source_coefficients.size()==name.component_source_members.size(),"component coordinate/source-ID mismatch");
+        std::vector<double> v(n,0);for(std::size_t i=0;i<component.source_coefficients.size();++i){require(name.component_source_members[i]<source.size(),"invalid component source reference");for(std::size_t a=0;a<n;++a)v[a]+=component.source_coefficients[i]*source[name.component_source_members[i]][a];}
+        require(std::abs(dot(v,v)/dot(target,target)-component.weight)<1e-10,"saved component coordinates do not reproduce its measured weight");
+        for(const auto& previous:vectors)require(std::abs(dot(v,previous))<1e-10,"saved components are not S orthogonal");
+        for(std::size_t a=0;a<n;++a)sum[a]+=v[a];vectors.push_back(v);total+=component.weight;
+    }
+    for(std::size_t a=0;a<n;++a)require(std::abs(sum[a]-target[a])<1e-10,"saved component coordinates do not reconstruct the unchanged source");
+    require(std::abs(total-1)<1e-10,"source symmetry weights are incomplete");
+}
 Mat mul(const Mat& a,const Mat& b){Mat c{};for(int i=0;i<3;++i)for(int j=0;j<3;++j)for(int k=0;k<3;++k)c[3*i+j]+=a[3*i+k]*b[3*k+j];return c;}
 Mat transpose(const Mat& a){Mat b{};for(int i=0;i<3;++i)for(int j=0;j<3;++j)b[3*i+j]=a[3*j+i];return b;}
 void shell(cov::Wavefunction& w,std::size_t atom,unsigned l,double exponent){cov::Shell s;s.atom_index=static_cast<std::uint32_t>(atom);s.angular_momentum=l;s.primitive_offset=static_cast<std::uint32_t>(w.primitives.size());s.primitive_count=1;s.basis_offset=w.basis_count;s.pure=0;w.primitives.push_back({float(exponent),1.f});w.shells.push_back(s);w.basis_count+=l==1?3:1;}
@@ -166,10 +181,37 @@ int main(){try{
     auto swapped=f;rotate(swapped,Mat{0,-1,0,1,0,0,0,0,1});std::swap(swapped.salc.operations[1],swapped.salc.operations[2]);for(auto& sub:swapped.salc.subspaces)std::swap(sub.characters[1],sub.characters[2]);compare(a,cov::ui::build_nbo_aomo_names(swapped.w,swapped.data,&swapped.salc));
     auto mixed=f;const auto x=mixed.w.orbitals[0].coefficients,y=mixed.w.orbitals[4].coefficients;const double q=.02,p=std::sqrt(1-q*q);for(std::size_t j=0;j<7;++j){mixed.w.orbitals[0].coefficients[j]=p*x[j]+q*y[j];mixed.w.orbitals[4].coefficients[j]=-q*x[j]+p*y[j];}
     const auto m=cov::ui::build_nbo_aomo_names(mixed.w,mixed.data,&mixed.salc);require(!m.canonical[0].verified&&!m.canonical[4].verified,"99.96 percent dominant weight must not certify a mixed eigenfunction");require(m.canonical[1].verified&&m.canonical[1].ordinal==0,"unknown earlier state must not silently corrupt symmetry ordinal");
+    std::vector<std::vector<double>> mixed_columns;for(const auto& mo:mixed.w.orbitals)mixed_columns.push_back(mo.coefficients);
+    check_components(m.canonical[0],mixed_columns,mixed_columns[0],mixed.w.ao_overlap);
+    require(m.canonical[0].component_source_kind=="canonical"&&!m.canonical[0].verified,"composition must not promote mixed canonical orbitals to one irrep");
+    for(const auto& component:m.canonical[0].components){if(component.irrep=="A1")require(std::abs(component.weight-.9996)<1e-12,"A1 symmetry weight wrong");if(component.irrep=="B1")require(std::abs(component.weight-.0004)<1e-12,"minor B1 symmetry weight was hidden");}
+    auto imperfect_gram=mixed;for(auto& value:imperfect_gram.w.orbitals[0].coefficients)value*=1.000003;
+    const auto gram_names=cov::ui::build_nbo_aomo_names(imperfect_gram.w,imperfect_gram.data,&imperfect_gram.salc);
+    std::vector<std::vector<double>> gram_columns;for(const auto& mo:imperfect_gram.w.orbitals)gram_columns.push_back(mo.coefficients);
+    check_components(gram_names.canonical[0],gram_columns,gram_columns[0],imperfect_gram.w.ao_overlap);
     const auto mixed_standalone=cov::ui::canonical_mo_names(mixed.w);
     require(!mixed_standalone->canonical[0].verified&&!mixed_standalone->canonical[4].verified&&
             mixed_standalone->canonical[1].verified&&mixed_standalone->canonical[1].ordinal==0,
             "standalone naming must preserve mixed-orbital and incomplete ordinal gates");
+    // Two weakly coupled pure A1 occurrences each close, but removing both
+    // leaves the mixed core with a combined leakage above the same gate. A
+    // later actual energy prefix still closes and counts all earlier copies.
+    auto prefix_fixture=mixed;prefix_fixture.w.orbitals[3].energy_hartree=.1;prefix_fixture.w.orbitals[5].energy_hartree=.3;
+    for(auto index:{3,5}){const auto a=prefix_fixture.w.orbitals[index].coefficients,b=prefix_fixture.w.orbitals[4].coefficients;
+        for(std::size_t j=0;j<a.size();++j){prefix_fixture.w.orbitals[index].coefficients[j]=std::cos(8e-5)*a[j]+std::sin(8e-5)*b[j];prefix_fixture.w.orbitals[4].coefficients[j]=-std::sin(8e-5)*a[j]+std::cos(8e-5)*b[j];}}
+    const auto prefix_names=cov::ui::build_nbo_aomo_names(prefix_fixture.w,prefix_fixture.data,&prefix_fixture.salc);
+    require(prefix_names.canonical[5].ordinal==4&&prefix_names.canonical[5].detail.find("ordinal certified by complete-group characters")!=std::string::npos,"strictly closed earlier prefix must supply all three earlier A1 occurrences despite broad connected-span bounds");
+    require(!prefix_names.canonical[0].verified&&!prefix_names.canonical[4].verified&&prefix_names.canonical[1].ordinal==0,"prefix counting must not convert mixed core members or certify an actually nonclosed earlier prefix");
+    auto unrelated_prefix=prefix_fixture;shell(unrelated_prefix.w,0,1,.3);for(auto& mo:unrelated_prefix.w.orbitals)mo.coefficients.resize(10,0);
+    unrelated_prefix.w.ao_overlap.assign(100,0);for(int i=0;i<10;++i)unrelated_prefix.w.ao_overlap[i*10+i]=1;
+    for(int i=7;i<10;++i){cov::MolecularOrbital mo;mo.coefficients.assign(10,0);mo.coefficients[i]=1;mo.energy_hartree=i==7?-.1:i==8?.4:.5;unrelated_prefix.w.orbitals.push_back(mo);}
+    unrelated_prefix.w.orbitals[7].coefficients[7]=std::cos(.02);unrelated_prefix.w.orbitals[7].coefficients[8]=std::sin(.02);
+    unrelated_prefix.w.orbitals[8].coefficients[7]=-std::sin(.02);unrelated_prefix.w.orbitals[8].coefficients[8]=std::cos(.02);
+    const auto unrelated_names=cov::ui::build_nbo_aomo_names(unrelated_prefix.w,unrelated_prefix.data,&unrelated_prefix.salc);
+    require(unrelated_names.canonical[5].ordinal==4&&unrelated_names.canonical[5].detail.find("zero target-irrep copies")!=std::string::npos&&!unrelated_names.canonical[7].verified,"a nonclosed energy cut through a verified zero-A1 B1+B2 span must not obstruct the independently closed A1 counting prefix");
+    prefix_fixture.w.orbitals[4].energy_hartree=.300001;
+    const auto nearby_mixed=cov::ui::build_nbo_aomo_names(prefix_fixture.w,prefix_fixture.data,&prefix_fixture.salc);
+    require(nearby_mixed.canonical[5].ordinal==0&&nearby_mixed.canonical[5].verified,"near-energy mixed source must block a prefix ordinal even for a verified pure target occurrence");
     auto low_mixed=mixed;low_mixed.w.orbitals[4].energy_hartree=-19;const double mild=.0003,mild_p=std::sqrt(1-mild*mild);for(std::size_t j=0;j<7;++j){low_mixed.w.orbitals[0].coefficients[j]=mild_p*x[j]+mild*y[j];low_mixed.w.orbitals[4].coefficients[j]=-mild*x[j]+mild_p*y[j];}const auto counted_core=cov::ui::build_nbo_aomo_names(low_mixed.w,low_mixed.data,&low_mixed.salc);require(!counted_core.canonical[0].verified&&!counted_core.canonical[4].verified&&counted_core.canonical[1].ordinal==2&&counted_core.canonical[2].ordinal==1,"complete invariant mixed core must supply integer counts without relabelling its individual members");
     auto reused_derived=low_mixed;
     for(const auto index:{std::size_t(0),std::size_t(4)}){
@@ -187,6 +229,8 @@ int main(){try{
     auto actual_mixed=actual_mixed_salc_span(.0003);
     const auto actual_coefficients=actual_mixed.data.orbitals;const auto actual_source_orbitals=actual_mixed.salc.orbitals;
     const auto actual_names=cov::ui::build_nbo_aomo_names(actual_mixed.w,actual_mixed.data,&actual_mixed.salc);
+    std::vector<std::vector<double>> actual_columns;for(const auto& orbital:actual_mixed.data.orbitals)actual_columns.push_back(orbital.coefficients);
+    for(std::size_t i=0;i<3;++i)check_components(actual_names.salc[i],actual_columns,actual_columns[i],actual_mixed.w.ao_overlap);
     require(actual_names.salc[0].verified&&actual_names.salc[0].irrep=="E"&&actual_names.salc[0].ordinal==0&&
         actual_names.salc[0].status=="verified_isotypic_member"&&actual_names.salc[0].partner_block_id.empty(),
         "pure source SALC in a verified mixed span needs its measured irrep without fabricated partners");
@@ -215,6 +259,28 @@ int main(){try{
     const auto failed_names=cov::ui::build_nbo_aomo_names(failed_actual.w,failed_actual.data,&failed_actual.salc);
     require(!failed_names.salc[0].verified&&failed_names.salc[0].status=="subspace_not_closed",
         "stored A1 signature must not override a present actual E column whose containing span is not closed");
+    std::vector<std::vector<double>> canonical_columns;for(const auto& mo:failed_actual.w.orbitals)canonical_columns.push_back(mo.coefficients);
+    check_components(failed_names.salc[0],canonical_columns,actual_columns[0],failed_actual.w.ao_overlap);
+    require(failed_names.salc[0].component_source_kind=="canonical"&&failed_names.salc[0].containing_members==std::vector<std::size_t>{0},"global SALC decomposition must preserve its original nonclosed local span");
+    auto shared_beta=failed_actual;shared_beta.w.orbital_occupation_model=cov::OrbitalOccupationModel::CanonicalShared;
+    for(auto& orbital:shared_beta.salc.orbitals)orbital.spin=cov::NboSpin::Beta;
+    for(auto& subspace:shared_beta.salc.subspaces)subspace.spin=cov::NboSpin::Beta;
+    const auto shared_beta_names=cov::ui::build_nbo_aomo_names(shared_beta.w,shared_beta.data,&shared_beta.salc);
+    check_components(shared_beta_names.salc[0],canonical_columns,actual_columns[0],shared_beta.w.ao_overlap);
+    require(shared_beta_names.salc[0].component_source_kind=="canonical"&&shared_beta.salc.orbitals[0].spin==cov::NboSpin::Beta,"shared spatial canonical expansion must preserve original beta SALC identity");
+    shared_beta.w.orbital_occupation_model=cov::OrbitalOccupationModel::ExplicitSpin;
+    const auto absent_beta=cov::ui::build_nbo_aomo_names(shared_beta.w,shared_beta.data,&shared_beta.salc);
+    require(!absent_beta.salc[0].decomposition_verified,"missing explicit beta basis must not be replaced by alpha solely because beta columns are absent");
+    auto metric_mixture=actual_mixed_salc_span(.5);metric_mixture.w.ao_overlap[5]=metric_mixture.w.ao_overlap[7]=3e-7;
+    const auto metric_mixture_names=cov::ui::build_nbo_aomo_names(metric_mixture.w,metric_mixture.data,&metric_mixture.salc);
+    require(metric_mixture_names.salc[1].decomposition_verified&&metric_mixture_names.salc[1].decomposition_orthogonality_error>4e-8&&metric_mixture_names.salc[1].decomposition_orthogonality_error<2e-5&&metric_mixture_names.salc[1].decomposition_weight_sum_error>4e-8,"inner-product errors must use the existing metric gate, independently from squared vector residual gates");
+    require(metric_mixture_names.salc[1].decomposition_reconstruction_residual<1e-10&&!metric_mixture_names.salc[1].verified&&metric_mixture.w.ao_overlap[5]==3e-7,"small measured metric defect must not alter S, source purity, or reconstruction");
+    metric_mixture.w.ao_overlap[5]=metric_mixture.w.ao_overlap[7]=1e-3;
+    const auto rejected_mixture=cov::ui::build_nbo_aomo_names(metric_mixture.w,metric_mixture.data,&metric_mixture.salc);
+    require(!rejected_mixture.salc[1].decomposition_verified,"metric defect beyond the original metric gate must still reject decomposition");
+    auto incomplete_global=failed_actual;incomplete_global.w.orbitals.pop_back();
+    const auto incomplete_global_names=cov::ui::build_nbo_aomo_names(incomplete_global.w,incomplete_global.data,&incomplete_global.salc);
+    require(!incomplete_global_names.salc[0].decomposition_verified&&incomplete_global_names.salc[0].components.empty(),"incomplete canonical space cannot certify nonclosed local SALC components");
     auto open=f;for(auto mo:before){mo.spin=cov::Spin::Beta;mo.energy_hartree+=.01;open.w.orbitals.push_back(mo);}const auto spin=cov::ui::build_nbo_aomo_names(open.w,open.data,&open.salc);require(spin.canonical[1].ordinal==2&&spin.canonical[8].ordinal==2&&spin.canonical[1].label.find("[alpha]")!=std::string::npos&&spin.canonical[8].label.find("[beta]")!=std::string::npos,"spin counters must be independent");
     auto unsupported=f;unsupported.salc.used_group="finite sampling subgroup of Cinfv";const auto u=cov::ui::build_nbo_aomo_names(unsupported.w,unsupported.data,&unsupported.salc);require(!u.canonical[0].verified&&!u.salc[0].verified&&u.canonical[0].label=="?","unsupported subgroup must remain unknown without inventing an irrep ordinal");
     auto ambiguous=f;ambiguous.w.atoms.push_back({"H",1,1,0,1});ambiguous.w.atoms.push_back({"H",1,-1,0,1});ambiguous.salc.operations[0].atom_permutation={0,1,2,3,4};ambiguous.salc.operations[1].atom_permutation={0,1,2,4,3};ambiguous.salc.operations[2].atom_permutation={0,2,1,3,4};ambiguous.salc.operations[3].atom_permutation={0,2,1,4,3};const auto axes=cov::ui::build_nbo_aomo_names(ambiguous.w,ambiguous.data,&ambiguous.salc);require(axes.canonical[0].verified&&axes.canonical[2].verified&&axes.salc[0].verified&&axes.canonical[2].irrep=="B2"&&!axes.canonical[2].detail.empty(),"tied molecular mirrors must use a recorded coordinate convention with x=B1/y=B2");
@@ -283,6 +349,11 @@ int main(){try{
     auto equal_copies=coupled;for(auto i:{0,1,3,4})equal_copies.w.orbitals[i].energy_hartree=-.4;
     const auto equal_names=cov::ui::build_nbo_aomo_names(equal_copies.w,equal_copies.data,&equal_copies.salc);
     require(equal_names.canonical[0].ordinal==0&&equal_names.canonical[3].ordinal==0&&equal_names.canonical[0].partner_block_size==2&&equal_names.canonical[7].ordinal==3,"independent source partner blocks do not resolve an equal-energy ordinal tie, but later total counts remain exact");
+    auto graph_copies=axial(3,false);shell(graph_copies.w,0,1,.4);graph_copies.w.ao_overlap.assign(36,0);for(int i=0;i<6;++i)graph_copies.w.ao_overlap[i*6+i]=1;
+    graph_copies.w.orbitals.clear();for(int i=0;i<6;++i){cov::MolecularOrbital mo;mo.coefficients.assign(6,0);mo.coefficients[i]=1;mo.energy_hartree=i<3?-.4:.2;graph_copies.w.orbitals.push_back(mo);}
+    const double gc=std::cos(1e-4),gs=std::sin(1e-4);graph_copies.w.orbitals[0].coefficients={gc,0,0,gs,0,0};graph_copies.w.orbitals[3].coefficients={-gs,0,0,gc,0,0};
+    const auto graph_names=cov::ui::build_nbo_aomo_names(graph_copies.w,graph_copies.data,&graph_copies.salc);
+    require(graph_names.canonical[0].containing_members.size()==4&&graph_names.canonical[0].partner_block_size==2&&graph_names.canonical[0].ordinal==1&&graph_names.canonical[3].ordinal==2,"weak same-irrep graph connections must not hide independently certified complete source copies");
     auto incomplete_copies=high_copies;incomplete_copies.salc.links.pop_back();incomplete_copies.salc.links.erase(incomplete_copies.salc.links.begin());const auto incomplete_names=cov::ui::build_nbo_aomo_names(incomplete_copies.w,incomplete_copies.data,&incomplete_copies.salc);require(incomplete_names.salc[4].ordinal==0,"missing canonical projection evidence must not certify a spectral bound");
     auto missing_metric=lin;missing_metric.w.ao_overlap.clear();const auto absent=cov::ui::build_nbo_aomo_names(missing_metric.w,missing_metric.data,&missing_metric.salc);require(!absent.canonical[3].verified,"missing S must not be guessed");
     const auto hex=axial(6,true);const auto hex_names=cov::ui::build_nbo_aomo_names(hex.w,hex.data,&hex.salc);require(hex_names.canonical[0].verified&&hex_names.canonical[0].irrep=="E1u"&&hex_names.canonical[1].ordinal==1&&hex_names.canonical[2].irrep=="A2u","Dnh must not depend on the smaller central-metal group catalogue");
@@ -293,6 +364,7 @@ int main(){try{
     require(!rejected_metric.canonical[0].verified&&rejected_metric.canonical[0].status=="symmetry_action_not_isometric"&&
         rejected_metric.canonical[0].detail.find("transformed norm error=")!=std::string::npos,
         "nonisometric action must be rejected with its measured reason, not called subspace leakage");
+    require(!rejected_metric.canonical[0].decomposition_verified&&rejected_metric.canonical[0].components.empty(),"nonisometric action must not expose apparently complete symmetry components");
     Fixture orthorhombic;
     orthorhombic.w.atoms={{"C",6,0,0,0},{"H",1,3,0,0},{"H",1,-3,0,0},{"H",1,0,1,0},{"H",1,0,-1,0},{"H",1,0,0,2},{"H",1,0,0,-2}};
     shell(orthorhombic.w,0,1,1);orthorhombic.w.ao_overlap={1,0,0,0,1,0,0,0,1};
@@ -301,5 +373,25 @@ int main(){try{
     require(native_d2h.point_group=="D2h"&&native_d2h.orbitals_labelled==3,"native D2h classifier incomplete");
     const auto d2h_names=cov::ui::canonical_mo_names(orthorhombic.w);const char* d2h_labels[]={"B3u","B2u","B1u"};
     for(std::size_t i=0;i<3;++i)require(d2h_names->canonical[i].verified&&d2h_names->canonical[i].ordinal==1&&d2h_names->canonical[i].irrep==d2h_labels[i]&&orthorhombic.w.orbitals[i].symmetry==d2h_labels[i],"native/standalone D2h axis convention mismatch");
+    auto atom=axial(3,false);atom.w.atoms.resize(1);for(auto& mo:atom.w.orbitals)mo.energy_hartree=-.4;
+    const auto atomic=cov::ui::build_nbo_aomo_names(atom.w,{},nullptr);
+    for(const auto& name:atomic.canonical)require(name.verified&&name.irrep=="p"&&name.point_group=="SO(3)"&&name.ordinal==1&&name.partner_block_size==3&&name.ordinal_scope.find("not principal n")!=std::string::npos,"single atom must use continuous angular evidence and explicit radial-copy numbering");
+    auto atomic_partial=atom.w;atomic_partial.orbitals.resize(1);const auto atomic_partial_names=cov::ui::build_nbo_aomo_names(atomic_partial,{},nullptr);
+    require(atomic_partial_names.canonical[0].verified&&atomic_partial_names.canonical[0].irrep=="p"&&atomic_partial_names.canonical[0].ordinal==0&&atomic_partial_names.canonical[0].partner_block_id.empty()&&atomic_partial_names.canonical[0].decomposition_verified,"pure atomic l does not require a complete radial partner block or a principal n");
+    shell(atom.w,0,0,.4);atom.w.ao_overlap.assign(16,0);for(int i=0;i<4;++i)atom.w.ao_overlap[i*4+i]=1;for(auto& mo:atom.w.orbitals)mo.coefficients.resize(4,0);
+    cov::MolecularOrbital atom_s;atom_s.coefficients={0,0,0,1};atom_s.energy_hartree=.2;atom.w.orbitals.push_back(atom_s);
+    const auto atom_before=atom.w.orbitals;const double ac=std::sqrt(.75),am=.5;
+    atom.w.orbitals[2].coefficients={0,0,ac,am};atom.w.orbitals[3].coefficients={0,0,-am,ac};
+    const auto angular_mixed=cov::ui::build_nbo_aomo_names(atom.w,{},nullptr);
+    std::vector<std::vector<double>> atomic_columns;for(const auto& mo:atom.w.orbitals)atomic_columns.push_back(mo.coefficients);
+    check_components(angular_mixed.canonical[2],atomic_columns,atomic_columns[2],atom.w.ao_overlap);
+    require(!angular_mixed.canonical[2].verified&&angular_mixed.canonical[2].point_group=="SO(3)","mixed atomic s/p vector must retain global composition without a fake finite-group irrep");
+    for(const auto& component:angular_mixed.canonical[2].components){if(component.irrep=="s")require(std::abs(component.weight-.25)<1e-12,"atomic s projection weight wrong");if(component.irrep=="p")require(std::abs(component.weight-.75)<1e-12,"atomic p projection weight wrong");}
+    cov::NboIntegration atom_data;cov::NboSalcModel atom_salc;atom_salc.orbitals.resize(4);
+    for(std::size_t i=0;i<4;++i){cov::NboOrbitalDescriptor descriptor;descriptor.ref={cov::NboOrbitalKind::NAO,cov::NboSpin::Total,i};descriptor.coefficients=atomic_columns[i];atom_data.orbitals.push_back(descriptor);atom_salc.orbitals[i].terms={{descriptor.ref,1}};atom_salc.orbitals[i].energy_hartree=atom.w.orbitals[i].energy_hartree;}
+    atom.w.orbitals=atom_before;const auto atomic_salc_names=cov::ui::build_nbo_aomo_names(atom.w,atom_data,&atom_salc);
+    std::vector<std::vector<double>> atomic_source;for(const auto& mo:atom.w.orbitals)atomic_source.push_back(mo.coefficients);
+    check_components(atomic_salc_names.salc[2],atomic_source,atomic_columns[2],atom.w.ao_overlap);
+    require(atomic_salc_names.salc[2].component_source_kind=="canonical"&&!atomic_salc_names.salc[2].verified,"atomic SALC composition must work without a fabricated finite-operation frame");
     std::cout<<"AO/MO names evidence and invariance smoke passed\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

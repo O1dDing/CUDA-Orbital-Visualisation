@@ -2,6 +2,7 @@
 #include "cov/orbital_ui.hpp"
 #include "cov/nbo_ui.hpp"
 #include "cov/nbo_aomo_labels.hpp"
+#include "cov/orbital_symmetry_components.hpp"
 #include "cov/validation.hpp"
 #include <imgui.h>
 #include <cmath>
@@ -30,10 +31,41 @@ inline const char* inspection_text(Language language,const char* en,const char* 
         case Language::Japanese:return ja;case Language::French:return fr;default:return en;}
 }
 inline std::string inspection_glyph_seed() {
-    return "当前检视源轨道带系数分量部分和组合叠加系数成分范数平方归一化目标 "
+    return "对称性组成显示成分返回正则轨道返回源 "
+        "対称性の組成成分を表示正準軌道に戻る元に戻る Composition de symétrie Afficher Retour MO Retour source "
+        "当前检视源轨道带系数分量部分和组合叠加系数成分范数平方归一化目标 "
         "現在の表示元の軌道重み付き成分部分和組合せ重ね表示係数成分ノルムの二乗正規化対象 "
         "Inspection actuelle Orbitales sources Composante pondérée Somme partielle Combinaison "
         "Superposition Coefficient Norme au carré Normalisation Cible";
+}
+inline void draw_symmetry_composition(const Wavefunction& canonical,const NboAomoName* name,
+    const OrbitalUIState& state,Language language,std::optional<std::size_t> canonical_index,
+    std::optional<std::size_t> salc_index={},bool interactive=true) {
+    if(!name || !name->decomposition_verified || name->verified)return;
+    ImGui::TextUnformatted(inspection_text(language,"Symmetry composition","对称性组成",
+        "対称性の組成","Composition de symétrie"));
+    if(!name->point_group.empty())ImGui::SameLine(),ImGui::TextUnformatted(point_group_display(name->point_group).c_str());
+    validation::field("details.symmetry.composition",serialize_orbital_name_json(*name));
+    for(std::size_t i=0;i<name->components.size();++i) {
+        const auto& part=name->components[i];
+        // Only suppress numerical dust in the visible list; every coefficient
+        // and weight, including these entries, remains in structured exports.
+        if(part.weight<1e-10)continue;
+        NboAomoName display;display.verified=true;display.irrep=part.irrep;display.point_group=name->point_group;
+        ImGui::PushID(static_cast<int>(i));
+        ImGui::Text("%s: %.8g%%",orbital_irrep_display_label(display).c_str(),100*part.weight);
+        if(interactive && state.nbo_ui) {
+            const auto selected=symmetry_component_selection(canonical,state.nbo_ui->integration,
+                state.nbo_ui->aomo.salc_model.get(),*name,i,canonical_index,salc_index);
+            if(selected) {
+                ImGui::SameLine();
+                if(ImGui::SmallButton(inspection_text(language,"Show component","显示成分",
+                    "成分を表示","Afficher")))state.nbo_ui->aomo.pending_selection=*selected;
+                validation::item("details.symmetry.component."+std::to_string(i));
+            }
+        }
+        ImGui::PopID();
+    }
 }
 inline void draw_inspection_details(const Wavefunction& canonical,OrbitalUIState& state,
                                     Language language) {
@@ -44,9 +76,11 @@ inline void draw_inspection_details(const Wavefunction& canonical,OrbitalUIState
     const auto* model=state.nbo_ui?state.nbo_ui->aomo.salc_model.get():nullptr;
     const NboSalcOrbital* side=nullptr;
     const NboAomoName* name=nullptr;
+    std::optional<std::size_t> side_index;
     if(s && model && s->dataset_id==model->dataset_id && !s->source_id.empty()){
         for(std::size_t i=0;i<model->orbitals.size();++i)if(model->orbitals[i].id==s->source_id){
             side=&model->orbitals[i];
+            side_index=i;
             if(state.nbo_ui->aomo.names && i<state.nbo_ui->aomo.names->salc.size())
                 name=&state.nbo_ui->aomo.names->salc[i];
             break;
@@ -88,6 +122,19 @@ inline void draw_inspection_details(const Wavefunction& canonical,OrbitalUIState
     if(base_side && name && name->verified && !name->irrep.empty()) {
         ImGui::Text("%s: %s",tr(Text::Symmetry,language),orbital_irrep_display_label(*name).c_str());
         if(!name->point_group.empty())ImGui::TextUnformatted(point_group_display(name->point_group).c_str());
+    }
+    if(base_side && side_index)draw_symmetry_composition(canonical,name,state,language,{},side_index);
+    if(s && is_symmetry_component(*s) && s->target_canonical_index && state.nbo_ui) {
+        if(ImGui::Button(inspection_text(language,"Return to source MO","返回正则轨道",
+            "正準軌道に戻る","Retour MO")))
+            state.nbo_ui->focus.pending_canonical_selection=*s->target_canonical_index;
+        validation::item("details.symmetry.return-canonical");
+    }
+    if(s && s->semantic_kind=="salc_symmetry_component" && side_index && model && state.nbo_ui) {
+        if(ImGui::Button(inspection_text(language,"Return to source SALC","返回源 SALC",
+            "元の SALC に戻る","Retour SALC source")))
+            state.nbo_ui->aomo.pending_selection=nbo_salc_selection(*model,*side_index);
+        validation::item("details.symmetry.return-salc");
     }
     if(state.inspection && state.inspection->selection.dataset_id==view.source_id){
         for(std::size_t i=0;i<state.inspection->metric_norm2.size();++i)

@@ -530,6 +530,7 @@ void draw_level_details(const MODiagramData& data,
         labelled_value(orbital_tr(OrbitalText::PointGroup,language),
                        point_group_display(verified_name->point_group),kSymmetryColour);
     // The row may additionally have a local coordination interpretation.
+    draw_symmetry_composition(wavefunction,verified_name,state,language,metadata.orbital_index);
     // It is retained as a separate scope, never substituted for the full MO.
     draw_symmetry_scope_details(level.metadata.symmetry_view,wavefunction,language,"details.local-symmetry");
     ImGui::Separator();
@@ -730,6 +731,8 @@ void draw_level_tooltip(const MODiagramData& data,
         canonical_name_for(wavefunction,orbital_index,state));
     if(usable_symmetry_text(symmetry))
         labelled_value(aomo_text(language,"Full MO symmetry"),symmetry,kSymmetryColour);
+    draw_symmetry_composition(wavefunction,canonical_name_for(wavefunction,orbital_index,state),
+        state,language,orbital_index,{},false);
     if(orbital_index<data.annotations.size()) {
         const auto& annotation=data.annotations[orbital_index];
         labelled_value(aomo_text(language,"All-pair angular character"),
@@ -1107,6 +1110,14 @@ void draw_diagram_details_window(const MODiagramData& data,
             draw_level_details(data,data.levels[*row],wavefunction,state,language,selected_index);
         } else if(selected_index<wavefunction.orbitals.size()) {
             ImGui::TextUnformatted(displayed_canonical_name(wavefunction,selected_index,state).c_str());
+            const auto* name=canonical_name_for(wavefunction,selected_index,state);
+            const auto& source=wavefunction.orbitals[selected_index];
+            labelled_number(tr(Text::ExactEnergy,language),format_energy(source.energy_hartree,state.energy_unit,8));
+            if(source.occupation_provenance!=DataProvenance::Unavailable)
+                labelled_number(tr(Text::Occupation,language),fixed_number(source.occupation,6));
+            if(name && name->verified)
+                labelled_value(aomo_text(language,"Full MO symmetry"),orbital_irrep_display_label(*name),kSymmetryColour);
+            draw_symmetry_composition(wavefunction,name,state,language,selected_index);
             ImGui::TextWrapped("%s",orbital_tr(OrbitalText::OrbitalDetailsOutsideDiagram,language));
         }
         ImGui::Separator();

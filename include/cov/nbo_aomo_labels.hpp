@@ -4,11 +4,22 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <limits>
 
 namespace cov::ui {
 struct NboIrrepContent {
     std::string irrep;
     std::size_t dimension=0,multiplicity=0;
+};
+struct NboIrrepComponent {
+    std::string irrep;
+    std::size_t dimension=0;
+    // Squared S norm divided by the unchanged source column's squared S norm.
+    // This is symmetry composition, not an occupation or a probability.
+    double weight=0;
+    // Unnormalised projected component in component_source_members order. Summing
+    // the reconstructed components recovers the unchanged source column.
+    std::vector<double> source_coefficients;
 };
 struct NboAomoName {
     std::string label, irrep;
@@ -34,6 +45,17 @@ struct NboAomoName {
     std::string status,ordinal_scope;
     std::size_t complete_set_ordinal=0;
     std::optional<double> projection_residual;
+    bool decomposition_verified=false;
+    std::string decomposition_status;
+    // S-norm amplitude and source-normalised scalar errors, respectively.
+    double decomposition_reconstruction_residual=std::numeric_limits<double>::quiet_NaN();
+    double decomposition_orthogonality_error=std::numeric_limits<double>::quiet_NaN();
+    double decomposition_weight_sum_error=std::numeric_limits<double>::quiet_NaN();
+    std::vector<NboIrrepComponent> components;
+    // Separate from the original containing span: a non-closed local SALC can
+    // have a global composition reconstructed in the full canonical basis.
+    std::string component_source_kind;
+    std::vector<std::size_t> component_source_members;
 };
 struct NboAomoNames {
     std::vector<NboAomoName> canonical, salc;

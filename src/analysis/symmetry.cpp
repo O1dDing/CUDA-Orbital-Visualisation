@@ -1,5 +1,7 @@
 #include "cov/symmetry.hpp"
 #include "cov/point_group_irreps.hpp"
+#include <Eigen/SVD>
+#include <Eigen/LU>
 
 #include <algorithm>
 #include <array>
@@ -266,37 +268,86 @@ bool is_linear_geometry(const std::vector<Vec3>& positions,
     return true;
 }
 
-std::vector<Vec3> candidate_axes(const std::vector<Vec3>& positions,
-                                 const SymmetryOptions& options) {
+double determinant(const Mat3&);
+Vec3 fixed_axis(const Mat3&);
+
+bool refine_pair_operation(const Wavefunction& w,const std::vector<Vec3>& positions,
+                           Mat3& matrix,const double tolerance) {
+    const double desired_determinant=determinant(matrix)>0?1.0:-1.0;
+    // Rounded anchors can amplify their individual coordinate errors. Use the
+    // tentative same-element correspondence to fit ALL atoms. The wider radius
+    // is only for proposing correspondences; it never accepts an operation.
+    for(int iteration=0;iteration<2;++iteration) {
+        std::vector<std::size_t> permutation;double error=0;
+        if(!validate_operation(w,positions,matrix,4*tolerance,permutation,error))return false;
+        Eigen::Matrix3d covariance=Eigen::Matrix3d::Zero();
+        for(std::size_t i=0;i<positions.size();++i) {
+            const auto& source=positions[i];const auto& target=positions[permutation[i]];
+            for(int row=0;row<3;++row)for(int col=0;col<3;++col)covariance(row,col)+=target[row]*source[col];
+        }
+        Eigen::JacobiSVD<Eigen::Matrix3d> decomposition(covariance,Eigen::ComputeFullU|Eigen::ComputeFullV);
+        if(decomposition.info()!=Eigen::Success)return false;
+        Eigen::Matrix3d sign=Eigen::Matrix3d::Identity();
+        sign(2,2)=desired_determinant*(decomposition.matrixU()*decomposition.matrixV().transpose()).determinant();
+        const Eigen::Matrix3d fitted=decomposition.matrixU()*sign*decomposition.matrixV().transpose();
+        if(!fitted.allFinite())return false;
+        for(int row=0;row<3;++row)for(int col=0;col<3;++col)matrix[3*row+col]=fitted(row,col);
+        if(validate_operation(w,positions,matrix,tolerance,permutation,error))return true;
+    }
+    return false;
+}
+
+std::vector<Vec3> candidate_axes(const Wavefunction& w,
+                                 const std::vector<Vec3>& positions,
+                                 const double tolerance,const bool refine) {
     std::vector<Vec3> axes;
-    axes.reserve(std::min<std::size_t>(options.maximum_candidate_axes, 256));
-
-    add_axis(axes, {1.0, 0.0, 0.0}, options.maximum_candidate_axes);
-    add_axis(axes, {0.0, 1.0, 0.0}, options.maximum_candidate_axes);
-    add_axis(axes, {0.0, 0.0, 1.0}, options.maximum_candidate_axes);
-
-    for (const auto& p : positions) add_axis(axes, p, options.maximum_candidate_axes);
-
-    // A threefold face axis need not pass through an atom or bisect two atom
-    // vectors (e.g. octahedral waters). Equilateral orbit triangles supply its
-    // normal without a molecule-specific Cartesian diagonal assumption.
-    double radius=0;for(const auto& p:positions)radius=std::max(radius,norm(p));
-    const double tolerance=std::max(options.absolute_tolerance_bohr,
-        options.relative_tolerance*std::max(1.0,radius));
-    for(std::size_t i=0;i<positions.size()&&axes.size()<options.maximum_candidate_axes;++i)
-        for(std::size_t j=i+1;j<positions.size()&&axes.size()<options.maximum_candidate_axes;++j)
-            for(std::size_t k=j+1;k<positions.size()&&axes.size()<options.maximum_candidate_axes;++k){
-                const auto a=sub(positions[j],positions[i]),b=sub(positions[k],positions[i]);
-                const double ab=norm(a),ac=norm(b),bc=norm(sub(positions[k],positions[j]));
-                if(ab>tolerance&&std::max({ab,ac,bc})-std::min({ab,ac,bc})<4*tolerance)
-                    add_axis(axes,cross(a,b),options.maximum_candidate_axes);
+    const std::size_t n=positions.size();
+    // An orthogonal symmetry is determined by the images of any two independent
+    // centred vectors and the sign of their normal. Enumerating those atom-pair
+    // images is complete for a nonlinear geometry; a truncated collection of
+    // atom/pair/triangle axes is not. Maximal area improves frame conditioning.
+    std::size_t first=n,second=n;double area=0;
+    for(std::size_t i=0;i<n;++i)for(std::size_t j=i+1;j<n;++j) {
+        const double candidate=norm2(cross(positions[i],positions[j]));
+        if(candidate>area) {area=candidate;first=i;second=j;}
+    }
+    if(first==n)return axes;
+    const double r1=norm(positions[first]),r2=norm(positions[second]);
+    Vec3 x=scale(positions[first],1/r1);
+    Vec3 y=sub(positions[second],scale(x,dot(x,positions[second])));
+    if(!normalize(y))return axes;const Vec3 z=cross(x,y);
+    const std::array<Vec3,3> source{x,y,z};
+    const double source_cosine=dot(positions[first],positions[second])/(r1*r2);
+    // This is only a proposal filter. Every resulting operation still has to
+    // map all original atoms within the unchanged recorded geometry tolerance.
+    const double angle_proposal_tolerance=2*tolerance*(1/r1+1/r2);
+    const double roundoff=64*std::numeric_limits<double>::epsilon()*std::max({1.0,r1,r2});
+    for(std::size_t i=0;i<n;++i) {
+        if(w.atoms[i].atomic_number!=w.atoms[first].atomic_number)continue;
+        const double a=norm(positions[i]);if(std::abs(a-r1)>tolerance+roundoff||a<=roundoff)continue;
+        for(std::size_t j=0;j<n;++j) {
+            if(i==j||w.atoms[j].atomic_number!=w.atoms[second].atomic_number)continue;
+            const double b=norm(positions[j]);if(std::abs(b-r2)>tolerance+roundoff||b<=roundoff)continue;
+            if(std::abs(dot(positions[i],positions[j])/(a*b)-source_cosine)>angle_proposal_tolerance)continue;
+            Vec3 u=scale(positions[i],1/a),v=sub(positions[j],scale(u,dot(u,positions[j])));
+            if(!normalize(v))continue;const Vec3 normal=cross(u,v);
+            for(int sign:{1,-1}) {
+                const std::array<Vec3,3> target{u,v,scale(normal,double(sign))};
+                Mat3 matrix{};
+                for(int row=0;row<3;++row)for(int col=0;col<3;++col)for(int k=0;k<3;++k)
+                    matrix[3*row+col]+=target[k][row]*source[k][col];
+                if(refine) {
+                    if(!refine_pair_operation(w,positions,matrix,tolerance))continue;
+                } else {
+                    std::vector<std::size_t> permutation;double error=0;
+                    if(!validate_operation(w,positions,matrix,tolerance,permutation,error))continue;
+                }
+                // A proper operation fixes its rotation axis; an improper
+                // operation negates it. Identity/inversion have no unique axis.
+                if(determinant(matrix)<0)for(auto& value:matrix)value=-value;
+                const auto axis=fixed_axis(matrix);
+                add_axis(axes,axis,std::numeric_limits<std::size_t>::max());
             }
-
-    for (std::size_t i = 0; i < positions.size() && axes.size() < options.maximum_candidate_axes; ++i) {
-        for (std::size_t j = i + 1; j < positions.size() && axes.size() < options.maximum_candidate_axes; ++j) {
-            add_axis(axes, cross(positions[i], positions[j]), options.maximum_candidate_axes);
-            add_axis(axes, add(positions[i], positions[j]), options.maximum_candidate_axes);
-            add_axis(axes, sub(positions[i], positions[j]), options.maximum_candidate_axes);
         }
     }
     return axes;
@@ -476,8 +527,8 @@ bool complete_consistent_operations(MolecularSymmetry& result,const Wavefunction
 
 } // namespace
 
-MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
-                                             const SymmetryOptions& options) {
+static MolecularSymmetry analyse_molecular_symmetry_impl(const Wavefunction& wavefunction,
+                                             const SymmetryOptions& options,const bool refine) {
     MolecularSymmetry result;
     if (wavefunction.atoms.empty()) return result;
 
@@ -520,7 +571,7 @@ MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
         return result;
     }
 
-    const auto axes = candidate_axes(positions, options);
+    const auto axes = candidate_axes(wavefunction,positions,result.tolerance_bohr,refine);
     std::vector<RotationAxis> rotation_axes;
     std::vector<ImproperAxis> improper_axes;
     std::vector<ReflectionPlane> planes;
@@ -664,6 +715,21 @@ MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
     }
 
     return result;
+}
+
+MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
+                                             const SymmetryOptions& options) {
+    auto direct=analyse_molecular_symmetry_impl(wavefunction,options,false);
+    if(wavefunction.atoms.size()<2||direct.linear)return direct;
+    auto fitted=analyse_molecular_symmetry_impl(wavefunction,options,true);
+    // Least-squares fitting can find valid evidence that noisy anchors missed,
+    // but can also move away from an already valid minimax frame. Keep both
+    // independently verified full groups; fitting never discards direct proof.
+    if(!direct.available())return fitted;
+    if(!fitted.available())return direct;
+    if(fitted.operations.size()>direct.operations.size()||
+       (fitted.operations.size()==direct.operations.size()&&fitted.max_mapping_error_bohr<direct.max_mapping_error_bohr))return fitted;
+    return direct;
 }
 
 void derive_point_group_from_geometry(Wavefunction& wavefunction,

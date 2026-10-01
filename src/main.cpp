@@ -13,6 +13,7 @@
 #include "cov/chemistry_route.hpp"
 #include "cov/orbital_tracking.hpp"
 #include "cov/nbo_aomo_labels.hpp"
+#include "cov/orbital_symmetry_components.hpp"
 #include "cov/nbo_aomo_text.hpp"
 #include "cov/orbital_ui.hpp"
 #include "cov/ui.hpp"
@@ -387,6 +388,14 @@ int main(int argc, char** argv) {
                         &nbo_ui.aomo.names->canonical[index]:nullptr;
                     view.label=cov::ui::canonical_mo_display_label(*wavefunction,index,name);
                     if(name){view.display_name_metadata_json=cov::ui::serialize_orbital_name_json(*name);if(name->verified)view.display_name_evidence=name->detail;}
+                } else if(selected.semantic_kind=="canonical_symmetry_component" &&
+                          selected.target_canonical_index && wavefunction) {
+                    const auto names=nbo_ui.aomo.names?nbo_ui.aomo.names:cov::ui::canonical_mo_names(*wavefunction);
+                    const auto index=*selected.target_canonical_index;
+                    if(names && index<names->canonical.size()) {
+                        view.display_name_metadata_json=cov::ui::serialize_orbital_name_json(names->canonical[index]);
+                        view.display_name_evidence=names->canonical[index].decomposition_status;
+                    }
                 } else if(nbo_ui.aomo.salc_model && nbo_ui.aomo.names &&
                           selected.dataset_id==nbo_ui.aomo.salc_model->dataset_id &&
                           !selected.source_id.empty()) {
@@ -395,6 +404,11 @@ int main(int argc, char** argv) {
                         if(model.orbitals[i].id==selected.source_id) {
                             const auto& name=nbo_ui.aomo.names->salc[i];
                             view.display_name_metadata_json=cov::ui::serialize_orbital_name_json(name);
+                            if(selected.semantic_kind=="salc_symmetry_component") {
+                                view.spin=model.orbitals[i].spin;
+                                view.spin_semantics="source SALC spin; source_spin and signed terms identify the verified spatial reconstruction basis";
+                                view.display_name_evidence=name.decomposition_status;
+                            }
                             if(selected.semantic_kind=="salc" || selected.semantic_kind=="spin_averaged_spatial_orbital") {
                                 if(nbo_ui.aomo.drawn_snapshot && nbo_ui.aomo.drawn_snapshot->integration_id==selected.dataset_id)
                                     for(const auto& node:nbo_ui.aomo.drawn_snapshot->nodes)
@@ -507,7 +521,8 @@ int main(int argc, char** argv) {
             const bool single_inspection=inspection && inspection->selection.terms.size()==1;
             const auto* descriptor=single_inspection && integration?
                 cov::nbo_orbital(*integration,inspection->selection.terms[0].orbital):nullptr;
-            const bool canonical_inspection=descriptor && descriptor->ref.kind==cov::NboOrbitalKind::Canonical;
+            const bool canonical_inspection=inspection && inspection->selection.mode==cov::NboSelectionMode::Orbital &&
+                descriptor && descriptor->ref.kind==cov::NboOrbitalKind::Canonical;
             const bool direct_canonical=wavefunction && wavefunction->source==cov::WavefunctionSource::Fchk &&
                 (!inspection || canonical_inspection) && !nbo_active;
             cov::validation::orbital_identity(
@@ -708,8 +723,15 @@ int main(int argc, char** argv) {
         };
 
         auto apply_selection = [&](const cov::NboOrbitalSelection& selection) {
-            if(!integration || !wavefunction) throw std::runtime_error("No verified orbital data is attached");
-            auto next=std::make_unique<cov::NboSelectionView>(cov::make_nbo_selection_view(*integration,*wavefunction,selection));
+            if(!wavefunction) throw std::runtime_error("No canonical wavefunction is loaded");
+            std::optional<cov::NboIntegration> canonical_components;
+            const cov::NboIntegration* source=integration?&*integration:nullptr;
+            if(!source && selection.semantic_kind=="canonical_symmetry_component") {
+                canonical_components=cov::ui::canonical_component_dataset(*wavefunction);
+                source=&*canonical_components;
+            }
+            if(!source)throw std::runtime_error("No verified orbital data is attached");
+            auto next=std::make_unique<cov::NboSelectionView>(cov::make_nbo_selection_view(*source,*wavefunction,selection));
             if(!next->available || next->wavefunction.orbitals.empty())
                 throw std::runtime_error(next->detail.empty()?next->status:next->detail);
             auto next_evaluator=std::make_unique<cov::CudaOrbitalEvaluator>(next->wavefunction);
@@ -1096,7 +1118,7 @@ int main(int argc, char** argv) {
                 // Translate presentation only; inspection identities and the actual signed field stay intact.
                 if(inspection) {
                     const auto& selected=inspection->selection;
-                    if(selected.spatial_spin)
+                    if(selected.spatial_spin || cov::ui::is_symmetry_component(selected))
                         label=selected.label;
                     else if(selected.mode==cov::NboSelectionMode::Orbital && selected.terms.size()==1 &&
                        selected.terms[0].orbital.kind==cov::NboOrbitalKind::Canonical)

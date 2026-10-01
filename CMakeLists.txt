@@ -39,6 +39,7 @@ add_library(cov_parser
     src/analysis/overlap_basis.cpp
     src/metric_subspace.cpp
     src/local_angular_generators.cpp
+    src/analysis/atomic_orbital_symmetry.cpp
     src/local_angular_projection.cpp
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
@@ -174,6 +175,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
         src/ui/nbo_ui.cpp
         src/ui/nbo_aomo_ui.cpp
         src/ui/nbo_aomo_labels.cpp
+        src/ui/orbital_symmetry_components.cpp
         src/ui/nbo_aomo_hover.cpp
         src/ui/nbo_aomo_text.cpp
         src/ui/ui_text_dispatch.cpp
@@ -569,6 +571,17 @@ if(COV_BUILD_TESTS)
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
     add_test(NAME mo_diagram_snapshot_smoke COMMAND cov_mo_diagram_snapshot_smoke)
     add_executable(cov_nbo_aomo_labels_smoke tests/nbo_aomo_labels_smoke.cpp)
+    add_executable(cov_atomic_orbital_symmetry_smoke tests/atomic_orbital_symmetry_smoke.cpp)
+    target_link_libraries(cov_atomic_orbital_symmetry_smoke PRIVATE cov_parser)
+    target_compile_options(cov_atomic_orbital_symmetry_smoke PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
+    add_test(NAME atomic_orbital_symmetry_smoke COMMAND cov_atomic_orbital_symmetry_smoke)
+    add_executable(cov_orbital_symmetry_components_smoke tests/orbital_symmetry_components_smoke.cpp)
+    add_executable(cov_orbital_symmetry_components_probe tests/orbital_symmetry_components_probe.cpp)
+    target_link_libraries(cov_orbital_symmetry_components_probe PRIVATE cov_ui)
+    target_compile_options(cov_orbital_symmetry_components_probe PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
+    target_link_libraries(cov_orbital_symmetry_components_smoke PRIVATE cov_ui)
+    target_compile_options(cov_orbital_symmetry_components_smoke PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
+    add_test(NAME orbital_symmetry_components_smoke COMMAND cov_orbital_symmetry_components_smoke)
     target_link_libraries(cov_nbo_aomo_labels_smoke PRIVATE cov_ui)
     target_compile_options(cov_nbo_aomo_labels_smoke PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
