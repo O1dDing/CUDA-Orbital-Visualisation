@@ -428,6 +428,13 @@ std::string orbital_label(const std::string& irrep){
     for(const auto& [upper,lower]:symbols)if(label.starts_with(upper)){label.replace(0,std::string(upper).size(),lower);break;}
     return label;
 }
+std::string numbered_orbital_label(const NboAomoName& name){
+    const auto irrep=orbital_label(name.irrep);
+    if(!name.ordinal)return irrep;
+    // Atomic copy order is not the principal quantum number in n-l notation.
+    if(name.point_group=="SO(3)")return irrep+"#"+std::to_string(name.ordinal);
+    return std::to_string(name.ordinal)+irrep;
+}
 void assign_ordinals(std::vector<Unit> units,std::vector<NboAomoName>& names){
     for(auto& u:units)if(u.copies_resolved&&u.energy_available&&std::isfinite(u.energy)&&(!u.irrep.empty()||u.scope.starts_with("canonical ")))u.lower=u.upper=u.energy;
     for(std::size_t target=0;target<units.size();++target){const auto& u=units[target];if(u.irrep.empty()||u.counting_only)continue;
@@ -504,7 +511,7 @@ void atomic_name_rows(const Wavefunction& target,const AtomicOrbitalSymmetryResu
         if(!retained&&salc){const auto local=assignment.partner_block_verified?assignment.containing_members:std::vector<std::size_t>{i};retained=retain_atomic_components(target,i,assignment,target,local,"salc",name);}
         if(!retained)name.decomposition_status=assignment.decomposition_verified?"atomic_component_source_reconstruction_unavailable":assignment.status;
         if(!salc)name.label=canonical_mo_display_label(target,i,&name);
-        else name.label=(name.verified?(name.ordinal?std::to_string(name.ordinal):std::string{})+name.irrep+" ":std::string{})+"[SALC "+std::to_string(i+1)+"]";
+        else name.label=(name.verified?numbered_orbital_label(name)+" ":std::string{})+"[SALC "+std::to_string(i+1)+"]";
     }
 }
 NboAomoNames atomic_names(const Wavefunction& w,const NboIntegration& data,const NboSalcModel* salc){
@@ -792,7 +799,7 @@ NboAomoNames nbo_aomo_names_for_view(const Wavefunction& w,const NboAomoNames& s
             name.detail+="; display ordinal in "+scope+": verified visible occurrences ordered by mean energy; exact ties use stable source identity (display convention)";}}
         for(auto i:selected){if(i>=names.size())continue;auto& name=names[i];if(!name.verified)continue;
             if(!side)name.label=canonical_mo_display_label(w,i,&name);
-            else {name.label=(name.ordinal?std::to_string(name.ordinal):"")+orbital_label(name.irrep);if(!name.ordinal)name.label+=" [SALC "+std::to_string(i+1)+"]";
+            else {name.label=numbered_orbital_label(name);if(!name.ordinal)name.label+=" [SALC "+std::to_string(i+1)+"]";
                 if(model&&model->orbitals[i].spin!=NboSpin::Total)name.label+=" ["+std::string(nbo_spin_name(model->orbitals[i].spin))+"]";}
         }
     };
@@ -846,7 +853,7 @@ std::string canonical_mo_display_label(const Wavefunction& w,std::size_t index,c
     const auto standalone=name?std::shared_ptr<const NboAomoNames>{}:canonical_mo_names(w);
     if(!name&&standalone&&index<standalone->canonical.size())name=&standalone->canonical[index];
     if(name&&name->verified&&name->ordinal&&!name->irrep.empty()){
-        auto label=std::to_string(name->ordinal)+orbital_label(name->irrep);
+        auto label=numbered_orbital_label(*name);
         const bool explicit_spin=w.orbital_occupation_model==OrbitalOccupationModel::ExplicitSpin||
             std::any_of(w.orbitals.begin(),w.orbitals.end(),[](const auto& o){return o.spin==Spin::Beta;});
         if(explicit_spin)

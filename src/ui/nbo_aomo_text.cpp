@@ -4,6 +4,7 @@ namespace cov::ui {
 namespace {
 const char* const rows[][4]={
     {"Full MO symmetry","完整 MO 对称性","MO 全体の対称性","Symétrie de l’OM entière"},
+    {"Rotation group","旋转群","回転群","Groupe de rotations"},
     {"Local coordination symmetry","局部配位对称性","局所配位の対称性","Symétrie de coordination locale"},
     {"All-pair angular character","各原子对的综合角向成分","全原子対の角成分","Caractère angulaire de l’ensemble des paires"},
     {"All-pair bonding character","各原子对的综合成键作用","全原子対の結合性","Caractère liant de l’ensemble des paires"},

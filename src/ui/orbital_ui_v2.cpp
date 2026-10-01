@@ -527,7 +527,7 @@ void draw_level_details(const MODiagramData& data,
     }
     if(usable_symmetry_text(displayed_symmetry) && verified_name &&
        verified_name->verified && !verified_name->point_group.empty())
-        labelled_value(orbital_tr(OrbitalText::PointGroup,language),
+        labelled_value(verified_name->point_group=="SO(3)"?aomo_text(language,"Rotation group"):orbital_tr(OrbitalText::PointGroup,language),
                        point_group_display(verified_name->point_group),kSymmetryColour);
     // The row may additionally have a local coordination interpretation.
     draw_symmetry_composition(wavefunction,verified_name,state,language,metadata.orbital_index);

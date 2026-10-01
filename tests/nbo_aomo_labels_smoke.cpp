@@ -376,6 +376,9 @@ int main(){try{
     auto atom=axial(3,false);atom.w.atoms.resize(1);for(auto& mo:atom.w.orbitals)mo.energy_hartree=-.4;
     const auto atomic=cov::ui::build_nbo_aomo_names(atom.w,{},nullptr);
     for(const auto& name:atomic.canonical)require(name.verified&&name.irrep=="p"&&name.point_group=="SO(3)"&&name.ordinal==1&&name.partner_block_size==3&&name.ordinal_scope.find("not principal n")!=std::string::npos,"single atom must use continuous angular evidence and explicit radial-copy numbering");
+    for(const auto& name:atomic.canonical)require(name.label=="p#1","atomic copy ordinal must not masquerade as principal n in a bare 1p label");
+    const auto atomic_view=cov::ui::nbo_aomo_names_for_view(atom.w,atomic,{0,1,2},{},nullptr,"atomic test view");
+    for(const auto& name:atomic_view.canonical)require(name.label=="p#1"&&name.ordinal_scope.find("not principal n")!=std::string::npos,"filtered atomic copies must retain their explicit ordinal format");
     auto atomic_partial=atom.w;atomic_partial.orbitals.resize(1);const auto atomic_partial_names=cov::ui::build_nbo_aomo_names(atomic_partial,{},nullptr);
     require(atomic_partial_names.canonical[0].verified&&atomic_partial_names.canonical[0].irrep=="p"&&atomic_partial_names.canonical[0].ordinal==0&&atomic_partial_names.canonical[0].partner_block_id.empty()&&atomic_partial_names.canonical[0].decomposition_verified,"pure atomic l does not require a complete radial partner block or a principal n");
     shell(atom.w,0,0,.4);atom.w.ao_overlap.assign(16,0);for(int i=0;i<4;++i)atom.w.ao_overlap[i*4+i]=1;for(auto& mo:atom.w.orbitals)mo.coefficients.resize(4,0);
@@ -393,5 +396,10 @@ int main(){try{
     std::vector<std::vector<double>> atomic_source;for(const auto& mo:atom.w.orbitals)atomic_source.push_back(mo.coefficients);
     check_components(atomic_salc_names.salc[2],atomic_source,atomic_columns[2],atom.w.ao_overlap);
     require(atomic_salc_names.salc[2].component_source_kind=="canonical"&&!atomic_salc_names.salc[2].verified,"atomic SALC composition must work without a fabricated finite-operation frame");
+    for(std::size_t i=0;i<4;++i)atom_data.orbitals[i].coefficients=atom_before[i].coefficients;
+    const auto pure_atomic_salc=cov::ui::build_nbo_aomo_names(atom.w,atom_data,&atom_salc);
+    for(std::size_t i=0;i<3;++i)require(pure_atomic_salc.salc[i].label.starts_with("p#1 "),"atomic SALC source labels must not use principal-n spelling");
+    const auto filtered_atomic_salc=cov::ui::nbo_aomo_names_for_view(atom.w,pure_atomic_salc,{0,1,2,3},{0,1,2,3},&atom_salc,"atomic SALC test view");
+    for(std::size_t i=0;i<3;++i)require(filtered_atomic_salc.salc[i].label=="p#1","atomic SALC labels must not revert to bare 1p after filtering");
     std::cout<<"AO/MO names evidence and invariance smoke passed\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
