@@ -10,7 +10,7 @@ struct NboSalcOptions {
     double symmetry_tolerance=2e-4;
     double energy_tolerance_hartree=2e-5;
     double eigenvalue_cluster_tolerance=1e-7;
-    std::size_t maximum_group_order=128;
+    std::size_t maximum_group_order=256;
 };
 struct NboSalcEnergyEvidence {
     NboSpin spin=NboSpin::Total;

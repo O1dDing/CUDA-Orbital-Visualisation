@@ -159,7 +159,9 @@ std::string state_json(std::size_t applied, const ui::OrbitalUIState& ui, const 
         if(std::isfinite(mo.energy_hartree) && active_set=="canonical")s<<mo.energy_hartree;
         else s<<"null";
         s << ",\"energy_semantics\":" << quote(active_set=="canonical"?"canonical eigenvalue":"not applicable; NBO diagonal Fock is separate")
-          << ",\"occupation\":" << mo.occupation
+          << ",\"occupation\":";
+        if(active_set=="canonical")s<<mo.occupation;else s<<"null";
+        s << ",\"occupation_semantics\":" << quote(active_set=="canonical"?"canonical occupation":"selected orbital or combination metadata; renderer placeholder is not physical occupation")
           << ",\"spin\":";
         if(active_set=="canonical")s<<static_cast<int>(mo.spin);else s<<"null";
         s << ",\"spin_semantics\":" << quote(active_set=="canonical"?"canonical wavefunction spin":"NBO spin is applied_spin; renderer channel may differ");

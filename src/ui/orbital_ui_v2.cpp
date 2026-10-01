@@ -985,6 +985,7 @@ std::string compact_metadata(const Wavefunction& wavefunction,const OrbitalMetad
         << canonical_mo_current_irrep(wavefunction,item.orbital_index,verified)
         << "; current display point_group="
         << (verified&&verified->verified?point_group_display(verified->point_group):std::string{});
+    if(verified)out<<"; display_name_metadata="<<serialize_orbital_name_json(*verified);
     return out.str();
 }
 
@@ -1190,7 +1191,9 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
     const NboAomoNames* aomo_names=nullptr;
     if(state.nbo_ui && state.nbo_ui->integration &&
        prepare_nbo_aomo_state(state.nbo_ui->aomo,*state.nbo_ui->integration,wavefunction))
-        aomo_names=state.nbo_ui->aomo.names.get();
+        // The complete MO inventory keeps complete-set names. Diagram names are
+        // numbered within its visible set and must not leak into this inventory.
+        aomo_names=state.nbo_ui->aomo.source_names.get();
     if(!aomo_names){
         standalone_names=canonical_mo_names(wavefunction);
         aomo_names=standalone_names.get();
@@ -1290,7 +1293,7 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
                 }
                 cov::validation::item("browser.mo."+std::to_string(index));
                 if(state.grouped_labels && item.degeneracy_size>1)
-                    ImGui::TextDisabled("%s",item.display_label.c_str());
+                    ImGui::TextDisabled("×%zu",item.degeneracy_size);
                 ImGui::TableNextColumn();
                 ImGui::TextColored(text_colour(kNumericColour), "%s",
                                    format_energy(item.energy_hartree, state.energy_unit, 5).c_str());

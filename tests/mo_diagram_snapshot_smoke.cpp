@@ -625,11 +625,14 @@ int main() {
         std::size_t labels=0;
         for(const auto* n:partners[block]) {
             labels+=!n->label.empty();
-            require(n->shell_member_count==3&&n->symmetry_ordinal==0&&
-                n->shell_label=="t₁u [alpha]"&&n->x==partners[block][0]->x&&
+            const auto display_ordinal=block<2?block+1:1;
+            require(n->shell_member_count==3&&n->symmetry_ordinal==display_ordinal&&
+                n->shell_label==std::to_string(display_ordinal)+"t₁u [alpha]"&&n->x==partners[block][0]->x&&
                 std::abs(*n->display_energy_hartree-(-0.42+0.04*block+1e-6))<1e-12&&
-                n->energy_hartree==partner_model->orbitals[*n->salc_index].energy_hartree,
-                "unknown ordinal must not suppress a proved SALC stack or change raw values");
+                n->energy_hartree==partner_model->orbitals[*n->salc_index].energy_hartree&&
+                partner_names->salc[*n->salc_index].ordinal==0&&
+                partner_view->names->salc[*n->salc_index].complete_set_ordinal==0,
+                "visible occurrence counters must preserve proved SALC stacks, unresolved complete-set ordinals and raw values");
             if(!n->label.empty())require(block<2?n->label_x+n->label_width<n->x:
                 n->label_x>n->x+n->width,"SALC shared labels must face outward on each side");
         }
@@ -642,6 +645,13 @@ int main() {
     for(const auto& n:partial_partners->nodes)if(n.salc_index&&*n.salc_index<2)
         require(n.shell_member_count==1&&n.display_group_id.rfind("verified-salc:",0)!=0,
             "an incomplete filtered occurrence cannot claim a complete SALC partner stack");
+    auto unknown_names=std::make_shared<cov::ui::NboAomoNames>(*partner_names);
+    unknown_names->salc[0]=cov::ui::NboAomoName{};
+    aomo_state.names=unknown_names;++aomo_state.revision;
+    const auto unknown_view=draw_aomo(cov::NboOrbitalKind::NAO,adaptive_graph);
+    for(const auto& n:unknown_view->nodes)if(n.salc_index==0)
+        require(!n.symmetry_name_verified&&!n.label.empty()&&n.individual_label.find("SALC 1")!=std::string::npos,
+            "an unresolved SALC name must retain its real source identity instead of a blank line");
     aomo_state.salc_model=crowded;aomo_state.names.reset();++aomo_state.revision;
     adaptive_options.energy_axis_mode=cov::EnergyAxisMode::Linear;
     const auto linear_graph=cov::make_mo_diagram_view_snapshot(

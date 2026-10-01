@@ -55,7 +55,7 @@ Fixture linear(){
     return f;
 }
 void rotate_general(Fixture& f,const Mat& rotation){
-    cov::SymmetryOperation op;op.matrix=rotation;op.atom_permutation={0,1,2};
+    cov::SymmetryOperation op;op.matrix=rotation;for(std::size_t i=0;i<f.w.atoms.size();++i)op.atom_permutation.push_back(i);
     for(auto& mo:f.w.orbitals)mo.coefficients=cov::apply_orbital_symmetry_operation(f.w,op,mo.coefficients,1);
     for(auto& descriptor:f.data.orbitals)descriptor.coefficients=cov::apply_orbital_symmetry_operation(f.w,op,descriptor.coefficients,1);
     for(auto& atom:f.w.atoms){const std::array<double,3> p{atom.x,atom.y,atom.z};atom.x=rotation[0]*p[0]+rotation[1]*p[1]+rotation[2]*p[2];atom.y=rotation[3]*p[0]+rotation[4]*p[1]+rotation[5]*p[2];atom.z=rotation[6]*p[0]+rotation[7]*p[1]+rotation[8]*p[2];}
@@ -80,6 +80,33 @@ Fixture spectral_copies(double first,double second){
     for(std::size_t i=0;i<entries.size();++i){cov::NboOrbitalDescriptor descriptor;descriptor.ref={cov::NboOrbitalKind::NAO,cov::NboSpin::Total,i};descriptor.coefficients.assign(n,0);for(const auto& [a,value]:entries[i])descriptor.coefficients[a]=value;f.data.orbitals.push_back(descriptor);cov::NboSalcOrbital o;o.fragment_id="copies";o.terms={{descriptor.ref,1}};double energy=0;for(std::size_t j=0;j<f.w.orbitals.size();++j){double overlap=0;for(std::size_t a=0;a<n;++a)overlap+=descriptor.coefficients[a]*f.w.orbitals[j].coefficients[a];energy+=overlap*overlap*f.w.orbitals[j].energy_hartree;f.salc.links.push_back({i,j,overlap,overlap*overlap});}o.energy_hartree=energy;f.salc.orbitals.push_back(o);}
     for(const auto& members:std::vector<std::vector<std::size_t>>{{0,1,2,3},{4,5}}){cov::NboSalcSubspace sub;sub.fragment_id="copies";sub.dimension=members.size();sub.orbital_indices=members;sub.symmetry_verified=true;f.salc.subspaces.push_back(sub);}
     cov::NboSalcEnergyEvidence proof;proof.available=proof.electronic_symmetry_verified=true;proof.status="verified_same_operator";proof.canonical_columns_checked=f.w.orbitals.size();f.salc.energies={proof};return f;
+}
+Fixture actual_mixed_salc_span(double mixing){
+    auto f=axial(3,false);const double p=std::sqrt(1-mixing*mixing);
+    const std::vector<std::vector<double>> columns{{1,0,0},{0,p,mixing},{0,-mixing,p}};
+    for(std::size_t i=0;i<columns.size();++i){cov::NboOrbitalDescriptor descriptor;descriptor.ref={cov::NboOrbitalKind::NAO,cov::NboSpin::Total,i};descriptor.coefficients=columns[i];f.data.orbitals.push_back(descriptor);
+        cov::NboSalcOrbital o;o.fragment_id="actual mixed";o.energy_hartree=-.8+.2*double(i);o.terms={{descriptor.ref,1}};f.salc.orbitals.push_back(o);}
+    cov::NboSalcSubspace sub;sub.fragment_id="actual mixed";sub.dimension=3;sub.orbital_indices={0,1,2};sub.symmetry_verified=true;
+    for(const auto& op:f.salc.operations)sub.characters.push_back(op.matrix[0]+op.matrix[4]+op.matrix[8]);
+    f.salc.subspaces={sub};return f;
+}
+Fixture slightly_coupled_copies(double second_mixing){
+    auto f=axial(3,false);shell(f.w,0,1,.4);shell(f.w,0,0,.3);shell(f.w,0,1,.2);
+    const std::size_t n=f.w.basis_count;f.w.ao_overlap.assign(n*n,0);for(std::size_t i=0;i<n;++i)f.w.ao_overlap[i*n+i]=1;
+    f.w.orbitals.clear();const double energies[]={-.4,-.4,-.8,.2,.2,.9,1.1,2,2,3};
+    for(std::size_t i=0;i<n;++i){cov::MolecularOrbital mo;mo.coefficients.assign(n,0);mo.coefficients[i]=1;mo.energy_hartree=energies[i];f.w.orbitals.push_back(mo);}
+    // Two E copies are connected through a slightly contaminated A1 source
+    // column in the full operation graph. Their actual source partner spaces
+    // may still pass the unchanged strict complete-operation closure test.
+    for(const auto& [member,angle]:std::vector<std::pair<std::size_t,double>>{{1,1e-4},{4,second_mixing}}){
+        const auto a=f.w.orbitals[member].coefficients,b=f.w.orbitals[6].coefficients;
+        for(std::size_t j=0;j<n;++j){f.w.orbitals[member].coefficients[j]=std::cos(angle)*a[j]+std::sin(angle)*b[j];f.w.orbitals[6].coefficients[j]=-std::sin(angle)*a[j]+std::cos(angle)*b[j];}}
+    f.data.orbitals.clear();f.salc.orbitals.clear();f.salc.subspaces.clear();f.salc.links.clear();
+    for(std::size_t i=0;i<n;++i){cov::NboOrbitalDescriptor descriptor;descriptor.ref={cov::NboOrbitalKind::NAO,cov::NboSpin::Total,i};descriptor.coefficients=f.w.orbitals[i].coefficients;f.data.orbitals.push_back(descriptor);
+        cov::NboSalcOrbital o;o.fragment_id="unchanged source copies";o.energy_hartree=energies[i];o.terms={{descriptor.ref,1}};f.salc.orbitals.push_back(o);
+        for(std::size_t j=0;j<n;++j)f.salc.links.push_back({i,j,i==j?1.:0.,i==j?1.:0.});}
+    cov::NboSalcSubspace sub;sub.fragment_id="unchanged source copies";sub.dimension=n;sub.symmetry_verified=true;for(std::size_t i=0;i<n;++i)sub.orbital_indices.push_back(i);f.salc.subspaces={sub};
+    cov::NboSalcEnergyEvidence proof;proof.available=proof.electronic_symmetry_verified=true;proof.status="verified_same_operator";proof.canonical_columns_checked=n;f.salc.energies={proof};return f;
 }
 }
 int main(){try{
@@ -157,9 +184,40 @@ int main(){try{
             "looser native derived labels must not remove mixed partners from complete-set counting");
     require(reused_derived.w.orbitals[0].symmetry=="A1"&&reused_derived.w.orbitals[4].symmetry=="B1","strict naming changed literal derived records");
     auto reducible=f;reducible.salc.subspaces.resize(1);auto& red=reducible.salc.subspaces[0];red.orbital_indices={0,1};red.dimension=2;red.irrep_dimension=0;red.multiplicity=0;red.characters={2,2,0,0};const auto bad=cov::ui::build_nbo_aomo_names(reducible.w,reducible.data,&reducible.salc);require(!bad.salc[0].verified&&!bad.salc[1].verified,"reducible SALC must not get a dimension-derived irrep");
+    auto actual_mixed=actual_mixed_salc_span(.0003);
+    const auto actual_coefficients=actual_mixed.data.orbitals;const auto actual_source_orbitals=actual_mixed.salc.orbitals;
+    const auto actual_names=cov::ui::build_nbo_aomo_names(actual_mixed.w,actual_mixed.data,&actual_mixed.salc);
+    require(actual_names.salc[0].verified&&actual_names.salc[0].irrep=="E"&&actual_names.salc[0].ordinal==0&&
+        actual_names.salc[0].status=="verified_isotypic_member"&&actual_names.salc[0].partner_block_id.empty(),
+        "pure source SALC in a verified mixed span needs its measured irrep without fabricated partners");
+    for(std::size_t i=1;i<3;++i)require(!actual_names.salc[i].verified&&actual_names.salc[i].status=="mixed_source_member"&&
+        actual_names.salc[i].projection_residual&&*actual_names.salc[i].projection_residual>4e-8&&
+        actual_names.salc[i].partner_block_id.empty(),"dominant SALC weight must not certify an actually mixed source column");
+    for(std::size_t i=0;i<3;++i){require(actual_names.salc[i].containing_members==std::vector<std::size_t>({0,1,2})&&
+        actual_names.salc[i].containing_irreps.size()==2,"mixed SALC containing span/content lost");
+        require(actual_mixed.data.orbitals[i].coefficients==actual_coefficients[i].coefficients&&
+            actual_mixed.salc.orbitals[i].energy_hartree==actual_source_orbitals[i].energy_hartree&&
+            actual_mixed.salc.orbitals[i].terms.front().coefficient==actual_source_orbitals[i].terms.front().coefficient,
+            "source SALC coefficients, terms or energies changed during naming");}
+    require(actual_names.salc[0].projection_residual&&*actual_names.salc[0].projection_residual<1e-12,
+        "pure SALC projector residual missing");
+    const auto actual_json=cov::ui::serialize_orbital_names_json(actual_names);
+    require(actual_json.find("verified_isotypic_member")!=std::string::npos&&actual_json.find("mixed_source_member")!=std::string::npos&&
+        actual_json.find("projection_residual_squared")!=std::string::npos,"mixed SALC JSON evidence incomplete");
+    auto actual_rotated=actual_mixed;const double ar=std::cos(.437),as=std::sin(.437);
+    rotate_general(actual_rotated,Mat{ar,0,as,0,1,0,-as,0,ar});compare(actual_names,cov::ui::build_nbo_aomo_names(actual_rotated.w,actual_rotated.data,&actual_rotated.salc));
+    auto omitted_actual=actual_mixed;omitted_actual.salc.orbitals[0].terms.clear();
+    const auto omitted_names=cov::ui::build_nbo_aomo_names(omitted_actual.w,omitted_actual.data,&omitted_actual.salc);
+    for(const auto& name:omitted_names.salc)require(!name.verified&&!name.projection_residual&&name.status=="stored_span_unclassified",
+        "stored reducible characters cannot identify any individual SALC when actual columns are omitted");
+    auto failed_actual=actual_mixed;failed_actual.salc.subspaces[0].orbital_indices={0};failed_actual.salc.subspaces[0].dimension=1;
+    failed_actual.salc.subspaces[0].characters.assign(failed_actual.salc.operations.size(),1);
+    const auto failed_names=cov::ui::build_nbo_aomo_names(failed_actual.w,failed_actual.data,&failed_actual.salc);
+    require(!failed_names.salc[0].verified&&failed_names.salc[0].status=="subspace_not_closed",
+        "stored A1 signature must not override a present actual E column whose containing span is not closed");
     auto open=f;for(auto mo:before){mo.spin=cov::Spin::Beta;mo.energy_hartree+=.01;open.w.orbitals.push_back(mo);}const auto spin=cov::ui::build_nbo_aomo_names(open.w,open.data,&open.salc);require(spin.canonical[1].ordinal==2&&spin.canonical[8].ordinal==2&&spin.canonical[1].label.find("[alpha]")!=std::string::npos&&spin.canonical[8].label.find("[beta]")!=std::string::npos,"spin counters must be independent");
     auto unsupported=f;unsupported.salc.used_group="finite sampling subgroup of Cinfv";const auto u=cov::ui::build_nbo_aomo_names(unsupported.w,unsupported.data,&unsupported.salc);require(!u.canonical[0].verified&&!u.salc[0].verified&&u.canonical[0].label=="?","unsupported subgroup must remain unknown without inventing an irrep ordinal");
-    auto ambiguous=f;ambiguous.w.atoms.push_back({"H",1,1,0,1});ambiguous.w.atoms.push_back({"H",1,-1,0,1});ambiguous.salc.operations[0].atom_permutation={0,1,2,3,4};ambiguous.salc.operations[1].atom_permutation={0,1,2,4,3};ambiguous.salc.operations[2].atom_permutation={0,2,1,3,4};ambiguous.salc.operations[3].atom_permutation={0,2,1,4,3};const auto axes=cov::ui::build_nbo_aomo_names(ambiguous.w,ambiguous.data,&ambiguous.salc);require(axes.canonical[0].verified&&!axes.canonical[2].verified&&!axes.salc[0].verified,"ambiguous perpendicular mirror names must not invent B1/B2");
+    auto ambiguous=f;ambiguous.w.atoms.push_back({"H",1,1,0,1});ambiguous.w.atoms.push_back({"H",1,-1,0,1});ambiguous.salc.operations[0].atom_permutation={0,1,2,3,4};ambiguous.salc.operations[1].atom_permutation={0,1,2,4,3};ambiguous.salc.operations[2].atom_permutation={0,2,1,3,4};ambiguous.salc.operations[3].atom_permutation={0,2,1,4,3};const auto axes=cov::ui::build_nbo_aomo_names(ambiguous.w,ambiguous.data,&ambiguous.salc);require(axes.canonical[0].verified&&axes.canonical[2].verified&&axes.salc[0].verified&&axes.canonical[2].irrep=="B2"&&!axes.canonical[2].detail.empty(),"tied molecular mirrors must use a recorded coordinate convention with x=B1/y=B2");
     // Octahedral central p triplet: an existing whole-orbital assignment is
     // one irrep occurrence, never three consecutive T1u ordinals.
     cov::Wavefunction oct;oct.atoms={{"M",26,0,0,0},{"H",1,1,0,0},{"H",1,-1,0,0},{"H",1,0,1,0},{"H",1,0,-1,0},{"H",1,0,0,1},{"H",1,0,0,-1}};shell(oct,0,1,1);oct.ao_overlap={1,0,0,0,1,0,0,0,1};
@@ -187,8 +245,15 @@ int main(){try{
     require(linear_names.salc[5].irrep=="Sigma_g+"&&linear_names.salc[6].irrep=="Sigma_g+"&&linear_names.salc[5].ordinal!=linear_names.salc[6].ordinal,"separate invariant radial copies need separate occurrences");
     auto linear_rotated=lin;const double c2=std::cos(.531),s2=std::sin(.531);rotate_general(linear_rotated,Mat{c2,0,s2,0,1,0,-s2,0,c2});compare(linear_names,cov::ui::build_nbo_aomo_names(linear_rotated.w,linear_rotated.data,&linear_rotated.salc));
     for(std::size_t i=0;i<lin.w.orbitals.size();++i)require(lin.w.orbitals[i].coefficients==linear_before[i].coefficients&&lin.w.orbitals[i].energy_hartree==linear_before[i].energy_hartree,"classification must not mutate producer coefficients or physical energies");
-    auto broken=lin;broken.w.orbitals[4].energy_hartree+=.05;const auto split=cov::ui::build_nbo_aomo_names(broken.w,broken.data,&broken.salc);require(!split.canonical[3].verified&&!split.canonical[4].verified,"broken-energy partners must not be relabelled as a canonical degenerate pair");
-    auto subgroup=broken;subgroup.w.orbitals[3].symmetry="B1u";subgroup.w.orbitals[3].symmetry_provenance=cov::DataProvenance::Producer;cov::OrbitalSymmetrySourceRecord record;record.source_path="fixture.log";record.detected_group_context="Dinfh";record.abelian_group_context="D2h";record.orbital_indices={3};record.labels={"B1u"};subgroup.w.orbital_symmetry_source_records.push_back(record);const auto subgroup_names=cov::ui::build_nbo_aomo_names(subgroup.w,subgroup.data,&subgroup.salc);require(!subgroup_names.canonical[3].verified&&subgroup.w.orbitals[3].symmetry=="B1u","producer subgroup metadata must be preserved without entering full-group numbering");
+    auto broken=lin;broken.w.orbitals[4].energy_hartree+=.05;const auto split=cov::ui::build_nbo_aomo_names(broken.w,broken.data,&broken.salc);require(split.canonical[3].verified&&split.canonical[4].verified&&split.canonical[3].irrep=="Pi_u"&&broken.w.orbitals[4].energy_hartree==lin.w.orbitals[4].energy_hartree+.05,"spatial irrep evidence must not be confused with energy degeneracy or overwrite source eigenvalues");
+    auto near_partner=lin;near_partner.w.orbitals[4].energy_hartree+=1.2669e-5;
+    const auto near_names=cov::ui::build_nbo_aomo_names(near_partner.w,near_partner.data,&near_partner.salc);
+    require(near_names.canonical[3].verified&&near_names.canonical[4].verified&&near_names.canonical[3].partner_block_id==near_names.canonical[4].partner_block_id,"measured symmetry partners must survive the old fixed energy boundary");
+    const auto filtered=cov::ui::nbo_aomo_names_for_view(lin.w,linear_names,{3,4,5},{},nullptr,"test valence filter");
+    require(filtered.canonical[5].ordinal==1&&filtered.canonical[5].complete_set_ordinal==3&&filtered.canonical[3].ordinal==filtered.canonical[4].ordinal&&filtered.canonical[3].ordinal==1,"display counters must start within each visible irrep, preserving complete-set identities and true partners");
+    const auto partial=cov::ui::nbo_aomo_names_for_view(lin.w,linear_names,{3,5},{},nullptr,"incomplete filter");
+    require(partial.canonical[3].verified&&partial.canonical[3].ordinal==0,"filtering one partner cannot invent a complete visible occurrence");
+    auto subgroup=broken;subgroup.w.orbitals[3].symmetry="B1u";subgroup.w.orbitals[3].symmetry_provenance=cov::DataProvenance::Producer;cov::OrbitalSymmetrySourceRecord record;record.source_path="fixture.log";record.detected_group_context="Dinfh";record.abelian_group_context="D2h";record.orbital_indices={3};record.labels={"B1u"};subgroup.w.orbital_symmetry_source_records.push_back(record);const auto subgroup_names=cov::ui::build_nbo_aomo_names(subgroup.w,subgroup.data,&subgroup.salc);require(subgroup_names.canonical[3].verified&&subgroup_names.canonical[3].irrep=="Pi_u"&&subgroup.w.orbitals[3].symmetry=="B1u","derived full-group identity must preserve the producer subgroup literal independently");
     auto unresolved=lin.salc;unresolved.orbitals.clear();unresolved.subspaces.clear();for(int i=0;i<7;++i){cov::NboSalcOrbital o;o.fragment_id="copies";o.energy_hartree=i<4?-.4:i<6?.4:.6;unresolved.orbitals.push_back(o);}
     for(int block=0;block<3;++block){cov::NboSalcSubspace sub;sub.fragment_id="copies";sub.symmetry_verified=true;sub.orbital_indices=block==0?std::vector<std::size_t>{0,1,2,3}:block==1?std::vector<std::size_t>{4,5}:std::vector<std::size_t>{6};sub.dimension=sub.orbital_indices.size();for(const auto& op:unresolved.operations)sub.characters.push_back(block==2?1:(block==0?2:1)*(op.matrix[0]+op.matrix[4]));unresolved.subspaces.push_back(sub);}
     const auto unresolved_names=cov::ui::build_nbo_aomo_names(lin.w,lin.data,&unresolved);require(unresolved_names.salc[0].verified&&unresolved_names.salc[0].irrep=="Pi_u"&&unresolved_names.salc[0].ordinal==0&&unresolved_names.salc[4].verified&&unresolved_names.salc[4].ordinal==0&&unresolved_names.salc[6].irrep=="Sigma_g+"&&unresolved_names.salc[6].ordinal==1,"unresolved copies block only their own irrep numbering, retaining other known counts");
@@ -197,12 +262,37 @@ int main(){try{
         !unresolved_names.salc[4].partner_block_id.empty()&&unresolved_names.salc[4].partner_block_id==unresolved_names.salc[5].partner_block_id,
         "unknown global ordinal must not erase a verified pair");
     const auto high_copies=spectral_copies(2,3);const auto high_names=cov::ui::build_nbo_aomo_names(high_copies.w,high_copies.data,&high_copies.salc);require(high_names.salc[0].verified&&high_names.salc[0].ordinal==0&&high_names.salc[4].irrep=="Pi_u"&&high_names.salc[4].ordinal==1&&high_names.salc[0].detail.find("spectral bounds")!=std::string::npos,"certified high repeated spectrum must not block a low single occurrence");
+    for(std::size_t i=0;i<4;++i)require(high_names.salc[i].status=="verified_isotypic_member"&&
+        high_names.salc[i].representation_multiplicity==2&&high_names.salc[i].projection_residual&&
+        high_names.salc[i].partner_block_id.empty(),"actual repeated isotypic source SALCs must retain projection evidence without copy ordinals or partners");
     const auto early_copies=spectral_copies(-3,-2);const auto early_names=cov::ui::build_nbo_aomo_names(early_copies.w,early_copies.data,&early_copies.salc);require(early_names.salc[4].ordinal==3,"known number of copies with certified lower spectrum must be counted");
     const auto crossing_copies=spectral_copies(-1,1);const auto crossing_names=cov::ui::build_nbo_aomo_names(crossing_copies.w,crossing_copies.data,&crossing_copies.salc);require(crossing_names.salc[4].verified&&crossing_names.salc[4].ordinal==0,"interleaved unresolved spectrum must still withhold the occurrence number");
+    auto coupled=slightly_coupled_copies(1e-4);const auto coupled_before=coupled.w.orbitals;const auto recovered=cov::ui::build_nbo_aomo_names(coupled.w,coupled.data,&coupled.salc);
+    for(const auto* rows:{&recovered.canonical,&recovered.salc}){
+        require((*rows)[0].containing_irreps.size()>1&&(*rows)[0].containing_members.size()==5,"source copies fixture must exercise an actual connected reducible span");
+        require((*rows)[0].ordinal==1&&(*rows)[1].ordinal==1&&(*rows)[3].ordinal==2&&(*rows)[4].ordinal==2&&(*rows)[7].ordinal==3&&(*rows)[8].ordinal==3,"verified independent copies must be counted once each, including later source occurrences");
+        require((*rows)[0].partner_block_size==2&&(*rows)[0].partner_block_id==(*rows)[1].partner_block_id&&(*rows)[3].partner_block_id==(*rows)[4].partner_block_id&&(*rows)[0].partner_block_id!=(*rows)[3].partner_block_id,"two certified source E copies need distinct true partner blocks");
+    }
+    auto partially_mixed=slightly_coupled_copies(.02);const auto partial_copies=cov::ui::build_nbo_aomo_names(partially_mixed.w,partially_mixed.data,&partially_mixed.salc);
+    for(const auto* rows:{&partial_copies.canonical,&partial_copies.salc}){
+        require((*rows)[0].verified&&(*rows)[0].ordinal==1&&(*rows)[1].ordinal==1&&(*rows)[0].partner_block_size==2,"one genuine source copy must survive a mixed second copy in its containing span");
+        require((*rows)[3].verified&&(*rows)[3].ordinal==0&&(*rows)[3].partner_block_id.empty()&&!(*rows)[4].verified&&!(*rows)[6].verified,"incomplete pure partners and mixed members must retain uncertainty");
+        require((*rows)[7].ordinal==3&&(*rows)[8].ordinal==3,"remaining copy count must exclude the already named occurrence and retain exactly one unresolved earlier copy");
+    }
+    for(std::size_t i=0;i<coupled_before.size();++i)require(coupled.w.orbitals[i].coefficients==coupled_before[i].coefficients&&coupled.w.orbitals[i].energy_hartree==coupled_before[i].energy_hartree,"copy identification must not rotate source columns or change their energies");
+    auto equal_copies=coupled;for(auto i:{0,1,3,4})equal_copies.w.orbitals[i].energy_hartree=-.4;
+    const auto equal_names=cov::ui::build_nbo_aomo_names(equal_copies.w,equal_copies.data,&equal_copies.salc);
+    require(equal_names.canonical[0].ordinal==0&&equal_names.canonical[3].ordinal==0&&equal_names.canonical[0].partner_block_size==2&&equal_names.canonical[7].ordinal==3,"independent source partner blocks do not resolve an equal-energy ordinal tie, but later total counts remain exact");
     auto incomplete_copies=high_copies;incomplete_copies.salc.links.pop_back();incomplete_copies.salc.links.erase(incomplete_copies.salc.links.begin());const auto incomplete_names=cov::ui::build_nbo_aomo_names(incomplete_copies.w,incomplete_copies.data,&incomplete_copies.salc);require(incomplete_names.salc[4].ordinal==0,"missing canonical projection evidence must not certify a spectral bound");
     auto missing_metric=lin;missing_metric.w.ao_overlap.clear();const auto absent=cov::ui::build_nbo_aomo_names(missing_metric.w,missing_metric.data,&missing_metric.salc);require(!absent.canonical[3].verified,"missing S must not be guessed");
     const auto hex=axial(6,true);const auto hex_names=cov::ui::build_nbo_aomo_names(hex.w,hex.data,&hex.salc);require(hex_names.canonical[0].verified&&hex_names.canonical[0].irrep=="E1u"&&hex_names.canonical[1].ordinal==1&&hex_names.canonical[2].irrep=="A2u","Dnh must not depend on the smaller central-metal group catalogue");
     const auto pyramid=axial(3,false);const auto pyramid_names=cov::ui::build_nbo_aomo_names(pyramid.w,pyramid.data,&pyramid.salc);require(pyramid_names.canonical[0].verified&&pyramid_names.canonical[0].irrep=="E"&&pyramid_names.canonical[1].ordinal==1&&pyramid_names.canonical[2].irrep=="A1","source-free Cnv A1 and E must follow actual rotation/reflection characters");
+    auto nonisometric=pyramid;nonisometric.w.ao_overlap[4]=1.0001;
+    for(auto& mo:nonisometric.w.orbitals)mo.coefficients[1]/=std::sqrt(1.0001);
+    const auto rejected_metric=cov::ui::build_nbo_aomo_names(nonisometric.w,nonisometric.data,&nonisometric.salc);
+    require(!rejected_metric.canonical[0].verified&&rejected_metric.canonical[0].status=="symmetry_action_not_isometric"&&
+        rejected_metric.canonical[0].detail.find("transformed norm error=")!=std::string::npos,
+        "nonisometric action must be rejected with its measured reason, not called subspace leakage");
     Fixture orthorhombic;
     orthorhombic.w.atoms={{"C",6,0,0,0},{"H",1,3,0,0},{"H",1,-3,0,0},{"H",1,0,1,0},{"H",1,0,-1,0},{"H",1,0,0,2},{"H",1,0,0,-2}};
     shell(orthorhombic.w,0,1,1);orthorhombic.w.ao_overlap={1,0,0,0,1,0,0,0,1};

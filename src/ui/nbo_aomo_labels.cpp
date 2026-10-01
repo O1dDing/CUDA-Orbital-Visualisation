@@ -3,8 +3,9 @@
 #include "cov/open_profile.hpp"
 #include "cov/orbital_symmetry_scope.hpp"
 #include "cov/orbital_symmetry.hpp"
-#include "cov/point_group_catalog.hpp"
+#include "cov/molecular_point_group_frame.hpp"
 #include "cov/mo_diagram.hpp"
+#include <Eigen/Core>
 
 #include <algorithm>
 #include <array>
@@ -16,6 +17,7 @@
 #include <set>
 #include <sstream>
 #include <tuple>
+#include <iomanip>
 
 namespace cov::ui {
 namespace {
@@ -25,6 +27,7 @@ constexpr double energy_order_tolerance=2e-5;
 thread_local std::size_t canonical_name_revision=0;
 using Vec=std::array<double,3>;
 using Mat=std::array<double,9>;
+using Dense=Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor>;
 double dot(const Vec& a,const Vec& b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
 double det(const Mat& a){return a[0]*(a[4]*a[8]-a[5]*a[7])-a[1]*(a[3]*a[8]-a[5]*a[6])+a[2]*(a[3]*a[7]-a[4]*a[6]);}
 double trace(const Mat& a){return a[0]+a[4]+a[8];}
@@ -33,15 +36,6 @@ Mat multiply(const Mat& a,const Mat& b){Mat c{};for(int i=0;i<3;++i)for(int j=0;
 const Mat identity{1,0,0,0,1,0,0,0,1};
 const Mat inversion{-1,0,0,0,-1,0,0,0,-1};
 std::string normalized(std::string s){std::string o;for(unsigned char c:s)if(!std::isspace(c)&&c!='_')o+=char(std::tolower(c));return o;}
-std::string finite_irrep(const std::string& group,const std::string& label){
-    const auto* pg=find_point_group(group);if(!pg)return {};
-    for(const auto& ir:pg->irreps)if(normalized(std::string(ir.label))==normalized(label))return std::string(ir.label);
-    return {};
-}
-std::size_t dimension(const std::string& group,const std::string& label){
-    const auto* pg=find_point_group(group);if(pg)for(const auto& ir:pg->irreps)if(normalized(std::string(ir.label))==normalized(label))return ir.dimension;
-    return 0;
-}
 struct CanonicalActionCache {
     const Wavefunction* wavefunction=nullptr;
     std::vector<double> packed,metric_packed;
@@ -50,11 +44,10 @@ struct CanonicalActionCache {
 struct Frame {
     std::string group, detail;
     std::vector<SymmetryOperation> ops;
-    std::size_t e=0, inv=0, rotation=0, mirror0=0, mirror1=0, yz=0;
-    bool valid=false, mirrors_named=false, linear=false;
+    bool valid=false, linear=false;
     Vec axis{};
-    unsigned lmax=0, rotation_order=0;
-    orbital_characters::D2hAxes d2h_axes;
+    unsigned lmax=0;
+    PointGroupIrrepTable table;
     mutable std::shared_ptr<CanonicalActionCache> canonical_action;
 };
 Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
@@ -62,13 +55,8 @@ Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
     if(!model||!model->group_verified)return f;
     f.group=model->point_group;f.linear=f.group=="Dinfh"||f.group=="Cinfv";
     if(model->used_group!=f.group&&(!f.linear||model->used_group!="finite sampling subgroup of "+f.group))return f;
-    f.ops=model->operations;const auto n=f.ops.size();const auto* pg=find_point_group(f.group);
-    // The native Dnh classifier supports general n, beyond the intentionally
-    // smaller central-metal display catalogue (which omits e.g. D6h).
-    if(!f.linear&&f.group.size()>2&&(f.group.front()=='C'||f.group.front()=='D')){
-        std::size_t i=1;while(i+1<f.group.size()&&std::isdigit(static_cast<unsigned char>(f.group[i]))){f.rotation_order=10*f.rotation_order+unsigned(f.group[i]-'0');++i;}if(i+1!=f.group.size()||f.rotation_order<2||f.rotation_order>64)f.rotation_order=0;
-    }
-    const auto expected_order=pg?std::size_t(pg->order):f.rotation_order&&f.group.front()=='D'&&f.group.back()=='h'?4*f.rotation_order:f.rotation_order&&f.group.front()=='C'&&f.group.back()=='v'?2*f.rotation_order:0;
+    f.ops=model->operations;const auto n=f.ops.size();
+    const auto expected_order=finite_point_group_order(f.group);
     if(!n||(!f.linear&&(!expected_order||expected_order!=n)))return f;
     if(f.linear){
         const auto geometry=analyse_molecular_symmetry(w);
@@ -81,43 +69,24 @@ Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
     }
     // SALC closure products intentionally carry only matrix/permutation data;
     // kind/order/axis metadata must not be used here.
-    std::vector<std::size_t> mirrors,rotations;bool have_e=false,have_i=false;
+    bool have_e=false;
     for(std::size_t i=0;i<n;++i){const auto& op=f.ops[i];
         if(op.atom_permutation.size()!=w.atoms.size())return f;
         std::set<std::size_t> seen;for(std::size_t a=0;a<w.atoms.size();++a){const auto b=op.atom_permutation[a];if(b>=w.atoms.size()||w.atoms[a].atomic_number!=w.atoms[b].atomic_number||!seen.insert(b).second)return f;}
         Mat trans{};for(int a=0;a<3;++a)for(int b=0;b<3;++b)trans[3*a+b]=op.matrix[3*b+a];
         if(matrix_error(multiply(trans,op.matrix),identity)>metric_tolerance)return f;
-        if(matrix_error(op.matrix,identity)<metric_tolerance){f.e=i;have_e=true;}
-        else if(matrix_error(op.matrix,inversion)<metric_tolerance){f.inv=i;have_i=true;}
-        else if(std::abs(det(op.matrix)+1)<metric_tolerance&&std::abs(trace(op.matrix)-1)<metric_tolerance)mirrors.push_back(i);
-        else if(std::abs(det(op.matrix)-1)<metric_tolerance&&std::abs(trace(op.matrix)+1)<metric_tolerance)rotations.push_back(i);
+        if(matrix_error(op.matrix,identity)<metric_tolerance)have_e=true;
     }
     if(!have_e)return f;
     // Recheck matrix closure, not just the advertised point-group string.
     for(const auto& a:f.ops)for(const auto& b:f.ops){const auto ab=multiply(a.matrix,b.matrix);if(std::none_of(f.ops.begin(),f.ops.end(),[&](const auto& c){return matrix_error(ab,c.matrix)<metric_tolerance;}))return f;}
     f.valid=true;
-    if(f.group=="C1")f.valid=n==1;
-    else if(f.group=="Ci")f.valid=n==2&&have_i;
-    else if(f.group=="Cs"){f.valid=n==2&&mirrors.size()==1;if(f.valid)f.mirror0=mirrors[0];}
-    else if(f.group=="C2"||f.group=="C2h"){f.valid=rotations.size()==1&&(f.group=="C2"||(have_i&&mirrors.size()==1));if(f.valid)f.rotation=rotations[0];}
-    else if(f.group=="C2v"){
-        f.valid=n==4&&mirrors.size()==2&&rotations.size()==1;if(!f.valid)return f;
-        f.mirror0=mirrors[0];f.mirror1=mirrors[1];f.rotation=rotations[0];
-        // Name the molecular plane yz by unique maximal on-plane atom support.
-        // This covaries under rigid rotations and atom permutations. A tie is
-        // explicitly unresolved: A1/A2 still work, but B1/B2 must not be guessed.
-        std::size_t support[2]{};Vec normals[2]{};
-        for(int k=0;k<2;++k){const auto& op=f.ops[mirrors[k]];
-            for(std::size_t a=0;a<w.atoms.size();++a)if(op.atom_permutation[a]==a)++support[k];
-            double best=0;for(int r=0;r<3;++r){Vec v{};for(int c=0;c<3;++c)v[c]=identity[3*r+c]-op.matrix[3*r+c];if(dot(v,v)>best){best=dot(v,v);normals[k]=v;}}
-            if(best>0)for(auto& x:normals[k])x/=std::sqrt(best);
-        }
-        if(std::abs(dot(normals[0],normals[1]))>metric_tolerance){f.valid=false;return f;}
-        f.mirrors_named=support[0]!=support[1];
-        if(f.mirrors_named){f.yz=mirrors[support[0]>support[1]?0:1];const auto& normal=normals[support[0]>support[1]?0:1];std::ostringstream s;s<<"C2v: yz is the uniquely maximal fixed-atom mirror; x normal in input frame=("<<normal[0]<<','<<normal[1]<<','<<normal[2]<<"); z is C2 axis; B1 transforms as x, B2 as y";f.detail=s.str();}
-        else f.detail="C2v mirror-axis convention unresolved (equal fixed-atom support); B1/B2 not assigned";
+    if(!f.linear&&f.valid){
+        auto group=analyse_molecular_symmetry(w);group.point_group=f.group;group.operations=f.ops;
+        f.table=molecular_point_group_irreps(w,group);
+        f.valid=f.table.valid;
+        f.detail=f.table.axis_detail+(f.table.valid?"":"; "+f.table.reason);
     }
-    if(f.group=="D2h"){const auto geometry=analyse_molecular_symmetry(w);f.d2h_axes=orbital_characters::d2h_axes(w,f.ops,geometry.centre_bohr,geometry.tolerance_bohr);f.detail=f.d2h_axes.detail;}
     if(f.detail.empty())f.detail=f.linear?"Validated angular-momentum-resolving sampling of "+f.group:"Validated full finite "+f.group+" operation matrices";
     return f;
 }
@@ -130,23 +99,8 @@ Frame canonical_frame(const Wavefunction& w){
     frame.group_verified=!geometry.operations.empty();
     frame.operations=geometry.operations;
     if(!geometry.linear&&frame.group_verified){
-        // Geometry supplies validated generators, not necessarily every group
-        // element. Complete their finite closure before the full-frame gate.
-        SymmetryOperation e;e.atom_permutation.resize(w.atoms.size());
-        std::iota(e.atom_permutation.begin(),e.atom_permutation.end(),0);
-        frame.operations={e};
-        for(std::size_t i=0;i<frame.operations.size();++i)for(const auto& generator:geometry.operations){
-            if(generator.atom_permutation.size()!=w.atoms.size()){frame.group_verified=false;return frame_for(w,&frame);}
-            SymmetryOperation product;product.matrix=multiply(frame.operations[i].matrix,generator.matrix);
-            product.atom_permutation.resize(w.atoms.size());
-            for(std::size_t a=0;a<w.atoms.size();++a){const auto b=generator.atom_permutation[a];if(b>=w.atoms.size()){frame.group_verified=false;return frame_for(w,&frame);}product.atom_permutation[a]=frame.operations[i].atom_permutation[b];}
-            if(std::any_of(frame.operations.begin(),frame.operations.end(),[&](const auto& op){return op.atom_permutation==product.atom_permutation&&matrix_error(op.matrix,product.matrix)<metric_tolerance;}))continue;
-            if(frame.operations.size()>=256){frame.group_verified=false;return frame_for(w,&frame);}
-            double mapping_error=0;
-            for(std::size_t a=0;a<w.atoms.size();++a){const auto& from=w.atoms[a];const auto& to=w.atoms[product.atom_permutation[a]];const Vec x{from.x-geometry.centre_bohr[0],from.y-geometry.centre_bohr[1],from.z-geometry.centre_bohr[2]},y{to.x-geometry.centre_bohr[0],to.y-geometry.centre_bohr[1],to.z-geometry.centre_bohr[2]};Vec difference{};for(int r=0;r<3;++r){difference[r]=-y[r];for(int c=0;c<3;++c)difference[r]+=product.matrix[3*r+c]*x[c];}mapping_error=std::max(mapping_error,std::sqrt(dot(difference,difference)));}
-            if(mapping_error>geometry.tolerance_bohr){frame.group_verified=false;return frame_for(w,&frame);}
-            product.max_mapping_error_bohr=mapping_error;frame.operations.push_back(std::move(product));
-        }
+        const auto complete=complete_molecular_point_group(w,geometry);
+        frame.operations=complete.operations;frame.group_verified=!complete.operations.empty();
     }
     if(geometry.linear){
         Vec axis{};double length2=0;
@@ -191,53 +145,6 @@ Frame canonical_frame(const Wavefunction& w){
 // For a linear molecule O(2) characters are 2 cos(m theta), with an
 // inversion parity in Dinfh and a reflection sign for Sigma. Compare EVERY
 // sampled operation, not a visually inferred sigma/pi or one selected axis.
-std::string match_linear(const Frame& f,const std::vector<double>& chars,std::size_t d){
-    if(!f.valid||!f.linear||chars.size()!=f.ops.size()||(d!=1&&d!=2))return {};
-    const char* symbols[]={"Sigma","Pi","Delta","Phi","Gamma"};
-    std::string match;
-    for(unsigned m=d==1?0:1;m<=(d==1?0:f.lmax);++m)for(int parity:{1,-1})for(int sign:{1,-1}){
-        if(f.group=="Cinfv"&&parity<0)continue;if(m&&sign<0)continue;
-        bool same=true;
-        for(std::size_t i=0;i<f.ops.size();++i){const auto& op=f.ops[i].matrix;Vec transformed{};for(int a=0;a<3;++a)for(int b=0;b<3;++b)transformed[a]+=op[3*a+b]*f.axis[b];
-            const double direction=dot(f.axis,transformed);if(std::abs(std::abs(direction)-1)>metric_tolerance){same=false;break;}
-            const bool reverse=direction<0;if(reverse&&f.group!="Dinfh"){same=false;break;}
-            Mat r=op;if(reverse)for(auto& x:r)x=-x;
-            const bool reflect=det(r)<0;
-            double expected=m?(reflect?0:2*std::cos(m*std::acos(std::clamp((trace(r)-1)/2,-1.,1.)))):(reflect?sign:1);
-            if(reverse)expected*=parity;
-            if(!std::isfinite(chars[i])||std::abs(chars[i]-expected)>character_tolerance){same=false;break;}
-        }
-        if(same){std::string label=symbols[m];if(f.group=="Dinfh")label+=parity>0?"_g":"_u";if(!m)label+=sign>0?"+":"-";if(!match.empty()&&match!=label)return {};match=label;}
-    }
-    return match;
-}
-std::string match_simple(const Frame& f,const std::vector<double>& chars,std::size_t d){
-    if(!f.valid||chars.size()!=f.ops.size()||d!=1)return {};
-    const auto near=[&](std::size_t i,double target){return std::isfinite(chars[i])&&std::abs(chars[i]-target)<=character_tolerance;};
-    if(!near(f.e,1))return {};
-    if(f.group=="D2h")return orbital_characters::match_d2h(f.d2h_axes,f.ops,chars,d,character_tolerance);
-    if(f.group=="C1")return "A";
-    if(f.group=="Ci")return near(f.inv,1)?"Ag":near(f.inv,-1)?"Au":"";
-    if(f.group=="Cs")return near(f.mirror0,1)?"A'":near(f.mirror0,-1)?"A''":"";
-    if(f.group=="C2"||f.group=="C2h"){const auto base=near(f.rotation,1)?"A":near(f.rotation,-1)?"B":"";if(!*base)return {};if(f.group=="C2")return base;return near(f.inv,1)?std::string(base)+"g":near(f.inv,-1)?std::string(base)+"u":"";}
-    if(f.group!="C2v")return {};
-    if(near(f.rotation,1)&&near(f.mirror0,1)&&near(f.mirror1,1))return "A1";
-    if(near(f.rotation,1)&&near(f.mirror0,-1)&&near(f.mirror1,-1))return "A2";
-    if(!f.mirrors_named||!near(f.rotation,-1))return {};
-    const auto other=f.yz==f.mirror0?f.mirror1:f.mirror0;
-    if(near(f.yz,-1)&&near(other,1))return "B1";
-    if(near(f.yz,1)&&near(other,-1))return "B2";
-    return {};
-}
-std::string match_frame(const Frame& f,const std::vector<double>& chars,std::size_t d){
-    auto label=match_simple(f,chars,d);if(!label.empty())return label;
-    label=match_linear(f,chars,d);if(!label.empty())return label;
-    // Axis-independent Cnv labels follow its real angular characters. Even-n
-    // B1/B2 need a reflection-class convention and remain unresolved here.
-    if(!f.valid||f.linear||f.rotation_order<3||f.group.front()!='C'||f.group.back()!='v'||chars.size()!=f.ops.size()||(d!=1&&d!=2))return {};
-    for(unsigned m=d==1?0:1;m<=(d==1?0:(f.rotation_order-1)/2);++m)for(int sign:{1,-1}){if(m&&sign<0)continue;bool same=true;for(std::size_t i=0;i<chars.size();++i){const auto& op=f.ops[i].matrix;const bool reflect=det(op)<0;const double expected=m?(reflect?0:2*std::cos(m*std::acos(std::clamp((trace(op)-1)/2,-1.,1.)))):(reflect?sign:1);if(!std::isfinite(chars[i])||std::abs(chars[i]-expected)>character_tolerance)same=false;}if(same)return m?(f.rotation_order<=4?"E":"E"+std::to_string(m)):(sign>0?"A1":"A2");}
-    return {};
-}
 double metric(const Wavefunction& w,const std::vector<double>& a,const std::vector<double>& b){
     const auto n=std::size_t(w.basis_count);double v=0;for(std::size_t i=0;i<n;++i){double row=0;for(std::size_t j=0;j<n;++j)row+=w.ao_overlap[i*n+j]*b[j];v+=a[i]*row;}return v;
 }
@@ -245,9 +152,8 @@ const CanonicalActionCache& canonical_action(const Wavefunction& w,const Frame& 
     const auto n=std::size_t(w.basis_count),m=w.orbitals.size();
     const auto metric_columns=[&](const std::vector<double>& packed){
         std::vector<double> result(n*m,0);
-        // Contiguous column updates share each S entry and let the compiler
-        // vectorise the independent columns of the complete immutable set.
-        for(std::size_t row=0;row<n;++row)for(std::size_t j=0;j<n;++j){const auto s=w.ao_overlap[row*n+j];for(std::size_t col=0;col<m;++col)result[row*m+col]+=s*packed[j*m+col];}
+        Eigen::Map<Dense>(result.data(),n,m).noalias()=
+            Eigen::Map<const Dense>(w.ao_overlap.data(),n,n)*Eigen::Map<const Dense>(packed.data(),n,m);
         return result;
     };
     if(!f.canonical_action||f.canonical_action->wavefunction!=&w){
@@ -264,56 +170,112 @@ const CanonicalActionCache& canonical_action(const Wavefunction& w,const Frame& 
 }
 // Complete S-orthonormal subspace character and leakage test. This examines
 // the actual canonical coefficients, including core and all virtual rows.
-std::vector<double> characters(const Wavefunction& w,const Frame& f,const std::vector<std::size_t>& indices){
-    const auto n=std::size_t(w.basis_count),k=indices.size();if(!f.valid||!n||!k||w.ao_overlap.size()!=n*n)return {};
-    std::vector<std::vector<double>> q;std::vector<double> packed(n*k);
-    for(std::size_t col=0;col<k;++col){const auto index=indices[col];if(index>=w.orbitals.size()||w.orbitals[index].coefficients.size()!=n)return {};q.push_back(w.orbitals[index].coefficients);for(std::size_t row=0;row<n;++row)packed[row*k+col]=q.back()[row];}
-    const auto m=w.orbitals.size();const auto& action=canonical_action(w,f,0);
-    std::vector<std::vector<double>> sq(k,std::vector<double>(n,0));
-    for(std::size_t col=0;col<k;++col)for(std::size_t row=0;row<n;++row)sq[col][row]=action.metric_packed[row*m+indices[col]];
-    for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<k;++b){const double g=std::inner_product(q[a].begin(),q[a].end(),sq[b].begin(),0.);if(!std::isfinite(g)||std::abs(g-(a==b?1.:0.))>metric_tolerance)return {};}
+struct CharacterFailure {std::string status,detail;};
+std::vector<double> characters(const Wavefunction& w,const Frame& f,const std::vector<std::size_t>& indices,CharacterFailure* failure=nullptr){
+    const auto fail=[&](const char* status,const char* quantity,double value,double limit){
+        if(failure){failure->status=status;std::ostringstream text;text<<std::setprecision(12)<<quantity<<'='<<value<<"; limit="<<limit;failure->detail=text.str();}
+        return std::vector<double>{};
+    };
+    const auto n=std::size_t(w.basis_count),k=indices.size(),m=w.orbitals.size();
+    if(!f.valid||!n||!k||w.ao_overlap.size()!=n*n)return fail("symmetry_evidence_unavailable","AO metric dimension",double(w.ao_overlap.size()),double(n*n));
+    const auto& action=canonical_action(w,f,0);Dense q(n,k),sq(n,k);
+    for(std::size_t col=0;col<k;++col){const auto i=indices[col];if(i>=m||w.orbitals[i].coefficients.size()!=n)return {};
+        for(std::size_t r=0;r<n;++r){q(r,col)=w.orbitals[i].coefficients[r];sq(r,col)=action.metric_packed[r*m+i];}}
+    const Dense gram=q.transpose()*sq;
+    if(!gram.allFinite()||(gram-Dense::Identity(k,k)).cwiseAbs().maxCoeff()>metric_tolerance)
+        return fail("source_metric_not_orthonormal","source Gram error",(gram-Dense::Identity(k,k)).cwiseAbs().maxCoeff(),metric_tolerance);
     std::vector<double> result;
-    for(std::size_t g=0;g<f.ops.size();++g){const auto& cache=canonical_action(w,f,g);const auto& tq=cache.transformed[g];const auto& stq=cache.metric_transformed[g];if(tq.size()!=n*m||stq.size()!=n*m)return {};double chi=0;
-        for(std::size_t col=0;col<k;++col){std::vector<double> t(n),st(n);for(std::size_t row=0;row<n;++row){t[row]=tq[row*m+indices[col]];st[row]=stq[row*m+indices[col]];}const double norm=std::inner_product(t.begin(),t.end(),st.begin(),0.);if(!std::isfinite(norm)||std::abs(norm-1)>metric_tolerance)return {};auto residual=t,residual_metric=st;
-            for(std::size_t a=0;a<k;++a){const double v=std::inner_product(sq[a].begin(),sq[a].end(),t.begin(),0.);if(a==col)chi+=v;for(std::size_t row=0;row<n;++row){residual[row]-=v*q[a][row];residual_metric[row]-=v*sq[a][row];}}
-            const double leakage=std::inner_product(residual.begin(),residual.end(),residual_metric.begin(),0.);if(!std::isfinite(leakage)||leakage< -1e-10||leakage>character_tolerance*character_tolerance)return {};
-        }result.push_back(chi);
+    for(std::size_t g=0;g<f.ops.size();++g){const auto& cache=canonical_action(w,f,g);
+        if(cache.transformed[g].size()!=n*m||cache.metric_transformed[g].size()!=n*m)return {};
+        Dense tq(n,k),stq(n,k);for(std::size_t c=0;c<k;++c)for(std::size_t r=0;r<n;++r){tq(r,c)=cache.transformed[g][r*m+indices[c]];stq(r,c)=cache.metric_transformed[g][r*m+indices[c]];}
+        const Dense d=sq.transpose()*tq;
+        const Dense residual=tq-q*d,residual_metric=stq-sq*d;
+        for(std::size_t c=0;c<k;++c){const double norm=tq.col(c).dot(stq.col(c)),loss=residual.col(c).dot(residual_metric.col(c));
+            if(!std::isfinite(norm)||std::abs(norm-1)>metric_tolerance)
+                return fail("symmetry_action_not_isometric","transformed norm error",std::abs(norm-1),metric_tolerance);
+            if(!std::isfinite(loss)||loss< -1e-10||loss>character_tolerance*character_tolerance)
+                return fail("subspace_not_closed","S-metric leakage squared",loss,character_tolerance*character_tolerance);}
+        result.push_back(d.trace());
     }return result;
 }
-// Energy supplies candidates only. Edges require measured operation coupling;
-// the resulting blocks still have to pass the complete leakage test above.
+// Residual of the real central idempotent on each unchanged source column.
+// Both canonical MOs and reconstructed source SALCs use this same S-metric
+// test after their complete containing span passes the closure/Gram gates.
+std::vector<double> projection_residuals(const Wavefunction& w,const Frame& f,
+    const std::vector<std::size_t>& members,std::size_t dimension,double norm,
+    const std::vector<double>& row_characters){
+    const auto n=std::size_t(w.basis_count),m=w.orbitals.size(),k=members.size();
+    if(!f.valid||!n||!k||w.ao_overlap.size()!=n*n||row_characters.size()!=f.ops.size()||norm<=0)return {};
+    Dense projected=Dense::Zero(n,k);
+    for(std::size_t g=0;g<f.ops.size();++g){const auto& cache=canonical_action(w,f,g);
+        if(cache.transformed[g].size()!=n*m)return {};
+        const double factor=double(dimension)*row_characters[g]/(double(f.ops.size())*norm);
+        for(std::size_t c=0;c<k;++c){if(members[c]>=m||w.orbitals[members[c]].coefficients.size()!=n)return {};
+            for(std::size_t a=0;a<n;++a)projected(a,c)+=factor*cache.transformed[g][a*m+members[c]];}}
+    Dense residual(n,k);for(std::size_t c=0;c<k;++c)for(std::size_t a=0;a<n;++a)residual(a,c)=w.orbitals[members[c]].coefficients[a]-projected(a,c);
+    const Dense sr=Eigen::Map<const Dense>(w.ao_overlap.data(),n,n)*residual;
+    std::vector<double> losses;for(std::size_t c=0;c<k;++c)losses.push_back(residual.col(c).dot(sr.col(c)));
+    return losses;
+}
+bool pure_projection(double loss){return std::isfinite(loss)&&loss>=-1e-10&&loss<=character_tolerance*character_tolerance;}
+void retain_projection_residual(NboAomoName& name,double loss){
+    if(std::isfinite(loss)&&loss>=-1e-10&&(!name.projection_residual||loss<*name.projection_residual))
+        name.projection_residual=std::max(0.,loss);
+}
+// Every edge is measured from the actual group action in the AO metric.
+// The scaled edge bound prevents many individually small couplings from
+// evading the complete-column leakage test. Energy never excludes partners.
 std::vector<std::vector<std::size_t>> connected_blocks(const Wavefunction& w,const Frame& f,const std::vector<std::size_t>& rows){
-    const auto n=std::size_t(w.basis_count),k=rows.size();std::vector<std::vector<std::size_t>> result;
-    if(!k)return result;
+    const auto n=std::size_t(w.basis_count),k=rows.size(),m=w.orbitals.size();
     const auto singles=[&](){std::vector<std::vector<std::size_t>> v;for(auto i:rows)v.push_back({i});return v;};
-    if(k==1)return singles();
-    if(!f.valid||!n||w.ao_overlap.size()!=n*n)return singles();
-    std::vector<double> packed(n*k),sq(n*k,0);
-    for(std::size_t col=0;col<k;++col){if(rows[col]>=w.orbitals.size()||w.orbitals[rows[col]].coefficients.size()!=n)return singles();for(std::size_t a=0;a<n;++a)packed[a*k+col]=w.orbitals[rows[col]].coefficients[a];}
-    const auto m=w.orbitals.size();const auto& action=canonical_action(w,f,0);
-    for(std::size_t a=0;a<n;++a)for(std::size_t col=0;col<k;++col)sq[a*k+col]=action.metric_packed[a*m+rows[col]];
-    for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<k;++b){double g=0;for(std::size_t row=0;row<n;++row)g+=packed[row*k+a]*sq[row*k+b];if(!std::isfinite(g)||std::abs(g-(a==b?1.:0.))>metric_tolerance)return singles();}
-    std::vector<std::size_t> parent(k);std::iota(parent.begin(),parent.end(),0);auto root=[&](std::size_t a){while(parent[a]!=a)a=parent[a];return a;};
-    for(std::size_t g=0;g<f.ops.size();++g){const auto& cache=canonical_action(w,f,g);const auto& tq=cache.transformed[g];if(tq.size()!=n*m)return singles();for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<a;++b){double ab=0,ba=0;for(std::size_t row=0;row<n;++row){ab+=sq[row*k+a]*tq[row*m+rows[b]];ba+=sq[row*k+b]*tq[row*m+rows[a]];}if(std::max(std::abs(ab),std::abs(ba))>character_tolerance)parent[root(b)]=root(a);}}
-    std::map<std::size_t,std::vector<std::size_t>> groups;for(std::size_t a=0;a<k;++a)groups[root(a)].push_back(rows[a]);for(auto& [key,members]:groups)result.push_back(std::move(members));return result;
+    if(k<2||!f.valid||!n||w.ao_overlap.size()!=n*n)return singles();
+    const auto& action=canonical_action(w,f,0);Dense q(n,k),sq(n,k);
+    for(std::size_t c=0;c<k;++c){if(rows[c]>=m||w.orbitals[rows[c]].coefficients.size()!=n)return singles();
+        for(std::size_t r=0;r<n;++r){q(r,c)=w.orbitals[rows[c]].coefficients[r];sq(r,c)=action.metric_packed[r*m+rows[c]];}}
+    const Dense gram=q.transpose()*sq;
+    if(!gram.allFinite()||(gram-Dense::Identity(k,k)).cwiseAbs().maxCoeff()>metric_tolerance)return singles();
+    std::vector<std::size_t> parent(k);std::iota(parent.begin(),parent.end(),0);
+    auto root=[&](std::size_t a){while(parent[a]!=a){parent[a]=parent[parent[a]];a=parent[a];}return a;};
+    const double edge_bound=character_tolerance/std::sqrt(double(k));
+    for(std::size_t g=0;g<f.ops.size();++g){const auto& cache=canonical_action(w,f,g);if(cache.transformed[g].size()!=n*m)return singles();
+        Dense tq(n,k);for(std::size_t c=0;c<k;++c)for(std::size_t r=0;r<n;++r)tq(r,c)=cache.transformed[g][r*m+rows[c]];
+        const Dense d=sq.transpose()*tq;if(!d.allFinite())return singles();
+        for(std::size_t a=0;a<k;++a)for(std::size_t b=0;b<a;++b)
+            if(std::max(std::abs(d(a,b)),std::abs(d(b,a)))>edge_bound)parent[root(b)]=root(a);
+    }
+    std::map<std::size_t,std::vector<std::size_t>> groups;
+    for(std::size_t a=0;a<k;++a)groups[root(a)].push_back(rows[a]);
+    std::vector<std::vector<std::size_t>> result;for(auto& [key,members]:groups)result.push_back(std::move(members));return result;
 }
 std::vector<std::vector<std::size_t>> canonical_blocks(const Wavefunction& w,const Frame& f){
-    std::vector<std::vector<std::size_t>> result;std::vector<std::size_t> rows(w.orbitals.size());std::iota(rows.begin(),rows.end(),0);
-    std::stable_sort(rows.begin(),rows.end(),[&](auto a,auto b){const auto& x=w.orbitals[a];const auto& y=w.orbitals[b];if(x.spin!=y.spin)return x.spin<y.spin;const bool xf=std::isfinite(x.energy_hartree),yf=std::isfinite(y.energy_hartree);if(xf!=yf)return xf;if(xf&&x.energy_hartree!=y.energy_hartree)return x.energy_hartree<y.energy_hartree;return a<b;});
-    for(std::size_t lo=0;lo<rows.size();){std::size_t hi=lo+1;const auto& first=w.orbitals[rows[lo]];while(hi<rows.size()&&w.orbitals[rows[hi]].spin==first.spin&&std::isfinite(first.energy_hartree)&&std::abs(w.orbitals[rows[hi]].energy_hartree-first.energy_hartree)<=1e-5)++hi;
-        auto blocks=connected_blocks(w,f,{rows.begin()+lo,rows.begin()+hi});result.insert(result.end(),blocks.begin(),blocks.end());lo=hi;
+    std::vector<std::vector<std::size_t>> result;
+    for(const auto spin:{Spin::Alpha,Spin::Beta}){std::vector<std::size_t> rows;
+        for(std::size_t i=0;i<w.orbitals.size();++i)if(w.orbitals[i].spin==spin)rows.push_back(i);
+        auto blocks=connected_blocks(w,f,rows);result.insert(result.end(),blocks.begin(),blocks.end());
     }return result;
 }
-// Reuse the native finite/linear classifier on an independent grouping view.
-// Synthetic energies are private block IDs, never displayed or used as data.
-std::vector<std::string> native_labels(const Wavefunction& w,const Frame& f,const std::vector<std::vector<std::size_t>>& blocks){
-    std::vector<std::string> labels(blocks.size());if(!f.valid)return labels;
-    Wavefunction view;view.atoms=w.atoms;view.shells=w.shells;view.primitives=w.primitives;view.basis_count=w.basis_count;view.ao_overlap=w.ao_overlap;
-    std::vector<std::size_t> offsets;std::vector<bool> valid;
-    for(std::size_t b=0;b<blocks.size();++b){offsets.push_back(view.orbitals.size());bool ok=!blocks[b].empty();for(auto i:blocks[b])if(i>=w.orbitals.size()||w.orbitals[i].coefficients.size()!=w.basis_count)ok=false;valid.push_back(ok);if(!ok)continue;for(auto i:blocks[b]){MolecularOrbital mo;mo.coefficients=w.orbitals[i].coefficients;mo.energy_hartree=double(b);view.orbitals.push_back(std::move(mo));}}
-    OrbitalSymmetryOptions options;options.character_tolerance=character_tolerance;options.minimum_subspace_retention=1-metric_tolerance;
-    if(derive_orbital_symmetry(view,options).point_group!=f.group)return labels;
-    for(std::size_t b=0;b<blocks.size();++b){if(!valid[b])continue;const auto& label=view.orbitals[offsets[b]].symmetry;bool same=!label.empty();for(std::size_t j=0;j<blocks[b].size();++j)if(view.orbitals[offsets[b]+j].symmetry!=label)same=false;if(same)labels[b]=label;}return labels;
+// Restrict the measured action to unchanged, individually pure source columns.
+// A graph component is only a proposal: its dimension, complete character row,
+// S Gram, transformed norms and leakage must all certify one actual copy.
+// Energy never removes a coupling or supplies missing partners.
+std::vector<std::vector<std::size_t>> verified_source_copies(const Wavefunction& w,const Frame& f,
+    const std::vector<std::size_t>& pure,std::size_t dimension,double norm,
+    const std::vector<double>& row_characters,std::size_t maximum_copies){
+    std::vector<std::vector<std::size_t>> result;
+    for(const auto& candidate:connected_blocks(w,f,pure)){
+        if(candidate.size()!=dimension)continue;
+        const auto values=characters(w,f,candidate);
+        if(values.size()!=row_characters.size())continue;
+        bool matches=true;for(std::size_t g=0;g<values.size();++g)
+            if(std::abs(values[g]-row_characters[g])>character_tolerance)matches=false;
+        const auto losses=projection_residuals(w,f,candidate,dimension,norm,row_characters);
+        if(losses.size()!=candidate.size()||!std::all_of(losses.begin(),losses.end(),pure_projection))matches=false;
+        if(matches)result.push_back(candidate);
+    }
+    // Connected components are disjoint. Reject inconsistent counting evidence
+    // instead of choosing a subset of equally plausible source copies.
+    if(result.size()>maximum_copies)result.clear();
+    return result;
 }
 struct Unit {
     std::vector<std::size_t> members;std::string irrep,scope,detail;
@@ -382,78 +344,89 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     const bool associated=!salc || ((salc->dataset_id.empty()||data.id.empty()||salc->dataset_id==data.id)&&
         (salc->canonical_fingerprint.empty()||data.canonical_fingerprint.empty()||salc->canonical_fingerprint==data.canonical_fingerprint));
     const auto frame=salc?frame_for(w,associated?salc:nullptr):canonical_frame(w);std::vector<Unit> units;std::vector<bool> taken(w.orbitals.size(),false);
-    const bool simple=frame.group=="C1"||frame.group=="Ci"||frame.group=="Cs"||frame.group=="C2"||frame.group=="C2h"||frame.group=="C2v"||frame.group=="D2h";
-    struct NamedCharacters {std::string label;std::size_t dimension;std::vector<double> values;};std::vector<NamedCharacters> known;
-    // Complete small Abelian tables are already defined by match_simple.
-    // This also allows a mixed closed block to be counted when no separate
-    // pure orbital happens to supply a named exemplar of one component.
-    if(simple&&frame.valid&&frame.ops.size()<=8)for(std::size_t mask=0;mask<(std::size_t(1)<<frame.ops.size());++mask){std::vector<double> values(frame.ops.size());for(std::size_t g=0;g<values.size();++g)values[g]=(mask&(std::size_t(1)<<g))?-1:1;const auto label=match_simple(frame,values,1);bool representation=!label.empty();for(std::size_t a=0;representation&&a<values.size();++a)for(std::size_t b=0;b<values.size();++b){const auto product=multiply(frame.ops[a].matrix,frame.ops[b].matrix);for(std::size_t c=0;c<values.size();++c)if(matrix_error(product,frame.ops[c].matrix)<metric_tolerance&&values[c]!=values[a]*values[b])representation=false;}if(representation&&std::none_of(known.begin(),known.end(),[&](const auto& x){return x.label==label;}))known.push_back({label,1,std::move(values)});}
+    struct NamedCharacters {std::string label;std::size_t dimension;double norm=1;std::vector<double> values;};
+    std::vector<NamedCharacters> known;
+    for(const auto& row:frame.table.rows)known.push_back({row.label,row.dimension,row.character_norm,row.characters});
+    if(frame.valid&&frame.linear){
+        const char* symbols[]={"Sigma","Pi","Delta","Phi","Gamma"};
+        for(unsigned l=0;l<=frame.lmax;++l)for(int parity:{1,-1})for(int sign:{1,-1}){
+            if(frame.group=="Cinfv"&&parity<0)continue;if(l&&sign<0)continue;
+            NamedCharacters row;row.label=symbols[l];row.dimension=l?2:1;
+            if(frame.group=="Dinfh")row.label+=parity>0?"_g":"_u";
+            if(!l)row.label+=sign>0?"+":"-";
+            for(const auto& op:frame.ops){Vec z{};for(int a=0;a<3;++a)for(int b=0;b<3;++b)z[a]+=op.matrix[3*a+b]*frame.axis[b];
+                const bool reverse=dot(z,frame.axis)<0;Mat r=op.matrix;if(reverse)for(auto& x:r)x=-x;
+                const bool reflect=det(r)<0;
+                double chi=l?(reflect?0:2*std::cos(l*std::acos(std::clamp((trace(r)-1)/2,-1.,1.)))):(reflect?sign:1);
+                if(reverse)chi*=parity;row.values.push_back(chi);
+            }known.push_back(std::move(row));
+        }
+    }
+    const auto decompose=[&](const std::vector<double>& values,std::size_t dimension){
+        std::vector<std::pair<std::size_t,std::size_t>> content;std::vector<double> reconstructed(values.size(),0);std::size_t dimensions=0;
+        if(values.empty()||known.empty())return content;
+        for(std::size_t r=0;r<known.size();++r){const auto& row=known[r];if(row.values.size()!=values.size()||row.norm<=0)return decltype(content){};
+            double inner=std::inner_product(values.begin(),values.end(),row.values.begin(),0.)/(double(values.size())*row.norm);
+            if(!std::isfinite(inner))return decltype(content){};const auto copies=std::llround(inner);
+            if(copies<0||std::abs(inner-double(copies))>character_tolerance)return decltype(content){};
+            if(!copies)continue;content.emplace_back(r,std::size_t(copies));dimensions+=row.dimension*std::size_t(copies);
+            for(std::size_t g=0;g<values.size();++g)reconstructed[g]+=double(copies)*row.values[g];
+        }
+        if(dimensions!=dimension)return decltype(content){};
+        for(std::size_t g=0;g<values.size();++g)if(std::abs(values[g]-reconstructed[g])>character_tolerance)return decltype(content){};
+        return content;
+    };
     const auto blocks=canonical_blocks(w,frame);
-    const auto derived=(simple||frame.linear)?std::vector<std::string>(blocks.size()):native_labels(w,frame,blocks);
-    for(std::size_t b=0;b<blocks.size();++b){const auto& members=blocks[b];const auto values=characters(w,frame,members);if(values.empty())continue;
-        auto label=match_frame(frame,values,members.size());if(label.empty())label=derived[b];
-        double norm=0;for(auto value:values)norm+=value*value/double(values.size());
-        if(label.empty()||std::abs(norm-1)>1e-3)continue;
-        Unit u;u.members=members;u.irrep=label;u.scope=w.orbitals[members.front()].spin==Spin::Beta?"canonical beta":"canonical alpha";u.detail="Calculated from complete canonical AO coefficients: S-orthonormal invariant irrep under every validated operation; "+frame.detail;
-        for(auto i:members){taken[i]=true;u.energy+=w.orbitals[i].energy_hartree/double(members.size());u.energy_available=u.energy_available&&std::isfinite(w.orbitals[i].energy_hartree);}
-        if(std::none_of(known.begin(),known.end(),[&](const auto& k){return k.label==label;}))known.push_back({label,members.size(),values});units.push_back(std::move(u));
-    }
-    for(std::size_t i=0;i<w.orbitals.size();++i){if(taken[i])continue;const auto& mo=w.orbitals[i];Unit u;u.members={i};u.scope=mo.spin==Spin::Beta?"canonical beta":"canonical alpha";u.energy=mo.energy_hartree;u.energy_available=std::isfinite(u.energy);
-        auto evidence=molecular_orbital_symmetry(w,i);std::string group=evidence.point_group;
-        if(evidence.origin==OrbitalSymmetryOrigin::Producer){group=evidence.producer_abelian_group.empty()?evidence.producer_detected_group:evidence.producer_abelian_group;}
-        const auto existing=finite_irrep(group,evidence.label);const auto dim=dimension(group,existing);
-        bool solid=evidence.origin==OrbitalSymmetryOrigin::Producer&&!evidence.source_path.empty()&&!existing.empty();
-        if(evidence.origin==OrbitalSymmetryOrigin::MolecularOperations&&evidence.molecular_assignment){const auto& a=*evidence.molecular_assignment;solid=!existing.empty()&&std::isfinite(a.subspace_retention)&&a.subspace_retention>=.985&&a.orbital_indices.size()==dim;}
-        // A producer's Abelian subgroup is not the full-group naming scope.
-        // Keep its literal source record intact, but do not mix its labels
-        // with calculated full-group labels and their occurrence counters.
-        if(!frame.group.empty()&&group!=frame.group)solid=false;
-        // Native derived assignments use their own retention threshold. They
-        // must pass this naming layer's unchanged complete-span leakage gate
-        // before being excluded from unknown-block representation counting.
-        if(solid&&evidence.origin==OrbitalSymmetryOrigin::MolecularOperations&&dim==1&&characters(w,frame,{i}).empty())solid=false;
-        if(solid&&dim>1){std::vector<std::size_t> members;
-            if(evidence.molecular_assignment)members=evidence.molecular_assignment->orbital_indices;
-            else for(std::size_t j=0;j<w.orbitals.size();++j)if(w.orbitals[j].spin==mo.spin&&std::abs(w.orbitals[j].energy_hartree-mo.energy_hartree)<=1e-5&&normalized(w.orbitals[j].symmetry)==normalized(mo.symmetry))members.push_back(j);
-            if(members.size()!=dim)solid=false;
-            for(auto j:members)if(j>=w.orbitals.size()||taken[j]||w.orbitals[j].spin!=mo.spin||normalized(w.orbitals[j].symmetry)!=normalized(mo.symmetry))solid=false;
-            if(solid&&characters(w,frame,members).empty())solid=false;
-            if(solid){u.members=members;u.energy=0;for(auto j:members)u.energy+=w.orbitals[j].energy_hartree/double(members.size());}
+    for(std::size_t b=0;b<blocks.size();++b){const auto& members=blocks[b];if(members.empty())continue;
+        CharacterFailure failure;const auto values=characters(w,frame,members,&failure);const auto content=decompose(values,members.size());
+        const auto scope=w.orbitals[members.front()].spin==Spin::Beta?"canonical beta":"canonical alpha";
+        double low=std::numeric_limits<double>::infinity(),high=-low;bool have_energy=true;
+        for(auto i:members){const double e=w.orbitals[i].energy_hartree;have_energy=have_energy&&std::isfinite(e);low=std::min(low,e);high=std::max(high,e);
+            auto& name=out.canonical[i];name.label="?";name.containing_members=members;
+            name.status=!frame.valid?"operation_frame_unavailable":values.empty()?(failure.status.empty()?"symmetry_evidence_unavailable":failure.status):content.empty()?"character_decomposition_unavailable":"mixed_source_member";
+            name.detail="Actual full AO coefficients; "+frame.detail+"; "+name.status+(failure.detail.empty()?"":"; "+failure.detail);
+            for(const auto& [r,copies]:content)name.containing_irreps.push_back({known[r].label,known[r].dimension,copies});
         }
-        // Producer B1/B2 can use another axis convention. In the simple groups
-        // verify agreement in this recorded frame before mixing its name with
-        // labels derived for the other canonical rows or the SALCs.
-        std::vector<double> simple_values;
-        if(simple){simple_values=characters(w,frame,{i});if(solid&&dim==1&&match_simple(frame,simple_values,1)!=existing)solid=false;}
-        if(solid){u.irrep=existing;u.detail="Existing "+std::string(orbital_symmetry_origin_name(evidence.origin))+" whole-orbital irrep; point group="+group;
-            // A measured character signature transfers a known label to SALCs
-            // in exactly the same input frame, never by dimension alone.
-            if(!simple&&group==frame.group&&std::none_of(known.begin(),known.end(),[&](const auto& k){return k.label==existing;})){auto signature=characters(w,frame,u.members);if(!signature.empty())known.push_back({existing,u.members.size(),std::move(signature)});}
-        }else{
-            u.irrep=match_simple(frame,simple_values,1);
-            u.detail=u.irrep.empty()?"No verified whole-orbital irrep (unsupported/ambiguous frame, mixed span, missing metric or operation action)":"Actual complete canonical AO coefficients pass every S-metric operation eigenfunction/leakage test; "+frame.detail;
+        if(content.empty()){
+            for(auto i:members){Unit u;u.members={i};u.scope=scope;u.energy=w.orbitals[i].energy_hartree;u.energy_available=std::isfinite(u.energy);units.push_back(std::move(u));}
+            continue;
         }
-        for(auto j:u.members){taken[j]=true;out.canonical[j].label="?";out.canonical[j].detail=u.detail+"; canonical source row="+std::to_string(j+1);}
-        units.push_back(std::move(u));
-    }
-    // A low-energy spectral cluster may have slightly mixed individual
-    // eigenvectors while its COMPLETE span is accurately invariant. Count
-    // its exact irrep content without labelling or rotating those members.
-    std::vector<bool> replaced(units.size(),false);std::vector<Unit> count_units;
-    for(const auto spin:{Spin::Alpha,Spin::Beta}){std::vector<std::size_t> unknown;for(const auto& u:units)if(u.irrep.empty())for(auto i:u.members)if(w.orbitals[i].spin==spin)unknown.push_back(i);
-        for(const auto& members:connected_blocks(w,frame,unknown)){const auto values=characters(w,frame,members);if(values.empty())continue;std::vector<double> reconstructed(values.size(),0);std::vector<std::pair<const NamedCharacters*,std::size_t>> decomposition;std::size_t dimension_sum=0;bool valid=true;
-            for(const auto& k:known){if(k.values.size()!=values.size())continue;double inner=0;for(std::size_t g=0;g<values.size();++g)inner+=values[g]*k.values[g]/double(values.size());if(!std::isfinite(inner)){valid=false;break;}const auto multiplicity=std::llround(inner);if(multiplicity<0||std::abs(inner-double(multiplicity))>character_tolerance){valid=false;break;}if(!multiplicity)continue;decomposition.push_back({&k,std::size_t(multiplicity)});dimension_sum+=k.dimension*std::size_t(multiplicity);for(std::size_t g=0;g<values.size();++g)reconstructed[g]+=double(multiplicity)*k.values[g];}
-            if(!valid||dimension_sum!=members.size())continue;for(std::size_t g=0;g<values.size();++g)if(std::abs(values[g]-reconstructed[g])>character_tolerance)valid=false;if(!valid)continue;
-            double low=std::numeric_limits<double>::infinity(),high=-low;for(auto i:members){const double energy=w.orbitals[i].energy_hartree;if(!std::isfinite(energy)){valid=false;break;}low=std::min(low,energy);high=std::max(high,energy);}if(!valid)continue;
-            for(std::size_t i=0;i<units.size();++i)if(units[i].irrep.empty()&&std::all_of(units[i].members.begin(),units[i].members.end(),[&](auto member){return std::find(members.begin(),members.end(),member)!=members.end();}))replaced[i]=true;
-            for(const auto& [k,copies]:decomposition){Unit count;count.members=members;count.irrep=k->label;count.scope=spin==Spin::Beta?"canonical beta":"canonical alpha";count.copies=copies;count.copies_resolved=false;count.counting_only=true;count.lower=low;count.upper=high;count_units.push_back(std::move(count));}
-            for(auto i:members)out.canonical[i].detail+="; complete invariant spectral block has verified integer irrep counts and eigenvalue bounds; individual mixed member remains unclassified";
+        std::vector<std::size_t> proved_counts(known.size(),0);std::set<std::size_t> proved_members;
+        for(const auto& [r,copies]:content){const auto& row=known[r];std::vector<std::size_t> pure;
+            // Central idempotent projector, with real conjugate-pair norm.
+            // It tests each *unchanged source column*. No rotated orbital is
+            // substituted for a mixed source MO merely to obtain a name.
+            const auto losses=projection_residuals(w,frame,members,row.dimension,row.norm,row.values);
+            for(std::size_t c=0;c<losses.size();++c){retain_projection_residual(out.canonical[members[c]],losses[c]);if(pure_projection(losses[c]))pure.push_back(members[c]);}
+            for(auto i:pure){auto& name=out.canonical[i];name.verified=true;name.irrep=row.label;name.point_group=frame.group;name.representation_multiplicity=copies;
+                name.status="verified_isotypic_member";name.detail="Source column lies in verified isotypic projection; independent occurrence membership unresolved; "+frame.detail;}
+            const auto source_copies=verified_source_copies(w,frame,pure,row.dimension,row.norm,row.values,copies);
+            for(std::size_t copy=0;copy<source_copies.size();++copy){const auto& partners=source_copies[copy];
+                if(std::any_of(partners.begin(),partners.end(),[&](auto i){return proved_members.contains(i);}))continue;
+                Unit u;u.members=partners;u.irrep=row.label;u.scope=scope;u.energy=0;u.energy_available=true;
+                u.detail="Verified complete irreducible source span under every operation; "+frame.detail;
+                for(auto i:partners){u.energy+=w.orbitals[i].energy_hartree/double(partners.size());u.energy_available=u.energy_available&&std::isfinite(w.orbitals[i].energy_hartree);proved_members.insert(i);
+                    auto& name=out.canonical[i];name.status="verified_irrep";name.partner_block_id="canonical-irrep:"+std::to_string(b)+":"+row.label+":"+std::to_string(copy);name.partner_block_size=partners.size();}
+                ++proved_counts[r];
+                units.push_back(std::move(u));
+            }
         }
+        // Remove only certified complete source copies. A narrower energy
+        // range for the remaining counts requires independent closure and an
+        // exact character decomposition equal to the original minus these
+        // copies. Failed residual evidence retains the original wide bounds.
+        std::vector<std::size_t> remaining;for(auto i:members)if(!proved_members.contains(i))remaining.push_back(i);
+        std::vector<std::pair<std::size_t,std::size_t>> expected;
+        for(const auto& [r,copies]:content)if(copies>proved_counts[r])expected.emplace_back(r,copies-proved_counts[r]);
+        const bool residual_verified=!remaining.empty()&&decompose(characters(w,frame,remaining),remaining.size())==expected;
+        if(residual_verified){low=std::numeric_limits<double>::infinity();high=-low;have_energy=true;
+            for(auto i:remaining){const double e=w.orbitals[i].energy_hartree;have_energy=have_energy&&std::isfinite(e);low=std::min(low,e);high=std::max(high,e);}}
+        for(const auto& [r,copies]:expected){Unit count;count.members=residual_verified?remaining:members;count.irrep=known[r].label;count.scope=scope;count.copies=copies;count.copies_resolved=false;count.counting_only=true;
+            if(have_energy){count.lower=low;count.upper=high;}units.push_back(std::move(count));}
     }
-    std::vector<Unit> counted;for(std::size_t i=0;i<units.size();++i)if(!replaced[i])counted.push_back(std::move(units[i]));counted.insert(counted.end(),count_units.begin(),count_units.end());
-    assign_ordinals(std::move(counted),out.canonical);
-    for(auto& name:out.canonical) if(name.verified) name.point_group=frame.group;
-    for(std::size_t i=0;i<out.canonical.size();++i){auto& name=out.canonical[i];if(name.verified&&!name.ordinal)name.label=canonical_mo_display_label(w,i,&name);else if(open)name.label+=w.orbitals[i].spin==Spin::Beta?" [beta]":" [alpha]";}
+    assign_ordinals(std::move(units),out.canonical);
+    for(auto& name:out.canonical){if(name.verified)name.point_group=frame.group;name.complete_set_ordinal=name.ordinal;name.ordinal_scope="complete canonical set";}
+    for(std::size_t i=0;i<out.canonical.size();++i){auto& name=out.canonical[i];if(name.verified)name.label=canonical_mo_display_label(w,i,&name);else if(open)name.label+=w.orbitals[i].spin==Spin::Beta?" [beta]":" [alpha]";}
     if(!salc)return out;
     Wavefunction side;side.atoms=w.atoms;side.shells=w.shells;side.primitives=w.primitives;side.basis_count=w.basis_count;side.ao_overlap=w.ao_overlap;side.orbitals.resize(salc->orbitals.size());
     for(std::size_t i=0;i<salc->orbitals.size();++i){const auto& orbital=salc->orbitals[i];auto& mo=side.orbitals[i];mo.energy_hartree=orbital.energy_hartree.value_or(std::numeric_limits<double>::quiet_NaN());mo.spin=orbital.spin==NboSpin::Beta?Spin::Beta:Spin::Alpha;
@@ -462,43 +435,115 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
         if(!valid)mo.coefficients.clear();
     }
     std::vector<std::vector<std::size_t>> side_blocks;std::vector<std::size_t> side_subspaces;
+    std::vector<bool> side_actual(salc->subspaces.size(),false),side_complete(salc->subspaces.size(),false);
+    std::vector<CharacterFailure> side_failures(salc->subspaces.size());
     for(std::size_t s=0;s<salc->subspaces.size();++s){const auto& sub=salc->subspaces[s];bool have_coefficients=!sub.orbital_indices.empty();for(auto i:sub.orbital_indices)if(i>=side.orbitals.size()||side.orbitals[i].coefficients.size()!=w.basis_count)have_coefficients=false;
-        const auto pieces=have_coefficients?connected_blocks(side,frame,sub.orbital_indices):std::vector<std::vector<std::size_t>>{sub.orbital_indices};for(const auto& piece:pieces){side_blocks.push_back(piece);side_subspaces.push_back(s);}}
-    const auto side_derived=(simple||frame.linear)?std::vector<std::string>(side_blocks.size()):native_labels(side,frame,side_blocks);
+        side_actual[s]=have_coefficients;
+        if(have_coefficients){const auto values=characters(side,frame,sub.orbital_indices,&side_failures[s]);
+            side_complete[s]=!decompose(values,sub.orbital_indices.size()).empty();}
+        const auto pieces=side_complete[s]?connected_blocks(side,frame,sub.orbital_indices):std::vector<std::vector<std::size_t>>{sub.orbital_indices};
+        for(const auto& piece:pieces){side_blocks.push_back(piece);side_subspaces.push_back(s);}}
+
     std::vector<bool> used(salc->orbitals.size(),false);units.clear();
-    for(std::size_t b=0;b<side_blocks.size();++b){const auto& sub=salc->subspaces[side_subspaces[b]];Unit u;u.scope=sub.fragment_id+":"+nbo_spin_name(sub.spin);u.detail="Fixed fragment subspace; "+frame.detail;
+    for(std::size_t b=0;b<side_blocks.size();++b){const auto sub_index=side_subspaces[b];const auto& sub=salc->subspaces[sub_index];Unit u;u.scope=sub.fragment_id+":"+nbo_spin_name(sub.spin);u.detail="Fixed fragment subspace; "+frame.detail;
         bool indices_ok=!side_blocks[b].empty();for(auto i:side_blocks[b])if(i>=out.salc.size()||used[i]||salc->orbitals[i].fragment_id!=sub.fragment_id||salc->orbitals[i].spin!=sub.spin)indices_ok=false;if(!indices_ok)continue;u.members=side_blocks[b];
         const bool verified=frame.valid&&sub.symmetry_verified&&sub.dimension==sub.orbital_indices.size()&&std::isfinite(sub.closure_error)&&sub.closure_error<=character_tolerance&&std::isfinite(sub.orthogonality_error)&&sub.orthogonality_error<=metric_tolerance;
-        if(verified){auto values=characters(side,frame,u.members);bool actual=!values.empty();
-            // Stored full-subspace characters remain useful even when the
-            // attachment omitted AO columns. Never reuse them for a subset.
-            if(!actual&&u.members==sub.orbital_indices)values=sub.characters;
-            double norm=0;for(double chi:values)norm+=chi*chi/double(values.size());
-            const auto copies=std::isfinite(norm)?std::size_t(std::llround(std::sqrt(std::max(0.,norm)))):0;
-            if(copies&&std::abs(norm-double(copies*copies))<1e-3&&u.members.size()%copies==0){const auto dim=u.members.size()/copies;for(auto& value:values)value/=double(copies);
-                u.irrep=match_frame(frame,values,dim);if(u.irrep.empty()&&copies==1&&actual)u.irrep=side_derived[b];
-                if(u.irrep.empty())for(const auto& k:known){if(k.dimension!=dim||k.values.size()!=values.size())continue;bool same=true;for(std::size_t a=0;a<values.size();++a)if(!std::isfinite(values[a])||std::abs(k.values[a]-values[a])>character_tolerance)same=false;if(same){if(!u.irrep.empty()&&u.irrep!=k.label){u.irrep.clear();break;}u.irrep=k.label;}}
-                u.copies=copies;u.copies_resolved=copies==1;
-            }
-        }
-        if(u.irrep.empty())u.detail+="; unclassified: reducible/mixed span, unsupported action, ambiguous axes, or no measured named signature";
-        else u.detail+="; full-subspace characters verified; irrep occurrence count="+std::to_string(u.copies)+(u.copies_resolved?"; one ordinal shared by true partners":"; repeated irrep known but individual copy numbering unresolved");
+        const bool actual=side_actual[sub_index];
+        std::vector<double> values;
+        if(verified&&actual&&side_complete[sub_index])values=characters(side,frame,u.members);
+        // A stored signature can stand in for omitted AO columns only for its
+        // complete recorded span. Failed actual closure/metric evidence never
+        // falls back to a stored signature that happens to look irreducible.
+        if(verified&&!actual&&u.members==sub.orbital_indices)values=sub.characters;
+        const auto content=decompose(values,u.members.size());
         for(auto i:u.members){used[i]=true;const auto& o=salc->orbitals[i];if(o.energy_hartree&&std::isfinite(*o.energy_hartree))u.energy+=*o.energy_hartree/double(u.members.size());else u.energy_available=false;out.salc[i].label="?";out.salc[i].detail=u.detail;
-            if(verified && !u.irrep.empty() && u.copies_resolved) {
-                out.salc[i].partner_block_id="salc-irrep-block:"+std::to_string(b);
-                out.salc[i].partner_block_size=u.members.size();
+            auto& name=out.salc[i];name.containing_members=u.members;
+            const auto& failure=side_failures[sub_index];
+            name.status=!frame.valid?"operation_frame_unavailable":actual&&!failure.status.empty()?failure.status:!verified?"subspace_not_verified":values.empty()?(actual?"subspace_not_closed":"stored_characters_unavailable"):content.empty()?"character_decomposition_unavailable":actual?"mixed_source_member":"stored_span_unclassified";
+            name.detail+="; "+name.status;
+            if(!failure.detail.empty())name.detail+="; "+failure.detail;
+            for(const auto& [r,copies]:content)name.containing_irreps.push_back({known[r].label,known[r].dimension,copies});
+        }
+        if(content.empty()){if(verified)certify_salc_energy_bounds(u,side,w,*salc);units.push_back(std::move(u));continue;}
+        if(!actual){
+            if(content.size()==1){const auto& [r,copies]=content.front();u.irrep=known[r].label;u.copies=copies;u.copies_resolved=copies==1;
+                u.detail+="; complete stored characters verified; irrep occurrence count="+std::to_string(copies)+(u.copies_resolved?"; one ordinal shared by stored partners":"; repeated irrep span; individual copy numbering unresolved");
+                for(auto i:u.members){auto& name=out.salc[i];name.status=u.copies_resolved?"verified_stored_irrep_span":"verified_stored_isotypic_span";
+                    if(u.copies_resolved){name.partner_block_id="salc-irrep-block:"+std::to_string(b);name.partner_block_size=u.members.size();}}
+                if(!u.copies_resolved)certify_salc_energy_bounds(u,side,w,*salc);
+                units.push_back(std::move(u));
+            }else{
+                // Full stored reducible characters provide counts but cannot
+                // identify any particular source column without AO evidence.
+                for(const auto& [r,copies]:content){Unit count=u;count.irrep=known[r].label;count.copies=copies;count.copies_resolved=false;count.counting_only=true;certify_salc_energy_bounds(count,side,w,*salc);units.push_back(std::move(count));}
+            }
+            continue;
+        }
+        std::vector<std::size_t> proved_counts(known.size(),0);std::set<std::size_t> proved_members;
+        for(const auto& [r,copies]:content){const auto& row=known[r];std::vector<std::size_t> pure;
+            const auto losses=projection_residuals(side,frame,u.members,row.dimension,row.norm,row.values);
+            for(std::size_t c=0;c<losses.size();++c){auto& name=out.salc[u.members[c]];retain_projection_residual(name,losses[c]);if(pure_projection(losses[c]))pure.push_back(u.members[c]);}
+            Unit evidence=u;certify_salc_energy_bounds(evidence,side,w,*salc);
+            for(auto i:pure){auto& name=out.salc[i];name.verified=true;name.irrep=row.label;name.label=orbital_label(row.label);name.representation_multiplicity=copies;
+                name.status="verified_isotypic_member";name.detail="Unchanged source SALC column lies in verified S-metric isotypic projection; independent occurrence membership unresolved; "+evidence.detail;}
+            const auto source_copies=verified_source_copies(side,frame,pure,row.dimension,row.norm,row.values,copies);
+            for(std::size_t copy=0;copy<source_copies.size();++copy){const auto& partners=source_copies[copy];
+                if(std::any_of(partners.begin(),partners.end(),[&](auto i){return proved_members.contains(i);}))continue;
+                Unit named;named.members=partners;named.irrep=row.label;named.scope=u.scope;
+                named.detail="Verified irreducible source SALC span under every operation; "+frame.detail;
+                for(auto i:partners){const auto& energy=salc->orbitals[i].energy_hartree;if(energy&&std::isfinite(*energy))named.energy+=*energy/double(partners.size());else named.energy_available=false;proved_members.insert(i);
+                    auto& name=out.salc[i];name.status="verified_irrep";name.partner_block_id="salc-irrep:"+std::to_string(b)+":"+row.label+":"+std::to_string(copy);name.partner_block_size=partners.size();}
+                ++proved_counts[r];
+                units.push_back(std::move(named));
             }
         }
-        if(verified&&(u.irrep.empty()||!u.copies_resolved))certify_salc_energy_bounds(u,side,w,*salc);
-        units.push_back(std::move(u));
+        std::vector<std::size_t> remaining;for(auto i:u.members)if(!proved_members.contains(i))remaining.push_back(i);
+        std::vector<std::pair<std::size_t,std::size_t>> expected;
+        for(const auto& [r,copies]:content)if(copies>proved_counts[r])expected.emplace_back(r,copies-proved_counts[r]);
+        const bool residual_verified=!remaining.empty()&&decompose(characters(side,frame,remaining),remaining.size())==expected;
+        for(const auto& [r,copies]:expected){Unit count=u;count.members=residual_verified?remaining:u.members;count.irrep=known[r].label;count.copies=copies;count.copies_resolved=false;count.counting_only=true;
+            certify_salc_energy_bounds(count,side,w,*salc);units.push_back(std::move(count));}
     }
-    for(std::size_t i=0;i<out.salc.size();++i)if(!used[i]){const auto& o=salc->orbitals[i];Unit u;u.members={i};u.scope=o.fragment_id+":"+nbo_spin_name(o.spin);u.energy=o.energy_hartree.value_or(0);u.energy_available=o.energy_hartree&&std::isfinite(*o.energy_hartree);units.push_back(u);out.salc[i].label="?";out.salc[i].detail="No validated containing SALC subspace";}
+    for(std::size_t i=0;i<out.salc.size();++i)if(!used[i]){const auto& o=salc->orbitals[i];Unit u;u.members={i};u.scope=o.fragment_id+":"+nbo_spin_name(o.spin);u.energy=o.energy_hartree.value_or(0);u.energy_available=o.energy_hartree&&std::isfinite(*o.energy_hartree);units.push_back(u);out.salc[i].label="?";out.salc[i].status="subspace_unavailable";out.salc[i].detail="No validated containing SALC subspace";}
     assign_ordinals(std::move(units),out.salc);
     for(std::size_t i=0;i<out.salc.size();++i)if(out.salc[i].verified&&!out.salc[i].ordinal)out.salc[i].label+=" [SALC "+std::to_string(i+1)+"]";
     for(std::size_t i=0;i<out.salc.size();++i)if(open && !salc->orbitals[i].spatial_spin)out.salc[i].label+=salc->orbitals[i].spin==NboSpin::Beta?" [beta]":salc->orbitals[i].spin==NboSpin::Alpha?" [alpha]":" [total]";
-    for(auto& name:out.salc) if(name.verified) name.point_group=frame.group;
+    for(auto& name:out.salc){if(name.verified)name.point_group=frame.group;name.complete_set_ordinal=name.ordinal;name.ordinal_scope="complete fragment spin set";}
     (void)data; // Identity is immutable and belongs to the caller's attachment.
     return out;
+}
+
+NboAomoNames nbo_aomo_names_for_view(const Wavefunction& w,const NboAomoNames& source,
+    const std::vector<std::size_t>& canonical_indices,const std::vector<std::size_t>& salc_indices,
+    const NboSalcModel* model,const std::string& scope){
+    auto out=source;
+    const auto number=[&](std::vector<NboAomoName>& names,const std::vector<std::size_t>& indices,bool side){
+        struct Occurrence {std::string family,block;std::vector<std::size_t> members;double energy=0;bool available=true;};
+        std::map<std::string,Occurrence> groups;std::set<std::size_t> selected(indices.begin(),indices.end());
+        for(auto i:selected){if(i>=names.size()||(!side&&i>=w.orbitals.size())||(side&&(!model||i>=model->orbitals.size())))continue;
+            auto& name=names[i];name.ordinal=0;name.ordinal_scope=scope;
+            if(!name.verified||name.irrep.empty()||name.partner_block_id.empty()||name.representation_multiplicity!=1)continue;
+            if(side&&model->orbitals[i].atoms.size()<=1){name.ordinal=source.salc[i].ordinal;name.ordinal_scope=source.salc[i].ordinal_scope;continue;}
+            const std::string family=side?model->orbitals[i].fragment_id+":"+nbo_spin_name(model->orbitals[i].spin):
+                w.orbitals[i].spin==Spin::Beta?"canonical beta":"canonical alpha";
+            auto& group=groups[family+":"+name.irrep+":"+name.partner_block_id];group.family=family+":"+name.irrep;group.block=name.partner_block_id;group.members.push_back(i);
+            const auto energy=side?model->orbitals[i].energy_hartree:std::optional<double>(w.orbitals[i].energy_hartree);
+            group.available=group.available&&energy&&std::isfinite(*energy);if(energy&&std::isfinite(*energy))group.energy+=*energy;
+        }
+        std::vector<Occurrence> ordered;
+        for(auto& [key,g]:groups){if(!g.available||g.members.empty()||g.members.size()!=names[g.members.front()].partner_block_size)continue;
+            g.energy/=double(g.members.size());ordered.push_back(std::move(g));}
+        std::stable_sort(ordered.begin(),ordered.end(),[](const auto& a,const auto& b){if(a.family!=b.family)return a.family<b.family;if(a.energy!=b.energy)return a.energy<b.energy;return a.members.front()<b.members.front();});
+        std::map<std::string,std::size_t> counters;
+        for(const auto& g:ordered){const auto ordinal=++counters[g.family];for(auto i:g.members){auto& name=names[i];name.ordinal=ordinal;
+            name.detail+="; display ordinal in "+scope+": verified visible occurrences ordered by mean energy; exact ties use stable source identity (display convention)";}}
+        for(auto i:selected){if(i>=names.size())continue;auto& name=names[i];if(!name.verified)continue;
+            if(!side)name.label=canonical_mo_display_label(w,i,&name);
+            else {name.label=(name.ordinal?std::to_string(name.ordinal):"")+orbital_label(name.irrep);if(!name.ordinal)name.label+=" [SALC "+std::to_string(i+1)+"]";
+                if(model&&model->orbitals[i].spin!=NboSpin::Total)name.label+=" ["+std::string(nbo_spin_name(model->orbitals[i].spin))+"]";}
+        }
+    };
+    number(out.canonical,canonical_indices,false);number(out.salc,salc_indices,true);return out;
 }
 
 std::shared_ptr<const NboAomoNames> canonical_mo_names(const Wavefunction& w){
@@ -572,5 +617,29 @@ std::string canonical_mo_current_irrep(const Wavefunction& w,std::size_t index,c
 
 std::string orbital_irrep_display_label(const NboAomoName& name){
     return name.verified&&!name.irrep.empty()?orbital_label(name.irrep):"?";
+}
+
+std::string serialize_orbital_name_json(const NboAomoName& name){
+    const auto quote=[](const std::string& text){std::ostringstream s;s<<'"';for(unsigned char c:text){
+        if(c=='"'||c=='\\')s<<'\\'<<char(c);else if(c<32)s<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<unsigned(c);else s<<char(c);}s<<'"';return s.str();};
+    std::ostringstream out;out<<std::setprecision(17)<<"{\"label\":"<<quote(name.label)
+        <<",\"irrep\":"<<quote(name.irrep)<<",\"point_group\":"<<quote(name.point_group)
+        <<",\"ordinal\":"<<name.ordinal<<",\"ordinal_scope\":"<<quote(name.ordinal_scope)
+        <<",\"complete_set_ordinal\":"<<name.complete_set_ordinal
+        <<",\"verified\":"<<(name.verified?"true":"false")<<",\"status\":"<<quote(name.status)
+        <<",\"representation_multiplicity\":"<<name.representation_multiplicity
+        <<",\"partner_block_id\":"<<quote(name.partner_block_id)<<",\"partner_block_size\":"<<name.partner_block_size
+        <<",\"projection_residual_squared\":";
+    if(name.projection_residual)out<<*name.projection_residual;else out<<"null";
+    out<<",\"containing_members\":[";for(std::size_t i=0;i<name.containing_members.size();++i){if(i)out<<',';out<<name.containing_members[i];}
+    out<<"],\"containing_irreps\":[";for(std::size_t i=0;i<name.containing_irreps.size();++i){if(i)out<<',';const auto& r=name.containing_irreps[i];
+        out<<"{\"irrep\":"<<quote(r.irrep)<<",\"dimension\":"<<r.dimension<<",\"multiplicity\":"<<r.multiplicity<<'}';}
+    out<<"],\"detail\":"<<quote(name.detail)<<'}';return out.str();
+}
+std::string serialize_orbital_names_json(const NboAomoNames& names){
+    std::ostringstream out;out<<"{\"schema\":\"cov.orbital.display-names.v2\",\"canonical\":[";
+    const auto rows=[&](const std::vector<NboAomoName>& entries){for(std::size_t i=0;i<entries.size();++i){if(i)out<<',';
+        auto row=serialize_orbital_name_json(entries[i]);out<<"{\"index\":"<<i<<','<<row.substr(1);}};
+    rows(names.canonical);out<<"],\"salc\":[";rows(names.salc);out<<"]}";return out.str();
 }
 } // namespace cov::ui

@@ -101,6 +101,9 @@ struct ActiveOrbitalView {
     // Inspection representation is independent of the orbital kind of its
     // first term: a SALC may be a signed NAO combination.
     std::string source_id, label, source_label, display_name_evidence;
+    // Produced only by the typed naming serializer; keeps display scope and
+    // source-subspace evidence without making analysis depend on the UI model.
+    std::string display_name_metadata_json;
     std::string semantic_kind, group_id;
     NboSpin spin=NboSpin::Total;
     NboSpin source_spin=NboSpin::Total;

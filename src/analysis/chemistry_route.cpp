@@ -704,6 +704,7 @@ std::string serialize_active_orbital_view_json(const ActiveOrbitalView& view) {
         <<",\"label\":"<<quoted(view.label)
         <<",\"source_label\":"<<quoted(view.source_label)
         <<",\"display_name_evidence\":"<<quoted(view.display_name_evidence)
+        <<",\"display_name_metadata\":"<<(view.display_name_metadata_json.empty()?"null":view.display_name_metadata_json)
         <<",\"semantic_kind\":"<<quoted(view.semantic_kind)
         <<",\"group_id\":"<<quoted(view.group_id)
         <<",\"spin\":"<<quoted(nbo_spin_name(view.spin))

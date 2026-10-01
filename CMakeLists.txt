@@ -43,6 +43,7 @@ add_library(cov_parser
     src/analysis/bond_analysis.cpp
     src/analysis/symmetry.cpp
     src/analysis/point_group_catalog.cpp
+    src/analysis/point_group_irreps.cpp
     src/analysis/orbital_symmetry.cpp
     src/analysis/orbital_symmetry_final.cpp
     src/analysis/orbital_chemistry.cpp
@@ -192,6 +193,7 @@ if(COV_ENABLE_CUDA OR COV_BUILD_TESTS)
     )
     target_link_libraries(cov_ui PUBLIC cov_imgui_core cov_orbitals cov_molecule)
     target_compile_features(cov_ui PUBLIC cxx_std_20)
+    target_include_directories(cov_ui SYSTEM PRIVATE ${cov_eigen_SOURCE_DIR})
     target_compile_options(cov_ui PRIVATE
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>
     )
@@ -479,6 +481,10 @@ if(COV_BUILD_TESTS)
     target_link_libraries(cov_point_group_catalog_smoke PRIVATE cov_parser)
     add_test(NAME point_group_catalog_smoke COMMAND cov_point_group_catalog_smoke)
 
+    add_executable(cov_point_group_irreps_smoke tests/point_group_irreps_smoke.cpp)
+    target_link_libraries(cov_point_group_irreps_smoke PRIVATE cov_parser)
+    add_test(NAME point_group_irreps_smoke COMMAND cov_point_group_irreps_smoke)
+
     add_executable(cov_coordination_geometry_smoke tests/coordination_geometry_smoke.cpp)
     target_link_libraries(cov_coordination_geometry_smoke PRIVATE cov_orbitals)
     add_test(NAME coordination_geometry_smoke COMMAND cov_coordination_geometry_smoke)
@@ -609,4 +615,10 @@ if(COV_BUILD_TESTS)
     add_executable(cov_ui_details_resize_smoke tests/ui_details_resize_smoke.cpp)
     target_link_libraries(cov_ui_details_resize_smoke PRIVATE cov_ui)
     add_test(NAME ui_details_resize_smoke COMMAND cov_ui_details_resize_smoke)
+    add_executable(cov_point_group_geometry_smoke tests/point_group_geometry_smoke.cpp)
+    target_link_libraries(cov_point_group_geometry_smoke PRIVATE cov_parser)
+    target_compile_definitions(cov_point_group_geometry_smoke PRIVATE COV_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME point_group_geometry_smoke COMMAND cov_point_group_geometry_smoke)
+    add_executable(cov_orbital_naming_probe tests/orbital_naming_probe.cpp)
+    target_link_libraries(cov_orbital_naming_probe PRIVATE cov_ui)
 endif()

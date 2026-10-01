@@ -1,4 +1,5 @@
 #include "cov/symmetry.hpp"
+#include "cov/point_group_irreps.hpp"
 
 #include <algorithm>
 #include <array>
@@ -276,6 +277,21 @@ std::vector<Vec3> candidate_axes(const std::vector<Vec3>& positions,
 
     for (const auto& p : positions) add_axis(axes, p, options.maximum_candidate_axes);
 
+    // A threefold face axis need not pass through an atom or bisect two atom
+    // vectors (e.g. octahedral waters). Equilateral orbit triangles supply its
+    // normal without a molecule-specific Cartesian diagonal assumption.
+    double radius=0;for(const auto& p:positions)radius=std::max(radius,norm(p));
+    const double tolerance=std::max(options.absolute_tolerance_bohr,
+        options.relative_tolerance*std::max(1.0,radius));
+    for(std::size_t i=0;i<positions.size()&&axes.size()<options.maximum_candidate_axes;++i)
+        for(std::size_t j=i+1;j<positions.size()&&axes.size()<options.maximum_candidate_axes;++j)
+            for(std::size_t k=j+1;k<positions.size()&&axes.size()<options.maximum_candidate_axes;++k){
+                const auto a=sub(positions[j],positions[i]),b=sub(positions[k],positions[i]);
+                const double ab=norm(a),ac=norm(b),bc=norm(sub(positions[k],positions[j]));
+                if(ab>tolerance&&std::max({ab,ac,bc})-std::min({ab,ac,bc})<4*tolerance)
+                    add_axis(axes,cross(a,b),options.maximum_candidate_axes);
+            }
+
     for (std::size_t i = 0; i < positions.size() && axes.size() < options.maximum_candidate_axes; ++i) {
         for (std::size_t j = i + 1; j < positions.size() && axes.size() < options.maximum_candidate_axes; ++j) {
             add_axis(axes, cross(positions[i], positions[j]), options.maximum_candidate_axes);
@@ -288,7 +304,8 @@ std::vector<Vec3> candidate_axes(const std::vector<Vec3>& positions,
 
 int count_axes_with_order_at_least(const std::vector<RotationAxis>& axes, const int order) {
     int count = 0;
-    for (const auto& axis : axes) if (axis.order >= order) ++count;
+    // C5 does not contain C4 or C3. Count the actual rotation subgroups.
+    for (const auto& axis : axes) if (axis.order % order == 0) ++count;
     return count;
 }
 
@@ -305,33 +322,156 @@ int maximum_improper_order(const std::vector<ImproperAxis>& axes) {
 }
 
 const RotationAxis* principal_rotation_axis(const std::vector<RotationAxis>& axes,
-                                            const int order) {
-    for (const auto& axis : axes) if (axis.order == order) return &axis;
-    return nullptr;
+                                            const int order,
+                                            const std::vector<ImproperAxis>& improper) {
+    const RotationAxis* best=nullptr;int best_improper=1;
+    for (const auto& axis : axes) if (axis.order == order) {
+        int aligned=1;for(const auto& s:improper)if(same_axis(axis.axis,s.axis))aligned=std::max(aligned,s.order);
+        if(!best||aligned>best_improper||(aligned==best_improper&&axis.error<best->error)){
+            best=&axis;best_improper=aligned;
+        }
+    }
+    return best;
 }
 
 bool has_plane_relation(const std::vector<ReflectionPlane>& planes,
                         const Vec3& axis,
-                        const bool normal_parallel_axis) {
+                        const bool normal_parallel_axis,
+                        const double angular_tolerance) {
     for (const auto& plane : planes) {
         const double alignment = std::abs(dot(plane.normal, axis));
         if (normal_parallel_axis) {
-            if (alignment > 1.0 - 2.0e-5) return true;
+            if (alignment > 1.0 - angular_tolerance*angular_tolerance) return true;
         } else {
-            if (alignment < 2.0e-5) return true;
+            if (alignment < angular_tolerance) return true;
         }
     }
     return false;
 }
 
 int perpendicular_c2_count(const std::vector<RotationAxis>& axes,
-                           const Vec3& principal) {
+                           const Vec3& principal,
+                           const double angular_tolerance) {
     int count = 0;
     for (const auto& axis : axes) {
-        if (axis.order < 2) continue;
-        if (std::abs(dot(axis.axis, principal)) < 2.0e-5) ++count;
+        if (axis.order % 2 != 0) continue;
+        if (std::abs(dot(axis.axis, principal)) < angular_tolerance) ++count;
     }
     return count;
+}
+
+double matrix_error(const Mat3& a,const Mat3& b) {
+    double e=0;for(int k=0;k<9;++k)e=std::max(e,std::abs(a[k]-b[k]));return e;
+}
+Mat3 transpose(const Mat3& a) {return {a[0],a[3],a[6],a[1],a[4],a[7],a[2],a[5],a[8]};}
+Mat3 negative(Mat3 a) {for(auto& x:a)x=-x;return a;}
+double determinant(const Mat3& a) {
+    return a[0]*(a[4]*a[8]-a[5]*a[7])-a[1]*(a[3]*a[8]-a[5]*a[6])+a[2]*(a[3]*a[7]-a[4]*a[6]);
+}
+Vec3 fixed_axis(const Mat3& a) {
+    const Vec3 rows[3]{{a[0]-1,a[1],a[2]},{a[3],a[4]-1,a[5]},{a[6],a[7],a[8]-1}};
+    Vec3 axis{};double best=0;for(int i=0;i<3;++i)for(int j=i+1;j<3;++j){
+        const auto candidate=cross(rows[i],rows[j]);if(norm2(candidate)>best){best=norm2(candidate);axis=candidate;}}
+    canonicalize_axis(axis);return axis;
+}
+
+// Candidate axes extracted from rounded coordinates are separately accurate,
+// but their floating-point generators need not obey exact group relations.
+// Fit a common frame, construct exact finite-group matrices in that frame,
+// and validate EACH matrix against the original, untouched atom coordinates.
+// This changes the symmetry action only within its recorded geometry tolerance.
+bool complete_consistent_operations(MolecularSymmetry& result,const Wavefunction& w,
+        const std::vector<Vec3>& positions,const std::vector<RotationAxis>& rotations,
+        const std::vector<ImproperAxis>& improper,const std::vector<ReflectionPlane>& planes,
+        double angular_tolerance) {
+    const auto expected=finite_point_group_order(result.point_group);
+    if(!expected)return false;
+    std::vector<Mat3> generators;
+    const auto best_axis=[&](int n)->const RotationAxis*{
+        const RotationAxis* best=nullptr;for(const auto& axis:rotations)
+            if(axis.order==n&&(!best||axis.error<best->error))best=&axis;return best;};
+    const std::string& group=result.point_group;
+    if(group=="C1") {}
+    else if(group=="Ci")generators.push_back(inversion_matrix());
+    else if(group=="Cs"){if(planes.empty())return false;const auto best=std::min_element(planes.begin(),planes.end(),[](const auto& a,const auto& b){return a.error<b.error;});generators.push_back(reflection_matrix(best->normal));}
+    else if(group=="T"||group=="Td"||group=="Th"||group=="O"||group=="Oh"){
+        const bool octahedral=group[0]=='O';const auto* first=best_axis(octahedral?4:2);if(!first)return false;
+        Vec3 x=first->axis,y{};double best=std::numeric_limits<double>::infinity();
+        for(const auto& a:rotations)if(a.order==(octahedral?4:2)&&std::abs(dot(x,a.axis))<angular_tolerance&&a.error<best){best=a.error;y=a.axis;}
+        y=sub(y,scale(x,dot(x,y)));if(!normalize(y))return false;const auto z=cross(x,y);
+        const Mat3 frame{x[0],y[0],z[0],x[1],y[1],z[1],x[2],y[2],z[2]};
+        const Mat3 cycle{0,0,1,1,0,0,0,1,0},halfturn{1,0,0,0,-1,0,0,0,-1};
+        generators.push_back(mat_mul(mat_mul(frame,cycle),transpose(frame)));
+        generators.push_back(mat_mul(mat_mul(frame,halfturn),transpose(frame)));
+        if(octahedral)generators.push_back(rotation_matrix(z,kPi/2));
+        if(group=="Td")generators.push_back(mat_mul(mat_mul(frame,Mat3{0,1,0,1,0,0,0,0,1}),transpose(frame)));
+        if(group=="Th"||group=="Oh")generators.push_back(inversion_matrix());
+    }else if(group=="I"||group=="Ih"){
+        const auto* first=best_axis(5);if(!first)return false;const auto z=first->axis;Vec3 x{};double best=std::numeric_limits<double>::infinity();
+        const double cosine=1/std::sqrt(5.0);
+        for(const auto& a:rotations)if(a.order==5&&std::abs(std::abs(dot(z,a.axis))-cosine)<angular_tolerance&&a.error<best){
+            best=a.error;auto adjacent=a.axis;if(dot(adjacent,z)<0)adjacent=scale(adjacent,-1);x=sub(adjacent,scale(z,dot(adjacent,z)));
+        }
+        if(!normalize(x))return false;
+        // Adjacent vertex axes of the icosahedron have exact cos(theta)=1/sqrt5.
+        const auto adjacent=add(scale(x,2/std::sqrt(5.0)),scale(z,cosine));
+        generators={rotation_matrix(z,2*kPi/5),rotation_matrix(adjacent,2*kPi/5)};
+        if(group=="Ih")generators.push_back(inversion_matrix());
+    }else{
+        std::size_t k=1;int n=0;while(k<group.size()&&group[k]>='0'&&group[k]<='9'){n=10*n+group[k]-'0';++k;}
+        if(n<2)return false;const char family=group[0],suffix=k<group.size()?group[k]:0;
+        Vec3 z{};
+        if(family=='S'){const ImproperAxis* best=nullptr;for(const auto& a:improper)if(a.order==n&&(!best||a.error<best->error))best=&a;if(!best)return false;z=best->axis;}
+        else{const auto* principal=principal_rotation_axis(rotations,n,improper);if(!principal)return false;z=principal->axis;}
+        if(family=='S')generators.push_back(improper_matrix(z,n));
+        else if(family=='D'&&suffix=='d')generators.push_back(improper_matrix(z,2*n));
+        else generators.push_back(rotation_matrix(z,2*kPi/n));
+        if(family=='D'){
+            Vec3 x{};double best=std::numeric_limits<double>::infinity();
+            for(const auto& a:rotations)if(a.order%2==0&&std::abs(dot(z,a.axis))<angular_tolerance&&a.error<best){best=a.error;x=a.axis;}
+            x=sub(x,scale(z,dot(z,x)));if(!normalize(x))return false;generators.push_back(rotation_matrix(x,kPi));
+        }else if(family=='C'&&suffix=='v'){
+            Vec3 normal{};double best=std::numeric_limits<double>::infinity();
+            for(const auto& p:planes)if(std::abs(dot(z,p.normal))<angular_tolerance&&p.error<best){best=p.error;normal=p.normal;}
+            normal=sub(normal,scale(z,dot(z,normal)));if(!normalize(normal))return false;generators.push_back(reflection_matrix(normal));
+        }
+        if(suffix=='h')generators.push_back(reflection_matrix(z));
+    }
+    MolecularSymmetry completed=result;completed.operations.clear();completed.max_mapping_error_bohr=0;
+    std::vector<Mat3> matrices{identity_matrix()};
+    for(std::size_t i=0;i<matrices.size();++i)for(const auto& g:generators){
+        const auto p=mat_mul(matrices[i],g);
+        if(std::any_of(matrices.begin(),matrices.end(),[&](const auto& a){return matrix_error(a,p)<1e-8;}))continue;
+        if(matrices.size()>=expected)return false;matrices.push_back(p);
+    }
+    if(matrices.size()!=expected)return false;
+    for(const auto& matrix:matrices){
+        std::vector<std::size_t> permutation;double error=0;
+        if(!validate_operation(w,positions,matrix,result.tolerance_bohr,permutation,error))return false;
+        SymmetryOperationKind kind;int order=1,power=1;Vec3 axis{};
+        const double det=determinant(matrix),trace=matrix[0]+matrix[4]+matrix[8];
+        if(matrix_error(matrix,identity_matrix())<1e-8){kind=SymmetryOperationKind::Identity;power=0;axis={0,0,1};}
+        else if(matrix_error(matrix,inversion_matrix())<1e-8){kind=SymmetryOperationKind::Inversion;order=2;}
+        else if(det<0&&std::abs(trace-1)<1e-8){kind=SymmetryOperationKind::Reflection;order=2;axis=fixed_axis(negative(matrix));}
+        else {
+            kind=det>0?SymmetryOperationKind::ProperRotation:SymmetryOperationKind::ImproperRotation;
+            axis=fixed_axis(det>0?matrix:negative(matrix));
+            // order/power describe the rotational component C_n^k in an
+            // improper operation C_n^k sigma_h (S3 has matrix period 6 but
+            // rotational order 3), matching the existing metadata contract.
+            const auto component=det>0?matrix:mat_mul(matrix,reflection_matrix(axis));
+            auto p=component;for(order=1;order<=int(expected);++order){if(matrix_error(p,identity_matrix())<1e-8)break;p=mat_mul(p,component);}
+            if(order>int(expected))return false;
+            const double rotation_trace=component[0]+component[4]+component[8];
+            const double angle=std::acos(std::clamp((rotation_trace-1)/2,-1.0,1.0));power=int(std::round(angle*order/(2*kPi)));
+            const auto skew=Vec3{component[7]-component[5],component[2]-component[6],component[3]-component[1]};if(dot(skew,axis)<0)power=order-power;
+        }
+        append_operation(completed,kind,order,power,axis,matrix,std::move(permutation),error);
+    }
+    // The real chemical table also checks the exact closure and class counts;
+    // failure is an unavailable group, never a fabricated downgrade to C1.
+    if(!finite_point_group_irreps(completed).valid)return false;
+    result=std::move(completed);return true;
 }
 
 } // namespace
@@ -479,6 +619,8 @@ MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
     const int c4_axes = count_axes_with_order_at_least(rotation_axes, 4);
     const int c3_axes = count_axes_with_order_at_least(rotation_axes, 3);
     const int c2_axes = count_axes_with_order_at_least(rotation_axes, 2);
+    const double angular_tolerance=std::max(2.0e-5,
+        2*result.tolerance_bohr/std::max(1.0,result.molecular_radius_bohr));
 
     if (c5_axes >= 6 && c3_axes >= 10) {
         result.point_group = result.has_inversion ? "Ih" : "I";
@@ -488,11 +630,11 @@ MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
         if (result.has_inversion) result.point_group = "Th";
         else result.point_group = planes.size() >= 6u ? "Td" : "T";
     } else if (max_order >= 2) {
-        const RotationAxis* principal = principal_rotation_axis(rotation_axes, max_order);
+        const RotationAxis* principal = principal_rotation_axis(rotation_axes, max_order,improper_axes);
         if (principal) {
-            const bool horizontal = has_plane_relation(planes, principal->axis, true);
-            const bool vertical = has_plane_relation(planes, principal->axis, false);
-            const int perpendicular_c2 = perpendicular_c2_count(rotation_axes, principal->axis);
+            const bool horizontal = has_plane_relation(planes, principal->axis, true,angular_tolerance);
+            const bool vertical = has_plane_relation(planes, principal->axis, false,angular_tolerance);
+            const int perpendicular_c2 = perpendicular_c2_count(rotation_axes, principal->axis,angular_tolerance);
             const bool dihedral = perpendicular_c2 >= max_order;
             if (dihedral) {
                 if (horizontal) result.point_group = "D" + std::to_string(max_order) + "h";
@@ -514,6 +656,11 @@ MolecularSymmetry analyse_molecular_symmetry(const Wavefunction& wavefunction,
         if (result.has_inversion) result.point_group = "Ci";
         else if (!planes.empty()) result.point_group = "Cs";
         else result.point_group = "C1";
+    }
+
+    if(!complete_consistent_operations(result,wavefunction,positions,rotation_axes,
+            improper_axes,planes,angular_tolerance)){
+        result.point_group.clear();result.operations.clear();
     }
 
     return result;

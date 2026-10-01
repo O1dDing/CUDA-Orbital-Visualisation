@@ -120,6 +120,8 @@ struct NboAomoViewSnapshot {
     std::string selected_side_node_id;
     std::shared_ptr<const NboSalcModel> salc_model;
     std::shared_ptr<const NboSalcModel> source_salc_model;
+    std::shared_ptr<const NboAomoNames> names;
+    std::string name_ordinal_scope;
     std::size_t hidden_numeric_zero_count=0,hidden_readability_count=0;
     std::size_t hidden_group_count=0;
     float canvas_width=0,canvas_height=0;
@@ -179,6 +181,9 @@ struct NboAomoUIState {
     std::uint64_t revision=0;
     std::shared_ptr<const NboAomoNames> names;
     const NboSalcModel* names_model=nullptr;
+    std::shared_ptr<const NboAomoNames> filtered_names,filtered_names_source;
+    std::vector<std::size_t> filtered_canonical_indices,filtered_salc_indices;
+    std::string filtered_name_scope;
 };
 
 // Returns true only when the whole AO/NAO--MO view is scientifically available.

@@ -386,7 +386,7 @@ int main(int argc, char** argv) {
                     const auto* name=nbo_ui.aomo.names && index<nbo_ui.aomo.names->canonical.size()?
                         &nbo_ui.aomo.names->canonical[index]:nullptr;
                     view.label=cov::ui::canonical_mo_display_label(*wavefunction,index,name);
-                    if(name && name->verified)view.display_name_evidence=name->detail;
+                    if(name){view.display_name_metadata_json=cov::ui::serialize_orbital_name_json(*name);if(name->verified)view.display_name_evidence=name->detail;}
                 } else if(nbo_ui.aomo.salc_model && nbo_ui.aomo.names &&
                           selected.dataset_id==nbo_ui.aomo.salc_model->dataset_id &&
                           !selected.source_id.empty()) {
@@ -394,6 +394,7 @@ int main(int argc, char** argv) {
                     for(std::size_t i=0;i<model.orbitals.size() && i<nbo_ui.aomo.names->salc.size();++i)
                         if(model.orbitals[i].id==selected.source_id) {
                             const auto& name=nbo_ui.aomo.names->salc[i];
+                            view.display_name_metadata_json=cov::ui::serialize_orbital_name_json(name);
                             if(selected.semantic_kind=="salc" || selected.semantic_kind=="spin_averaged_spatial_orbital") {
                                 if(nbo_ui.aomo.drawn_snapshot && nbo_ui.aomo.drawn_snapshot->integration_id==selected.dataset_id)
                                     for(const auto& node:nbo_ui.aomo.drawn_snapshot->nodes)
@@ -438,9 +439,11 @@ int main(int argc, char** argv) {
                 view.source_id=routed?routed->canonical_fingerprint:path_to_utf8(current_file);
                 view.source_label=cov::ui::canonical_mo_source_label(*wavefunction,mo_index);
                 const cov::ui::NboAomoName* display_name=nullptr;
-                if(nbo_ui.aomo.names && mo_index<nbo_ui.aomo.names->canonical.size()){
-                    const auto& name=nbo_ui.aomo.names->canonical[mo_index];
+                const auto current_names=nbo_ui.aomo.names?nbo_ui.aomo.names:cov::ui::canonical_mo_names(*wavefunction);
+                if(current_names && mo_index<current_names->canonical.size()){
+                    const auto& name=current_names->canonical[mo_index];
                     display_name=&name;
+                    view.display_name_metadata_json=cov::ui::serialize_orbital_name_json(name);
                     if(name.verified)view.display_name_evidence=name.detail;
                 }
                 view.label=cov::ui::canonical_mo_display_label(*wavefunction,mo_index,display_name);
@@ -480,31 +483,8 @@ int main(int argc, char** argv) {
             if(nbo_ui.aomo.salc_model)
                 write(".salc.json",cov::serialize_nbo_salc_json(*nbo_ui.aomo.salc_model));
             else write(".salc.json","{\"status\":\"not_analysed\",\"reason\":\"No verified NBO SALC model attached\"}");
-            std::ostringstream names;
-            names<<"{\"schema\":\"cov.orbital.display-names.v1\",\"canonical\":[";
-            if(nbo_ui.aomo.names)
-                for(std::size_t i=0;i<nbo_ui.aomo.names->canonical.size();++i){
-                    if(i)names<<',';const auto& name=nbo_ui.aomo.names->canonical[i];
-                    names<<"{\"index\":"<<i<<",\"label\":"<<cov::validation::quote(name.label)
-                         <<",\"irrep\":"<<cov::validation::quote(name.irrep)
-                         <<",\"point_group\":"<<cov::validation::quote(name.point_group)
-                         <<",\"ordinal\":"<<name.ordinal
-                         <<",\"verified\":"<<(name.verified?"true":"false")
-                         <<",\"detail\":"<<cov::validation::quote(name.detail)<<'}';
-                }
-            names<<"],\"salc\":[";
-            if(nbo_ui.aomo.names)
-                for(std::size_t i=0;i<nbo_ui.aomo.names->salc.size();++i){
-                    if(i)names<<',';const auto& name=nbo_ui.aomo.names->salc[i];
-                    names<<"{\"index\":"<<i<<",\"label\":"<<cov::validation::quote(name.label)
-                         <<",\"irrep\":"<<cov::validation::quote(name.irrep)
-                         <<",\"point_group\":"<<cov::validation::quote(name.point_group)
-                         <<",\"ordinal\":"<<name.ordinal
-                         <<",\"verified\":"<<(name.verified?"true":"false")
-                         <<",\"detail\":"<<cov::validation::quote(name.detail)<<'}';
-                }
-            names<<"]}";
-            write(".display-names.json",names.str());
+            const auto current_names=nbo_ui.aomo.names?nbo_ui.aomo.names:cov::ui::canonical_mo_names(*wavefunction);
+            write(".display-names.json",cov::ui::serialize_orbital_names_json(*current_names));
             cov::validation::record("chemistry.export",
                 "{\"analysis\":"+analysis+",\"active_view\":"+active+"}");
         };

@@ -1,3 +1,4 @@
+#include "cov/molecular_point_group_frame.hpp"
 #include "cov/nbo_salc.hpp"
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -281,7 +282,9 @@ void energy_provenance(std::ostream& o,const NboSalcEnergyEvidence& x) {
 NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& data,const NboSalcOptions& options){
     NboSalcModel out;out.dataset_id=data.id;out.canonical_fingerprint=nbo_canonical_fingerprint(w);std::ostringstream key;key<<data.id<<':'<<out.canonical_fingerprint<<':'<<std::setprecision(17)<<options.metric_tolerance<<':'<<options.symmetry_tolerance<<':'<<options.energy_tolerance_hartree<<':'<<options.eigenvalue_cluster_tolerance<<':'<<options.maximum_group_order;out.cache_key=key.str();
     const auto n=std::size_t(w.basis_count);if(!n||w.ao_overlap.size()!=n*n||!data.dataset.association.compatible||data.canonical_fingerprint!=out.canonical_fingerprint){out.detail="Missing metric, rejected association, or changed immutable canonical identity";return out;}
-    const M s=Eigen::Map<const RM>(w.ao_overlap.data(),n,n);const auto geometry=analyse_molecular_symmetry(w);out.point_group=geometry.point_group;auto group=make_group(w,geometry,options);out.group_verified=group.valid;out.group_closure_error=group.error;out.used_group=group.valid?(geometry.linear?"finite sampling subgroup of "+geometry.point_group:geometry.point_group):"C1 fallback";out.operations=group.valid?group.ops:std::vector<SymmetryOperation>{};if(!group.valid)out.diagnostics.push_back(group.detail);
+    const M s=Eigen::Map<const RM>(w.ao_overlap.data(),n,n);const auto geometry=analyse_molecular_symmetry(w);out.point_group=geometry.point_group;auto group=make_group(w,geometry,options);out.group_verified=group.valid;out.group_closure_error=group.error;out.used_group=group.valid?(geometry.linear?"finite sampling subgroup of "+geometry.point_group:geometry.point_group):"unavailable";out.operations=group.valid?group.ops:std::vector<SymmetryOperation>{};if(!group.valid)out.diagnostics.push_back(group.detail);
+    MolecularSymmetry full_geometry=geometry;full_geometry.operations=out.operations;
+    const auto irrep_table=group.valid&&!geometry.linear?molecular_point_group_irreps(w,full_geometry):PointGroupIrrepTable{};
     std::vector<std::size_t> atom_group(w.atoms.size());std::iota(atom_group.begin(),atom_group.end(),0);auto root=[&](std::size_t a){while(atom_group[a]!=a)a=atom_group[a];return a;};
     if(group.valid&&w.atoms.size()!=2)for(const auto& op:group.ops)for(std::size_t a=0;a<w.atoms.size();++a){auto x=root(a),y=root(op.atom_permutation[a]);if(x!=y)atom_group[std::max(x,y)]=std::min(x,y);}
     std::map<std::size_t,std::vector<std::size_t>> atomsets;for(std::size_t a=0;a<w.atoms.size();++a)atomsets[root(a)].push_back(a);
@@ -341,6 +344,12 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
             if(!valid_partition){spaces={M::Identity(b,b)};closed=false;out.diagnostics.push_back(fragment.id+":"+family.type+": rejected spectral partition; preserving complete fixed NAO family");}
             std::size_t ordinal=0;for(const auto& q:spaces){NboSalcSubspace sub;sub.id=fragment.id+":"+nbo_spin_name(spin)+":"+family.type+":space"+std::to_string(++ordinal);sub.fragment_id=fragment.id;sub.spin=spin;sub.dimension=q.cols();sub.closure_error=closure;sub.orthogonality_error=err(q.transpose()*q-M::Identity(q.cols(),q.cols()));sub.symmetry_verified=closed;double retention=0;
                 if(closed){for(const auto& rep:reps){const M rq=rep*q;retention=std::max(retention,err(rq-q*(q.transpose()*rq)));double character=(q.transpose()*rq).trace();sub.characters.push_back(character);sub.character_norm+=character*character/double(reps.size());}sub.closure_error=std::max(sub.closure_error,retention);if(retention>options.symmetry_tolerance)sub.symmetry_verified=false;const auto mult=std::size_t(std::llround(std::sqrt(sub.character_norm)));if(mult&&std::abs(sub.character_norm-double(mult*mult))<1e-3&&sub.dimension%mult==0){sub.multiplicity=mult;sub.irrep_dimension=sub.dimension/mult;}}
+                if(sub.symmetry_verified&&irrep_table.valid){
+                    const auto decomposition=decompose_point_group_characters(irrep_table,sub.characters,options.symmetry_tolerance);
+                    sub.multiplicity=0;sub.irrep_dimension=0;
+                    if(decomposition.valid){std::size_t row_count=0,row_index=0;for(std::size_t i=0;i<decomposition.multiplicities.size();++i)if(decomposition.multiplicities[i]){++row_count;row_index=i;}
+                        if(row_count==1){sub.multiplicity=decomposition.multiplicities[row_index];sub.irrep_dimension=irrep_table.rows[row_index].dimension;}}
+                }
                 sub.label=sub.symmetry_verified?"Symmetry channel "+std::to_string(ordinal):"Fixed NAO subspace";sub.detail=sub.symmetry_verified?"Geometry-verified invariant subspace; character/partner evidence retained. Phase gauge: stable projector columns in producer NAO order.":"No asserted SALC: trivial group, unsupported action, or literal family is not closed; fixed NAOs retained.";
                 for(Eigen::Index col=0;col<q.cols();++col){NboSalcOrbital o;o.id=sub.id+":member"+std::to_string(col);o.fragment_id=fragment.id;o.subspace_id=sub.id;o.spin=spin;o.type=family.type;o.angular=family.angular;o.partner_index=col;o.partner_dimension=q.cols();o.atoms=fragment.atoms;o.symmetry_adapted=sub.symmetry_verified&&fragment.atoms.size()>1;o.detail=sub.detail;
                     V global=V::Zero(r);for(std::size_t row=0;row<b;++row){const double coeff=q(row,col);global[family.indices[row]]=coeff;if(coeff!=0)o.terms.push_back({descriptors[family.indices[row]]->ref,coeff});}

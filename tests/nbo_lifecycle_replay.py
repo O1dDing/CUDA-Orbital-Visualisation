@@ -72,7 +72,9 @@ for name,plan in plans.items():
         if label in ['report-only','full-restored']:
             for key in ['wiberg','e2']:check(label+':'+key+'-reset',field(ui,'nbo.overlay.'+key+'.checked')=='false')
     if name=='failure-recovery':
-        ui=read(out/'returned-canonical.ui.json');check('return:status-refreshed',str(field(ui,'status.detail')).startswith('Canonical MO '))
+        ui=read(out/'returned-canonical.ui.json');active=json.loads(field(ui,'scene.active_view'))
+        check('return:status-refreshed',active['kind']=='canonical' and active['selection'] is None and
+              field(ui,'status.detail')==active['label'],dict(status=field(ui,'status.detail'),active=active))
     if name=='manual-overlay':
         ui=read(out/'overlay-on.ui.json')
         for key in ['wiberg','e2']:check('overlay-on:'+key,field(ui,'nbo.overlay.'+key+'.checked')=='true')

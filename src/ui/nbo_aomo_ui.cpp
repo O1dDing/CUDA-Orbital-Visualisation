@@ -208,7 +208,7 @@ std::string source_name(const NboSource& s) {
 // Layout is derived from immutable orbital identities and the diagram's energy
 // transform. In particular, changing the focused MO never redefines a side
 // orbital or moves a quantitative energy level.
-NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
+NboAomoViewSnapshot make_unified_snapshot(NboAomoUIState& state,
     const NboIntegration& data,const Wavefunction& canonical,
     const MODiagramViewSnapshot& diagram,float available_width) {
     NboAomoViewSnapshot view;
@@ -1025,6 +1025,44 @@ NboAomoViewSnapshot make_unified_snapshot(const NboAomoUIState& state,
                 }
             }
             view.edges.push_back(std::move(edge));
+        }
+    }
+    // Number a frozen filter result. Selection/pan/zoom do not enter this scope,
+    // and producer/source identities remain the lookup keys in every consumer.
+    const auto source_names=state.salc_model==state.source_salc_model?state.source_names:state.spin_averaged_names;
+    const auto base_names=source_names?source_names:state.names;
+    if(base_names){std::vector<std::size_t> visible_salc;
+        for(const auto& node:view.nodes)if(!node.group_header&&node.salc_index)visible_salc.push_back(*node.salc_index);
+        view.name_ordinal_scope="filtered view: preset="+std::to_string(int(state.preset))+"; core="+std::to_string(state.show_core)+"; rydberg="+std::to_string(state.show_rydberg)+"; hide_h="+std::to_string(state.hide_h_orbitals);
+        if(!state.filtered_names||state.filtered_names_source!=base_names||state.filtered_name_scope!=view.name_ordinal_scope||
+           state.filtered_canonical_indices!=view.central_mo_indices||state.filtered_salc_indices!=visible_salc){
+            state.filtered_names=std::make_shared<const NboAomoNames>(nbo_aomo_names_for_view(canonical,*base_names,view.central_mo_indices,visible_salc,state.salc_model.get(),view.name_ordinal_scope));
+            state.filtered_names_source=base_names;state.filtered_name_scope=view.name_ordinal_scope;
+            state.filtered_canonical_indices=view.central_mo_indices;state.filtered_salc_indices=visible_salc;
+        }
+        view.names=state.filtered_names;
+        for(auto& node:view.nodes){if(node.group_header)continue;const NboAomoName* name=nullptr;
+            if(node.canonical_index&&*node.canonical_index<view.names->canonical.size())name=&view.names->canonical[*node.canonical_index];
+            else if(node.salc_index&&*node.salc_index<view.names->salc.size()&&node.atoms.size()>1)name=&view.names->salc[*node.salc_index];
+            if(!name)continue;node.symmetry_irrep=name->irrep;node.symmetry_ordinal=name->ordinal;node.symmetry_multiplicity=name->representation_multiplicity;
+            node.symmetry_name_verified=name->verified;node.name_detail=name->detail;
+            if(node.canonical_index)node.individual_label=canonical_mo_display_label(canonical,*node.canonical_index,name);
+            else node.individual_label=name->verified?name->label:node.label;
+            if(node.spatial_pair_id.empty())node.label=node.individual_label;
+            if(node.salc_index&&!node.shell_label.empty()&&name->verified)node.shell_label=name->label;
+        }
+        // The merged RO display retains both real references and both energies.
+        // Its two spin counters agree when the corresponding visible sets agree.
+        for(auto& node:view.nodes)if(!node.spatial_pair_id.empty()&&!node.label.empty()&&node.canonical_index){
+            const auto pair=std::find_if(view.nodes.begin(),view.nodes.end(),[&](const auto& item){return item.spatial_pair_id==node.spatial_pair_id&&item.canonical_index&&item.canonical_index!=node.canonical_index;});
+            if(pair==view.nodes.end())continue;
+            const auto other=*pair->canonical_index;const auto& first=canonical.orbitals[*node.canonical_index];const auto& second=canonical.orbitals[other];
+            const auto strip=[](std::string label){for(const std::string spin:{" [alpha]"," [beta]"})if(label.ends_with(spin)){label.resize(label.size()-spin.size());break;}return label;};
+            const auto other_name=canonical_mo_display_label(canonical,other,&view.names->canonical[other]);
+            const auto a=strip(node.individual_label),b=strip(other_name);
+            const bool occupied=first.occupation>.5,opposite=second.occupation>.5;
+            const std::string arrows=occupied&&opposite?" ↑↓":occupied?(first.spin==Spin::Beta?" ↓":" ↑"):opposite?(second.spin==Spin::Beta?" ↓":" ↑"):"";
+            node.label=(a==b?a+" α/β":node.individual_label+" / "+other_name)+arrows;node.spatial_pair_label=node.label;
         }
     }
     // A measured matrix/representation error informs numerical-zero handling.
@@ -1957,6 +1995,7 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
     }
     const auto snapshot=std::make_shared<const NboAomoViewSnapshot>(std::move(initial_snapshot));
     state.drawn_snapshot=snapshot;
+    if(snapshot->names)state.names=snapshot->names;
     state.status=snapshot->capability_status+": "+snapshot->capability_detail;
     validation::field("aomo.snapshot",snapshot->id);
     validation::anchor("aomo.graph");
@@ -2433,11 +2472,19 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
         std::set<RefKey> visible_orbitals;
         for(const auto& node:view.nodes){visible_nodes.insert(node.id);
             if(node.orbital)visible_orbitals.insert(key(*node.orbital));}
+        const auto name_json=[&](const NboAomoNode* node){
+            if(!node||!view.names)return std::string{};
+            if(node->canonical_index&&*node->canonical_index<view.names->canonical.size())
+                return serialize_orbital_name_json(view.names->canonical[*node->canonical_index]);
+            if(node->salc_index&&*node->salc_index<view.names->salc.size())
+                return serialize_orbital_name_json(view.names->salc[*node->salc_index]);
+            return std::string{};
+        };
         {
             std::ofstream out(result.csv_path,std::ios::binary);
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
-            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode,source_display_name,target_display_name,active_view_json,pi_partner_evidence_json\n";
+            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode,source_display_name,target_display_name,active_view_json,pi_partner_evidence_json,source_name_evidence_json,target_name_evidence_json\n";
             const auto display_columns=[&](const NboAomoEdge* edge,
                 std::optional<double> source_energy,std::size_t canonical_index,
                 const NboSpatialSpinInfo* spin_info=nullptr,std::optional<double> occupation=std::nullopt) {
@@ -2462,7 +2509,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 out<<','<<csv(spin_info?spin_info->id:"")<<",,";
                 if(source && source->occupation)out<<*source->occupation;else if(occupation)out<<*occupation;
                 out<<','<<csv(spin_info?"spin_averaged_spatial":"source_channel")
-                   <<','<<csv(source?source->label:"")<<','<<csv(target?target->label:"")<<",,\n";
+                   <<','<<csv(source?source->label:"")<<','<<csv(target?target->label:"")<<",,,"
+                   <<csv(name_json(source))<<','<<csv(name_json(target))<<'\n';
             };
             for(const auto& link:data.links){
                 const bool central=in(view.central_mo_indices,link.canonical_index);
@@ -2522,7 +2570,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             // Include every active-model side identity once, even hidden/no-link
             // members, so source_spatial_id is always resolvable within the CSV.
             const auto side_row=[&](const NboAomoNode& node,bool shown){
-                std::vector<std::string> row(36);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                std::vector<std::string> row(38);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
                 row[5]=node.spatial_spin?"spatial":"SALC";if(node.salc_index)row[6]=std::to_string(*node.salc_index);
                 row[7]=node.spatial_spin?"total":node.salc_index&&view.salc_model?nbo_spin_name(view.salc_model->orbitals[*node.salc_index].spin):node.orbital?nbo_spin_name(node.orbital->spin):"";
                 row[16]=node.id;row[17]=shown?"true":"false";row[19]="side_orbital";
@@ -2534,6 +2582,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 if(node.occupation)row[30]=precise(*node.occupation);
                 row[31]=node.spatial_spin?"spin_averaged_spatial":"source_channel";
                 row[32]=node.label;
+                row[36]=name_json(&node);
                 for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
             };
             if(view.basis_kind==NboOrbitalKind::NAO&&view.salc_model&&view.salc_model->available){
@@ -2546,13 +2595,13 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 }
             }else for(const auto& node:view.nodes)if(node.lane!=NboAomoLane::Centre&&!node.group_header)side_row(node,true);
             for(const auto& candidate:view.pi_partner_candidates) {
-                std::vector<std::string> row(36);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                std::vector<std::string> row(38);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
                 row[7]=candidate.channel.spin;row[16]=candidate.channel.channel_id;
                 row[19]="pi_partner_candidate";row[35]=pi_partner_assessment_json(candidate);
                 for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
             }
             if(view.active_view){
-                std::vector<std::string> row(36);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
+                std::vector<std::string> row(38);row[0]=view.id;row[1]=data.id;row[2]=view.mo_snapshot_id;
                 row[19]="active_view";row[34]=serialize_active_orbital_view_json(*view.active_view);
                 for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
             }
@@ -2564,6 +2613,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
             out<<"{\"schema\":\"cov_aomo_unified_view_v3\",\"snapshot_id\":"<<quote(view.id)
+               <<",\"name_ordinal_scope\":"<<quote(view.name_ordinal_scope)
+               <<",\"display_names\":"<<(view.names?serialize_orbital_names_json(*view.names):"null")
                <<",\"integration_id\":"<<quote(data.id)<<",\"mo_snapshot_id\":"<<quote(view.mo_snapshot_id)
                 <<",\"mo_energy_axis_mode\":"<<quote(view.mo_energy_axis_mode)
                 <<",\"display_energy_unit\":"<<quote(view.display_energy_unit)
@@ -2684,6 +2735,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                    <<",\"symmetry_multiplicity\":"<<node.symmetry_multiplicity
                    <<",\"symmetry_name_verified\":"<<(node.symmetry_name_verified?"true":"false")
                    <<",\"name_detail\":"<<quote(node.name_detail)
+                   <<",\"name_evidence\":"<<(name_json(&node).empty()?"null":name_json(&node))
                    <<",\"individual_label\":"<<quote(node.individual_label)
                    <<",\"spatial_pair_id\":"<<quote(node.spatial_pair_id)
                    <<",\"spatial_pair_label\":"<<quote(node.spatial_pair_label)
