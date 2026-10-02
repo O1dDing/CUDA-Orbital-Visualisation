@@ -3,6 +3,7 @@
 #include "cov/nbo_aomo_text.hpp"
 #include "cov/nbo_ui.hpp"
 #include "cov/validation.hpp"
+#include "cov/ui_forensic_helpers.hpp"
 
 #include "cov/mo_diagram.hpp"
 #include "cov/mo_diagram_layout.hpp"
@@ -16,6 +17,7 @@
 #include <cmath>
 #include <cstring>
 #include <iomanip>
+#include <limits>
 #include <map>
 #include <optional>
 #include <set>
@@ -667,7 +669,15 @@ void draw_level_details(const MODiagramData& data,
                                       state.energy_unit,6));
         cov::validation::item(prefix+".splitting");
         // Catalogue priors stay in the structured result, not the details UI.
-        cov::validation::record("details.energy-gap",orbital_energy_gap_json(interaction,state.energy_unit));
+        if(validation::forensic_mode())
+            validation::record("details.energy-gap","{\"kind\":"+std::to_string(static_cast<int>(interaction.kind))+
+                ",\"gap_kind\":"+validation::quote(orbital_energy_gap_kind_name(interaction.gap_kind))+
+                ",\"label\":"+validation::quote(cf?interaction.symmetry:localised_pi_interaction_kind(interaction.kind,language))+
+                ",\"lower_orbitals\":"+forensic::indices(interaction.lower_orbitals)+
+                ",\"upper_orbitals\":"+forensic::indices(interaction.upper_orbitals)+
+                ",\"splitting_hartree\":"+forensic::number(interaction.splitting_hartree)+"}");
+        else if(validation::active())
+            cov::validation::record("details.energy-gap",orbital_energy_gap_json(interaction,state.energy_unit));
     }
 
     ImGui::Separator();
@@ -1073,7 +1083,12 @@ bool browser_cache_matches(const OrbitalUIBrowserCache& cache,
 void draw_diagram_details_window(const MODiagramData& data,
     const Wavefunction& wavefunction,const std::size_t selected_index,
     OrbitalUIState& state,const Language language,const float ui_scale) {
-    if(!state.show_diagram_details)return;
+    if(!state.show_diagram_details) {
+        if(validation::forensic_mode())validation::record("forensic.diagram.details",
+            "{\"schema\":1,\"open\":false,\"selected_canonical_index\":"+
+            std::to_string(selected_index)+",\"active_view\":"+forensic::active(state.active_view)+"}");
+        return;
+    }
     const auto* viewport=ImGui::GetMainViewport();
     const ImVec2 work=viewport->WorkSize;
     ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x+work.x*.5f,viewport->WorkPos.y+work.y*.5f),
@@ -1098,6 +1113,28 @@ void draw_diagram_details_window(const MODiagramData& data,
         &state.show_diagram_details,ImGuiWindowFlags_HorizontalScrollbar);
     const auto details_pos=ImGui::GetWindowPos(),details_size=ImGui::GetWindowSize();
     state.diagram_details_bounds=std::array<float,4>{details_pos.x,details_pos.y,details_size.x,details_size.y};
+    if(validation::forensic_mode()) {
+        const ImVec2 details_max(details_pos.x+details_size.x,details_pos.y+details_size.y);
+        const ImVec2 title_lo(details_pos.x+24.0f*ui_scale,details_pos.y);
+        const ImVec2 title_hi(std::max(title_lo.x+1.0f,details_max.x-48.0f*ui_scale),
+                              details_pos.y+ImGui::GetFrameHeight());
+        validation::hit("diagram.details.window",details_pos,details_max);
+        validation::chrome_hit("diagram.details.title",title_lo,title_hi);
+        const auto row=mo_diagram_row_for_orbital(data,selected_index);
+        const std::string route=uses_inspection_details(state)?"inspection":
+            row && *row<data.levels.size()?"diagram-level":"canonical-outside-diagram";
+        validation::record("forensic.diagram.details","{\"schema\":1,\"open\":true,\"content_visible\":"+
+            std::string(forensic::boolean(visible))+",\"title\":"+validation::quote(details_title)+
+            ",\"window_hit_id\":\"diagram.details.window\",\"title_hit_id\":\"diagram.details.title\""+
+            ",\"window_rect\":"+forensic::rect(details_pos,details_max)+
+            ",\"title_hit_rect\":"+forensic::rect(title_lo,title_hi)+
+            ",\"selection_route\":"+validation::quote(route)+
+            ",\"selected_canonical_index\":"+std::to_string(selected_index)+
+            ",\"level_row\":"+forensic::index(row)+
+            ",\"group_member_indices\":"+(row && *row<data.levels.size()?
+                forensic::indices(data.levels[*row].member_indices):"[]")+
+            ",\"active_view\":"+forensic::active(state.active_view)+"}");
+    }
     if(visible) {
         if(ImGui::Button(orbital_tr(OrbitalText::CloseOrbitalDetails,language)))state.show_diagram_details=false;
         cov::validation::item("diagram.details.close");
@@ -1518,6 +1555,20 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
         }
     }
     if(integrated_aomo){
+        if(validation::forensic_mode())validation::record("forensic.diagram",
+            "{\"schema\":1,\"snapshot_id\":"+validation::quote(data.view?data.view->id:"")+
+            ",\"canvas\":\"aomo\",\"nodes_record\":\"forensic.aomo\""+
+            ",\"mode\":"+std::to_string(static_cast<int>(drawn_options.mode))+
+            ",\"mode_name\":"+validation::quote(mo_diagram_mode_name(drawn_options.mode))+
+            ",\"filter\":"+std::to_string(static_cast<int>(drawn_options.filter.mode))+
+            ",\"filter_name\":"+validation::quote(filter_name(drawn_options.filter.mode,language))+
+            ",\"virtual_window_hartree\":"+forensic::number(drawn_options.filter.virtual_window_hartree)+
+            ",\"core_energy_cutoff_hartree\":"+forensic::number(drawn_options.filter.core_energy_cutoff_hartree)+
+            ",\"neighbourhood\":"+std::to_string(drawn_options.neighbourhood)+
+            ",\"energy_unit_name\":"+validation::quote(energy_unit_symbol(drawn_options.energy_unit))+
+            ",\"compact\":"+forensic::boolean(drawn_options.hide_ligand_centred_intermediates)+
+            ",\"selected_canonical_index\":"+std::to_string(selected_index)+
+            ",\"active_view\":"+forensic::active(state.active_view)+"}");
         draw_pi_counterpart_navigation(data,wavefunction,state,language,actions);
         // The same canonical details remain reachable from the unified canvas;
         // its levels are already drawn there and must not be drawn a second time.
@@ -1556,7 +1607,14 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     ImDrawList* draw = ImGui::GetWindowDrawList();
     draw->AddRectFilled(p0, p1, IM_COL32(12, 18, 27, 235), 7.0f * ui_scale);
     draw->AddRect(p0, p1, IM_COL32(43, 58, 77, 220), 7.0f * ui_scale);
-    if (data.levels.empty()) { ImGui::EndChild(); return; }
+    if (data.levels.empty()) {
+        if(validation::forensic_mode())validation::record("forensic.diagram",
+            "{\"schema\":1,\"snapshot_id\":"+validation::quote(data.view?data.view->id:"")+
+            ",\"canvas\":\"canonical\",\"canvas_rect\":"+forensic::rect(p0,p1)+
+            ",\"clip_rect\":"+forensic::rect(draw->GetClipRectMin(),draw->GetClipRectMax())+
+            ",\"node_count\":0,\"nodes\":[]}");
+        ImGui::EndChild();return;
+    }
 
     const float top = p0.y + 34.0f * ui_scale;
     const float bottom = p1.y - 24.0f * ui_scale;
@@ -1589,6 +1647,9 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     points.reserve(data.levels.size());
     std::vector<DiagramMemberPoint> member_points;
     member_points.reserve(data.metadata.size());
+    const bool capture_forensic=validation::forensic_mode();
+    std::string forensic_nodes="[";
+    bool first_forensic_node=true;
     for (std::size_t i = 0; i < data.levels.size(); ++i) {
         const auto& level = data.levels[i];
         const float y = map_energy_y(level.layout_energy_hartree, data.energy_transform, top, bottom);
@@ -1622,6 +1683,47 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                           ImVec2(member_x+member_half,y),colour,
                           member_selected?2.8f:1.8f);
             const ElectronGlyphs electrons=member_view.electrons;
+            if(capture_forensic) {
+                const auto used=counterpart_selected?spin_counterpart:member_orbital;
+                const auto clip_lo=draw->GetClipRectMin(),clip_hi=draw->GetClipRectMax();
+                const ImVec2 node_lo(member_x-member_half,y-8.0f*ui_scale),
+                    node_hi(member_x+member_half,y+8.0f*ui_scale);
+                const ImVec2 hit_lo(std::max(clip_lo.x,node_lo.x),std::max(clip_lo.y,y-4.0f*ui_scale)),
+                    hit_hi(std::min(clip_hi.x,node_hi.x),std::min(clip_hi.y,y+4.0f*ui_scale));
+                if(!first_forensic_node)forensic_nodes+=',';first_forensic_node=false;
+                forensic_nodes+="{\"id\":"+validation::quote("mo:"+std::to_string(used))+
+                    ",\"hit_id\":"+validation::quote("diagram.mo."+std::to_string(used))+
+                    ",\"canonical_index\":"+std::to_string(used)+
+                    ",\"member_canonical_index\":"+std::to_string(member_orbital)+
+                    ",\"spin_counterpart\":"+forensic::index(member_view.spin_counterpart)+
+                    ",\"source_index\":"+(used<wavefunction.orbitals.size() &&
+                        wavefunction.orbitals[used].source_orbital_index!=std::numeric_limits<std::size_t>::max()?
+                        std::to_string(wavefunction.orbitals[used].source_orbital_index):"null")+
+                    ",\"kind\":\"Canonical\",\"spin\":"+(used<wavefunction.orbitals.size()?
+                        validation::quote(wavefunction.orbitals[used].spin==Spin::Beta?"Beta":"Alpha"):"null")+
+                    ",\"label\":\"\",\"individual_label\":\"\",\"label_painted\":false"+
+                    ",\"row\":"+std::to_string(i)+
+                    ",\"member_indices\":"+forensic::indices(level.member_indices)+
+                    ",\"member_spin_counterparts\":"+forensic::indices(level.member_spin_counterparts)+
+                    ",\"layout_energy_hartree\":"+forensic::number(level.layout_energy_hartree)+
+                    ",\"energy_hartree\":"+(used<wavefunction.orbitals.size()?
+                        forensic::number(wavefunction.orbitals[used].energy_hartree):"null")+
+                    ",\"occupation\":"+(used<wavefunction.orbitals.size() &&
+                        wavefunction.orbitals[used].occupation_provenance!=DataProvenance::Unavailable?
+                        forensic::number(wavefunction.orbitals[used].occupation):"null")+
+                    ",\"alpha_arrows\":"+std::to_string(electrons.alpha)+
+                    ",\"beta_arrows\":"+std::to_string(electrons.beta)+
+                    ",\"selected_highlight\":"+forensic::boolean(member_selected)+
+                    ",\"logical_rect\":"+forensic::rect(ImVec2(node_lo.x-p0.x,node_lo.y-p0.y),
+                        ImVec2(node_hi.x-p0.x,node_hi.y-p0.y))+
+                    ",\"screen_rect\":"+forensic::rect(node_lo,node_hi)+
+                    ",\"hit_rect\":"+(hit_lo.x<hit_hi.x && hit_lo.y<hit_hi.y?forensic::rect(hit_lo,hit_hi):"null")+
+                    ",\"viewport_intersects\":"+forensic::boolean(node_hi.x>=clip_lo.x && node_lo.x<=clip_hi.x &&
+                        node_hi.y>=clip_lo.y && node_lo.y<=clip_hi.y)+
+                    ",\"scroll_clipped\":"+forensic::boolean(node_lo.x<clip_lo.x || node_lo.y<clip_lo.y ||
+                        node_hi.x>clip_hi.x || node_hi.y>clip_hi.y)+
+                    ",\"clickable_in_viewport\":"+forensic::boolean(hit_lo.x<hit_hi.x && hit_lo.y<hit_hi.y)+"}";
+            }
 #ifdef COV_ENABLE_VALIDATION
             const auto used_mo=counterpart_selected?spin_counterpart:member_orbital;
             cov::validation::hit("diagram.mo."+std::to_string(used_mo),
@@ -1658,6 +1760,27 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     draw_pi_groups(draw, points, p1, ui_scale);
     draw_ligand_field_pi_interactions(
         draw,data,points,p1,drawn_options.energy_unit,language,ui_scale);
+    if(capture_forensic)validation::record("forensic.diagram",
+        "{\"schema\":1,\"snapshot_id\":"+validation::quote(data.view?data.view->id:"")+
+        ",\"canvas\":\"canonical\",\"mode\":"+std::to_string(static_cast<int>(drawn_options.mode))+
+        ",\"mode_name\":"+validation::quote(mo_diagram_mode_name(drawn_options.mode))+
+        ",\"filter\":"+std::to_string(static_cast<int>(drawn_options.filter.mode))+
+        ",\"filter_name\":"+validation::quote(filter_name(drawn_options.filter.mode,language))+
+        ",\"virtual_window_hartree\":"+forensic::number(drawn_options.filter.virtual_window_hartree)+
+        ",\"core_energy_cutoff_hartree\":"+forensic::number(drawn_options.filter.core_energy_cutoff_hartree)+
+        ",\"neighbourhood\":"+std::to_string(drawn_options.neighbourhood)+
+        ",\"compact\":"+forensic::boolean(drawn_options.hide_ligand_centred_intermediates)+
+        ",\"energy_unit\":"+std::to_string(static_cast<int>(drawn_options.energy_unit))+
+        ",\"energy_unit_name\":"+validation::quote(energy_unit_symbol(drawn_options.energy_unit))+
+        ",\"energy_axis_mode\":"+std::to_string(static_cast<int>(drawn_options.energy_axis_mode))+
+        ",\"selected_canonical_index\":"+std::to_string(selected_index)+
+        ",\"active_view\":"+forensic::active(state.active_view)+
+        ",\"canvas_rect\":"+forensic::rect(p0,p1)+
+        ",\"clip_rect\":"+forensic::rect(draw->GetClipRectMin(),draw->GetClipRectMax())+
+        ",\"scroll\":["+forensic::number(ImGui::GetScrollX())+","+forensic::number(ImGui::GetScrollY())+"]"+
+        ",\"scroll_max\":["+forensic::number(ImGui::GetScrollMaxX())+","+forensic::number(ImGui::GetScrollMaxY())+"]"+
+        ",\"node_count\":"+std::to_string(member_points.size())+
+        ",\"nodes\":"+forensic_nodes+"]}");
 
     if (ImGui::IsItemHovered()) {
         const ImVec2 mouse = ImGui::GetIO().MousePos;

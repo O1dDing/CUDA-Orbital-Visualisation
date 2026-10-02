@@ -1,5 +1,6 @@
 #include "cov/validation.hpp"
 #include "cov/validation_navigation.hpp"
+#include "cov/forensic_capture.hpp"
 #include "cov/gl_api.hpp"
 #include <imgui_internal.h>
 #include <algorithm>
@@ -24,6 +25,10 @@ struct Command { std::string op, id, value; std::vector<float> args; std::vector
 std::vector<std::filesystem::path> dropped_paths;
 bool enabled = false;
 bool hidden_window = false;
+bool forensic = false;
+int detail_page = 0;
+float detail_scroll_before = -1;
+bool detail_page_pending = false;
 int requested_window_width = 2100, requested_window_height = 1250;
 std::filesystem::path output;
 std::string export_name="actual-export";
@@ -80,7 +85,8 @@ void finish(const std::string& status, const std::string& detail = {}) {
             << ",\"seconds\":" << number(std::chrono::duration<double>(Clock::now()-command_started).count()) << "}\n";
     actions.flush();
     if (status != "executed") ++failures;
-    ++next; stage = attempts = cooldown = 0; complete_command = false;
+    ++next; stage = attempts = cooldown = detail_page = 0; complete_command = false;
+    detail_scroll_before=-1;detail_page_pending=false;
     command_started = Clock::now();
 }
 NavigationTarget navigation_target(const Target& t) { return {t.lo,t.hi,t.window,t.clip.Min,t.clip.Max}; }
@@ -147,7 +153,9 @@ std::string state_json(std::size_t applied, const ui::OrbitalUIState& ui, const 
       << ",\"scene_view\":" << scene_view_json
       << ",\"diagram_generation\":" << diagram_generation
       << ",\"rendered_generation\":" << rendered_generation << ",\"volume_generation\":" << generation
-      << ",\"scene_matches_applied\":" << (rendered_mo==applied && rendered_set==active_set && rendered_dataset==active_dataset?"true":"false")
+      << ",\"scene_matches_applied\":" << (rendered_mo==applied && rendered_set==active_set &&
+          rendered_dataset==active_dataset && rendered_spin==active_spin &&
+          rendered_source_index==active_source_index && rendered_coefficient_source==active_coefficient_source?"true":"false")
       << ",\"evaluation_reason\":" << quote(evaluation_reason) << ",\"kernel_ms\":" << kernel_ms
       << ",\"compact\":" << (ui.hide_ligand_centred_intermediates?"true":"false")
       << ",\"energy_unit\":" << static_cast<int>(ui.energy_unit)
@@ -189,9 +197,10 @@ bool configure(int argc, char** argv) {
         if(a=="--validation-plan" && i+1<argc) plan=std::filesystem::u8path(argv[++i]);
         else if(a=="--validation-output" && i+1<argc) output=std::filesystem::u8path(argv[++i]);
         else if(a=="--validation-background") hidden_window=true;
+        else if(a=="--validation-forensic") forensic=true;
         else throw std::runtime_error("unknown/incomplete validation argument: "+a);
     }
-    if(plan.empty() && output.empty() && !hidden_window) return false;
+    if(plan.empty() && output.empty() && !hidden_window && !forensic) return false;
     if(plan.empty() || output.empty()) throw std::runtime_error("plan and output are both required");
     std::ifstream in(plan); std::string line;
     std::getline(in,line); if(line!="COV_VALIDATION 1") throw std::runtime_error("unsupported validation plan schema");
@@ -219,7 +228,12 @@ bool configure(int argc, char** argv) {
                 c.args={x,y};
             }
         }
-        if(c.op!="drop"&&c.op!="scene"&&c.op!="window"&&c.op!="drag"&&c.op!="wheel"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name") throw std::runtime_error("unknown plan command");
+        if(c.op!="drop"&&c.op!="scene"&&c.op!="window"&&c.op!="drag"&&c.op!="wheel"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name"&&c.op!="inspect"&&c.op!="inspect-details") throw std::runtime_error("unknown plan command");
+        if((c.op=="inspect" || c.op=="inspect-details") && !forensic)
+            throw std::runtime_error("inspect requires --validation-forensic");
+        if((c.op=="inspect" || c.op=="inspect-details" || c.op=="capture") &&
+           (c.id.empty() || c.id.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")!=std::string::npos))
+            throw std::runtime_error("capture/inspect requires a plain artifact name");
         if(c.op=="export-name" && (c.id.empty() || c.id.find_first_not_of(
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")!=std::string::npos)) {
             throw std::runtime_error("export-name requires a plain artifact name");
@@ -229,17 +243,20 @@ bool configure(int argc, char** argv) {
     if(std::filesystem::exists(output / "actions.jsonl")) throw std::runtime_error("refusing to overwrite an existing validation run");
     std::filesystem::create_directories(output);
     std::filesystem::copy_file(plan,output/"plan.txt");
-    frames.open(output/"frames.jsonl");actions.open(output/"actions.jsonl");
+    if(!forensic)frames.open(output/"frames.jsonl");
+    actions.open(output/"actions.jsonl");
     events.open(output/"events.jsonl");
     started=command_started=Clock::now(); enabled=true;
     std::ofstream identity(output/"identity.json");
     identity << "{\"schema\":1,\"git_commit\":" << quote(COV_VALIDATION_COMMIT)
              << ",\"input\":" << quote(argv[1]) << ",\"build\":\"validation ON\",\"imgui\":" << quote(IMGUI_VERSION)
              << ",\"window_mode\":" << quote(hidden_window?"background-hidden":"visible")
+             << ",\"forensic\":" << (forensic?"true":"false")
              << ",\"protocol\":\"local plan v1\",\"scientific_verdict\":\"external checker required\"}";
     return true;
 }
 bool active(){return enabled;}
+bool forensic_mode(){return enabled&&forensic;}
 bool background(){return enabled&&hidden_window;}
 int window_width(){return requested_window_width;}
 int window_height(){return requested_window_height;}
@@ -284,7 +301,31 @@ void input_frame() {
     // the production export. Existing COV_VALIDATION 1 plans keep the default.
     if(c.op=="export-name") {export_name=c.id;complete_command=true;return;}
     if(volume_command(c)) {++stage;return;}
-    if(c.op=="capture" || c.op=="wait") { if(++stage>=4) complete_command=true;return; }
+    if(c.op=="capture" || c.op=="wait" || c.op=="inspect") { if(++stage>=4) complete_command=true;return; }
+    if(c.op=="inspect-details") {
+        const auto found=previous.find("diagram.details.window");
+        if(found==previous.end() || !found->second.window || found->second.window->Collapsed) {
+            if(++attempts>=12)finish("failed","details window is not open");
+            return;
+        }
+        auto* w=found->second.window;
+        // Real wheel input, never SetScrollY: this also reveals occlusion failures.
+        const auto p=ImVec2(w->InnerRect.GetCenter().x,w->InnerRect.GetCenter().y);
+        injected_mouse=p;io.AddMousePosEvent(p.x,p.y);
+        if(cooldown>0) {io.AddMouseWheelEvent(0,-float(cooldown));cooldown=0;stage=1;return;}
+        if(stage==0 && detail_page==0 && w->Scroll.y>1) {
+            io.AddMouseWheelEvent(0,100);stage=1;detail_scroll_before=w->Scroll.y;return;
+        }
+        if(++stage<5)return;
+        if(detail_page==0 && w->Scroll.y>1 && detail_scroll_before>=0) {
+            finish("failed","details top is unreachable or covered");return;
+        }
+        if(detail_page>0 && w->Scroll.y<=detail_scroll_before+0.5f && w->Scroll.y<w->ScrollMax.y-1) {
+            finish("failed","details scrolling made no progress; check window stacking");return;
+        }
+        detail_page_pending=true;
+        return;
+    }
     if(c.op=="key") {
         const std::map<std::string,ImGuiKey> keys={{"Home",ImGuiKey_Home},{"Down",ImGuiKey_DownArrow},{"Up",ImGuiKey_UpArrow},{"Enter",ImGuiKey_Enter},{"Escape",ImGuiKey_Escape}};
         const auto k=keys.find(c.id);if(k==keys.end()){finish("failed","unsupported key");return;}
@@ -440,10 +481,17 @@ void item(const std::string& id) {
     if(!enabled || ImGui::GetCurrentWindow()->SkipItems)return;
     hit(id,ImGui::GetItemRectMin(),ImGui::GetItemRectMax());
 }
+void chrome_hit(const std::string& id, ImVec2 lo, ImVec2 hi) {
+    if(!enabled)return;
+    auto* window=ImGui::GetCurrentWindow();
+    targets[id]={lo,hi,window,window->OuterRectClipped};
+}
 void anchor(const std::string& id) {
     if(!enabled)return;const auto p=ImGui::GetCursorScreenPos();hit(id,p,ImVec2(p.x+20,p.y+4));
 }
 void record(const std::string& kind,const std::string& json) {
+    if(enabled && forensic && (kind=="nbo.integration" || kind=="aomo.selection" ||
+       kind=="chemistry.route" || kind=="input.density_evidence" || kind=="input.pi_topology_evidence"))return;
     if(enabled && (kind=="nbo.integration" || kind=="aomo.selection")){
         const auto name=(kind=="nbo.integration"?"integration-":"selection-")+std::to_string(frame)+".json";
         std::ofstream file(output/name);file<<json;
@@ -481,9 +529,40 @@ std::filesystem::path export_base(const std::filesystem::path& original) {
 }
 void end_frame(int width,int height,std::size_t applied,const ui::OrbitalUIState& ui,const Wavefunction* wf) {
     if(!enabled)return;
-    const auto state=state_json(applied,ui,wf);frames<<state<<'\n';
+    const auto state=state_json(applied,ui,wf);
+    if(!forensic)frames<<state<<'\n';
+    const auto write_inspection=[&](const std::string& id) {
+        std::ofstream out(output/(id+".view.json"));
+        out<<"{\"schema\":1,\"state\":"<<state<<",\"targets\":[";bool first=true;
+        for(const auto& [name,t]:targets){if(!first)out<<',';first=false;out<<"{\"id\":"<<quote(name)
+            <<",\"rect\":["<<t.lo.x<<','<<t.lo.y<<','<<t.hi.x<<','<<t.hi.y
+            <<"],\"clip_rect\":["<<t.clip.Min.x<<','<<t.clip.Min.y<<','<<t.clip.Max.x<<','<<t.clip.Max.y
+            <<"],\"visible\":"<<(point_visible(t)?"true":"false")<<'}';}
+        out<<"],\"draw_trace\":[";first=true;
+        for(const auto& x:trace){if(!first)out<<',';first=false;out<<x;}
+        out<<"],\"rendered\":"<<capture_rendered_frame_json(ImGui::GetDrawData(),ImGui::GetIO().Fonts)<<'}';
+        out.close();if(!out)throw std::runtime_error("cannot save final display inspection");
+    };
+    if(!done() && detail_page_pending) {
+        const auto it=targets.find("diagram.details.window");
+        if(it==targets.end() || !it->second.window){finish("failed","details disappeared during capture");return;}
+        auto* w=it->second.window;
+        std::ostringstream name;name<<commands[next].id<<"-p"<<std::setfill('0')<<std::setw(3)<<detail_page;
+        write_inspection(name.str());
+        detail_page_pending=false;
+        if(w->Scroll.y>=w->ScrollMax.y-1)complete_command=true;
+        else if(++detail_page>=64){finish("failed","details page limit reached");return;}
+        else {
+            detail_scroll_before=w->Scroll.y;stage=0;
+            // Less than one visible page gives overlap between captured pages.
+            const float step=std::max(1.0f,std::floor(w->InnerRect.GetHeight()/(5.0f*w->CalcFontSize())*0.65f));
+            // input_frame clears backend events, so store the pending wheel.
+            cooldown=static_cast<int>(step);
+        }
+    }
     if(!done() && complete_command) {
         const auto c=commands[next];
+        if(c.op=="inspect" || (forensic && c.op=="capture"))write_inspection(c.id);
         if(c.op=="capture" || c.op=="volume_full") {
             framebuffer(output/(c.id+".bmp"),width,height);
             std::ofstream out(output/(c.id+".ui.json"));

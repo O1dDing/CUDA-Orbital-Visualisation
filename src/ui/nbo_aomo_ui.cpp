@@ -5,6 +5,7 @@
 #include "cov/point_group_catalog.hpp"
 #include "cov/molecule_style.hpp"
 #include "cov/validation.hpp"
+#include "cov/ui_forensic_helpers.hpp"
 #include <imgui.h>
 #include <algorithm>
 #include <array>
@@ -2087,6 +2088,10 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
                 snapshot->energy_tick_screen_rgb[2],255),label,snapshot->label_font_size);
     }
     const GraphAppearance appearance(*snapshot);
+    const bool capture_forensic=validation::forensic_mode();
+    std::string forensic_edges="[",forensic_nodes="[";
+    bool first_forensic_edge=true,first_forensic_node=true;
+    std::size_t forensic_edge_count=0,forensic_edges_included=0;
     for(const auto& edge:snapshot->edges){
         if(!edge.visible)continue;
         const auto& a=snapshot->nodes[edge.source_node];const auto& b=snapshot->nodes[edge.target_node];
@@ -2094,6 +2099,32 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         const auto pa=transform(a),pb=transform(b);
         const float ax=a.lane==NboAomoLane::Right?pa.x:pa.x+node_width(a)*state.zoom;
         const float bx=a.lane==NboAomoLane::Right?pb.x+node_width(b)*state.zoom:pb.x;
+        if(capture_forensic)++forensic_edge_count;
+        if(capture_forensic && forensic_edges_included<4096) {
+            ++forensic_edges_included;
+            const ImVec2 start(ax,pa.y+a.height*0.5f*state.zoom),
+                end(bx,pb.y+b.height*0.5f*state.zoom);
+            const ImVec2 mid((start.x+end.x)*0.5f,(start.y+end.y)*0.5f);
+            const ImVec2 edge_hit_lo(std::max(clip_min.x,mid.x-5*scale),std::max(clip_min.y,mid.y-5*scale)),
+                edge_hit_hi(std::min(clip_max.x,mid.x+5*scale),std::min(clip_max.y,mid.y+5*scale));
+            if(!first_forensic_edge)forensic_edges+=',';first_forensic_edge=false;
+            forensic_edges+="{\"id\":"+validation::quote(edge.id)+
+                ",\"hit_id\":"+validation::quote("aomo.edge."+edge.id)+
+                ",\"source_id\":"+validation::quote(a.id)+
+                ",\"target_id\":"+validation::quote(b.id)+
+                ",\"coefficient\":"+forensic::number(edge.coefficient)+
+                ",\"weight\":"+forensic::number(edge.weight)+
+                ",\"projection_strength_nonadditive\":"+forensic::number(edge.projection_strength_nonadditive)+
+                ",\"screen_endpoints\":"+forensic::rect(
+                    ImVec2(ax,pa.y+a.height*0.5f*state.zoom),
+                    ImVec2(bx,pb.y+b.height*0.5f*state.zoom))+
+                ",\"hit_rect\":"+(edge_hit_lo.x<edge_hit_hi.x && edge_hit_lo.y<edge_hit_hi.y?
+                    forensic::rect(edge_hit_lo,edge_hit_hi):"null")+
+                ",\"clickable_in_viewport\":"+forensic::boolean(b.canonical_index &&
+                    edge_hit_lo.x<edge_hit_hi.x && edge_hit_lo.y<edge_hit_hi.y)+
+                ",\"stroke_width\":"+forensic::number(style.width*scale)+
+                ",\"alpha\":"+std::to_string(style.alpha)+"}";
+        }
         paint_connection(ImVec2(ax,pa.y+a.height*0.5f*state.zoom),
             ImVec2(bx,pb.y+b.height*0.5f*state.zoom),
             IM_COL32(style.red,style.green,style.blue,style.alpha),style.width*scale);
@@ -2119,10 +2150,73 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
             snapshot->label_font_size*0.85f*0.4f*state.zoom:height*0.5f;
         const ImVec2 hit_min(std::max(clip_min.x,p.x),std::max(clip_min.y,line_y-hit_half));
         const ImVec2 hit_max(std::min(clip_max.x,q.x),std::min(clip_max.y,line_y+hit_half));
-        if(hit_min.x<hit_max.x && hit_min.y<hit_max.y)
+        if(capture_forensic)
+            validation::hit("aomo.node."+node.id,ImVec2(p.x,line_y-hit_half),ImVec2(q.x,line_y+hit_half));
+        else if(hit_min.x<hit_max.x && hit_min.y<hit_max.y)
             validation::hit("aomo.node."+node.id,hit_min,hit_max);
         const float strength=appearance.node_strength(node);
         const bool selected_node=strength>=0.99f;
+        if(capture_forensic) {
+            if(!first_forensic_node)forensic_nodes+=',';first_forensic_node=false;
+            forensic_nodes+="{\"id\":"+validation::quote(node.id)+
+                ",\"hit_id\":"+validation::quote("aomo.node."+node.id)+
+                ",\"choice_hit_id\":"+validation::quote("aomo.node.choice."+node.id)+
+                ",\"label\":"+validation::quote(node.label)+
+                ",\"individual_label\":"+validation::quote(node.individual_label)+
+                ",\"lane\":"+std::to_string(static_cast<int>(node.lane))+
+                ",\"orbital\":"+(node.orbital?forensic::ref(*node.orbital):"null")+
+                ",\"canonical_index\":"+forensic::index(node.canonical_index)+
+                ",\"canonical_source_index\":"+(node.canonical_index && *node.canonical_index<canonical.orbitals.size() &&
+                    canonical.orbitals[*node.canonical_index].source_orbital_index!=std::numeric_limits<std::size_t>::max()?
+                    std::to_string(canonical.orbitals[*node.canonical_index].source_orbital_index):"null")+
+                ",\"canonical_spin\":"+(node.canonical_index && *node.canonical_index<canonical.orbitals.size()?
+                    validation::quote(canonical.orbitals[*node.canonical_index].spin==Spin::Beta?"Beta":"Alpha"):"null")+
+                ",\"salc_index\":"+forensic::index(node.salc_index)+
+                ",\"fragment_group_id\":"+forensic::index(node.fragment_group_id)+
+                ",\"subspace_id\":"+validation::quote(node.subspace_id)+
+                ",\"display_group_id\":"+validation::quote(node.display_group_id)+
+                ",\"spatial_pair_id\":"+validation::quote(node.spatial_pair_id)+
+                ",\"member_canonical_indices\":"+forensic::indices(node.member_canonical_indices)+
+                ",\"atoms\":"+forensic::indices(node.atoms)+
+                ",\"shell_member_index\":"+std::to_string(node.shell_member_index)+
+                ",\"shell_member_count\":"+std::to_string(node.shell_member_count)+
+                ",\"group_header\":"+forensic::boolean(node.group_header)+
+                ",\"available\":"+forensic::boolean(node.available)+
+                ",\"quantitative_energy\":"+forensic::boolean(node.quantitative_energy)+
+                ",\"energy_hartree\":"+forensic::number(node.energy_hartree)+
+                ",\"energy_semantics\":"+validation::quote(node.energy_semantics)+
+                ",\"display_energy_hartree\":"+forensic::number(node.display_energy_hartree)+
+                ",\"display_energy_semantics\":"+validation::quote(node.display_energy_semantics)+
+                ",\"occupation\":"+forensic::number(node.occupation)+
+                ",\"occupation_label\":"+validation::quote(node.occupation_label)+
+                ",\"occupation_on_bar\":"+forensic::boolean(node.occupation_on_bar)+
+                ",\"selected_highlight\":"+forensic::boolean(selected_node)+
+                ",\"logical_rect\":"+forensic::rect(ImVec2(node.x,node.y),
+                    ImVec2(node.x+node_width(node),node.y+node.height))+
+                ",\"screen_rect\":"+forensic::rect(p,q)+
+                ",\"label_screen_rect\":"+forensic::rect(point(node.label_x,node.label_y),
+                    point(node.label_x+node.label_width,node.label_y+node.label_height))+
+                ",\"unclipped_hit_rect\":"+forensic::rect(ImVec2(p.x,line_y-hit_half),ImVec2(q.x,line_y+hit_half))+
+                ",\"hit_rect\":"+(hit_min.x<hit_max.x && hit_min.y<hit_max.y?forensic::rect(hit_min,hit_max):"null")+
+                ",\"viewport_intersects\":"+forensic::boolean(visible_rect(p,q))+
+                ",\"scroll_clipped\":"+forensic::boolean(p.x<clip_min.x || p.y<clip_min.y || q.x>clip_max.x || q.y>clip_max.y)+
+                ",\"clickable_in_viewport\":"+forensic::boolean(hit_min.x<hit_max.x && hit_min.y<hit_max.y);
+            if(node.spatial_spin) {
+                forensic_nodes+=",\"spatial_spin_id\":"+validation::quote(node.spatial_spin->id)+
+                    ",\"energy_status\":"+validation::quote(node.spatial_spin->energy_status)+
+                    ",\"occupation_status\":"+validation::quote(node.spatial_spin->occupation_status)+
+                    ",\"source_members\":[";
+                bool first=true;
+                for(const auto& channel:node.spatial_spin->channels)
+                    for(const auto& member:channel.members) {
+                        if(!first)forensic_nodes+=',';first=false;
+                        forensic_nodes+="{\"id\":"+validation::quote(member.id)+
+                            ",\"spin\":"+validation::quote(nbo_spin_name(channel.spin))+"}";
+                    }
+                forensic_nodes+=']';
+            }
+            forensic_nodes+='}';
+        }
         const auto colour=selected_node?IM_COL32(122,223,255,255):
             node.group_header?IM_COL32(143,161,187,255):
             node.quantitative_energy?IM_COL32(228,239,249,255):IM_COL32(174,189,207,255);
@@ -2159,6 +2253,36 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
             }
             validation::field("aomo.hover",hover_text);
             ImGui::PopTextWrapPos();ImGui::EndTooltip();}
+    }
+    if(capture_forensic) {
+        validation::record("forensic.aomo","{\"schema\":1,\"snapshot_id\":"+validation::quote(snapshot->id)+
+            ",\"mo_snapshot_id\":"+validation::quote(snapshot->mo_snapshot_id)+
+            ",\"view\":{\"preset\":"+std::to_string(static_cast<int>(snapshot->preset))+
+            ",\"preset_name\":"+validation::quote(preset_names[static_cast<int>(snapshot->preset)])+
+            ",\"basis\":"+validation::quote(nbo_orbital_kind_name(snapshot->basis_kind))+
+            ",\"basis_name\":"+validation::quote(snapshot->basis_kind==NboOrbitalKind::NAO?"NAO":"Gaussian AO")+
+            ",\"overview\":"+forensic::boolean(snapshot->overview)+
+            ",\"show_core\":"+forensic::boolean(snapshot->show_core)+
+            ",\"show_rydberg\":"+forensic::boolean(snapshot->show_rydberg)+
+            ",\"hide_h_orbitals\":"+forensic::boolean(snapshot->hide_h_orbitals)+
+            ",\"illustrative_side_layout\":"+forensic::boolean(snapshot->illustrative_side_layout)+
+            ",\"energy_unit\":"+validation::quote(snapshot->display_energy_unit)+
+            ",\"energy_axis_mode\":"+validation::quote(snapshot->mo_energy_axis_mode)+"}"+
+            ",\"focused_canonical_index\":"+std::to_string(snapshot->focused_canonical_index)+
+            ",\"selected_side_node_id\":"+validation::quote(snapshot->selected_side_node_id)+
+            ",\"selection\":"+forensic::selection(snapshot->selection)+
+            ",\"active_view\":"+forensic::active(snapshot->active_view)+
+            ",\"canvas_rect\":"+forensic::rect(origin,canvas_max)+
+            ",\"clip_rect\":"+forensic::rect(clip_min,clip_max)+
+            ",\"zoom\":"+forensic::number(state.zoom)+
+            ",\"pan\":["+forensic::number(state.pan_x)+","+forensic::number(state.pan_y)+"]"+
+            ",\"scroll\":["+forensic::number(ImGui::GetScrollX())+","+forensic::number(ImGui::GetScrollY())+"]"+
+            ",\"scroll_max\":["+forensic::number(ImGui::GetScrollMaxX())+","+forensic::number(ImGui::GetScrollMaxY())+"]"+
+            ",\"node_count\":"+std::to_string(snapshot->nodes.size())+
+            ",\"edge_count\":"+std::to_string(forensic_edge_count)+
+            ",\"included_edge_count\":"+std::to_string(forensic_edges_included)+
+            ",\"edges_truncated\":"+forensic::boolean(forensic_edges_included<forensic_edge_count)+
+            ",\"nodes\":"+forensic_nodes+"],\"edges\":"+forensic_edges+"]}");
     }
     draw->PopClipRect();
     ImGui::EndChild();

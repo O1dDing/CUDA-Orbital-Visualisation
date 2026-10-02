@@ -632,7 +632,7 @@ int main(int argc, char** argv) {
                 auto next_wavefunction=std::make_unique<cov::Wavefunction>(cov::parse_molden(path, options));
                 profile_stage("wavefunction");
                 auto& wf=*next_wavefunction;
-                if (cov::validation::active()) {
+                if (cov::validation::active() && !cov::validation::forensic_mode()) {
                     std::ostringstream diagnostics;
                     cov::write_numerical_diagnostics_json(diagnostics,wf);
                     cov::validation::record("input.numerical_diagnostics",diagnostics.str());
@@ -716,7 +716,7 @@ int main(int argc, char** argv) {
                 pending_mo_index.reset();
                 orbital_ui.browser_cache={};
                 orbital_ui.diagram_cache={};
-                if(cov::validation::active())
+                if(cov::validation::active() && !cov::validation::forensic_mode())
                     cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
                 grid_box = new_box;
                 current_file = path;
@@ -811,7 +811,7 @@ int main(int argc, char** argv) {
                 canonical_mo_index=selection.terms.front().orbital.index;
             pending_mo_index.reset();recompute=false;resize_and_recompute=false;
             identity();
-            if(cov::validation::active())
+            if(cov::validation::active() && !cov::validation::forensic_mode())
                 cov::validation::record("aomo.selection",cov::serialize_nbo_selection_json(*inspection));
             cov::validation::evaluated(0,"typed-orbital-selection",evaluator->last_kernel_ms());
         };
@@ -828,7 +828,7 @@ int main(int argc, char** argv) {
             nbo_ui.routed=&*routed;
             semantic_graph=*routed->interaction_graph.value;
             renderer.invalidate_geometry_cache();
-            if(cov::validation::active())
+            if(cov::validation::active() && !cov::validation::forensic_mode())
                 cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
             nbo_ui.focus={};nbo_ui.aomo={};clear_inspection_controls();
             nbo_ui.selected_atoms.clear();nbo_ui.selected_structure.reset();
@@ -851,7 +851,7 @@ int main(int argc, char** argv) {
             status=nbo_ui.error.empty()?StatusKind::Loaded:StatusKind::Error;
             status_detail=nbo_ui.error.empty()?integration->dataset.source.path:nbo_ui.error;
             // Do not build large diagnostic payloads during ordinary viewing.
-            if(cov::validation::active())
+            if(cov::validation::active() && !cov::validation::forensic_mode())
                 cov::validation::record("nbo.integration",cov::serialize_nbo_integration_json(*integration));
             cov::validation::record("nbo.attach","{\"source\":"+cov::validation::quote(integration->dataset.source.path)+
                 ",\"association\":"+cov::validation::quote(integration->dataset.association.status)+
@@ -870,7 +870,7 @@ int main(int argc, char** argv) {
             if(wavefunction){
                 routed=cov::route_chemistry(*wavefunction);
                 nbo_ui.routed=&*routed;semantic_graph=*routed->interaction_graph.value;
-                if(cov::validation::active())
+                if(cov::validation::active() && !cov::validation::forensic_mode())
                     cov::validation::record("chemistry.route",cov::serialize_routed_analysis_json(*routed));
             }
             renderer.invalidate_geometry_cache();
@@ -1839,6 +1839,12 @@ int main(int argc, char** argv) {
             identity();
             cov::validation::ui_frame(mo_index,pending_mo_index.value_or(mo_index));
 
+            if(cov::validation::forensic_mode())
+                cov::validation::record("forensic.input","{\"canonical_path\":"+
+                    cov::validation::quote(path_to_utf8(current_file))+
+                    ",\"status\":"+std::to_string(static_cast<int>(status))+
+                    ",\"error\":"+cov::validation::quote(status_error_detail)+
+                    ",\"nbo_source\":"+cov::validation::quote(integration?integration->dataset.source.path:std::string{})+"}");
             ImGui::Render();
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
             cov::validation::end_frame(fb_w,fb_h,mo_index,orbital_ui,active_wavefunction());

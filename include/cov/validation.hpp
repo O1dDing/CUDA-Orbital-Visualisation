@@ -10,6 +10,7 @@ namespace cov::validation {
 #ifdef COV_ENABLE_VALIDATION
 bool configure(int argc, char** argv);
 bool active();
+bool forensic_mode();
 bool background();
 int window_width();
 int window_height();
@@ -31,6 +32,7 @@ void end_frame(int width, int height, std::size_t applied,
                const ui::OrbitalUIState&, const Wavefunction*);
 void item(const std::string& id);
 void hit(const std::string& id, ImVec2 lo, ImVec2 hi);
+void chrome_hit(const std::string& id, ImVec2 lo, ImVec2 hi);
 void anchor(const std::string& id);
 void record(const std::string& kind, const std::string& json);
 void field(const std::string& label, const std::string& value);
@@ -39,6 +41,7 @@ std::filesystem::path export_base(const std::filesystem::path& original);
 #else
 inline bool configure(int, char**) { return false; }
 inline bool active() { return false; }
+inline bool forensic_mode() { return false; }
 inline bool background() { return false; }
 inline int window_width() { return 2100; }
 inline int window_height() { return 1250; }
@@ -57,6 +60,7 @@ inline void scene_view(const ViewerLayout&, const OrbitCamera&) {}
 inline void end_frame(int, int, std::size_t, const ui::OrbitalUIState&, const Wavefunction*) {}
 inline void item(const std::string&) {}
 inline void hit(const std::string&, ImVec2, ImVec2) {}
+inline void chrome_hit(const std::string&, ImVec2, ImVec2) {}
 inline void anchor(const std::string&) {}
 inline void record(const std::string&, const std::string&) {}
 inline void field(const std::string&, const std::string&) {}
