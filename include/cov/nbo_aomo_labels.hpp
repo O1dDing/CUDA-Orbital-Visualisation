@@ -39,11 +39,20 @@ struct NboAomoName {
     // among other occurrences can be numbered. Empty means unproved partners.
     std::string partner_block_id;
     std::size_t partner_block_size=0;
+    // Failed source-copy and ordering checks are distinct from missing input.
+    // These diagnostics never promote a projection to a verified partner block.
+    std::string partner_status, partner_failure_quantity;
+    std::optional<double> partner_failure_value, partner_failure_limit;
     // Scientific containing span is independent of the current display filter.
     std::vector<std::size_t> containing_members;
     std::vector<NboIrrepContent> containing_irreps;
     std::string status,ordinal_scope;
     std::size_t complete_set_ordinal=0;
+    std::string ordinal_status,complete_set_ordinal_status;
+    std::vector<std::size_t> ordinal_blocking_members;
+    // Conservative possible complete-set ranks, not a chosen physical order.
+    // Absent if the relevant irrep counts or energy bounds are unavailable.
+    std::optional<std::size_t> complete_set_ordinal_lower,complete_set_ordinal_upper;
     std::optional<double> projection_residual;
     bool decomposition_verified=false;
     std::string decomposition_status;

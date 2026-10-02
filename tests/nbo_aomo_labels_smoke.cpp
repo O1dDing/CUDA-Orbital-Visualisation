@@ -349,6 +349,46 @@ int main(){try{
     auto equal_copies=coupled;for(auto i:{0,1,3,4})equal_copies.w.orbitals[i].energy_hartree=-.4;
     const auto equal_names=cov::ui::build_nbo_aomo_names(equal_copies.w,equal_copies.data,&equal_copies.salc);
     require(equal_names.canonical[0].ordinal==0&&equal_names.canonical[3].ordinal==0&&equal_names.canonical[0].partner_block_size==2&&equal_names.canonical[7].ordinal==3,"independent source partner blocks do not resolve an equal-energy ordinal tie, but later total counts remain exact");
+    for(auto i:{0,1,3,4})require(equal_names.canonical[i].ordinal_status=="same_irrep_energy_order_unresolved"&&
+        equal_names.canonical[i].complete_set_ordinal_lower==1&&equal_names.canonical[i].complete_set_ordinal_upper==2&&
+        !equal_names.canonical[i].ordinal_blocking_members.empty(),"equal-energy copies must retain possible ranks and actual blockers without claiming missing energies");
+    const auto tied_view=cov::ui::nbo_aomo_names_for_view(equal_copies.w,equal_names,{0,1,3,4,7,8},{},nullptr,"tie display");
+    require(tied_view.canonical[0].ordinal==1&&tied_view.canonical[3].ordinal==2&&
+        tied_view.canonical[0].ordinal_status=="display_order_convention"&&
+        tied_view.canonical[0].complete_set_ordinal_status=="same_irrep_energy_order_unresolved"&&
+        tied_view.canonical[0].complete_set_ordinal==0&&tied_view.canonical[0].complete_set_ordinal_upper==2,
+        "display order must not overwrite complete-set tie evidence");
+    const auto partial_view=cov::ui::nbo_aomo_names_for_view(equal_copies.w,equal_names,{0},{},nullptr,"partial pair");
+    require(partial_view.canonical[0].ordinal==0&&partial_view.canonical[0].ordinal_status=="visible_partner_group_incomplete",
+        "filtered-out partners must not be called missing source data");
+    const auto tie_json=cov::ui::serialize_orbital_name_json(tied_view.canonical[0]);
+    require(tie_json.find("\"complete_set_ordinal_bounds\":{\"lower\":1,\"upper\":2")!=std::string::npos&&
+        tie_json.find("\"complete_set_ordinal_status\":\"same_irrep_energy_order_unresolved\"")!=std::string::npos,
+        "copied/exported naming evidence must distinguish display order from complete-set ranking bounds");
+    auto close_order=c2v();
+    close_order.w.orbitals[0].energy_hartree=-1;
+    close_order.w.orbitals[1].energy_hartree=-1+1.5e-5;
+    close_order.w.orbitals[3].energy_hartree=-1+3e-5;
+    const auto close_names=cov::ui::build_nbo_aomo_names(close_order.w,close_order.data,&close_order.salc);
+    require(close_names.canonical[0].complete_set_ordinal_lower==1&&close_names.canonical[0].complete_set_ordinal_upper==2&&
+        close_names.canonical[1].complete_set_ordinal_lower==1&&close_names.canonical[1].complete_set_ordinal_upper==3&&
+        close_names.canonical[3].complete_set_ordinal_lower==2&&close_names.canonical[3].complete_set_ordinal_upper==3,
+        "nontransitive near-energy relations need per-copy bounds, not one transitive tied block");
+    auto closure_border=c2v();const double border_angle=1.1e-4;
+    const auto source_zero=closure_border.w.orbitals[0].coefficients,source_four=closure_border.w.orbitals[4].coefficients;
+    for(std::size_t a=0;a<source_zero.size();++a){
+        closure_border.w.orbitals[0].coefficients[a]=std::cos(border_angle)*source_zero[a]+std::sin(border_angle)*source_four[a];
+        closure_border.w.orbitals[4].coefficients[a]=-std::sin(border_angle)*source_zero[a]+std::cos(border_angle)*source_four[a];}
+    const auto border_before=closure_border.w.orbitals;
+    const auto border_names=cov::ui::build_nbo_aomo_names(closure_border.w,closure_border.data,&closure_border.salc);
+    for(auto i:{0,4})require(border_names.canonical[i].verified&&border_names.canonical[i].projection_residual&&
+        *border_names.canonical[i].projection_residual<4e-8&&border_names.canonical[i].ordinal==0&&
+        border_names.canonical[i].partner_status=="subspace_not_closed"&&
+        border_names.canonical[i].partner_failure_value&&*border_names.canonical[i].partner_failure_value>4e-8&&
+        border_names.canonical[i].partner_failure_limit==4e-8&&border_names.canonical[i].partner_block_id.empty(),
+        "near-pure projection and failed source-operation closure must keep separate measured evidence");
+    for(std::size_t i=0;i<border_before.size();++i)require(closure_border.w.orbitals[i].coefficients==border_before[i].coefficients&&
+        closure_border.w.orbitals[i].energy_hartree==border_before[i].energy_hartree,"diagnostics must not purify or modify source orbitals");
     auto graph_copies=axial(3,false);shell(graph_copies.w,0,1,.4);graph_copies.w.ao_overlap.assign(36,0);for(int i=0;i<6;++i)graph_copies.w.ao_overlap[i*6+i]=1;
     graph_copies.w.orbitals.clear();for(int i=0;i<6;++i){cov::MolecularOrbital mo;mo.coefficients.assign(6,0);mo.coefficients[i]=1;mo.energy_hartree=i<3?-.4:.2;graph_copies.w.orbitals.push_back(mo);}
     const double gc=std::cos(1e-4),gs=std::sin(1e-4);graph_copies.w.orbitals[0].coefficients={gc,0,0,gs,0,0};graph_copies.w.orbitals[3].coefficients={-gs,0,0,gc,0,0};

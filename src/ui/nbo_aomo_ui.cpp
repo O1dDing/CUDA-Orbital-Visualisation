@@ -2472,22 +2472,33 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
         std::set<RefKey> visible_orbitals;
         for(const auto& node:view.nodes){visible_nodes.insert(node.id);
             if(node.orbital)visible_orbitals.insert(key(*node.orbital));}
-        const auto name_json=[&](const NboAomoNode* node){
-            if(!node||!view.names)return std::string{};
-            if(node->canonical_index&&*node->canonical_index<view.names->canonical.size())
-                return serialize_orbital_name_json(view.names->canonical[*node->canonical_index]);
-            if(node->salc_index&&*node->salc_index<view.names->salc.size())
-                return serialize_orbital_name_json(view.names->salc[*node->salc_index]);
-            return std::string{};
+        // Complete names contain projected coefficient arrays. Store them once
+        // in display_names; repeating them on every dense coefficient edge can
+        // turn a small diagram export into gigabytes. A reference uses the real
+        // source set/index, independently of visibility and display numbering.
+        const auto json_filename_u8=result.json_path.filename().u8string();
+        const std::string json_filename(json_filename_u8.begin(),json_filename_u8.end());
+        const auto name_ref=[&](bool canonical,std::optional<std::size_t> index,bool external){
+            if(!view.names||!index||*index>=(canonical?view.names->canonical.size():view.names->salc.size()))
+                return std::string{};
+            const std::string pointer="/display_names/"+std::string(canonical?"canonical/":"salc/")+std::to_string(*index);
+            return "{\"file\":"+quote(external?json_filename:std::string{})+
+                ",\"pointer\":"+quote(pointer)+"}";
+        };
+        const auto node_name_ref=[&](const NboAomoNode* node,bool external){
+            if(!node)return std::string{};
+            return node->canonical_index?name_ref(true,node->canonical_index,external):
+                name_ref(false,node->salc_index,external);
         };
         {
             std::ofstream out(result.csv_path,std::ios::binary);
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
-            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode,source_display_name,target_display_name,active_view_json,pi_partner_evidence_json,source_name_evidence_json,target_name_evidence_json\n";
+            out<<"snapshot_id,integration_id,mo_snapshot_id,in_central_view,visible_link,basis_kind,basis_index,spin,canonical_index,coefficient,orthonormal_weight,nao_projection_weight,ao_metric_residual_norm,source_path,source_line,source_block,diagram_source_id,displayed_on_canvas,projection_strength_nonadditive,record_kind,source_energy_hartree,source_display_energy_hartree,source_display_offset_y,source_display_group_id,target_energy_hartree,target_display_energy_hartree,target_display_offset_y,target_display_group_id,source_spatial_id,source_spatial_spin_json,source_occupation,source_spin_mode,source_display_name,target_display_name,active_view_json,pi_partner_evidence_json,source_name_evidence_ref_json,target_name_evidence_ref_json\n";
             const auto display_columns=[&](const NboAomoEdge* edge,
                 std::optional<double> source_energy,std::size_t canonical_index,
-                const NboSpatialSpinInfo* spin_info=nullptr,std::optional<double> occupation=std::nullopt) {
+                const NboSpatialSpinInfo* spin_info=nullptr,std::optional<double> occupation=std::nullopt,
+                std::optional<std::size_t> source_salc=std::nullopt) {
                 const NboAomoNode* source=edge?&view.nodes[edge->source_node]:nullptr;
                 const NboAomoNode* target=nullptr;
                 for(const auto& node:view.nodes)if(node.canonical_index==canonical_index){target=&node;break;}
@@ -2510,7 +2521,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 if(source && source->occupation)out<<*source->occupation;else if(occupation)out<<*occupation;
                 out<<','<<csv(spin_info?"spin_averaged_spatial":"source_channel")
                    <<','<<csv(source?source->label:"")<<','<<csv(target?target->label:"")<<",,,"
-                   <<csv(name_json(source))<<','<<csv(name_json(target))<<'\n';
+                   <<csv(source_salc?name_ref(false,source_salc,true):node_name_ref(source,true))
+                   <<','<<csv(name_ref(true,canonical_index,true))<<'\n';
             };
             for(const auto& link:data.links){
                 const bool central=in(view.central_mo_indices,link.canonical_index);
@@ -2565,7 +2577,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                    <<(edge!=view.edges.end()&&edge->visible?"true":"false")
                    <<",,"<<(orbital.spatial_spin?"spin_averaged_spatial_link":"fixed_salc_link");
                 display_columns(edge!=view.edges.end()?&*edge:nullptr,
-                    orbital.energy_hartree,link.canonical_index,orbital.spatial_spin?&*orbital.spatial_spin:nullptr,orbital.occupation);
+                    orbital.energy_hartree,link.canonical_index,orbital.spatial_spin?&*orbital.spatial_spin:nullptr,orbital.occupation,link.side_index);
             }
             // Include every active-model side identity once, even hidden/no-link
             // members, so source_spatial_id is always resolvable within the CSV.
@@ -2582,7 +2594,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                 if(node.occupation)row[30]=precise(*node.occupation);
                 row[31]=node.spatial_spin?"spin_averaged_spatial":"source_channel";
                 row[32]=node.label;
-                row[36]=name_json(&node);
+                row[36]=node_name_ref(&node,true);
                 for(std::size_t i=0;i<row.size();++i){if(i)out<<',';out<<csv(row[i]);}out<<'\n';
             };
             if(view.basis_kind==NboOrbitalKind::NAO&&view.salc_model&&view.salc_model->available){
@@ -2612,7 +2624,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             std::ofstream out(result.json_path,std::ios::binary);
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
             out<<std::setprecision(17);
-            out<<"{\"schema\":\"cov_aomo_unified_view_v3\",\"snapshot_id\":"<<quote(view.id)
+            out<<"{\"schema\":\"cov_aomo_unified_view_v4\",\"snapshot_id\":"<<quote(view.id)
+               <<",\"csv_schema\":\"cov_aomo_links_v4\",\"name_reference_contract\":\"file is a sibling bundle filename (empty means this JSON); pointer is a JSON Pointer into display_names. Full source coefficients are stored once in that table.\""
                <<",\"name_ordinal_scope\":"<<quote(view.name_ordinal_scope)
                <<",\"display_names\":"<<(view.names?serialize_orbital_names_json(*view.names):"null")
                <<",\"integration_id\":"<<quote(data.id)<<",\"mo_snapshot_id\":"<<quote(view.mo_snapshot_id)
@@ -2735,7 +2748,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
                    <<",\"symmetry_multiplicity\":"<<node.symmetry_multiplicity
                    <<",\"symmetry_name_verified\":"<<(node.symmetry_name_verified?"true":"false")
                    <<",\"name_detail\":"<<quote(node.name_detail)
-                   <<",\"name_evidence\":"<<(name_json(&node).empty()?"null":name_json(&node))
+                   <<",\"name_evidence_ref\":"<<(node_name_ref(&node,false).empty()?"null":node_name_ref(&node,false))
                    <<",\"individual_label\":"<<quote(node.individual_label)
                    <<",\"spatial_pair_id\":"<<quote(node.spatial_pair_id)
                    <<",\"spatial_pair_label\":"<<quote(node.spatial_pair_label)

@@ -1,5 +1,6 @@
 #include "cov/mo_diagram.hpp"
 #include "cov/nbo_aomo_ui.hpp"
+#include "cov/nbo_aomo_labels.hpp"
 #include "cov/orbital_ui.hpp"
 
 #include <imgui.h>
@@ -228,6 +229,42 @@ int main() {
     };
     aomo_frame(cov::NboOrbitalKind::NAO);
     aomo_frame(cov::NboOrbitalKind::GaussianAO);
+    // Name evidence is shared once, not copied for every coefficient edge.
+    // This fixture includes a hidden canonical target and both spin channels.
+    {
+        auto compact_view=*draw_aomo(cov::NboOrbitalKind::NAO,snapshot);
+        auto names=std::make_shared<cov::ui::NboAomoNames>();
+        names->canonical.resize(3);
+        for(auto& name:names->canonical){
+            name.irrep="A";name.label="source name";
+            cov::ui::NboIrrepComponent component;component.irrep="A";
+            component.source_coefficients.assign(4096,0.12345678901234567);
+            name.components.push_back(std::move(component));
+        }
+        compact_view.names=names;
+        auto dense=integration;
+        for(std::size_t i=0;i<50;++i){auto link=integration.links[i%integration.links.size()];
+            link.coefficient=-0.375;link.source.path="producer,quoted\"source";
+            link.source.line_begin=17;link.source.block="retained block";
+            dense.links.push_back(link);}
+        const auto exported=cov::ui::export_nbo_aomo_bundle(compact_view,dense,root/std::filesystem::path(u8"共用证据"));
+        require(exported.csv&&exported.json,"shared name export failed");
+        const auto csv=read(exported.csv_path),json=read(exported.json_path);
+        require(csv.size()<150000&&csv.find("source_coefficients")==std::string::npos,
+            "CSV must not repeat projected coefficient arrays on each link");
+        require(count(json,"\"source_coefficients\"")==3 &&
+            json.find("cov_aomo_unified_view_v4")!=std::string::npos &&
+            json.find("\"name_evidence_ref\"")!=std::string::npos,
+            "complete name coefficients must remain once in the shared JSON table");
+        require(count(csv,"-0.375,")==50&&count(csv,"producer,quoted\"\"source")==50&&
+            count(csv,",17,\"retained block\"")==50,
+            "normalizing names must preserve every signed link coefficient and producer reference");
+        require(csv.find("source_name_evidence_ref_json,target_name_evidence_ref_json")!=std::string::npos&&
+            csv.find("/display_names/canonical/0")!=std::string::npos&&
+            csv.find("/display_names/canonical/2")!=std::string::npos&&
+            csv.find("共用证据.aomo.json")!=std::string::npos,
+            "both spin source indices and the UTF-8 bundle name must resolve independently of visibility");
+    }
     aomo_state.collapsed_atoms.insert(0);
     const auto folded_atom=draw_aomo(cov::NboOrbitalKind::NAO,snapshot);
     bool found_header=false;

@@ -461,7 +461,7 @@ void record(const std::string& kind,const std::string& json) {
                    kind=="browser.copy" || kind=="details.copy" || kind=="aomo.copy" ||
                    kind=="nbo.attach" || kind=="nbo.attach.error" || kind=="scene.pick" ||
                    kind=="aomo.selection.error" || kind=="input.package.error" ||
-                   kind=="input.numerical_diagnostics" ||
+                   kind=="input.numerical_diagnostics" || kind=="input.frame_tracking" ||
                    (kind=="diagram.cache" && json.find("false")!=std::string::npos))) {
         if(kind=="diagram.cache")++diagram_generation;
         events<<"{\"frame\":"<<frame<<",\"kind\":"<<quote(kind)<<",\"data\":"<<json<<"}\n";events.flush();

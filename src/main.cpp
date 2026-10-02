@@ -650,9 +650,23 @@ int main(int argc, char** argv) {
                     // Cross-frame identity is descriptive state only. Both
                     // canonical wavefunctions remain immutable, and loading a
                     // new frame still resets selection to that frame's own HOMO.
-                    // ✳ TODO: Profile slow frame opens and bound search work per conflict group.
+                    // Track with a shared work/deadline budget; never retain a
+                    // partial assignment as a completed correspondence.
                     new_tracking = cov::track_orbital_subspaces(*wavefunction, wf);
                     profile_stage("frame-matching");
+                    if(cov::validation::active()){
+                        std::ostringstream tracking;
+                        tracking<<"{\"budget_exhausted\":"<<(new_tracking->tracking_budget_exhausted?"true":"false")
+                            <<",\"budget_reason\":"<<int(new_tracking->budget_exhaustion_reason)
+                            <<",\"budget_stage\":"<<int(new_tracking->budget_exhausted_stage)
+                            <<",\"work_units\":"<<new_tracking->tracking_work_units
+                            <<",\"matches\":"<<new_tracking->matches.size()
+                            <<",\"unmatched_from\":"<<new_tracking->unmatched_from.size()
+                            <<",\"unmatched_to\":"<<new_tracking->unmatched_to.size()
+                            <<",\"unresolved_from\":"<<new_tracking->unresolved_from.size()
+                            <<",\"unresolved_to\":"<<new_tracking->unresolved_to.size()<<'}';
+                        cov::validation::record("input.frame_tracking",tracking.str());
+                    }
                 }
 
                 auto next_route=cov::route_chemistry(wf);
@@ -1484,6 +1498,7 @@ int main(int argc, char** argv) {
             cov::ui::begin_card("##frame_tracking_card", 156.0f * ui_scale);
             cov::ui::section_title(cov::ui::tr(cov::ui::Text::FrameTracking,
                                                language));
+            cov::validation::item("input.frame_tracking");
             if (frame_tracking) {
                 if (ImGui::BeginTable("##frame_tracking_metrics", 2,
                                       ImGuiTableFlags_SizingStretchProp |
@@ -1507,6 +1522,15 @@ int main(int argc, char** argv) {
                                        ? cov::ui::Text::Compatible
                                        : cov::ui::Text::Incompatible,
                                    language));
+                    if(frame_tracking->tracking_budget_exhausted){
+                        const std::string unresolved=std::to_string(frame_tracking->unresolved_from.size())+
+                            " / "+std::to_string(frame_tracking->unresolved_to.size());
+                        metric_row(scene_text(language,"Unresolved correspondence","对应关系未确定",
+                            "対応未確定","Correspondances indéterminées"),unresolved.c_str());
+                        metric_row(cov::ui::tr(cov::ui::Text::TrackingOptimisation,language),
+                            scene_text(language,"Matching limit reached","匹配已达运行限额",
+                                "対応探索の上限に到達","Limite de recherche atteinte"));
+                    }else{
                     metric_row(cov::ui::tr(cov::ui::Text::MatchedSubspaces,
                                            language),
                                matched.c_str());
@@ -1520,6 +1544,7 @@ int main(int argc, char** argv) {
                                        ? cov::ui::Text::ConservativeFallback
                                        : cov::ui::Text::ExactOrNotNeeded,
                                    language));
+                    }
                     ImGui::EndTable();
                 }
             } else {
