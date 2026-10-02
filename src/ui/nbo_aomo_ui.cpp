@@ -2447,18 +2447,26 @@ bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& data,
         ImGui::EndChild();
         validation::field("aomo.coefficients.count",std::to_string(links.size()));
     }
-    if(ImGui::Button(aomo_text(language,"Export whole diagram"))){
-        state.export_requested=true;}
+    if(ImGui::Button(aomo_text(language,"Export images"))){
+        state.export_content=DiagramExportContent::Images;state.export_requested=true;}
     validation::item("aomo.export");
     same_line_for(aomo_text(language,"Light paper export"));
     if(ImGui::Checkbox(aomo_text(language,"Light paper export"),&state.paper_export))++state.revision;
     validation::item("aomo.paper_export");
+    const bool export_options=ImGui::CollapsingHeader(aomo_text(language,"Analysis data (advanced)"));
+    validation::item("aomo.export_options");
+    if(export_options){
+        if(ImGui::Button(aomo_text(language,"Export analysis data"))){
+            state.export_content=DiagramExportContent::AnalysisData;state.export_requested=true;}
+        validation::item("aomo.export_data");
+    }
     if(!state.export_status.empty())ImGui::TextWrapped("%s",state.export_status.c_str());
     return true;
 }
 
 NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
-    const NboIntegration& data,const std::filesystem::path& base) {
+    const NboIntegration& data,const std::filesystem::path& base,
+    const DiagramExportContent content) {
     NboAomoExportResult result;
     const auto file=[&](const char* suffix){auto path=base;path+=suffix;return path;};
     result.json_path=file(".aomo.json");result.csv_path=file(".aomo.csv");
@@ -2468,6 +2476,7 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
         result.error=aomo_text(view.language,"The diagram does not match the loaded data.");return result;
     }
     try {
+        if(content!=DiagramExportContent::Images){
         std::set<std::string> visible_nodes;
         std::set<RefKey> visible_orbitals;
         for(const auto& node:view.nodes){visible_nodes.insert(node.id);
@@ -2829,6 +2838,8 @@ NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& view,
             if(!out)throw std::runtime_error(aomo_text(view.language,"Could not save the diagram data."));
         }
         result.json=true;
+        }
+        if(content==DiagramExportContent::AnalysisData) return result;
         float max_y=0,max_x=0;
         for(const auto& node:view.nodes){max_y=std::max(max_y,node.label_y+node.label_height+20);
             max_x=std::max(max_x,std::max(node.x+node.width,

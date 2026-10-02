@@ -1597,7 +1597,9 @@ int main(int argc, char** argv) {
                     canonical_requested=true;
                     nbo_ui.focus.pending_canonical_selection.reset();
                 }
-                const bool export_requested = orbital_actions.export_diagram || diagram_actions.export_diagram;
+                const bool export_analysis=orbital_actions.export_analysis || diagram_actions.export_analysis;
+                const bool export_requested=orbital_actions.export_diagram || diagram_actions.export_diagram || export_analysis;
+                const auto export_content=export_analysis?cov::DiagramExportContent::AnalysisData:cov::DiagramExportContent::Images;
                 if (export_requested && wavefunction) {
                     std::filesystem::path base = current_file.empty()
                                                      ? std::filesystem::current_path() / "mo_diagram"
@@ -1628,22 +1630,24 @@ int main(int argc, char** argv) {
                                 "非線形エネルギー軸","Axe d’énergie non linéaire");
                         presentation.raster_text=cov::ui::raster_text;
                         presentation.raster_text_width=cov::ui::raster_text_width;
-                        result=cov::export_mo_diagram_bundle({snapshot->data,std::move(presentation)},base);
+                        result=cov::export_mo_diagram_bundle({snapshot->data,std::move(presentation)},base,export_content);
                     }
                     else result.error="No current diagram view is available for export";
+                    const bool exported=export_analysis?(result.json&&result.csv):(result.svg&&result.png);
     #ifdef COV_ENABLE_VALIDATION
                     cov::validation::record("export.actual","{\"base\":"+cov::validation::quote(path_to_utf8(base))+
                         ",\"snapshot_id\":"+(snapshot?cov::validation::quote(snapshot->data.view->id):"null")+
                         ",\"mode\":"+(snapshot?std::to_string(static_cast<int>(snapshot->data.mode)):"null")+
                         ",\"selected_index\":"+(snapshot && snapshot->data.view->inspected_orbital_index
                             ?std::to_string(*snapshot->data.view->inspected_orbital_index):"null")+
-                        ",\"success\":"+((result.svg&&result.png&&result.json&&result.csv)?"true":"false")+"}");
+                        ",\"content\":"+cov::validation::quote(export_analysis?"analysis_data":"images")+
+                        ",\"success\":"+(exported?"true":"false")+"}");
     #endif
-                    if (result.svg && result.png && result.json && result.csv) {
-                        export_analysis_companions(base);
+                    if (exported) {
+                        if(export_analysis) export_analysis_companions(base);
                         status = StatusKind::Exported;
                         status_detail = path_to_utf8(result.svg_path.parent_path() /
-                            result.svg_path.stem()) + ".{png,svg,json,csv}";
+                            result.svg_path.stem()) + (export_analysis?".{json,csv}":".{png,svg}");
                     } else {
                         status = StatusKind::Error;
                         status_detail=cov::ui::tr(cov::ui::Text::ExportFailed,language);
@@ -1883,10 +1887,12 @@ int main(int argc, char** argv) {
                 if(integration && nbo_ui.aomo.drawn_snapshot){
                     const auto base=cov::validation::export_base(nbo_ui.aomo.export_path[0]?
                         path_from_utf8(nbo_ui.aomo.export_path.data()):current_file);
-                    const auto result=cov::ui::export_nbo_aomo_bundle(*nbo_ui.aomo.drawn_snapshot,*integration,base);
-                    if(result.json && result.svg && result.png && result.csv)
+                    const auto content=nbo_ui.aomo.export_content;
+                    const auto result=cov::ui::export_nbo_aomo_bundle(*nbo_ui.aomo.drawn_snapshot,*integration,base,content);
+                    if(content==cov::DiagramExportContent::AnalysisData && result.json && result.csv)
                         export_analysis_companions(base);
-                    nbo_ui.aomo.export_status=result.error.empty()?path_to_utf8(result.svg_path):result.error;
+                    nbo_ui.aomo.export_status=result.error.empty()?path_to_utf8(
+                        content==cov::DiagramExportContent::AnalysisData?result.json_path:result.svg_path):result.error;
                 }
             }
             if(canonical_requested){

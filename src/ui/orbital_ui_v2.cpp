@@ -1680,6 +1680,12 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     ImGui::EndChild();
     if (ImGui::Button(tr(Text::ExportBundle, language), ImVec2(-1.0f, 0.0f))) actions.export_diagram = true;
     cov::validation::item("diagram.export");
+    const bool export_options=ImGui::CollapsingHeader(aomo_text(language,"Analysis data (advanced)"));
+    cov::validation::item("diagram.export_options");
+    if(export_options){
+        if(ImGui::Button(aomo_text(language,"Export analysis data"))) actions.export_analysis=true;
+        cov::validation::item("diagram.export_data");
+    }
     if(ImGui::Button(orbital_tr(OrbitalText::OrbitalDetails,language),ImVec2(-1.0f,0.0f)))
         state.show_diagram_details=true;
     cov::validation::item("diagram.details");

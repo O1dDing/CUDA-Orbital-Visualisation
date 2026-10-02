@@ -341,7 +341,7 @@ def interaction_plan(case: dict, discovery: Path,
                   'capture "beta-mo"',
                   'volume "beta-mo-field" "0"']
     lines += ['export-name "category-export"',
-              'click "aomo.export"',
+              'click "aomo.export"','seek "aomo.export_options"','click "aomo.export_options"','seek "aomo.export_data"','click "aomo.export_data"','click "aomo.export_options"',
               'capture "exported"']
     write_text(plan, "\n".join(lines) + "\n")
     write_json(folder / "selected-ui.json", selection)
@@ -417,7 +417,7 @@ def g_shell_interaction_plan(case: dict, discovery: Path) -> dict:
               'click "scene.fit_component"', 'capture "g-beta"',
               'hover "scene.viewport"', 'click ' + quoted(picked_atom),
               'capture "right-picked"',
-              'export-name "g-shell-export"', 'click "aomo.export"',
+              'export-name "g-shell-export"', 'click "aomo.export"','seek "aomo.export_options"','click "aomo.export_options"','seek "aomo.export_data"','click "aomo.export_data"','click "aomo.export_options"',
               'capture "exported"']
     write_text(plan, "\n".join(lines) + "\n")
     expected = {"g-alpha-field": {"kind": "NAO", "index": index, "spin": "alpha"},

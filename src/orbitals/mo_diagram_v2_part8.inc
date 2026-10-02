@@ -688,7 +688,8 @@ bool write_mo_diagram_csv(const MODiagramData& data,
 }
 
 MODiagramExportResult export_mo_diagram_bundle(const MODiagramViewSnapshot& snapshot,
-                                               const std::filesystem::path& base_path) {
+                                               const std::filesystem::path& base_path,
+                                               const DiagramExportContent content) {
     static std::mutex bundle_mutex;
     static std::atomic<std::uint64_t> generation{0u};
     const std::lock_guard lock(bundle_mutex);
@@ -705,8 +706,13 @@ MODiagramExportResult export_mo_diagram_bundle(const MODiagramViewSnapshot& snap
     const std::array<std::filesystem::path,4> targets{
         result.svg_path,result.png_path,result.json_path,result.csv_path};
 
+    const bool images=content!=DiagramExportContent::AnalysisData;
+    const bool analysis=content!=DiagramExportContent::Images;
+    const std::array<bool,4> enabled{images,images,analysis,analysis};
     std::error_code ec;
-    for (const auto& target:targets) {
+    for (std::size_t i=0;i<targets.size();++i) {
+        if(!enabled[i]) continue;
+        const auto& target=targets[i];
         if (std::filesystem::exists(target,ec) &&
             !std::filesystem::is_regular_file(target,ec)) {
             result.error="Export target exists and is not a regular file: "+
@@ -733,10 +739,10 @@ MODiagramExportResult export_mo_diagram_bundle(const MODiagramViewSnapshot& snap
         }
     };
     std::string error;
-    if (!write_mo_diagram_svg(data,options,temporary[0],&error) ||
-        !write_mo_diagram_png(data,options,temporary[1],&error) ||
-        !write_mo_diagram_json(data,options,temporary[2],&error) ||
-        !write_mo_diagram_csv(data,options,temporary[3],&error)) {
+    if ((images && (!write_mo_diagram_svg(data,options,temporary[0],&error) ||
+                    !write_mo_diagram_png(data,options,temporary[1],&error))) ||
+        (analysis && (!write_mo_diagram_json(data,options,temporary[2],&error) ||
+                      !write_mo_diagram_csv(data,options,temporary[3],&error)))) {
         cleanup_temporaries();
         result.error=error;
         return result;
@@ -745,6 +751,7 @@ MODiagramExportResult export_mo_diagram_bundle(const MODiagramViewSnapshot& snap
     std::array<bool,4> backed_up{};
     std::array<bool,4> installed{};
     for (std::size_t i=0;i<targets.size();++i) {
+        if(!enabled[i]) continue;
         ec.clear();
         if (std::filesystem::exists(targets[i],ec)) {
             std::filesystem::rename(targets[i],backup[i],ec);
@@ -782,7 +789,8 @@ MODiagramExportResult export_mo_diagram_bundle(const MODiagramViewSnapshot& snap
         ec.clear();
         std::filesystem::remove(backup[i],ec);
     }
-    result.svg=result.png=result.json=result.csv=true;
+    result.svg=result.png=images;
+    result.json=result.csv=analysis;
     return result;
 }
 

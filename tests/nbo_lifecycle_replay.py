@@ -21,7 +21,11 @@ partial=fixtures/'report-only';partial.mkdir();shutil.copyfile(water/'analysis.l
 prefix=['COV_VALIDATION 1','window 2100 1250','scene 0.26 0.65 0.35 1.7 0.05 96']
 def load(p):return [f'drop "{p.as_posix()}"','wait "load"']
 def capture(n):return ['hover "scene.viewport"',f'capture "{n}"']
-def export(n,entry='nbo.export'):return [f'export-name "{n}"',f'seek "{entry}"',f'click "{entry}"']+capture(n)
+def export(n,entry='nbo.export'):
+    plan=[f'export-name "{n}"',f'seek "{entry}"',f'click "{entry}"']
+    if entry=='diagram.export':
+        plan += ['seek "diagram.export_options"','click "diagram.export_options"','seek "diagram.export_data"','click "diagram.export_data"','click "diagram.export_options"']
+    return plan+capture(n)
 def manual():
     p=[]
     for key,name in [('path','analysis.log'),('archive47','electronic.47'),('aonbo','FILE.37'),('nbomo','FILE.49'),('naomo','FILE.51'),('aonao','FILE.52'),('naonbo','FILE.53')]:

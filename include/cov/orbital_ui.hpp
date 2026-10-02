@@ -62,6 +62,7 @@ struct OrbitalUIState {
 struct OrbitalUIActions {
     std::optional<std::size_t> select_orbital;
     bool export_diagram = false;
+    bool export_analysis = false;
     std::shared_ptr<const MODiagramViewSnapshot> drawn_diagram;
 };
 

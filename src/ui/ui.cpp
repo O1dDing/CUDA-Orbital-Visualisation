@@ -110,7 +110,7 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Valence MO diagram", "价电子层 MO 图", "価電子層 MO 図", "Diagramme MO de valence"},
     {"Valence diagram span", "价电子 MO 图范围", "価電子 MO 図の表示範囲", "Étendue du diagramme MO de valence"},
     {"Generate MO diagram", "生成 MO 图", "MO 図を生成", "Générer le diagramme MO"},
-    {"Export diagram + metadata", "导出图与元数据", "図とメタデータを書き出す", "Exporter diagramme + métadonnées"},
+    {"Export images", "导出图片", "画像を書き出す", "Exporter les images"},
     {"Exported", "已导出", "書き出し完了", "Exporté"},
     {"Export failed", "导出失败", "書き出し失敗", "Échec de l’export"},
     {"Molecule style", "分子样式", "分子表示", "Style moléculaire"},

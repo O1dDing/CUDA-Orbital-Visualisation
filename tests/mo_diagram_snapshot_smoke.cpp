@@ -85,6 +85,23 @@ int main() {
         svg.find("1b₂ [alpha]")!=std::string::npos && svg.find("分子轨道能级")!=std::string::npos &&
         svg.find("能量 (eV)")!=std::string::npos && svg.find("support (not probability)")==std::string::npos,
         "figure must preserve supplied orbital names, language and axis units without scores");
+    // Picture-only export neither creates analysis files nor touches old ones.
+    const auto pictures=cov::export_mo_diagram_bundle(snapshot,root/"pictures",cov::DiagramExportContent::Images);
+    require(pictures.svg&&pictures.png&&!pictures.json&&!pictures.csv&&
+        !std::filesystem::exists(pictures.json_path)&&!std::filesystem::exists(pictures.csv_path),
+        "picture export must produce only PNG and SVG");
+    require(read(pictures.svg_path)==svg&&read(pictures.png_path)==png,
+        "picture-only export must preserve the exact rendered figure");
+    std::filesystem::create_directory(pictures.json_path);
+    {std::ofstream out(pictures.csv_path);out<<"untouched analysis";}
+    const auto images_again=cov::export_mo_diagram_bundle(snapshot,root/"pictures",cov::DiagramExportContent::Images);
+    require(images_again.svg&&images_again.png&&std::filesystem::is_directory(pictures.json_path)&&
+        read(pictures.csv_path)=="untouched analysis","unrequested analysis paths must be ignored");
+    const auto analysis=cov::export_mo_diagram_bundle(snapshot,root/"analysis",cov::DiagramExportContent::AnalysisData);
+    require(analysis.json&&analysis.csv&&!analysis.svg&&!analysis.png&&
+        !std::filesystem::exists(analysis.svg_path)&&!std::filesystem::exists(analysis.png_path)&&
+        read(analysis.json_path)==json&&read(analysis.csv_path)==csv,
+        "explicit analysis export must preserve numerical output without rendering images");
     const auto& id=snapshot.data.view->id;
     require(svg.find(id)!=std::string::npos && png.find(id)!=std::string::npos &&
         json.find(id)!=std::string::npos && csv.find(id)!=std::string::npos,
@@ -249,6 +266,21 @@ int main() {
             dense.links.push_back(link);}
         const auto exported=cov::ui::export_nbo_aomo_bundle(compact_view,dense,root/std::filesystem::path(u8"共用证据"));
         require(exported.csv&&exported.json,"shared name export failed");
+        const auto pictures=cov::ui::export_nbo_aomo_bundle(compact_view,dense,root/"dense-pictures",cov::DiagramExportContent::Images);
+        require(pictures.svg&&pictures.png&&!pictures.csv&&!pictures.json&&
+            !std::filesystem::exists(pictures.csv_path)&&!std::filesystem::exists(pictures.json_path)&&
+            read(pictures.svg_path)==read(exported.svg_path)&&read(pictures.png_path)==read(exported.png_path),
+            "dense NBO picture export must preserve figures and skip all coefficient payloads");
+        std::filesystem::create_directory(pictures.json_path);
+        {std::ofstream out(pictures.csv_path);out<<"untouched analysis";}
+        const auto repeated=cov::ui::export_nbo_aomo_bundle(compact_view,dense,root/"dense-pictures",cov::DiagramExportContent::Images);
+        require(repeated.svg&&repeated.png&&std::filesystem::is_directory(pictures.json_path)&&
+            read(pictures.csv_path)=="untouched analysis","NBO picture export must not rewrite older analysis");
+        const auto data_only=cov::ui::export_nbo_aomo_bundle(compact_view,dense,root/"dense-data",cov::DiagramExportContent::AnalysisData);
+        require(data_only.csv&&data_only.json&&!data_only.png&&!data_only.svg&&
+            !std::filesystem::exists(data_only.svg_path)&&!std::filesystem::exists(data_only.png_path)&&
+            read(data_only.json_path)==read(exported.json_path),
+            "NBO analysis must be independently exportable with complete source data");
         const auto csv=read(exported.csv_path),json=read(exported.json_path);
         require(csv.size()<150000&&csv.find("source_coefficients")==std::string::npos,
             "CSV must not repeat projected coefficient arrays on each link");

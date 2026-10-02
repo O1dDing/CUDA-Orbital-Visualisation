@@ -171,6 +171,7 @@ struct NboAomoUIState {
     std::optional<NboOrbitalSelection> selection; // last applied 3D identity; root updates
     std::optional<ActiveOrbitalView> active_view; // same presentation identity as details/export
     bool export_requested=false;
+    DiagramExportContent export_content=DiagramExportContent::Images;
     bool show_full_numeric=false;
     std::string source_id,status,export_status;
     std::array<char,2048> export_path{};
@@ -200,7 +201,8 @@ struct NboAomoExportResult {
     std::string error;
 };
 NboAomoExportResult export_nbo_aomo_bundle(const NboAomoViewSnapshot& snapshot,
-    const NboIntegration& integration,const std::filesystem::path& base);
+    const NboIntegration& integration,const std::filesystem::path& base,
+    DiagramExportContent content=DiagramExportContent::All);
 
 // Picks an occupied, non-core NBO associated with the current central MO when
 // matrix evidence exists. No selection is made when that association is absent.

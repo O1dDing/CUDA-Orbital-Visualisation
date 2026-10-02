@@ -469,6 +469,8 @@ struct MetalLigandDetailAvailability {
     const Wavefunction& wavefunction, const MODiagramData& data,
     const MODiagramLevel& level);
 
+enum class DiagramExportContent { Images, AnalysisData, All };
+
 struct MODiagramExportResult {
     bool svg = false;
     bool png = false;
@@ -483,7 +485,8 @@ struct MODiagramExportResult {
 
 [[nodiscard]] MODiagramExportResult export_mo_diagram_bundle(
     const MODiagramViewSnapshot& snapshot,
-    const std::filesystem::path& base_path);
+    const std::filesystem::path& base_path,
+    DiagramExportContent content = DiagramExportContent::All);
 // Explicit computed-export API for noninteractive callers. The live UI must
 // pass its already drawn snapshot through the overload above.
 [[nodiscard]] MODiagramExportResult export_mo_diagram_bundle(
