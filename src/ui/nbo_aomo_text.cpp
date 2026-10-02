@@ -3,6 +3,8 @@
 namespace cov::ui {
 namespace {
 const char* const rows[][4]={
+    {"Unresolved correspondence","对应关系未确定","対応未確定","Correspondances indéterminées"},
+    {"Matching limit reached","匹配已达运行限额","対応探索の上限に到達","Limite de recherche atteinte"},
     {"Full MO symmetry","完整 MO 对称性","MO 全体の対称性","Symétrie de l’OM entière"},
     {"Rotation group","旋转群","回転群","Groupe de rotations"},
     {"Local coordination symmetry","局部配位对称性","局所配位の対称性","Symétrie de coordination locale"},

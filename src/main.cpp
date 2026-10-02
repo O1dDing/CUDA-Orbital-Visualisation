@@ -1525,11 +1525,9 @@ int main(int argc, char** argv) {
                     if(frame_tracking->tracking_budget_exhausted){
                         const std::string unresolved=std::to_string(frame_tracking->unresolved_from.size())+
                             " / "+std::to_string(frame_tracking->unresolved_to.size());
-                        metric_row(scene_text(language,"Unresolved correspondence","对应关系未确定",
-                            "対応未確定","Correspondances indéterminées"),unresolved.c_str());
+                        metric_row(cov::ui::aomo_text(language,"Unresolved correspondence"),unresolved.c_str());
                         metric_row(cov::ui::tr(cov::ui::Text::TrackingOptimisation,language),
-                            scene_text(language,"Matching limit reached","匹配已达运行限额",
-                                "対応探索の上限に到達","Limite de recherche atteinte"));
+                            cov::ui::aomo_text(language,"Matching limit reached"));
                     }else{
                     metric_row(cov::ui::tr(cov::ui::Text::MatchedSubspaces,
                                            language),
