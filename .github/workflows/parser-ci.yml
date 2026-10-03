@@ -13,6 +13,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Install CJK fonts for real glyph coverage checks
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes fonts-noto-cjk
+          test -f /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
       - name: Configure CPU core build
         run: cmake -S . -B build -DCOV_ENABLE_CUDA=OFF -DCOV_BUILD_TESTS=ON
       - name: Build parser, orbital chemistry, diagram and UI targets
