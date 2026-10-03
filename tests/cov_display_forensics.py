@@ -301,7 +301,7 @@ def sweep_plan(package: Path, nodes: list[dict], capture: bool = False,
         name = artifact_id(hit)
         start = len(plan.commands)
         # Native seek uses genuine pointer/wheel input, including clipped nodes.
-        plan.add("seek", hit)
+        plan.add("seek", hit + ".reveal")
         plan.add("click", hit)
         choice = needs_choice(node, inventory_nodes or nodes)
         if choice:

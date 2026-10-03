@@ -1,4 +1,5 @@
 #pragma once
+#include "cov/orbital_group_bonding.hpp"
 
 #include "cov/model.hpp"
 #include "cov/orbital_view.hpp"
@@ -82,6 +83,7 @@ enum class BondingClass {
     Bonding,
     Nonbonding,
     Antibonding,
+    Mixed,
 };
 
 struct MulticentreDescriptor {
@@ -205,6 +207,11 @@ struct MODiagramOptions {
     std::size_t max_levels = 0;
     std::size_t max_virtual_levels = 10;
     bool hide_ligand_centred_intermediates = false;
+    // 0 preserves the non-NBO path; 1/2/3 are brief/research/full AOMO scopes.
+    // These describe display membership, never a different electronic state.
+    unsigned aomo_scope=0;
+    bool show_core_background=false, show_fragment_background=false;
+    std::vector<std::size_t> display_centre_atoms;
 
     double nonlinear_minimum_gap_weight = 0.070;
 
@@ -241,10 +248,16 @@ struct OrbitalEnergyGapDescriptor {
     PiInteractionKind kind = PiInteractionKind::Coupled;
     double splitting_hartree = 0.0;
     double confidence = 0.0;
+    // Reading priority only: minimum absolute cross-Fock trace of the two
+    // complete uniform-sign endpoint groups, in hartree; not a bond energy.
+    double display_strength_hartree = std::numeric_limits<double>::quiet_NaN();
     bool lower_visible = true;
     bool upper_visible = true;
     std::size_t retained_level = 0;
     std::shared_ptr<const PiPartnerAssessment> orbital_evidence;
+    // Equivalent physical projector scopes share one displayed relation;
+    // retain each original channel reference for reproducible diagnostics.
+    std::vector<std::string> equivalent_channel_ids;
     OrbitalEnergyGapKind gap_kind = OrbitalEnergyGapKind::PiPartner;
     OrbitalSymmetryExplanation lower_symmetry_scope;
     OrbitalSymmetryExplanation upper_symmetry_scope;
@@ -301,6 +314,7 @@ struct MODiagramLevel {
     double metal_ligand_overlap = 0.0;
     bool raw_data_fallback = false;
     bool approximate_nonbonding = false;
+    std::vector<OrbitalGroupBondingResult> bonding_scopes;
 };
 
 // One visible row may represent an exactly-degenerate canonical-MO set and,

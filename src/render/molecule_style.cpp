@@ -368,9 +368,10 @@ std::vector<BondVisual> analyse_bonds(const Wavefunction& wavefunction,
             bonds.push_back(bond);
         }
     }
-    if(wavefunction.bond_order_provenance==DataProvenance::Unavailable) {
-        // Compatibility fallback for files where a complete overlap/density
-        // analysis cannot be obtained. This remains intentionally conservative.
+    {
+        // Capability is per pair: a partial electronic result cannot turn all
+        // omitted pairs into exact zeros. Only genuinely missing pair values
+        // use conservative geometry; an explicit zero stays authoritative.
         for (std::size_t i = 0; i < atom_count; ++i) {
             for (std::size_t j = i + 1; j < atom_count; ++j) {
                 // Per-pair capability fallback: an actual WBI=0 vetoes the

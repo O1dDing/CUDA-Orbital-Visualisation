@@ -1,5 +1,6 @@
 #pragma once
 #include "cov/nbo_integration.hpp"
+#include "cov/pi_pair_evidence.hpp"
 #include <utility>
 
 namespace cov {
@@ -13,6 +14,10 @@ struct NboPiCanonicalGroup {
     double cross_fock_min_hartree=0, cross_fock_max_hartree=0,
            cross_fock_mean_hartree=0;
     std::string character="unresolved";
+    // Tr(C_group^T P_ordered-role C_group)/rank, using unique complete NBO
+    // vectors (not printed row counts). The two directions remain separate.
+    double ligand_to_centre_donor_weight=0, ligand_to_centre_acceptor_weight=0;
+    double centre_to_ligand_donor_weight=0, centre_to_ligand_acceptor_weight=0;
 };
 struct NboPiAngularEvidence {
     std::size_t atom=0;
@@ -28,6 +33,12 @@ struct NboPiDirectionProjection {
     double donor_ligand_weight=0, donor_centre_weight=0,
            acceptor_ligand_weight=0, acceptor_centre_weight=0;
     NboSource source;
+    std::string method, status, reason;
+    double donor_occupation=0, acceptor_occupation=0;
+    double energy_gap_hartree=0, fock_hartree=0, e2_hartree=0;
+    double actual_occupation_second_order_hartree=0, perturbation_occupation=0;
+    std::string e2_reference="unavailable";
+    bool recovered_from_unprinted_fock=false;
 };
 struct NboPiCoupling {
     std::string id, channel="pi", direction="unresolved", direction_evidence;
@@ -50,12 +61,21 @@ struct NboPiCoupling {
     // Empty for the broad atom-pi projector. Nonempty families retain full
     // ligand support and independently assigned internal pi/antipi character.
     std::string ligand_family;
+    std::string centre_family;
     std::vector<std::size_t> ligand_family_nbo_ids;
     bool localized_family_verified=false;
     std::string operator_kind="canonical-same-operator";
     double canonical_operator_residual_hartree=0;
     double operator_validation_tolerance_hartree=2e-5;
     bool canonical_members_are_verified_shared_spatial=false;
+    bool direction_verified=false;
+    double direction_mapping_error_bound=1;
+    std::string direction_reference="ordered-localized-NBO/same-spin-Fock";
+    // Full orthonormal projector columns in the verified NAO reference.
+    // Scientific scope comparisons use these, never names or atom lists.
+    NboMatrix centre_projector_basis, ligand_projector_basis;
+    PiFrozenOperatorAssessment frozen_operator;
+    std::vector<PiFrozenSpectralGroup> frozen_groups;
     NboSource source;
 };
 struct NboPiCouplingAnalysis {
@@ -68,4 +88,20 @@ struct NboPiCouplingAnalysis {
 NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& canonical,
     const NboIntegration& integration,
     const std::vector<std::pair<std::size_t,std::size_t>>& strong_connectivity);
+// Frozen Fock removal in one orthonormal reference. canonical_columns must
+// diagonalize fock; groups contain complete source column indices. This is
+// a display sensitivity diagnostic, not a self-consistent deletion energy.
+PiFrozenOperatorAssessment assess_pi_frozen_operator(const NboMatrix& fock,
+    const NboMatrix& centre_basis,const NboMatrix& ligand_basis,
+    const NboMatrix& canonical_columns,
+    const std::vector<std::vector<std::size_t>>& groups,
+    const std::vector<double>& occupations,double operator_error_hartree,
+    std::vector<PiFrozenSpectralGroup>* per_group=nullptr);
+// source_members must be fixed by the display domain before evaluating this
+// diagnostic. Every touched degenerate spectral cluster must be complete.
+PiFrozenOperatorAssessment assess_pi_frozen_display_scope(const NboPiCoupling&,
+    const std::vector<std::size_t>& source_members);
+// A versioned display-error calibration for structurally defined channel
+// families. Eligibility never comes from a molecule/ligand name or MO number.
+PiDisplayCalibration pi_channel_display_calibration(const NboPiCoupling&);
 } // namespace cov

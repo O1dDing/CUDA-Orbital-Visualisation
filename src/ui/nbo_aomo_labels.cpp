@@ -39,6 +39,12 @@ Mat multiply(const Mat& a,const Mat& b){Mat c{};for(int i=0;i<3;++i)for(int j=0;
 const Mat identity{1,0,0,0,1,0,0,0,1};
 const Mat inversion{-1,0,0,0,-1,0,0,0,-1};
 std::string normalized(std::string s){std::string o;for(unsigned char c:s)if(!std::isspace(c)&&c!='_')o+=char(std::tolower(c));return o;}
+void retain_dominant_name(NboAomoName& name){
+    if(name.verified||!name.decomposition_verified||name.point_group.empty()||name.components.empty())return;
+    double first=0,second=0;std::string irrep;
+    for(const auto& c:name.components){if(c.weight>first){second=first;first=c.weight;irrep=c.irrep;}else second=std::max(second,c.weight);}
+    if(first>=.95&&first-second>=.90){name.approximate_dominant_label=true;name.dominant_irrep=irrep;name.dominant_weight=first;}
+}
 struct CanonicalActionCache {
     const Wavefunction* wavefunction=nullptr;
     std::vector<double> packed,metric_packed;
@@ -56,7 +62,7 @@ struct Frame {
 Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
     Frame f;
     if(!model||!model->group_verified)return f;
-    f.group=model->point_group;f.linear=f.group=="Dinfh"||f.group=="Cinfv";
+    f.group=model->symmetry_scope.reduced?model->used_group:model->point_group;f.linear=f.group=="Dinfh"||f.group=="Cinfv";
     if(model->used_group!=f.group&&(!f.linear||model->used_group!="finite sampling subgroup of "+f.group))return f;
     f.ops=model->operations;const auto n=f.ops.size();
     const auto expected_order=finite_point_group_order(f.group);
@@ -91,6 +97,7 @@ Frame frame_for(const Wavefunction& w,const NboSalcModel* model){
         f.detail=f.table.axis_detail+(f.table.valid?"":"; "+f.table.reason);
     }
     if(f.detail.empty())f.detail=f.linear?"Validated angular-momentum-resolving sampling of "+f.group:"Validated full finite "+f.group+" operation matrices";
+    if(model->symmetry_scope.reduced)f.detail+="; approximate total/spin-density symmetry scope; nuclear geometry="+model->point_group+"; physical Fock invariance is independently tested";
     return f;
 }
 Frame canonical_frame(const Wavefunction& w){
@@ -101,6 +108,8 @@ Frame canonical_frame(const Wavefunction& w){
     frame.point_group=frame.used_group=geometry.point_group;
     frame.group_verified=!geometry.operations.empty();
     frame.operations=geometry.operations;
+    const auto electronic=analyse_nbo_electronic_symmetry_scope(w);
+    if(electronic.reduced){frame.symmetry_scope=electronic;frame.used_group=electronic.naming_group;frame.operations=electronic.operations;return frame_for(w,&frame);}
     if(!geometry.linear&&frame.group_verified){
         const auto complete=complete_molecular_point_group(w,geometry);
         frame.operations=complete.operations;frame.group_verified=!complete.operations.empty();
@@ -723,7 +732,7 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
             name.detail+="; ordinal certified by complete-group characters of "+std::to_string(prefix.size())+" earlier same-spin source columns; "+std::to_string(ordinal-1)+" complete earlier copies of "+first.irrep+"; actual prefix Gram/isometry/closure gates passed; source energy separation tolerance=2e-5 Ha";
             if(omitted_zero_spans)name.detail+="; omitted only independently closed containing spans with zero target-irrep copies";}
     }
-    for(auto& name:out.canonical){if(name.verified)name.point_group=frame.group;name.complete_set_ordinal=name.ordinal;name.ordinal_scope="complete canonical set";
+    for(auto& name:out.canonical){if(name.verified||name.decomposition_verified)name.point_group=frame.group; retain_dominant_name(name);name.complete_set_ordinal=name.ordinal;name.ordinal_scope="complete canonical set";
         if(name.ordinal_status.empty())name.ordinal_status=name.verified?"original_partner_block_unverified":"source_irrep_not_verified";
         if(name.partner_status.empty())name.partner_status=name.verified?"original_partner_subset_not_verified":"source_irrep_not_verified";
         name.complete_set_ordinal_status=name.ordinal_status;}
@@ -787,7 +796,7 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
             for(std::size_t c=0;c<losses.size();++c){auto& name=out.salc[u.members[c]];retain_projection_residual(name,losses[c]);if(pure_projection(losses[c]))pure.push_back(u.members[c]);}
             Unit evidence=u;certify_salc_energy_bounds(evidence,side,w,*salc);
             for(auto i:pure){auto& name=out.salc[i];name.verified=true;name.irrep=row.label;name.label=orbital_label(row.label);name.representation_multiplicity=copies;
-                name.status="verified_isotypic_member";name.detail="Unchanged source SALC column lies in verified S-metric isotypic projection; independent occurrence membership unresolved; "+evidence.detail;}
+                name.status="verified_isotypic_member";name.detail=(sub.basis_kind=="derived_salc"?"Mapped derived SALC column":"Unchanged producer column")+std::string(" lies in verified S-metric isotypic projection; independent occurrence membership unresolved; ")+evidence.detail;}
             const auto source_copies=verified_source_copies(side,frame,pure,row.dimension,row.norm,row.values,copies,nullptr,&out.salc);
             for(std::size_t copy=0;copy<source_copies.size();++copy){const auto& partners=source_copies[copy];
                 if(std::any_of(partners.begin(),partners.end(),[&](auto i){return proved_members.contains(i);}))continue;
@@ -826,7 +835,10 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction& w,const NboIntegration& da
     assign_ordinals(std::move(units),out.salc);
     for(std::size_t i=0;i<out.salc.size();++i)if(out.salc[i].verified&&!out.salc[i].ordinal)out.salc[i].label+=" [SALC "+std::to_string(i+1)+"]";
     for(std::size_t i=0;i<out.salc.size();++i)if(open && !salc->orbitals[i].spatial_spin)out.salc[i].label+=salc->orbitals[i].spin==NboSpin::Beta?" [beta]":salc->orbitals[i].spin==NboSpin::Alpha?" [alpha]":" [total]";
-    for(auto& name:out.salc){if(name.verified)name.point_group=frame.group;name.complete_set_ordinal=name.ordinal;name.ordinal_scope="complete fragment spin set";
+    for(std::size_t i=0;i<out.salc.size();++i){auto& name=out.salc[i];if(name.verified||name.decomposition_verified)name.point_group=frame.group; retain_dominant_name(name);
+        if(name.approximate_dominant_label){name.label="\xE2\x89\x88"+orbital_label(name.dominant_irrep)+" [SALC "+std::to_string(i+1)+"]";
+            if(salc->orbitals[i].spin!=NboSpin::Total)name.label+=" ["+std::string(nbo_spin_name(salc->orbitals[i].spin))+"]";}
+        name.complete_set_ordinal=name.ordinal;name.ordinal_scope="complete fragment spin set";
         if(name.ordinal_status.empty())name.ordinal_status=name.verified?"original_partner_block_unverified":"source_irrep_not_verified";
         if(name.partner_status.empty())name.partner_status=name.partner_block_id.empty()?"original_partner_subset_not_verified":"verified_stored_partner_span";
         name.complete_set_ordinal_status=name.ordinal_status;}
@@ -839,31 +851,45 @@ NboAomoNames nbo_aomo_names_for_view(const Wavefunction& w,const NboAomoNames& s
     const NboSalcModel* model,const std::string& scope){
     auto out=source;
     const auto number=[&](std::vector<NboAomoName>& names,const std::vector<std::size_t>& indices,bool side){
-        struct Occurrence {std::string family,block;std::vector<std::size_t> members;double energy=0;bool available=true;};
+        struct Occurrence {std::string family,block;std::vector<std::size_t> members,visible;double energy=0;bool available=true;};
         std::map<std::string,Occurrence> groups;std::set<std::size_t> selected(indices.begin(),indices.end());
-        for(auto i:selected){if(i>=names.size()||(!side&&i>=w.orbitals.size())||(side&&(!model||i>=model->orbitals.size())))continue;
-            auto& name=names[i];name.ordinal=0;name.ordinal_scope=scope+(name.point_group=="SO(3)"?"; atomic radial-copy order; not principal n":"");
-            name.ordinal_status=!name.verified?"source_irrep_not_verified":name.partner_block_id.empty()?"original_partner_block_unverified":"visible_partner_group_incomplete";
+        const auto valid=[&](std::size_t i){return i<names.size()&&(side?model&&i<model->orbitals.size():i<w.orbitals.size());};
+        const auto energy=[&](std::size_t i){return side?model->orbitals[i].energy_hartree:std::optional<double>(w.orbitals[i].energy_hartree);};
+        const auto family=[&](std::size_t i){return side?model->orbitals[i].fragment_id+":"+nbo_spin_name(model->orbitals[i].spin):
+            w.orbitals[i].spin==Spin::Beta?std::string("canonical beta"):std::string("canonical alpha");};
+        std::vector<std::size_t> rows;for(auto i:selected)if(valid(i)){
+            auto& name=names[i];name.ordinal=0;name.visible_partner_count=0;
+            name.ordinal_scope=scope+(name.point_group=="SO(3)"?"; atomic radial-copy order; not principal n":"");
+            name.ordinal_status=!name.verified?"source_irrep_not_verified":name.partner_block_id.empty()?"original_partner_block_unverified":"certified_copy_pending_view_order";
+            rows.push_back(i);
+        }
+        std::stable_sort(rows.begin(),rows.end(),[&](auto i,auto j){const auto a=energy(i),b=energy(j);const bool av=a&&std::isfinite(*a),bv=b&&std::isfinite(*b);
+            if(av!=bv)return av;if(av&&*a!=*b)return *a<*b;return i<j;});
+        for(std::size_t j=0;j<rows.size();++j)names[rows[j]].view_row_ordinal=j+1;
+        // Read every certified partner from the immutable complete model. Hidden
+        // members retain their contribution to the copy's trace/size sort key.
+        for(std::size_t i=0;i<names.size();++i){if(!valid(i))continue;const auto& name=names[i];
             if(!name.verified||name.irrep.empty()||name.partner_block_id.empty()||name.representation_multiplicity!=1)continue;
-            if(side&&model->orbitals[i].atoms.size()<=1){name.ordinal=source.salc[i].ordinal;name.ordinal_scope=source.salc[i].ordinal_scope;name.ordinal_status=source.salc[i].ordinal_status;continue;}
-            const std::string family=side?model->orbitals[i].fragment_id+":"+nbo_spin_name(model->orbitals[i].spin):
-                w.orbitals[i].spin==Spin::Beta?"canonical beta":"canonical alpha";
-            auto& group=groups[family+":"+name.irrep+":"+name.partner_block_id];group.family=family+":"+name.irrep;group.block=name.partner_block_id;group.members.push_back(i);
-            const auto energy=side?model->orbitals[i].energy_hartree:std::optional<double>(w.orbitals[i].energy_hartree);
-            group.available=group.available&&energy&&std::isfinite(*energy);if(energy&&std::isfinite(*energy))group.energy+=*energy;
+            auto& group=groups[family(i)+":"+name.irrep+":"+name.partner_block_id];group.family=family(i)+":"+name.irrep;group.block=name.partner_block_id;group.members.push_back(i);
+            if(selected.contains(i))group.visible.push_back(i);
+            const auto e=energy(i);group.available=group.available&&e&&std::isfinite(*e);if(e&&std::isfinite(*e))group.energy+=*e;
         }
         std::vector<Occurrence> ordered;
-        for(auto& [key,g]:groups){if(!g.available){for(auto i:g.members)names[i].ordinal_status="visible_group_energy_unavailable";continue;}
-            if(g.members.empty()||g.members.size()!=names[g.members.front()].partner_block_size)continue;
+        for(auto& [key,g]:groups){if(g.visible.empty())continue;
+            for(auto i:g.visible)names[i].visible_partner_count=g.visible.size();
+            if(g.members.size()!=names[g.members.front()].partner_block_size){for(auto i:g.visible)names[i].ordinal_status="complete_partner_evidence_inconsistent";continue;}
+            if(!g.available){for(auto i:g.visible)names[i].ordinal_status="nonquantitative_copy_entry";continue;}
             g.energy/=double(g.members.size());ordered.push_back(std::move(g));}
-        std::stable_sort(ordered.begin(),ordered.end(),[](const auto& a,const auto& b){if(a.family!=b.family)return a.family<b.family;if(a.energy!=b.energy)return a.energy<b.energy;return a.members.front()<b.members.front();});
+        std::stable_sort(ordered.begin(),ordered.end(),[](const auto& a,const auto& b){if(a.family!=b.family)return a.family<b.family;if(a.energy!=b.energy)return a.energy<b.energy;return a.block<b.block;});
         std::map<std::string,std::size_t> counters;
-        for(const auto& g:ordered){const auto ordinal=++counters[g.family];for(auto i:g.members){auto& name=names[i];name.ordinal=ordinal;name.ordinal_status="display_order_convention";
-            name.detail+="; display ordinal in "+scope+": verified visible occurrences ordered by mean energy; exact ties use stable source identity (display convention)";}}
-        for(auto i:selected){if(i>=names.size())continue;auto& name=names[i];if(!name.verified)continue;
+        for(const auto& g:ordered){const auto ordinal=++counters[g.family];for(auto i:g.visible){auto& name=names[i];name.ordinal=ordinal;name.ordinal_status="display_order_convention";
+            name.detail+="; display ordinal in "+scope+": certified occurrences ordered by full-copy mean energy; exact ties use stable copy identity (display convention); visible members="+std::to_string(g.visible.size())+"/"+std::to_string(g.members.size());}}
+        for(auto i:rows){auto& name=names[i];
             if(!side)name.label=canonical_mo_display_label(w,i,&name);
-            else {name.label=numbered_orbital_label(name);if(!name.ordinal)name.label+=" [SALC "+std::to_string(i+1)+"]";
-                if(model&&model->orbitals[i].spin!=NboSpin::Total)name.label+=" ["+std::string(nbo_spin_name(model->orbitals[i].spin))+"]";}
+            else if(name.approximate_dominant_label){name.label="\xE2\x89\x88"+orbital_label(name.dominant_irrep)+" [SALC "+std::to_string(i+1)+"]";
+                if(model->orbitals[i].spin!=NboSpin::Total)name.label+=" ["+std::string(nbo_spin_name(model->orbitals[i].spin))+"]";}
+            else if(name.verified){name.label=numbered_orbital_label(name);if(!name.ordinal)name.label+=" [SALC "+std::to_string(i+1)+"]";
+                if(model->orbitals[i].spin!=NboSpin::Total)name.label+=" ["+std::string(nbo_spin_name(model->orbitals[i].spin))+"]";}
         }
     };
     number(out.canonical,canonical_indices,false);number(out.salc,salc_indices,true);return out;
@@ -928,6 +954,8 @@ std::string canonical_mo_display_label(const Wavefunction& w,std::size_t index,c
         for(const std::string spin:{" [alpha]"," [beta]"})if(source.ends_with(spin)){source.resize(source.size()-spin.size());suffix=spin;break;}
         return orbital_label(name->irrep)+" ["+source+"]"+suffix;
     }
+    if(name&&name->approximate_dominant_label&&!name->dominant_irrep.empty()){
+        return "\xE2\x89\x88"+orbital_label(name->dominant_irrep)+" ["+canonical_mo_source_label(w,index)+"]";}
     return canonical_mo_source_label(w,index);
 }
 
@@ -939,7 +967,7 @@ std::string canonical_mo_current_irrep(const Wavefunction& w,std::size_t index,c
 }
 
 std::string orbital_irrep_display_label(const NboAomoName& name){
-    return name.verified&&!name.irrep.empty()?orbital_label(name.irrep):"?";
+    return name.verified&&!name.irrep.empty()?orbital_label(name.irrep):name.approximate_dominant_label?"\xE2\x89\x88"+orbital_label(name.dominant_irrep):"?";
 }
 
 std::string serialize_orbital_name_json(const NboAomoName& name){
@@ -949,6 +977,9 @@ std::string serialize_orbital_name_json(const NboAomoName& name){
         <<",\"irrep\":"<<quote(name.irrep)<<",\"point_group\":"<<quote(name.point_group)
         <<",\"ordinal\":"<<name.ordinal<<",\"ordinal_scope\":"<<quote(name.ordinal_scope)
         <<",\"ordinal_energy_tolerance_hartree\":"<<energy_order_tolerance
+        <<",\"view_row_ordinal\":"<<name.view_row_ordinal<<",\"visible_partner_count\":"<<name.visible_partner_count
+        <<",\"approximate_dominant_label\":"<<(name.approximate_dominant_label?"true":"false")
+        <<",\"dominant_irrep\":"<<quote(name.dominant_irrep)<<",\"dominant_weight\":"<<name.dominant_weight
         <<",\"complete_set_ordinal\":"<<name.complete_set_ordinal
         <<",\"ordinal_status\":"<<quote(name.ordinal_status)
         <<",\"complete_set_ordinal_status\":"<<quote(name.complete_set_ordinal_status)

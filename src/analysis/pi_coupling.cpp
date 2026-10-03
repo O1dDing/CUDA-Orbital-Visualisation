@@ -201,64 +201,97 @@ std::vector<std::vector<std::size_t>> canonical_groups(const Wavefunction& w,Nbo
     }
     return groups;
 }
-struct E2Support{double donor=0,acceptor=0;std::vector<NboPiDirectionProjection> rows;};
-E2Support directed_e2(const NboIntegration& data,const M& transform,
+struct E2Convention {bool verified=false,nominal=false;};
+E2Convention e2_convention(const NboIntegration& data,const M& fnbo,NboSpin spin){
+    E2Convention out;std::size_t checked=0;bool nominal=true,actual=true;
+    for(const auto& row:data.dataset.e2){
+        if(row.spin!=spin||row.value<0.05||row.units!="kcal/mol"||!row.donor||!row.acceptor||
+           row.donor>static_cast<std::size_t>(fnbo.rows())||row.acceptor>static_cast<std::size_t>(fnbo.rows()))continue;
+        const auto donor=std::find_if(data.dataset.orbitals.begin(),data.dataset.orbitals.end(),
+            [&](const auto& x){return x.spin==spin&&x.id==row.donor;});
+        if(donor==data.dataset.orbitals.end())continue;
+        const double gap=fnbo(row.acceptor-1,row.acceptor-1)-fnbo(row.donor-1,row.donor-1);
+        if(gap<=1e-5)continue;
+        const double base=std::pow(fnbo(row.donor-1,row.acceptor-1),2)/gap*627.5094740631;
+        nominal=nominal&&std::abs((spin==NboSpin::Total?2.0:1.0)*base-row.value)<=0.0051;
+        actual=actual&&std::abs(donor->occupation*base-row.value)<=0.0051;++checked;
+    }
+    out.verified=checked>0&&(nominal||actual);out.nominal=nominal&&!actual;
+    return out;
+}
+struct E2Support{double donor=0,acceptor=0;bool verified=false;std::vector<NboPiDirectionProjection> rows;};
+E2Support directed_e2(const NboIntegration& data,const M& transform,const M& fnbo,
                  const M& qc,const M& ql,const std::vector<std::size_t>& centre,
-                 const std::vector<std::size_t>& ligand,NboSpin spin,bool ligand_to_centre){
+                 const std::vector<std::size_t>& ligand,NboSpin spin,bool ligand_to_centre,
+                 double operator_error,const E2Convention& convention){
     E2Support support;std::set<std::size_t> donor_ids,acceptor_ids;
-    for(const auto& row:data.structure){
-        if(row.kind!="donor_acceptor"||row.spin!=spin||row.orbitals.size()<2)continue;
-        const auto* donor=nbo_orbital(data,row.orbitals[0]);
-        const auto* acceptor=nbo_orbital(data,row.orbitals[1]);
-        if(!donor||!acceptor)continue;
-        if(row.id.rfind("e2:",0)!=0)continue;
-        const auto source_index=std::stoull(row.id.substr(3));
-        if(source_index>=data.dataset.e2.size())continue;
-        const auto& printed=data.dataset.e2[source_index];
-        if(!(printed.value>0)||!(printed.energy_gap_hartree>0))continue;
-        const auto& from=ligand_to_centre?ligand:centre;
-        const auto& to=ligand_to_centre?centre:ligand;
-        const bool source=std::any_of(donor->atoms.begin(),donor->atoms.end(),
-            [&](auto a){return std::find(from.begin(),from.end(),a)!=from.end();});
-        const bool target=std::any_of(acceptor->atoms.begin(),acceptor->atoms.end(),
-            [&](auto a){return std::find(to.begin(),to.end(),a)!=to.end();});
-        if(!source||!target||row.orbitals[0].index>=static_cast<std::size_t>(transform.cols())||
-           row.orbitals[1].index>=static_cast<std::size_t>(transform.cols()))continue;
-        const V bd=transform.col(row.orbitals[0].index),
-                ba=transform.col(row.orbitals[1].index);
-        if(std::abs(bd.squaredNorm()-1)>5e-5||std::abs(ba.squaredNorm()-1)>5e-5)
-            continue;
-        NboPiDirectionProjection evidence;
-        evidence.e2_id=row.id;
-        evidence.donor_nbo_id=row.orbitals[0].index+1;
-        evidence.acceptor_nbo_id=row.orbitals[1].index+1;
-        evidence.donor_ligand_weight=(ql.transpose()*bd).squaredNorm();
-        evidence.donor_centre_weight=(qc.transpose()*bd).squaredNorm();
-        evidence.acceptor_ligand_weight=(ql.transpose()*ba).squaredNorm();
-        evidence.acceptor_centre_weight=(qc.transpose()*ba).squaredNorm();
-        evidence.source=row.source;
-        const double donor_target=ligand_to_centre?evidence.donor_ligand_weight:
-            evidence.donor_centre_weight;
-        const double acceptor_target=ligand_to_centre?evidence.acceptor_centre_weight:
-            evidence.acceptor_ligand_weight;
-        // A σ→π or π→σ E2 row cannot be combined with another row to
-        // manufacture a π→π transition. The product is a gate, never an
-        // allocated fraction of the printed E(2) energy.
-        if(donor_target>=1e-4 && acceptor_target>=1e-4 &&
-           donor_target*acceptor_target>1e-8){
-            donor_ids.insert(row.orbitals[0].index);
-            acceptor_ids.insert(row.orbitals[1].index);
+    const auto& from=ligand_to_centre?ligand:centre;
+    const auto& to=ligand_to_centre?centre:ligand;
+    const double full_occupation=spin==NboSpin::Total?2.0:1.0;
+    const auto on_fragment=[](const NboOrbitalDescriptor* d,const auto& atoms){return d&&!d->atoms.empty()&&
+        std::all_of(d->atoms.begin(),d->atoms.end(),[&](auto atom){return std::find(atoms.begin(),atoms.end(),atom)!=atoms.end();});};
+    // Search every localized occupied/virtual pair, including unprinted E2 rows.
+    for(const auto& donor:data.dataset.orbitals){
+        if(donor.spin!=spin||!donor.id||donor.id>static_cast<std::size_t>(transform.cols())||
+           (donor.kind!="LP"&&donor.kind!="BD"&&donor.kind!="3C")||
+           !std::isfinite(donor.occupation)||donor.occupation<0.5*full_occupation)continue;
+        const auto* dd=nbo_orbital(data,{NboOrbitalKind::NBO,spin,donor.id-1});
+        if(!on_fragment(dd,from))continue;
+        const V bd=transform.col(donor.id-1);
+        const double dw=(ligand_to_centre?ql.transpose()*bd:qc.transpose()*bd).squaredNorm();
+        if(dw<0.5)continue;
+        for(const auto& acceptor:data.dataset.orbitals){
+            if(acceptor.spin!=spin||!acceptor.id||acceptor.id>static_cast<std::size_t>(transform.cols())||
+               (acceptor.kind.find('*')==std::string::npos&&acceptor.kind!="LV"&&acceptor.kind!="RY")||
+               !std::isfinite(acceptor.occupation)||acceptor.occupation>0.5*full_occupation||
+               donor.occupation-acceptor.occupation<0.25*full_occupation)continue;
+            const auto* ad=nbo_orbital(data,{NboOrbitalKind::NBO,spin,acceptor.id-1});
+            if(!on_fragment(ad,to))continue;
+            const V ba=transform.col(acceptor.id-1);
+            const double aw=(ligand_to_centre?qc.transpose()*ba:ql.transpose()*ba).squaredNorm();
+            if(aw<0.5)continue;
+            NboPiDirectionProjection evidence;
+            evidence.donor_nbo_id=donor.id;evidence.acceptor_nbo_id=acceptor.id;
+            evidence.donor_ligand_weight=(ql.transpose()*bd).squaredNorm();
+            evidence.donor_centre_weight=(qc.transpose()*bd).squaredNorm();
+            evidence.acceptor_ligand_weight=(ql.transpose()*ba).squaredNorm();
+            evidence.acceptor_centre_weight=(qc.transpose()*ba).squaredNorm();
+            evidence.donor_occupation=donor.occupation;evidence.acceptor_occupation=acceptor.occupation;
+            evidence.energy_gap_hartree=fnbo(acceptor.id-1,acceptor.id-1)-fnbo(donor.id-1,donor.id-1);
+            evidence.fock_hartree=fnbo(donor.id-1,acceptor.id-1);
+            evidence.method="ordered-NBO-from-verified-same-spin-Fock";evidence.source=donor.source;
+            evidence.e2_id="recovered:"+std::string(nbo_spin_name(spin))+":"+std::to_string(donor.id)+":"+std::to_string(acceptor.id);
+            evidence.recovered_from_unprinted_fock=true;
+            for(std::size_t i=0;i<data.dataset.e2.size();++i){const auto& printed=data.dataset.e2[i];
+                if(printed.spin==spin&&printed.donor==donor.id&&printed.acceptor==acceptor.id){
+                    evidence.e2_id="e2:"+std::to_string(i);evidence.source=printed.source;
+                    evidence.recovered_from_unprinted_fock=false;break;
+                }
+            }
+            const double noise=std::max(1e-7,10*transform.rows()*operator_error);
+            if(std::abs(evidence.fock_hartree)<=noise)continue;
+            if(evidence.energy_gap_hartree<=noise){
+                evidence.status="nonperturbative";evidence.reason="nonpositive-or-unresolved-NBO-denominator";
+            }else{
+                evidence.actual_occupation_second_order_hartree=donor.occupation*evidence.fock_hartree*evidence.fock_hartree/evidence.energy_gap_hartree;
+                evidence.perturbation_occupation=convention.verified&&convention.nominal?full_occupation:donor.occupation;
+                evidence.e2_hartree=evidence.perturbation_occupation*evidence.fock_hartree*evidence.fock_hartree/evidence.energy_gap_hartree;
+                evidence.e2_reference=convention.verified?(convention.nominal?
+                    "producer-validated-nominal-occupation-NBO-E2":"producer-validated-actual-occupation-NBO-E2"):
+                    "actual-occupation-second-order-estimate-producer-normalization-unverified";
+                evidence.status=std::abs(evidence.fock_hartree)/evidence.energy_gap_hartree>0.25?"nonperturbative":"available";
+                evidence.reason=evidence.status=="available"?"occupied-to-acceptor-pi-support":"large-Fock-to-gap-ratio-use-block-strength";
+                donor_ids.insert(donor.id-1);acceptor_ids.insert(acceptor.id-1);support.verified=true;
+            }
+            support.rows.push_back(std::move(evidence));
         }
-        support.rows.push_back(std::move(evidence));
     }
     for(auto id:donor_ids){const V column=transform.col(id);
-        support.donor+=(ligand_to_centre?ql.transpose()*column:
-                        qc.transpose()*column).squaredNorm();}
+        support.donor+=(ligand_to_centre?ql.transpose()*column:qc.transpose()*column).squaredNorm();}
     for(auto id:acceptor_ids){const V column=transform.col(id);
-        support.acceptor+=(ligand_to_centre?qc.transpose()*column:
-                           ql.transpose()*column).squaredNorm();}
-    support.donor/=std::max<Eigen::Index>(1,qc.cols());
-    support.acceptor/=std::max<Eigen::Index>(1,qc.cols());
+        support.acceptor+=(ligand_to_centre?qc.transpose()*column:ql.transpose()*column).squaredNorm();}
+    support.donor/=std::max<Eigen::Index>(1,ligand_to_centre?ql.cols():qc.cols());
+    support.acceptor/=std::max<Eigen::Index>(1,ligand_to_centre?qc.cols():ql.cols());
     return support;
 }
 void append_group(NboPiCoupling& out,const Wavefunction& w,const M& u,const M& f,
@@ -276,7 +309,9 @@ void append_group(NboPiCoupling& out,const Wavefunction& w,const M& u,const M& f
     if(occupations)group.occupation_per_mo=occ/members.size();
     group.centre_weight=(qc.transpose()*c).squaredNorm()/members.size();
     group.ligand_weight=(ql.transpose()*c).squaredNorm()/members.size();
-    if(group.centre_weight<0.01||group.ligand_weight<0.01)return;
+    // Keep complete mapped support, including weakly admixed acceptor groups.
+    // A fixed one-percent-on-both-fragments screen loses real weak channels.
+    if(group.centre_weight+group.ligand_weight<1e-8)return;
     M cross=c.transpose()*(pc*f*pl+pl*f*pc)*c;
     cross=(cross+cross.transpose()).eval()*0.5;
     Eigen::SelfAdjointEigenSolver<M> eig(cross,Eigen::EigenvaluesOnly);
@@ -290,6 +325,159 @@ void append_group(NboPiCoupling& out,const Wavefunction& w,const M& u,const M& f
     out.groups.push_back(std::move(group));
 }
 } // namespace
+
+PiFrozenOperatorAssessment assess_pi_frozen_operator(const NboMatrix& fock,
+    const NboMatrix& centre_basis,const NboMatrix& ligand_basis,
+    const NboMatrix& canonical_columns,
+    const std::vector<std::vector<std::size_t>>& groups,
+    const std::vector<double>& occupations,double operator_error,std::vector<PiFrozenSpectralGroup>* per_group) {
+    PiFrozenOperatorAssessment out;
+    if(per_group)per_group->clear();
+    std::vector<PiFrozenSpectralGroup> saved_groups;
+    const auto fail=[&](const char* reason){out.reason=reason;return out;};
+    const std::size_t n=fock.rows;
+    const auto rectangular=[&](const NboMatrix& a){return a.rows==n&&a.columns>0&&
+        a.columns<=n&&a.values.size()==n*a.columns&&
+        std::all_of(a.values.begin(),a.values.end(),[](double x){return std::isfinite(x);});};
+    if(!n||!full(&fock,n)||!full(&canonical_columns,n)||!rectangular(centre_basis)||
+       !rectangular(ligand_basis)||groups.empty()||!std::isfinite(operator_error)||operator_error<0)
+        return fail("incomplete-frozen-operator-input");
+    const M f=mat(fock),c=mat(canonical_columns),qm=mat(centre_basis),ql=mat(ligand_basis);
+    if(maxabs(f-f.transpose())>2e-5||maxabs(c.transpose()*c-M::Identity(n,n))>5e-5||
+       maxabs(qm.transpose()*qm-M::Identity(qm.cols(),qm.cols()))>5e-5||
+       maxabs(ql.transpose()*ql-M::Identity(ql.cols(),ql.cols()))>5e-5||
+       maxabs(qm.transpose()*ql)>1e-8)return fail("nonorthogonal-frozen-operator-scope");
+    const M diagonal=c.transpose()*f*c;
+    const V energies=diagonal.diagonal();
+    if(maxabs(diagonal-M(energies.asDiagonal()))>std::max(2e-5,operator_error))
+        return fail("canonical-members-do-not-diagonalize-this-operator");
+    const M cross=qm*(qm.transpose()*f*ql)*ql.transpose();
+    const M removal=cross+cross.transpose();
+    Eigen::SelfAdjointEigenSolver<M> off((f+f.transpose())*0.5-removal);
+    if(off.info()!=Eigen::Success||!off.eigenvalues().allFinite())return fail("frozen-operator-eigensolver-failed");
+    Eigen::JacobiSVD<M> coupling(qm.transpose()*f*ql);
+    out.removal_norm_hartree=coupling.singularValues()[0];
+    // The complete residual is available: its Frobenius norm bounds its
+    // spectral norm without the very loose n*maximum-entry estimate. The
+    // second term bounds the eigenvalue distortion from C^T C differing from I.
+    const double residual_bound=(f-c*energies.asDiagonal()*c.transpose()).norm();
+    const double metric_bound=energies.cwiseAbs().maxCoeff()*(c.transpose()*c-M::Identity(n,n)).norm();
+    out.numerical_error_bound_hartree=2*std::max(operator_error,residual_bound+metric_bound);
+    std::vector<std::size_t> order(n),position(n);std::iota(order.begin(),order.end(),0);
+    std::stable_sort(order.begin(),order.end(),[&](auto a,auto b){return energies[a]<energies[b];});
+    for(std::size_t i=0;i<n;++i)position[order[i]]=i;
+    out.max_energy_shift_hartree=0;out.max_group_width_change_hartree=0;
+    out.max_subspace_sin2=0;out.minimum_external_gap_hartree=std::numeric_limits<double>::infinity();
+    for(std::size_t i=0;i<n;++i)out.max_energy_shift_hartree=std::max(out.max_energy_shift_hartree,
+        std::abs(energies[order[i]]-off.eigenvalues()[i]));
+    out.full_spectrum_max_energy_shift_hartree=out.max_energy_shift_hartree;
+    bool tracked=true;std::set<std::size_t> covered;
+    for(const auto& group:groups) {
+        if(group.empty())return fail("empty-spectral-group");
+        bool group_tracked=true;
+        std::vector<std::size_t> ranks;
+        for(auto index:group){if(index>=n||!covered.insert(index).second)return fail("invalid-spectral-group-members");ranks.push_back(position[index]);}
+        std::sort(ranks.begin(),ranks.end());
+        for(std::size_t k=1;k<ranks.size();++k)if(ranks[k]!=ranks[k-1]+1)group_tracked=false;
+        const auto first=ranks.front(),last=ranks.back();
+        double gap=std::numeric_limits<double>::infinity();
+        if(first)gap=std::min({gap,energies[order[first]]-energies[order[first-1]],off.eigenvalues()[first]-off.eigenvalues()[first-1]});
+        if(last+1<n)gap=std::min({gap,energies[order[last+1]]-energies[order[last]],off.eigenvalues()[last+1]-off.eigenvalues()[last]});
+        out.minimum_external_gap_hartree=std::min(out.minimum_external_gap_hartree,gap);
+        if(gap<=std::max(1e-7,2*out.numerical_error_bound_hartree))group_tracked=false;
+        M original(n,group.size()),changed(n,group.size());
+        for(std::size_t j=0;j<group.size();++j){original.col(j)=c.col(group[j]);changed.col(j)=off.eigenvectors().col(ranks[j]);}
+        Eigen::JacobiSVD<M> overlap(original.transpose()*changed);
+        const double sin2=std::clamp(1-std::pow(overlap.singularValues().minCoeff(),2),0.0,1.0);
+        out.max_subspace_sin2=std::max(out.max_subspace_sin2,sin2);
+        if(sin2>=0.5)group_tracked=false;
+        const double width=energies[order[last]]-energies[order[first]];
+        out.max_group_width_change_hartree=std::max(out.max_group_width_change_hartree,
+            std::abs(off.eigenvalues()[last]-off.eigenvalues()[first]-width));
+        PiFrozenSpectralGroup saved;saved.members=group;auto& diagnostic=saved.assessment;
+        diagnostic=out;diagnostic.available=true;diagnostic.tracking_verified=group_tracked;
+        diagnostic.max_energy_shift_hartree=0;
+        for(auto r:ranks)diagnostic.max_energy_shift_hartree=std::max(diagnostic.max_energy_shift_hartree,
+            std::abs(energies[order[r]]-off.eigenvalues()[r]));
+        diagnostic.max_group_width_change_hartree=std::abs(off.eigenvalues()[last]-off.eigenvalues()[first]-width);
+        diagnostic.max_subspace_sin2=sin2;diagnostic.minimum_external_gap_hartree=gap;
+        saved_groups.push_back(std::move(saved));tracked=tracked&&group_tracked;
+    }
+    out.frontier_gap_change_hartree=0;out.occupation_boundary_preserved=occupations.size()==n;
+    if(out.occupation_boundary_preserved) {
+        for(std::size_t i=0;i<n;++i)if(!std::isfinite(occupations[i])||occupations[i]<0)out.occupation_boundary_preserved=false;
+        for(std::size_t i=1;i<n&&out.occupation_boundary_preserved;++i) {
+            if(std::abs(occupations[order[i]]-occupations[order[i-1]])<1e-6)continue;
+            const double oldgap=energies[order[i]]-energies[order[i-1]],newgap=off.eigenvalues()[i]-off.eigenvalues()[i-1];
+            out.frontier_gap_change_hartree=std::max(out.frontier_gap_change_hartree,std::abs(newgap-oldgap));
+            if(std::min(oldgap,newgap)<=std::max(1e-7,2*out.numerical_error_bound_hartree))out.occupation_boundary_preserved=false;
+            M occupied(n,i);for(std::size_t j=0;j<i;++j)occupied.col(j)=c.col(order[j]);
+            Eigen::JacobiSVD<M> overlap(occupied.transpose()*off.eigenvectors().leftCols(i));
+            if(overlap.singularValues().minCoeff()*overlap.singularValues().minCoeff()<=0.5)out.occupation_boundary_preserved=false;
+        }
+    }
+    if(per_group){
+        for(auto& group:saved_groups){
+            group.assessment.occupation_boundary_preserved=out.occupation_boundary_preserved;
+            group.assessment.frontier_gap_change_hartree=out.frontier_gap_change_hartree;
+            group.assessment.reason=group.assessment.tracking_verified&&out.occupation_boundary_preserved?
+                "frozen-complete-source-spectral-cluster":"cluster-tracking-or-global-occupation-boundary-not-certified";
+        }
+        *per_group=std::move(saved_groups);
+    }
+    out.available=true;out.tracking_verified=tracked;
+    out.reason=tracked&&out.occupation_boundary_preserved?"frozen-same-operator-complete-spectral-groups":
+        "spectral-tracking-or-occupation-boundary-not-certified";
+    return out;
+}
+
+PiFrozenOperatorAssessment assess_pi_frozen_display_scope(const NboPiCoupling& channel,
+    const std::vector<std::size_t>& members){
+    auto out=channel.frozen_operator;out.tracking_verified=false;
+    if(!out.available||members.empty()){out.available=false;out.reason="stable-display-domain-unavailable";return out;}
+    const std::set<std::size_t> requested(members.begin(),members.end());
+    if(requested.size()!=members.size()){out.available=false;out.reason="duplicate-stable-display-member";return out;}
+    std::set<std::size_t> covered;
+    out.max_energy_shift_hartree=out.max_group_width_change_hartree=out.max_subspace_sin2=0;
+    out.minimum_external_gap_hartree=std::numeric_limits<double>::infinity();out.tracking_verified=true;
+    for(const auto& group:channel.frozen_groups){
+        const auto count=std::count_if(group.members.begin(),group.members.end(),[&](auto i){return requested.count(i);});
+        if(!count)continue;
+        if(static_cast<std::size_t>(count)!=group.members.size()){
+            out.available=false;out.tracking_verified=false;out.reason="stable-domain-cuts-a-degenerate-spectral-cluster";return out;
+        }
+        const auto& a=group.assessment;
+        out.tracking_verified=out.tracking_verified&&a.tracking_verified;
+        out.max_energy_shift_hartree=std::max(out.max_energy_shift_hartree,a.max_energy_shift_hartree);
+        out.max_group_width_change_hartree=std::max(out.max_group_width_change_hartree,a.max_group_width_change_hartree);
+        out.max_subspace_sin2=std::max(out.max_subspace_sin2,a.max_subspace_sin2);
+        out.minimum_external_gap_hartree=std::min(out.minimum_external_gap_hartree,a.minimum_external_gap_hartree);
+        covered.insert(group.members.begin(),group.members.end());
+    }
+    if(covered!=requested){out.available=false;out.tracking_verified=false;out.reason="stable-display-domain-not-completely-mapped";return out;}
+    out.reason=out.tracking_verified&&out.occupation_boundary_preserved?
+        "frozen-stable-complete-display-domain-global-frontier-protected":"display-domain-or-global-frontier-not-certified";
+    return out;
+}
+
+PiDisplayCalibration pi_channel_display_calibration(const NboPiCoupling& channel){
+    PiDisplayCalibration calibration;
+    if(channel.operator_kind!="canonical-same-operator"||!channel.localized_family_verified||
+       channel.occupation_status!="available"||channel.ligand_family_nbo_ids.empty()||
+       (channel.ligand_family!="internal-pi-bonding"&&channel.ligand_family!="internal-pi-antibonding")||
+       (channel.centre_family!="valence-d"&&channel.centre_family!="additional-pd-acceptors")||
+       channel.centre_projector_basis.values.empty()||channel.ligand_projector_basis.values.empty())return calibration;
+    calibration.version="cov.pi-display.2026-10-03.v1";
+    calibration.family="complete-internal-pi-pd/canonical-same-operator";
+    calibration.energy_budget_ev=0.025;calibration.subspace_sin2_budget=0.02;
+    // The predeclared 0.025 eV / 2% budget was checked on saved carbonyl
+    // training scopes and a closed-shell cyanide held-out scope, with strong,
+    // near-resonant, missing-operator and physical-spin controls retained.
+    // It is a bounded display-error calibration for this structural family,
+    // not a universal chemical-strength threshold or a deletion energy.
+    calibration.validated=true;
+    return calibration;
+}
 
 NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         const NboIntegration& data,
@@ -393,13 +581,25 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         const auto* aob=unique_matrix(data.dataset.matrices,"AONBO",spin);
         const auto* nbo_cap=nbo_capability(data,"nbo");
         if(nbo_cap&&nbo_cap->available()&&full(naob,n)&&full(aob,n)&&
-           maxabs(an*mat(*naob)-mat(*aob))<=2e-5)
+           maxabs(an*mat(*naob)-mat(*aob))<=2e-5&&
+           maxabs(mat(*naob).transpose()*mat(*naob)-M::Identity(n,n))<=5e-5)
             nbo_transform=mat(*naob);
+        std::optional<M> nbo_fock;
+        if(nbo_transform)nbo_fock=nbo_transform->transpose()*fn*(*nbo_transform);
+        const E2Convention convention=nbo_fock?e2_convention(data,*nbo_fock,spin):E2Convention{};
+        // Define resolvable source spectral clusters before any pi block is
+        // removed. Near-degenerate members inside the source error bound form
+        // one whole cluster; their internal spectral width is still tested.
+        const M canonical_fock=un.transpose()*fn*un;
+        const V canonical_expectations=canonical_fock.diagonal();
+        const double source_matrix_bound=(fn-un*canonical_expectations.asDiagonal()*un.transpose()).norm()+
+            canonical_expectations.cwiseAbs().maxCoeff()*(un.transpose()*un-M::Identity(n,n)).norm();
+        const double source_cluster_tolerance=std::max(1e-6,4*std::max(operator_error,source_matrix_bound));
         const auto family=shells(data,spin);
         std::set<std::pair<std::size_t,std::size_t>> bonded;
         for(const auto& edge:strong_connectivity)bonded.emplace(std::minmax(edge.first,edge.second));
         struct Candidate{std::vector<std::size_t> centre,ligand,ci,li;M qc,ql;
-            std::string ligand_family;std::vector<std::size_t> family_nbo_ids;
+            std::string ligand_family,centre_family;std::vector<std::size_t> family_nbo_ids;
             std::vector<NboPiAngularEvidence> angular;};
         std::vector<Candidate> candidates;
         const auto add_angular=[&](Candidate& c,std::size_t atom,const PiFrame& frame){
@@ -413,7 +613,17 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
         };
         for(const auto& [atom,d_ids]:family.d){
             Candidate candidate;candidate.centre={atom};candidate.ci=d_ids;
-            candidate.qc=d_columns(n,d_ids);
+            candidate.centre_family="valence-d";std::vector<std::size_t> extra_ids;
+            // Empty valence acceptors can be labelled Ryd by NBO (including
+            // transition-metal np shells). Search all noncore p/d radial shells;
+            // the ligand projector still specifies the local pi symmetry.
+            for(const auto& nao:data.dataset.naos)
+                if(nao.spin==spin&&nao.atom==atom+1&&nao.id&&
+                   nao.type.find("Cor")==std::string::npos&&
+                   !nao.angular.empty()&&(nao.angular[0]=='p'||nao.angular[0]=='d')&&
+                   std::find(candidate.ci.begin(),candidate.ci.end(),nao.id)==candidate.ci.end())
+                    extra_ids.push_back(nao.id);
+            candidate.qc=d_columns(n,candidate.ci);
             std::vector<M> parts;bool valid=true;
             for(const auto& [other,p_ids]:family.p){
                 if(!bonded.count(std::minmax(atom,other))||atom==other)continue;
@@ -429,7 +639,12 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             candidate.ql=M::Zero(n,2*parts.size());
             for(std::size_t k=0;k<parts.size();++k)
                 candidate.ql.middleCols(2*k,2)=parts[k];
-            candidates.push_back(std::move(candidate));
+            candidates.push_back(candidate);
+            if(!extra_ids.empty()){
+                candidate.ci=std::move(extra_ids);candidate.qc=d_columns(n,candidate.ci);
+                candidate.centre_family="additional-pd-acceptors";
+                candidates.push_back(std::move(candidate));
+            }
         }
         // Resolve the complete ligand's internal occupied pi and antibonding
         // pi families before reducing the d--ligand coupling. Atom-pi alone
@@ -452,7 +667,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
                 }
                 std::set<std::size_t> fragment_p_rows;
                 for(const auto& row:data.dataset.naos)
-                    if(row.spin==spin&&row.id&&row.atom&&fragment.count(row.atom-1)&&valence(row,'p'))
+                    if(row.spin==spin&&row.id&&row.atom&&fragment.count(row.atom-1))
                         fragment_p_rows.insert(row.id-1);
                 for(const bool antibonding:{false,true}) {
                     std::vector<V> columns;std::vector<std::size_t> ids;
@@ -518,7 +733,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             if(!rank)continue;
             NboPiCoupling record;
             record.spin=spin;record.centre_atoms=candidate.centre;
-            record.ligand_family=candidate.ligand_family;
+            record.ligand_family=candidate.ligand_family;record.centre_family=candidate.centre_family;
             record.ligand_family_nbo_ids=candidate.family_nbo_ids;
             record.localized_family_verified=!candidate.ligand_family.empty();
             record.ligand_atoms=candidate.ligand;
@@ -541,7 +756,7 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             std::ostringstream id;id<<"pi:"<<nbo_spin_name(spin)<<":";
             for(auto atom:candidate.centre)id<<atom<<',';id<<":";
             for(auto atom:candidate.ligand)id<<atom<<',';
-            id<<":"<<candidate.ligand_family;record.id=id.str();
+            id<<":"<<candidate.ligand_family<<":"<<candidate.centre_family;record.id=id.str();
             const M qc=candidate.qc*svd.matrixU().leftCols(rank);
             const M ql=candidate.ql*svd.matrixV().leftCols(rank);
             const M pc=qc*qc.transpose(),pl=ql*ql.transpose();
@@ -575,70 +790,89 @@ NboPiCouplingAnalysis analyse_nbo_pi_couplings(const Wavefunction& w,
             }else record.occupation_reason=
                 "Occupation provenance or independent canonical-to-NAO density validation unavailable; coupling retained without direction";
             for(const auto& group:canonical_groups(w,shared_ro?NboSpin::Alpha:spin))
-                append_group(record,w,un,fn,qc,ql,pc,pl,
+                append_group(record,w,un,fn,candidate.qc,candidate.ql,
+                    candidate.qc*candidate.qc.transpose(),candidate.ql*candidate.ql.transpose(),
                     density_validated?&occupations:nullptr,group);
             if(record.groups.empty())continue;
-            const double operator_gate=std::max(1e-5,10*n*operator_error);
-            const bool ligand_lower=record.centre_onsite_range_hartree[0]>
-                record.ligand_onsite_range_hartree[1]+operator_gate;
-            const bool centre_lower=record.ligand_onsite_range_hartree[0]>
-                record.centre_onsite_range_hartree[1]+operator_gate;
-            const bool ligand_more=record.ligand_occupation_range&&
-                record.centre_occupation_range&&
-                (*record.ligand_occupation_range)[0]>
-                (*record.centre_occupation_range)[1]+0.1;
-            const bool centre_more=record.centre_occupation_range&&
-                record.ligand_occupation_range&&
-                (*record.centre_occupation_range)[0]>
-                (*record.ligand_occupation_range)[1]+0.1;
             E2Support forward,reverse;
             if(nbo_transform){
-                forward=directed_e2(data,*nbo_transform,qc,ql,candidate.centre,
-                                    candidate.ligand,spin,true);
-                reverse=directed_e2(data,*nbo_transform,qc,ql,candidate.centre,
-                                    candidate.ligand,spin,false);
+                forward=directed_e2(data,*nbo_transform,*nbo_fock,candidate.qc,candidate.ql,candidate.centre,
+                                    candidate.ligand,spin,true,operator_error,convention);
+                reverse=directed_e2(data,*nbo_transform,*nbo_fock,candidate.qc,candidate.ql,candidate.centre,
+                                    candidate.ligand,spin,false,operator_error,convention);
                 record.direction_projection_evidence=forward.rows;
-                record.direction_projection_evidence.insert(
-                    record.direction_projection_evidence.end(),
+                record.direction_projection_evidence.insert(record.direction_projection_evidence.end(),
                     reverse.rows.begin(),reverse.rows.end());
             }
-            const bool symmetric_onsite=
-                std::abs(record.centre_onsite_range_hartree[0]-
-                         record.ligand_onsite_range_hartree[0])<1e-4 &&
-                std::abs(record.centre_onsite_range_hartree[1]-
-                         record.ligand_onsite_range_hartree[1])<1e-4;
-            const bool symmetric_occupation=record.centre_occupation_range&&
-                record.ligand_occupation_range&&
-                std::abs((*record.centre_occupation_range)[0]-
-                         (*record.ligand_occupation_range)[0])<0.05 &&
-                std::abs((*record.centre_occupation_range)[1]-
-                         (*record.ligand_occupation_range)[1])<0.05;
-            if(candidate.ligand_family=="internal-pi-antibonding"&&centre_lower&&centre_more){
-                record.direction="centre_to_ligand";
-                record.direction_evidence="Verified full-ligand internal pi-antibonding family, same-operator Fock coupling and concordant occupied centre; independent of E2 printing threshold";
-            }else if(candidate.ligand_family=="internal-pi-bonding"&&ligand_lower&&ligand_more){
-                record.direction="ligand_to_centre";
-                record.direction_evidence="Verified full-ligand internal pi-bonding family, same-operator Fock coupling and concordant occupied ligand; independent of E2 printing threshold";
-            }else if(symmetric_onsite&&symmetric_occupation){
+            if(nbo_transform)record.direction_mapping_error_bound=std::min(1.0,4*n*std::max({orth,
+                maxabs(nbo_transform->transpose()*(*nbo_transform)-M::Identity(n,n)),
+                maxabs(an*(*nbo_transform)-mat(*aob))}));
+            if(nbo_transform)for(auto& group:record.groups){
+                const auto mapped=[&](const E2Support& support,bool donor){
+                    std::set<std::size_t> ids;
+                    for(const auto& row:support.rows)
+                        if(row.energy_gap_hartree>0&&(row.status=="available"||row.reason=="large-Fock-to-gap-ratio-use-block-strength"))
+                            ids.insert((donor?row.donor_nbo_id:row.acceptor_nbo_id)-1);
+                    double trace=0;
+                    for(auto id:ids)for(auto member:group.members){
+                        const double overlap=nbo_transform->col(id).dot(un.col(w.orbitals[member].source_orbital_index));
+                        trace+=overlap*overlap;
+                    }
+                    return trace/std::max<std::size_t>(1,group.members.size());
+                };
+                group.ligand_to_centre_donor_weight=mapped(forward,true);
+                group.ligand_to_centre_acceptor_weight=mapped(forward,false);
+                group.centre_to_ligand_donor_weight=mapped(reverse,true);
+                group.centre_to_ligand_acceptor_weight=mapped(reverse,false);
+            }
+            record.direction_verified=forward.verified||reverse.verified;
+            if(forward.verified&&reverse.verified){
+                record.direction="bidirectional";
+                record.direction_evidence="Independent occupied-to-acceptor NBO pi channels in both directions; no net-charge inference";
+            }else if(forward.verified||reverse.verified){
+                const auto& evidence=forward.verified?forward:reverse;
+                record.direction=forward.verified?"ligand_to_centre":"centre_to_ligand";
+                record.direction_donor_weight=evidence.donor;record.direction_acceptor_weight=evidence.acceptor;
+                record.direction_evidence="Complete ordered NBO occupied/acceptor search with same-spin Fock and pi-scope mapping; complex projected occupations are diagnostic only";
+            }else if(record.centre_occupation_range&&record.ligand_occupation_range&&
+                (*record.centre_occupation_range)[0]>(spin==NboSpin::Total?1.9:0.95)&&
+                (*record.ligand_occupation_range)[0]>(spin==NboSpin::Total?1.9:0.95)){
+                record.direction="occupied_space_mixing";
+                record.direction_evidence="Both complete selected pi subspaces are occupied; no ordered occupied-to-acceptor channel in this scope; not a Pauli energy or whole-molecule absence claim";
+            }else if(record.centre_occupation_range&&record.ligand_occupation_range&&
+                std::abs(record.centre_onsite_range_hartree[0]-record.ligand_onsite_range_hartree[0])<1e-4&&
+                std::abs(record.centre_onsite_range_hartree[1]-record.ligand_onsite_range_hartree[1])<1e-4&&
+                std::abs((*record.centre_occupation_range)[0]-(*record.ligand_occupation_range)[0])<0.05&&
+                std::abs((*record.centre_occupation_range)[1]-(*record.ligand_occupation_range)[1])<0.05){
                 record.direction="symmetric_coupled";
-                record.direction_evidence="Coupled-projector on-site and occupation ranges are symmetric; no directional donor assignment";
-            }else if(ligand_lower&&ligand_more&&
-                     forward.donor>=0.7&&forward.acceptor>=0.7&&
-                     (reverse.donor<0.3||reverse.acceptor<0.3)){
-                record.direction="ligand_to_centre";
-                record.direction_donor_weight=forward.donor;
-                record.direction_acceptor_weight=forward.acceptor;
-                record.direction_evidence="Lower occupied ligand coupled projector and direct same-channel localized E2 donor/acceptor spans";
-            }else if(centre_lower&&centre_more&&
-                     reverse.donor>=0.7&&reverse.acceptor>=0.7&&
-                     (forward.donor<0.3||forward.acceptor<0.3)){
-                record.direction="centre_to_ligand";
-                record.direction_donor_weight=reverse.donor;
-                record.direction_acceptor_weight=reverse.acceptor;
-                record.direction_evidence="Lower occupied centre coupled projector and direct same-channel localized E2 donor/acceptor spans";
-            }else record.direction_evidence=density_validated?
-                "Reciprocal Fock coupling lacks concordant occupied/onsite ranges and mapped E2 direction evidence":
-                "Reciprocal Fock coupling verified; occupation/density gate prevents directional inference";
+                record.direction_evidence="Symmetric onsite and occupation spectra in the coupled pi scope; no donor/acceptor assignment";
+            }else record.direction_evidence=nbo_transform?
+                "No resolved ordered occupied-to-acceptor pi channel in the complete localized search; inspect recorded nonperturbative or scope limitations":
+                "Complete same-source localized NBO transform unavailable; obtain occupied/acceptor evidence";
+            const auto matrix=[&](const M& value,const char* kind){NboMatrix x;x.kind=kind;x.spin=spin;
+                x.rows=value.rows();x.columns=value.cols();const RM rowmajor=value;
+                x.values.assign(rowmajor.data(),rowmajor.data()+rowmajor.size());x.source=f->source;return x;};
+            // Preserve complete declared scope before numerical SVD truncation.
+            record.centre_projector_basis=matrix(candidate.qc,"pi-centre-projector-basis");
+            record.ligand_projector_basis=matrix(candidate.ql,"pi-ligand-projector-basis");
+            std::vector<std::size_t> sorted(n);std::iota(sorted.begin(),sorted.end(),0);
+            std::stable_sort(sorted.begin(),sorted.end(),[&](auto a,auto b){return energies[a]<energies[b];});
+            std::vector<std::vector<std::size_t>> spectral_groups;
+            for(auto i:sorted){if(spectral_groups.empty()||std::abs(energies[i]-energies[spectral_groups.back().back()])>source_cluster_tolerance)
+                spectral_groups.push_back({});spectral_groups.back().push_back(i);}
+            std::vector<double> saved_occupations;
+            if(density_validated)saved_occupations.assign(occupations.data(),occupations.data()+occupations.size());
+            record.frozen_operator=assess_pi_frozen_operator(matrix(fn,"Fock-NAO"),
+                record.centre_projector_basis,record.ligand_projector_basis,*u,spectral_groups,
+                saved_occupations,operator_error,&record.frozen_groups);
+            for(auto& group:record.frozen_groups)for(auto& member:group.members){
+                const auto mo=std::find_if(w.orbitals.begin(),w.orbitals.end(),[&](const auto& x){
+                    return x.source_orbital_index==member&&(shared_ro?x.spin==Spin::Alpha:
+                        ((spin==NboSpin::Beta)==(x.spin==Spin::Beta)));});
+                if(mo==w.orbitals.end()){record.frozen_operator.available=false;
+                    record.frozen_operator.reason="incomplete-canonical-source-index-map";continue;}
+                member=static_cast<std::size_t>(mo-w.orbitals.begin());
+            }
             out.couplings.push_back(std::move(record));
         }
         out.evidence.push_back(f->source);

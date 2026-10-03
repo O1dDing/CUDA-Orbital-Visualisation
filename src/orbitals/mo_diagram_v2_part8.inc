@@ -5,6 +5,7 @@ const char* machine_bonding_class(const BondingClass value) noexcept {
         case BondingClass::Bonding: return "bonding";
         case BondingClass::Nonbonding: return "nonbonding";
         case BondingClass::Antibonding: return "antibonding";
+        case BondingClass::Mixed: return "mixed";
         default: return "unclassified";
     }
 }

@@ -64,6 +64,81 @@ Group make_group(const Wavefunction& w,const MolecularSymmetry& symmetry,const N
     std::vector<bool> used(n);for(std::size_t i=0;i<n;++i)if(!used[i]){std::set<std::size_t> c;for(std::size_t h=0;h<n;++h)c.insert(out.table[out.table[h*n+i]*n+inverse[h]]);out.classes.emplace_back(c.begin(),c.end());for(auto j:c)used[j]=true;}
     out.valid=true;out.detail=symmetry.linear?"Validated finite sampling subgroup of linear point group":"Validated complete finite group";return out;
 }
+NboElectronicSymmetryScope density_scope(const Wavefunction& w,const MolecularSymmetry& geometry,
+    const Group& group,const NboSalcOptions& options){
+    NboElectronicSymmetryScope out;out.geometry_group=geometry.point_group;out.naming_group=geometry.point_group;
+    out.operations=group.ops;out.geometry_operations=group.ops;out.relative_tolerance=options.symmetry_tolerance;
+    const auto n=std::size_t(w.basis_count);
+    if(!group.valid||geometry.linear||w.ao_overlap.size()!=n*n){out.status="operation_frame_unavailable";return out;}
+    const auto unpack=[&](const std::vector<double>& packed){
+        if(packed.size()!=n*(n+1)/2)return M{};M p(n,n);std::size_t k=0;
+        for(std::size_t i=0;i<n;++i)for(std::size_t j=0;j<=i;++j)p(i,j)=p(j,i)=packed[k++];return p.allFinite()?p:M{};};
+    const M total=unpack(w.total_density_packed),spin=unpack(w.spin_density_packed);
+    if(!total.size()){out.status="total_density_unavailable";return out;}
+    const bool open=w.alpha_electrons!=w.beta_electrons||w.orbital_occupation_model==OrbitalOccupationModel::ExplicitSpin;
+    if(open&&!spin.size()){out.status="spin_density_unavailable";return out;}
+    std::vector<const MolecularOrbital*> columns;for(const auto& mo:w.orbitals)if(mo.spin!=Spin::Beta&&mo.coefficients.size()==n)columns.push_back(&mo);
+    if(columns.empty()){out.status="retained_metric_basis_unavailable";return out;}
+    const M s=Eigen::Map<const RM>(w.ao_overlap.data(),n,n);M q(n,columns.size());
+    for(std::size_t j=0;j<columns.size();++j)q.col(j)=Eigen::Map<const V>(columns[j]->coefficients.data(),n);
+    const M gram=q.transpose()*s*q;
+    if(!gram.allFinite()||err(gram-M::Identity(q.cols(),q.cols()))>options.metric_tolerance){out.status="retained_metric_basis_invalid";return out;}
+    Eigen::SelfAdjointEigenSolver<M> eig((gram+gram.transpose())*.5);
+    if(eig.info()!=Eigen::Success||eig.eigenvalues().minCoeff()<=1e-10){out.status="retained_metric_rank_invalid";return out;}
+    q=(q*eig.eigenvectors()*eig.eigenvalues().array().rsqrt().matrix().asDiagonal()*eig.eigenvectors().transpose()).eval();
+    const M sq=s*q,pt=sq.transpose()*total*sq,ps=spin.size()?M(sq.transpose()*spin*sq):M{};
+    const auto density_complete=[&](const M& original,const M& represented){
+        const M residual=original-q*represented*q.transpose(),weighted=s*residual;
+        const double norm2=(weighted*weighted).trace();
+        return std::sqrt(std::max(0.,norm2))/std::max(1e-12,represented.norm())<=options.metric_tolerance;};
+    if(!density_complete(total,pt)||(spin.size()&&!density_complete(spin,ps))){out.status="density_outside_retained_basis";return out;}
+    std::vector<bool> keep;std::vector<M> reps;
+    for(const auto& operation:group.ops){
+        const auto values=apply_orbital_symmetry_operation(w,operation,flat(q),q.cols());
+        if(values.size()!=n*std::size_t(q.cols())){out.status="density_operation_unavailable";return out;}
+        const M tq=Eigen::Map<const RM>(values.data(),n,q.cols()),d=sq.transpose()*tq;
+        const M residual=tq-q*d,leakage=residual.transpose()*s*residual;
+        if(err(d.transpose()*d-M::Identity(d.cols(),d.cols()))>options.metric_tolerance||leakage.diagonal().maxCoeff()>options.symmetry_tolerance*options.symmetry_tolerance){out.status="density_operation_not_closed";return out;}
+        reps.push_back(d);
+        const double rt=(d*pt*d.transpose()-pt).norm()/std::max(1e-12,pt.norm());
+        const double rs=ps.size()?(d*ps*d.transpose()-ps).norm()/std::max(1e-12,ps.norm()):0;
+        out.total_density_residuals.push_back(rt);if(ps.size())out.spin_density_residuals.push_back(rs);
+        keep.push_back(rt<=out.relative_tolerance&&rs<=out.relative_tolerance);
+    }
+    for(std::size_t i=0;i<reps.size();++i)for(std::size_t j=0;j<reps.size();++j)
+        if(err(reps[i]*reps[j]-reps[group.table[i*reps.size()+j]])>options.symmetry_tolerance){out.status="density_operation_relations_failed";return out;}
+    out.density_checked=true;
+    // Enumerate only subgroups contained in the accepted operation set. This
+    // does not label a threshold-selected, non-closed set as a point group.
+    const auto close=[&](std::vector<std::size_t> members){
+        std::set<std::size_t> chosen(members.begin(),members.end());bool changed=true;
+        while(changed){changed=false;const std::vector<std::size_t> old(chosen.begin(),chosen.end());
+            for(auto i:old)for(auto j:old){const auto k=group.table[i*group.ops.size()+j];if(!keep[k])return std::vector<std::size_t>{};if(chosen.insert(k).second)changed=true;}}
+        return std::vector<std::size_t>(chosen.begin(),chosen.end());};
+    std::vector<std::size_t> accepted;for(std::size_t i=0;i<keep.size();++i)if(keep[i])accepted.push_back(i);
+    std::vector<std::size_t> chosen=close(accepted);
+    if(chosen.empty()){
+        std::set<std::vector<std::size_t>> seen{{0}};std::vector<std::vector<std::size_t>> todo{{0}};
+        for(std::size_t cursor=0;cursor<todo.size();++cursor){if(todo.size()>4096){out.status="density_subgroup_search_capacity";return out;}
+            for(auto i:accepted){auto candidate=todo[cursor];candidate.push_back(i);candidate=close(candidate);if(!candidate.empty()&&seen.insert(candidate).second)todo.push_back(std::move(candidate));}}
+        std::size_t largest=0,count=0;for(const auto& candidate:todo){if(candidate.size()>largest){largest=candidate.size();count=1;chosen=candidate;}else if(candidate.size()==largest)++count;}
+        if(count!=1){out.status="ambiguous_maximal_density_subgroups";return out;}
+    }
+    if(chosen.size()==group.ops.size()){out.naming_scope_verified=true;out.status="geometry_group_preserves_density";out.retained_operation_indices=chosen;return out;}
+    MolecularSymmetry subgroup=geometry;subgroup.operations.clear();for(auto i:chosen)subgroup.operations.push_back(group.ops[i]);
+    std::vector<std::string> candidates{"C1","Cs","Ci","T","Td","Th","O","Oh","I","Ih"};
+    for(std::size_t order=2;order<=group.ops.size();++order)for(const auto& family:{"C","D","S"})
+        for(const auto& suffix:{"","v","h","d"})candidates.push_back(std::string(family)+std::to_string(order)+suffix);
+    std::vector<std::string> matching;
+    for(const auto& name:candidates){if(finite_point_group_order(name)!=chosen.size())continue;subgroup.point_group=name;
+        if(molecular_point_group_irreps(w,subgroup).valid)matching.push_back(name);}
+    // Standard aliases S2=Ci, C1v/C1h=Cs and D1=C2 are not separate scopes.
+    matching.erase(std::remove(matching.begin(),matching.end(),"S2"),matching.end());
+    if(matching.size()!=1){out.status="density_subgroup_name_ambiguous";return out;}
+    out.naming_group=matching.front();out.operations=subgroup.operations;out.retained_operation_indices=chosen;
+    out.reduced=true;out.naming_scope_verified=true;out.status="verified_approximate_density_subgroup";return out;
+}
+
 M deterministic_basis(const M& eigvectors,double tolerance){
     // Stable projector-column gauge, independent of eigenvector signs and
     // rotations within a repeated eigenvalue. Phase is a coordinate convention.
@@ -100,6 +175,82 @@ std::vector<M> merge_group_connected_spaces(std::vector<M> spaces,const std::vec
     for(std::size_t i=0;i<m;++i)for(std::size_t j=i+1;j<m;++j)if(invariant[i]&&invariant[j]&&(characters[i]-characters[j]).cwiseAbs().maxCoeff()<=tolerance)parent[root(j)]=root(i);
     std::map<std::size_t,std::vector<std::size_t>> components;for(std::size_t i=0;i<m;++i)components[root(i)].push_back(i);std::vector<M> result;
     for(const auto& [key,indices]:components){Eigen::Index count=0;for(auto i:indices)count+=spaces[i].cols();M joined(spaces.front().rows(),count);Eigen::Index offset=0;for(auto i:indices){joined.middleCols(offset,spaces[i].cols())=spaces[i];offset+=spaces[i].cols();}auto q=deterministic_basis(joined,1e-9);if(q.size()==0)return {};result.push_back(std::move(q));}return result;
+}
+// A central class sum identifies isotypic spaces, but is scalar on their
+// multiplicity coordinates. Split those coordinates with commuting operators.
+// Every result is rechecked against the complete real character row; this also
+// handles chemical E rows of real character norm 2 without splitting partners.
+double copy_leakage(const M& q,const M& rep,const M& outside_metric){
+    const M internal=rep*q-q*(q.transpose()*rep*q);
+    const M residual_metric=internal.transpose()*internal+q.transpose()*outside_metric*q;
+    return std::sqrt(std::max(0.0,residual_metric.diagonal().maxCoeff()));
+}
+std::vector<M> split_irrep_copies(const M& space,const std::vector<M>& reps,const std::vector<M>& outside_metrics,
+    const PointGroupIrrepTable& table,const M& fock,const NboSalcOptions& options,
+    std::string& gauge){
+    if(!table.valid)return {space};
+    std::vector<double> chars;for(const auto& d:reps)chars.push_back((space.transpose()*d*space).trace());
+    const auto content=decompose_point_group_characters(table,chars,options.symmetry_tolerance);
+    if(!content.valid)return {space};
+    std::size_t row=table.rows.size(),copies=0;
+    for(std::size_t i=0;i<content.multiplicities.size();++i)if(content.multiplicities[i]){
+        if(row!=table.rows.size())return {space};row=i;copies=content.multiplicities[i];}
+    if(row==table.rows.size()||copies<=1)return {space};
+    const auto dimension=Eigen::Index(table.rows[row].dimension);
+    std::vector<M> blocks{space};
+    const auto refine=[&](const M& seed,double cluster_tolerance){
+        std::vector<M> next;
+        for(const auto& block:blocks){
+            if(block.cols()==dimension){next.push_back(block);continue;}
+            const M k=block.transpose()*seed*block;
+            Eigen::SelfAdjointEigenSolver<M> eig((k+k.transpose())*.5);
+            if(eig.info()!=Eigen::Success){next.push_back(block);continue;}
+            std::vector<M> pieces;bool valid=true;
+            for(Eigen::Index lo=0;lo<k.cols();){Eigen::Index hi=lo+1;
+                while(hi<k.cols()&&std::abs(eig.eigenvalues()[hi]-eig.eigenvalues()[lo])<=cluster_tolerance)++hi;
+                if((hi-lo)%dimension){valid=false;break;}
+                const M projected=block*eig.eigenvectors().middleCols(lo,hi-lo);
+                M q=deterministic_basis(projected,1e-9);if(!q.size()){valid=false;break;}
+                std::vector<double> signature;for(std::size_t g=0;g<reps.size();++g){const auto& d=reps[g];
+                    const M dq=d*q;
+                    if(copy_leakage(q,d,outside_metrics[g])>options.symmetry_tolerance){valid=false;break;}
+                    signature.push_back((q.transpose()*dq).trace());}
+                if(!valid)break;
+                const auto decomposition=decompose_point_group_characters(table,signature,options.symmetry_tolerance);
+                if(!decomposition.valid||decomposition.multiplicities[row]!=std::size_t((hi-lo)/dimension)){valid=false;break;}
+                pieces.push_back(std::move(q));lo=hi;
+            }
+            if(valid)next.insert(next.end(),pieces.begin(),pieces.end());else next.push_back(block);
+        }
+        blocks=std::move(next);
+    };
+    if(fock.size()){
+        double commutator=0;for(const auto& d:reps)commutator=std::max(commutator,err(d.transpose()*fock*d-fock));
+        if(commutator<=options.energy_tolerance_hartree){refine(fock,options.energy_tolerance_hartree);gauge="physical_fock_spectrum";}
+        // A small absolute Fock asymmetry can rotate nearly coincident copies
+        // appreciably. The Reynolds mean supplies a mathematical copy gauge;
+        // every energy below still uses the original, unmodified operator.
+        if(std::any_of(blocks.begin(),blocks.end(),[&](const M& q){return q.cols()!=dimension;})){
+            M averaged=M::Zero(fock.rows(),fock.cols());for(const auto& d:reps)averaged+=d.transpose()*fock*d;
+            averaged/=double(reps.size());refine(averaged,options.energy_tolerance_hartree);
+            gauge="reynolds_fock_copy_gauge; original_operator_expectations";
+        }
+    }
+    // Symmetric matrix units span all real symmetric seeds. Reynolds averaging
+    // therefore spans the self-adjoint commutant, including equivalent copies.
+    for(Eigen::Index i=0;i<space.rows();++i)for(Eigen::Index j=0;j<=i;++j){
+        if(std::all_of(blocks.begin(),blocks.end(),[&](const M& q){return q.cols()==dimension;}))break;
+        M seed=M::Zero(space.rows(),space.rows());
+        for(const auto& d:reps){seed+=d.row(i).transpose()*d.row(j);if(i!=j)seed+=d.row(j).transpose()*d.row(i);}
+        seed/=double(reps.size());refine(seed,options.eigenvalue_cluster_tolerance);
+        gauge="reynolds_symmetric_matrix_units_v1; producer_NAO_order";
+    }
+    if(blocks.size()!=copies||std::any_of(blocks.begin(),blocks.end(),[&](const M& q){return q.cols()!=dimension;})){
+        gauge="unresolved_isotypic_multiplicity";return {space};}
+    M joined(space.rows(),space.cols());Eigen::Index offset=0;for(const auto& q:blocks){joined.middleCols(offset,q.cols())=q;offset+=q.cols();}
+    if(err(joined.transpose()*joined-M::Identity(joined.cols(),joined.cols()))>2e-5||
+       err(joined*joined.transpose()-space*space.transpose())>2e-5){gauge="copy_partition_rejected";return {space};}
+    return blocks;
 }
 struct Energy {NboSalcEnergyEvidence evidence;M fock;};
 M archive_coefficients(const Wavefunction& w,const NboAssociation& assoc,const M& x){
@@ -279,11 +430,20 @@ void energy_provenance(std::ostream& o,const NboSalcEnergyEvidence& x) {
 }
 } // namespace
 
+NboElectronicSymmetryScope analyse_nbo_electronic_symmetry_scope(const Wavefunction& w,const NboSalcOptions& options){
+    const auto geometry=analyse_molecular_symmetry(w);const auto group=make_group(w,geometry,options);
+    return density_scope(w,geometry,group,options);
+}
 NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& data,const NboSalcOptions& options){
-    NboSalcModel out;out.dataset_id=data.id;out.canonical_fingerprint=nbo_canonical_fingerprint(w);std::ostringstream key;key<<data.id<<':'<<out.canonical_fingerprint<<':'<<std::setprecision(17)<<options.metric_tolerance<<':'<<options.symmetry_tolerance<<':'<<options.energy_tolerance_hartree<<':'<<options.eigenvalue_cluster_tolerance<<':'<<options.maximum_group_order;out.cache_key=key.str();
+    NboSalcModel out;out.dataset_id=data.id;out.canonical_fingerprint=nbo_canonical_fingerprint(w);std::ostringstream key;key<<data.id<<':'<<out.canonical_fingerprint<<':'<<std::setprecision(17)<<options.metric_tolerance<<':'<<options.symmetry_tolerance<<':'<<options.energy_tolerance_hartree<<':'<<options.eigenvalue_cluster_tolerance<<':'<<options.maximum_group_order;out.cache_key=key.str()+"|salc-copy-v2";
     const auto n=std::size_t(w.basis_count);if(!n||w.ao_overlap.size()!=n*n||!data.dataset.association.compatible||data.canonical_fingerprint!=out.canonical_fingerprint){out.detail="Missing metric, rejected association, or changed immutable canonical identity";return out;}
     const M s=Eigen::Map<const RM>(w.ao_overlap.data(),n,n);const auto geometry=analyse_molecular_symmetry(w);out.point_group=geometry.point_group;auto group=make_group(w,geometry,options);out.group_verified=group.valid;out.group_closure_error=group.error;out.used_group=group.valid?(geometry.linear?"finite sampling subgroup of "+geometry.point_group:geometry.point_group):"unavailable";out.operations=group.valid?group.ops:std::vector<SymmetryOperation>{};if(!group.valid)out.diagnostics.push_back(group.detail);
-    MolecularSymmetry full_geometry=geometry;full_geometry.operations=out.operations;
+    out.symmetry_scope=density_scope(w,geometry,group,options);
+    MolecularSymmetry full_geometry=geometry;
+    if(out.symmetry_scope.reduced){full_geometry.point_group=out.symmetry_scope.naming_group;full_geometry.operations=out.symmetry_scope.operations;
+        group=make_group(w,full_geometry,options);out.group_verified=group.valid;out.group_closure_error=group.error;
+        out.operations=group.ops;out.used_group=full_geometry.point_group;}
+    full_geometry.operations=out.operations;
     const auto irrep_table=group.valid&&!geometry.linear?molecular_point_group_irreps(w,full_geometry):PointGroupIrrepTable{};
     std::vector<std::size_t> atom_group(w.atoms.size());std::iota(atom_group.begin(),atom_group.end(),0);auto root=[&](std::size_t a){while(atom_group[a]!=a)a=atom_group[a];return a;};
     if(group.valid&&w.atoms.size()!=2)for(const auto& op:group.ops)for(std::size_t a=0;a<w.atoms.size();++a){auto x=root(a),y=root(op.atom_permutation[a]);if(x!=y)atom_group[std::max(x,y)]=std::min(x,y);}
@@ -300,7 +460,7 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
         // fields can pass one generator while failing its powers.
         if(transforms)for(const auto& op:group.ops){const auto t=apply_orbital_symmetry_operation(w,op,flat(a),r);if(t.size()!=n*r){transforms=false;out.diagnostics.push_back("Full-group AO action unavailable; fixed NAO fallback");break;}const M ta=Eigen::Map<const RM>(t.data(),n,r);const double metric_error=err(ta.transpose()*s*ta-M::Identity(r,r));out.representation_error=std::max(out.representation_error,metric_error);if(metric_error>options.symmetry_tolerance){transforms=false;out.diagnostics.push_back("AO action fails metric isometry; fixed NAO fallback");break;}transformed_basis.push_back(ta);}
         if(transforms)for(const auto& action:transformed_basis)representations.push_back(sa.transpose()*action);
-        if(energy.evidence.available&&transforms){double e=0;for(const auto& g:representations)e=std::max(e,err(g.transpose()*energy.fock*g-energy.fock));energy.evidence.fock_symmetry_error=e;energy.evidence.electronic_symmetry_verified=energy.evidence.canonical_same_operator&&r==n&&e<=options.symmetry_tolerance;}
+        if(energy.evidence.available&&transforms){double e=0;for(const auto& g:representations)e=std::max(e,err(g.transpose()*energy.fock*g-energy.fock));energy.evidence.fock_symmetry_error=e;energy.evidence.electronic_symmetry_verified=e<=options.energy_tolerance_hartree;}
         std::string density_reason;
         const M density=verified_density(w,data,spin,a,options.metric_tolerance,density_reason);
         NboSalcSpinOperator op;op.spin=spin;
@@ -319,14 +479,25 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
         out.energies.push_back(energy.evidence);
         std::map<std::pair<std::size_t,std::string>,Family> familymap;for(std::size_t j=0;j<r;++j){const auto atom=descriptors[j]->atoms[0];if(atom>=atom_group.size())continue;const NboNao* row=nullptr;for(const auto& x:data.dataset.naos)if(x.spin==spin&&x.id==descriptors[j]->ref.index+1){row=&x;break;}const std::string type=row?compact(row->type):"unclassified";auto& f=familymap[{atom_group[atom],type}];f.fragment=atom_group[atom];f.type=type;f.angular=row?row->angular:"unclassified";f.indices.push_back(j);}
         const auto start=out.orbitals.size();
-        for(const auto& entry:familymap){const auto& family=entry.second;const auto b=family.indices.size();const auto& fragment=out.fragments[family.fragment];std::vector<M> reps;bool closed=transforms&&group.ops.size()>1;double closure=0;
+        for(const auto& entry:familymap){const auto& family=entry.second;const auto b=family.indices.size();const auto& fragment=out.fragments[family.fragment];std::vector<M> reps,outside_metrics;bool closed=transforms&&group.ops.size()>1;double closure=0;
             M family_basis(n,b);for(std::size_t j=0;j<b;++j)family_basis.col(j)=a.col(family.indices[j]);
             // Evaluate the actual field residual. Subtracting two nearly unit
             // norms assumes exactly orthonormal printed NAOs and turns their
             // small metric error into its square root, causing frame-dependent
             // false failures for ill-conditioned/rank-limited AO bases.
+            const M original_family=family_basis;
+            const M gram=family_basis.transpose()*s*family_basis;
+            Eigen::SelfAdjointEigenSolver<M> metric_solver((gram+gram.transpose())*.5);
+            M whitening=M::Identity(b,b);
+            if(fragment.atoms.size()>1&&metric_solver.info()==Eigen::Success&&metric_solver.eigenvalues().minCoeff()>1e-10)
+                whitening=metric_solver.eigenvectors()*metric_solver.eigenvalues().array().rsqrt().matrix().asDiagonal()*metric_solver.eigenvectors().transpose();
+            else if(metric_solver.info()!=Eigen::Success)closed=false;
+            family_basis=original_family*whitening;
             const M family_metric=s*family_basis;
-            if(closed)for(const auto& action:transformed_basis){M transformed(n,b);for(std::size_t j=0;j<b;++j)transformed.col(j)=action.col(family.indices[j]);const M local=family_metric.transpose()*transformed;reps.push_back(local);const M residual=transformed-family_basis*local;const M residual_metric=residual.transpose()*s*residual;for(std::size_t j=0;j<b;++j)closure=std::max(closure,std::sqrt(std::max(0.0,residual_metric(j,j))));}
+            M family_fock,family_density;
+            if(energy.evidence.available){M raw(b,b);for(std::size_t i=0;i<b;++i)for(std::size_t j=0;j<b;++j)raw(i,j)=energy.fock(family.indices[i],family.indices[j]);family_fock=whitening*raw*whitening;}
+            if(density.size()){M raw(b,b);for(std::size_t i=0;i<b;++i)for(std::size_t j=0;j<b;++j)raw(i,j)=density(family.indices[i],family.indices[j]);family_density=whitening*raw*whitening;}
+            if(closed)for(const auto& action:transformed_basis){M transformed(n,b);for(std::size_t j=0;j<b;++j)transformed.col(j)=action.col(family.indices[j]);transformed=(transformed*whitening).eval();const M local=family_metric.transpose()*transformed;reps.push_back(local);const M residual=transformed-family_basis*local;const M residual_metric=residual.transpose()*s*residual;outside_metrics.push_back(residual_metric);for(std::size_t j=0;j<b;++j)closure=std::max(closure,std::sqrt(std::max(0.0,residual_metric(j,j))));}
             if(closure>options.symmetry_tolerance)closed=false;
             if(closed){double relation=0;for(std::size_t i=0;i<reps.size();++i)for(std::size_t j=0;j<reps.size();++j)relation=std::max(relation,err(reps[i]*reps[j]-reps[group.table[i*group.ops.size()+j]]));closure=std::max(closure,relation);if(relation>options.symmetry_tolerance)closed=false;}
             std::vector<M> spaces;
@@ -335,6 +506,12 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
             if(closed&&fragment.atoms.size()>1){M central=M::Zero(b,b);std::size_t ci=0;for(const auto& cl:group.classes){M z=M::Zero(b,b);for(auto g:cl)z+=reps[g];z=(z+z.transpose()).eval()/(2*double(cl.size()));central+=std::sqrt(double(++ci)+1.6180339887498948)*z;}Eigen::SelfAdjointEigenSolver<M> eig(central);if(eig.info()==Eigen::Success){for(Eigen::Index lo=0;lo<eig.eigenvalues().size();){Eigen::Index hi=lo+1;while(hi<eig.eigenvalues().size()&&std::abs(eig.eigenvalues()[hi]-eig.eigenvalues()[lo])<=options.eigenvalue_cluster_tolerance*std::max(1.0,std::abs(eig.eigenvalues()[lo])))++hi;auto q=deterministic_basis(eig.eigenvectors().middleCols(lo,hi-lo),1e-9);if(!q.size()){spaces.clear();break;}spaces.push_back(std::move(q));lo=hi;}}}
             if(closed&&fragment.atoms.size()>1&&!spaces.empty())spaces=merge_group_connected_spaces(std::move(spaces),reps,options.symmetry_tolerance);
             if(spaces.empty()){spaces.push_back(M::Identity(b,b));if(fragment.atoms.size()>1)closed=false;}
+            std::vector<std::string> copy_gauges;
+            if(closed&&fragment.atoms.size()>1){std::vector<M> split;
+                for(const auto& q:spaces){std::string gauge="stable_projector_columns";
+                    auto copies=split_irrep_copies(q,reps,outside_metrics,irrep_table,family_fock,options,gauge);
+                    for(auto& copy:copies){split.push_back(std::move(copy));copy_gauges.push_back(gauge);}}
+                spaces=std::move(split);}
             // Acceptance is for the entire fixed basis, not just each block.
             // A bad gauge or noninvariant spectral split must never introduce
             // duplicate/nonorthogonal directions and inflate MO coverage.
@@ -342,17 +519,35 @@ NboSalcModel build_nbo_salc_model(const Wavefunction& w,const NboIntegration& da
             for(const auto& q:spaces){if(offset+q.cols()>Eigen::Index(b)){valid_partition=false;break;}joined.middleCols(offset,q.cols())=q;offset+=q.cols();if(closed)for(const auto& rep:reps)if(err(rep*q-q*(q.transpose()*rep*q))>options.symmetry_tolerance)valid_partition=false;}
             if(offset!=Eigen::Index(b)||err(joined.transpose()*joined-M::Identity(b,b))>options.metric_tolerance)valid_partition=false;
             if(!valid_partition){spaces={M::Identity(b,b)};closed=false;out.diagnostics.push_back(fragment.id+":"+family.type+": rejected spectral partition; preserving complete fixed NAO family");}
-            std::size_t ordinal=0;for(const auto& q:spaces){NboSalcSubspace sub;sub.id=fragment.id+":"+nbo_spin_name(spin)+":"+family.type+":space"+std::to_string(++ordinal);sub.fragment_id=fragment.id;sub.spin=spin;sub.dimension=q.cols();sub.closure_error=closure;sub.orthogonality_error=err(q.transpose()*q-M::Identity(q.cols(),q.cols()));sub.symmetry_verified=closed;double retention=0;
-                if(closed){for(const auto& rep:reps){const M rq=rep*q;retention=std::max(retention,err(rq-q*(q.transpose()*rq)));double character=(q.transpose()*rq).trace();sub.characters.push_back(character);sub.character_norm+=character*character/double(reps.size());}sub.closure_error=std::max(sub.closure_error,retention);if(retention>options.symmetry_tolerance)sub.symmetry_verified=false;const auto mult=std::size_t(std::llround(std::sqrt(sub.character_norm)));if(mult&&std::abs(sub.character_norm-double(mult*mult))<1e-3&&sub.dimension%mult==0){sub.multiplicity=mult;sub.irrep_dimension=sub.dimension/mult;}}
+            std::size_t ordinal=0;for(const auto& q:spaces){NboSalcSubspace sub;sub.id="salc-copy-v2:"+out.used_group+":"+fragment.id+":"+nbo_spin_name(spin)+":"+family.type+":space"+std::to_string(++ordinal);sub.fragment_id=fragment.id;sub.spin=spin;sub.dimension=q.cols();sub.closure_error=closure;sub.orthogonality_error=err(q.transpose()*q-M::Identity(q.cols(),q.cols()));sub.symmetry_verified=closed;double retention=0;
+                if(closed){for(std::size_t g=0;g<reps.size();++g){const auto& rep=reps[g];const M rq=rep*q;retention=std::max(retention,copy_leakage(q,rep,outside_metrics[g]));double character=(q.transpose()*rq).trace();sub.characters.push_back(character);sub.character_norm+=character*character/double(reps.size());}sub.closure_error=std::max(sub.closure_error,retention);if(retention>options.symmetry_tolerance)sub.symmetry_verified=false;const auto mult=std::size_t(std::llround(std::sqrt(sub.character_norm)));if(mult&&std::abs(sub.character_norm-double(mult*mult))<1e-3&&sub.dimension%mult==0){sub.multiplicity=mult;sub.irrep_dimension=sub.dimension/mult;}}
                 if(sub.symmetry_verified&&irrep_table.valid){
                     const auto decomposition=decompose_point_group_characters(irrep_table,sub.characters,options.symmetry_tolerance);
                     sub.multiplicity=0;sub.irrep_dimension=0;
                     if(decomposition.valid){std::size_t row_count=0,row_index=0;for(std::size_t i=0;i<decomposition.multiplicities.size();++i)if(decomposition.multiplicities[i]){++row_count;row_index=i;}
                         if(row_count==1){sub.multiplicity=decomposition.multiplicities[row_index];sub.irrep_dimension=irrep_table.rows[row_index].dimension;}}
                 }
+                sub.copy_gauge=ordinal<=copy_gauges.size()?copy_gauges[ordinal-1]:"literal_producer_NAO";
+                sub.basis_kind=fragment.atoms.size()>1?"derived_salc":"producer_nao";
+                const M mapped=whitening*q;
+                for(auto index:family.indices)sub.source_basis.push_back(descriptors[index]->ref);
+                sub.source_to_derived=flat(mapped);
+                if(family_density.size())sub.density=flat(q.transpose()*family_density*q);
+                if(family_fock.size()){
+                    const M k=q.transpose()*family_fock*q;sub.fock=flat(k);
+                    Eigen::SelfAdjointEigenSolver<M> spectrum((k+k.transpose())*.5);
+                    sub.energy_scalar_residual_hartree=err(k-M::Identity(k.rows(),k.cols())*(k.trace()/double(k.rows())));
+                    sub.energy_spectral_width_hartree=spectrum.info()==Eigen::Success?spectrum.eigenvalues().maxCoeff()-spectrum.eigenvalues().minCoeff():std::numeric_limits<double>::infinity();
+                    for(const auto& d:reps){const M local=q.transpose()*d*q;sub.energy_commutator_hartree=std::max(sub.energy_commutator_hartree,err(local.transpose()*k*local-k));}
+                    sub.energy_copy_coupling_hartree=err(family_fock*q-q*k);
+                    sub.energy_degeneracy_verified=sub.symmetry_verified&&sub.multiplicity==1&&
+                        sub.energy_scalar_residual_hartree<=options.energy_tolerance_hartree&&sub.energy_spectral_width_hartree<=options.energy_tolerance_hartree&&
+                        sub.energy_commutator_hartree<=options.energy_tolerance_hartree&&sub.energy_copy_coupling_hartree<=options.energy_tolerance_hartree;
+                    sub.energy_degeneracy_status=sub.energy_degeneracy_verified?"verified_same_operator_degeneracy":"actual_operator_split_or_coupled";
+                }
                 sub.label=sub.symmetry_verified?"Symmetry channel "+std::to_string(ordinal):"Fixed NAO subspace";sub.detail=sub.symmetry_verified?"Geometry-verified invariant subspace; character/partner evidence retained. Phase gauge: stable projector columns in producer NAO order.":"No asserted SALC: trivial group, unsupported action, or literal family is not closed; fixed NAOs retained.";
                 for(Eigen::Index col=0;col<q.cols();++col){NboSalcOrbital o;o.id=sub.id+":member"+std::to_string(col);o.fragment_id=fragment.id;o.subspace_id=sub.id;o.spin=spin;o.type=family.type;o.angular=family.angular;o.partner_index=col;o.partner_dimension=q.cols();o.atoms=fragment.atoms;o.symmetry_adapted=sub.symmetry_verified&&fragment.atoms.size()>1;o.detail=sub.detail;
-                    V global=V::Zero(r);for(std::size_t row=0;row<b;++row){const double coeff=q(row,col);global[family.indices[row]]=coeff;if(coeff!=0)o.terms.push_back({descriptors[family.indices[row]]->ref,coeff});}
+                    V global=V::Zero(r);for(std::size_t row=0;row<b;++row){const double coeff=mapped(row,col);global[family.indices[row]]=coeff;if(coeff!=0)o.terms.push_back({descriptors[family.indices[row]]->ref,coeff});}
                     o.label=o.terms.size()==1?nbo_orbital(data,o.terms[0].orbital)->label:"SALC "+std::to_string(ordinal)+"."+std::to_string(col+1)+" "+family.type;
                     if(o.terms.size()==1){for(const auto& row:data.dataset.naos)if(row.spin==o.terms[0].orbital.spin&&row.id==o.terms[0].orbital.index+1){o.angular=row.angular;break;}}
                     else {o.angular="mixed directions";const auto begin=family.type.find('(');if(begin!=std::string::npos)for(std::size_t k=begin+1;k<family.type.size();++k)if(std::string("spdfghik").find(family.type[k])!=std::string::npos){o.angular=family.type.substr(k,1);break;}}
@@ -374,12 +569,29 @@ NboOrbitalSelection nbo_salc_selection(const NboSalcModel& model,std::size_t ind
 NboOrbitalSelection nbo_salc_component_selection(const NboSalcModel& model,const NboSalcLink& link){auto s=nbo_salc_selection(model,link.side_index);s.semantic_kind="salc_component";s.target_canonical_index=link.canonical_index;for(auto& term:s.terms)term.coefficient*=link.coefficient;s.label+=" component of canonical MO "+std::to_string(link.canonical_index+1);return s;}
 
 std::string serialize_nbo_salc_json(const NboSalcModel& m){std::ostringstream o;o<<std::setprecision(17);o<<"{\"dataset_id\":"<<quoted(m.dataset_id)<<",\"canonical_fingerprint\":"<<quoted(m.canonical_fingerprint)<<",\"cache_key\":"<<quoted(m.cache_key)<<",\"available\":"<<(m.available?"true":"false")<<",\"status\":"<<quoted(m.status)<<",\"detail\":"<<quoted(m.detail)<<",\"point_group\":"<<quoted(m.point_group)<<",\"used_group\":"<<quoted(m.used_group)<<",\"group_verified\":"<<(m.group_verified?"true":"false")<<",\"group_closure_error\":";num(o,m.group_closure_error);o<<",\"representation_error\":";num(o,m.representation_error);o<<",\"orthogonality_error\":";num(o,m.orthogonality_error);
+    const auto& scope=m.symmetry_scope;
+    o<<",\"symmetry_scope\":{\"geometry_group\":"<<quoted(scope.geometry_group)<<",\"naming_group\":"<<quoted(scope.naming_group)<<",\"status\":"<<quoted(scope.status)
+     <<",\"naming_scope_verified\":"<<(scope.naming_scope_verified?"true":"false")<<",\"density_checked\":"<<(scope.density_checked?"true":"false")<<",\"reduced\":"<<(scope.reduced?"true":"false")<<",\"relative_tolerance\":"<<scope.relative_tolerance;
+    o<<",\"total_density_residuals\":";json_array(o,scope.total_density_residuals,[&](auto v){num(o,v);});
+    o<<",\"spin_density_residuals\":";json_array(o,scope.spin_density_residuals,[&](auto v){num(o,v);});
+    o<<",\"retained_operation_indices\":";json_array(o,scope.retained_operation_indices,[&](auto v){o<<v;});
+    o<<",\"geometry_operations\":";json_array(o,scope.geometry_operations,[&](const auto& op){o<<"{\"matrix\":";std::vector<double> values(op.matrix.begin(),op.matrix.end());json_array(o,values,[&](auto v){num(o,v);});o<<",\"atom_permutation\":";json_array(o,op.atom_permutation,[&](auto v){o<<v;});o<<'}';});o<<'}';
     o<<",\"spin_averaged\":"<<(m.spin_averaged?"true":"false")<<",\"merged_spatial_count\":"<<m.merged_spatial_count<<",\"separate_spin_count\":"<<m.separate_spin_count;
     const auto& ro=m.restricted_open_shell;
     o<<",\"restricted_open_shell\":{\"verified\":"<<(ro.verified?"true":"false")<<",\"status\":"<<quoted(ro.status)<<",\"detail\":"<<quoted(ro.detail)<<",\"method\":"<<quoted(ro.method)<<",\"alpha_electrons\":"<<ro.alpha_electrons<<",\"beta_electrons\":"<<ro.beta_electrons<<",\"shared_columns\":"<<ro.shared_columns<<",\"coefficient_residual\":"<<ro.coefficient_residual<<",\"occupation_error\":"<<ro.occupation_error<<",\"density_error\":"<<ro.density_error<<",\"tolerance\":"<<ro.tolerance<<'}';
     o<<",\"phase_convention\":\"stable projector columns in producer NAO order; largest absolute coefficient positive; individual signs are gauge-dependent\",\"operations\":";json_array(o,m.operations,[&](const auto& x){o<<"{\"matrix\":[";for(int i=0;i<9;++i){if(i)o<<',';num(o,x.matrix[i]);}o<<"],\"atom_permutation\":";json_array(o,x.atom_permutation,[&](auto i){o<<i;});o<<",\"mapping_error_bohr\":";num(o,x.max_mapping_error_bohr);o<<'}';});
     o<<",\"fragments\":";json_array(o,m.fragments,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"side\":"<<x.side<<",\"atoms\":";json_array(o,x.atoms,[&](auto i){o<<i;});o<<'}';});
-    o<<",\"subspaces\":";json_array(o,m.subspaces,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"fragment_id\":"<<quoted(x.fragment_id)<<",\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"detail\":"<<quoted(x.detail)<<",\"dimension\":"<<x.dimension<<",\"irrep_dimension\":"<<x.irrep_dimension<<",\"multiplicity\":"<<x.multiplicity<<",\"symmetry_verified\":"<<(x.symmetry_verified?"true":"false")<<",\"closure_error\":";num(o,x.closure_error);o<<",\"orthogonality_error\":";num(o,x.orthogonality_error);o<<",\"character_norm\":";num(o,x.character_norm);o<<",\"characters\":";json_array(o,x.characters,[&](auto v){num(o,v);});o<<",\"orbital_indices\":";json_array(o,x.orbital_indices,[&](auto v){o<<v;});o<<'}';});
+    o<<",\"subspaces\":";json_array(o,m.subspaces,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"fragment_id\":"<<quoted(x.fragment_id)<<",\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"detail\":"<<quoted(x.detail)<<",\"dimension\":"<<x.dimension<<",\"irrep_dimension\":"<<x.irrep_dimension<<",\"multiplicity\":"<<x.multiplicity<<",\"symmetry_verified\":"<<(x.symmetry_verified?"true":"false")<<",\"closure_error\":";num(o,x.closure_error);o<<",\"orthogonality_error\":";num(o,x.orthogonality_error);o<<",\"character_norm\":";num(o,x.character_norm);o<<",\"characters\":";json_array(o,x.characters,[&](auto v){num(o,v);});o<<",\"copy_gauge\":"<<quoted(x.copy_gauge)<<",\"basis_kind\":"<<quoted(x.basis_kind)
+        <<",\"energy_degeneracy_verified\":"<<(x.energy_degeneracy_verified?"true":"false")<<",\"energy_degeneracy_status\":"<<quoted(x.energy_degeneracy_status)
+        <<",\"energy_scalar_residual_hartree\":";num(o,x.energy_scalar_residual_hartree);
+        o<<",\"energy_spectral_width_hartree\":";num(o,x.energy_spectral_width_hartree);
+        o<<",\"energy_commutator_hartree\":";num(o,x.energy_commutator_hartree);
+        o<<",\"energy_copy_coupling_hartree\":";num(o,x.energy_copy_coupling_hartree);
+        o<<",\"source_basis\":";json_array(o,x.source_basis,[&](const auto& ref){o<<"{\"kind\":"<<quoted(nbo_orbital_kind_name(ref.kind))<<",\"spin\":"<<quoted(nbo_spin_name(ref.spin))<<",\"index\":"<<ref.index<<'}';});
+        o<<",\"source_to_derived\":";json_array(o,x.source_to_derived,[&](auto v){num(o,v);});
+        o<<",\"fock\":";json_array(o,x.fock,[&](auto v){num(o,v);});
+        o<<",\"density\":";json_array(o,x.density,[&](auto v){num(o,v);});
+        o<<",\"orbital_indices\":";json_array(o,x.orbital_indices,[&](auto v){o<<v;});o<<'}';});
     o<<",\"orbitals\":";json_array(o,m.orbitals,[&](const auto& x){o<<"{\"id\":"<<quoted(x.id)<<",\"label\":"<<quoted(x.label)<<",\"fragment_id\":"<<quoted(x.fragment_id)<<",\"subspace_id\":"<<quoted(x.subspace_id)<<",\"type\":"<<quoted(x.type)<<",\"angular\":"<<quoted(x.angular)<<",\"detail\":"<<quoted(x.detail)<<",\"spin\":"<<quoted(nbo_spin_name(x.spin))<<",\"symmetry_adapted\":"<<(x.symmetry_adapted?"true":"false")<<",\"partner_index\":"<<x.partner_index<<",\"partner_dimension\":"<<x.partner_dimension<<",\"energy_hartree\":";optional(o,x.energy_hartree);o<<",\"occupation\":";optional(o,x.occupation);o<<",\"energy_semantics\":"<<quoted(x.energy_semantics)<<",\"spin_correspondence_status\":"<<quoted(x.spin_correspondence_status)<<",\"spatial_spin\":"<<(x.spatial_spin?serialize_nbo_spatial_spin_json(*x.spatial_spin):"null")<<",\"atoms\":";json_array(o,x.atoms,[&](auto i){o<<i;});o<<",\"terms\":";json_array(o,x.terms,[&](const auto& t){o<<"{\"kind\":"<<quoted(nbo_orbital_kind_name(t.orbital.kind))<<",\"spin\":"<<quoted(nbo_spin_name(t.orbital.spin))<<",\"index\":"<<t.orbital.index<<",\"coefficient\":";num(o,t.coefficient);o<<'}';});o<<'}';});
     o<<",\"links\":";json_array(o,m.links,[&](const auto& x){o<<"{\"side_index\":"<<x.side_index<<",\"canonical_index\":"<<x.canonical_index<<",\"coefficient\":";num(o,x.coefficient);o<<",\"weight\":";num(o,x.weight);o<<",\"source_spin\":"<<quoted(nbo_spin_name(x.source_spin))<<",\"source_side_indices\":";json_array(o,x.source_side_indices,[&](auto i){o<<i;});o<<",\"source_coefficients\":";json_array(o,x.source_coefficients,[&](double v){num(o,v);});o<<",\"basis_mapping\":";json_array(o,x.basis_mapping,[&](double v){num(o,v);});o<<'}';});
     o<<",\"coverage\":";json_array(o,m.coverage,[&](const auto& x){o<<"{\"canonical_index\":"<<x.canonical_index<<",\"available\":"<<(x.available?"true":"false")<<",\"weight_sum\":";num(o,x.weight_sum);o<<",\"residual_norm\":";num(o,x.residual_norm);o<<'}';});

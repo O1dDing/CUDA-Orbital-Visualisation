@@ -25,6 +25,8 @@ struct MoleculeRenderSettings {
     float molecule_opacity = 1.00f;
     float orbital_opacity = 0.92f;
     bool show_hydrogens = true;
+    bool show_numbers=false, number_atoms=true, number_fragments=true;
+    bool number_ignore_h=true;
     // Strong coordination connectivity uses the same solid structural line.
     // Its chemical semantics remain independent of the visual style.
     bool show_coordination_contacts = true;

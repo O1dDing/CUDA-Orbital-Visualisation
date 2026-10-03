@@ -51,6 +51,9 @@ struct OrbitalUIState {
     MODiagramMode diagram_mode = MODiagramMode::ValenceCentral;
     bool hide_ligand_centred_intermediates = true;
     bool show_diagram_details = false;
+    // Only an explicit open/reopen action requests focus. Background controls
+    // never cover this floating window or repeatedly steal keyboard focus.
+    bool focus_diagram_details = false;
     // Last drawn details rectangle (x, y, width, height), in ImGui coordinates.
     std::optional<std::array<float, 4>> diagram_details_bounds;
     int diagram_neighbourhood = 12;

@@ -233,6 +233,7 @@ const char* bonding_class_name(const BondingClass value) noexcept {
         case BondingClass::Bonding: return "bonding";
         case BondingClass::Nonbonding: return "nonbonding";
         case BondingClass::Antibonding: return "antibonding";
+        case BondingClass::Mixed: return "mixed";
         default: return "N/A";
     }
 }

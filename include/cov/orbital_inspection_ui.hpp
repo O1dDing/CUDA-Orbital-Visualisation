@@ -148,7 +148,9 @@ inline void draw_inspection_details(const Wavefunction& canonical,OrbitalUIState
             ",\"clipboard_matches\":"+(clipboard && copied==clipboard?"true":"false")+"}");
     }
     validation::item("details.inspection.copy");
-    if(s && ImGui::TreeNode(inspection_text(language,"Source orbitals","源轨道","元の軌道","Orbitales sources"))){
+    const bool sources_open=s && ImGui::TreeNode(inspection_text(language,"Source orbitals","源轨道","元の軌道","Orbitales sources"));
+    if(s)validation::item("details.inspection.sources-tree");
+    if(sources_open){
         ImGuiListClipper clipper;clipper.Begin(static_cast<int>(s->terms.size()),ImGui::GetTextLineHeightWithSpacing());
         while(clipper.Step())for(int i=clipper.DisplayStart;i<clipper.DisplayEnd;++i){
             const auto& t=s->terms[static_cast<std::size_t>(i)];
@@ -159,7 +161,9 @@ inline void draw_inspection_details(const Wavefunction& canonical,OrbitalUIState
         }
         ImGui::TreePop();
     }
-    if(s && s->spatial_spin && ImGui::TreeNode("α / β")){
+    const bool spin_open=s && s->spatial_spin && ImGui::TreeNode("α / β");
+    if(s && s->spatial_spin)validation::item("details.inspection.spin-tree");
+    if(spin_open){
         for(const auto& channel:s->spatial_spin->channels){
             ImGui::TextUnformatted(nbo_spin_name(channel.spin));
             if(channel.energy_hartree)ImGui::Text("%s: %s",tr(Text::Energy,language),

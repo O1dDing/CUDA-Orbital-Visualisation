@@ -34,6 +34,8 @@ struct NboAomoNode {
     std::size_t symmetry_ordinal=0;
     std::size_t symmetry_multiplicity=1;
     bool symmetry_name_verified=false;
+    BondingClass bonding_class=BondingClass::Unclassified;
+    std::string bonding_scope_status;
     std::optional<NboOrbitalRef> orbital;
     std::optional<std::size_t> canonical_index;
     std::optional<std::size_t> fragment_group_id;
@@ -42,6 +44,8 @@ struct NboAomoNode {
     std::string subspace_id;
     std::vector<std::size_t> atoms;
     std::vector<std::size_t> member_canonical_indices;
+    std::vector<double> member_energies_hartree,member_occupations;
+    bool weak_display_container=false;
     std::optional<double> energy_hartree,occupation;
     // Raw energies above remain scientific data. These are diagram-only means
     // and symmetric shell-stack offsets, never inputs to selection or fields.
@@ -100,6 +104,7 @@ struct NboAomoViewSnapshot {
     std::vector<NboAomoCaption> captions;
     std::vector<PiPartnerAssessment> pi_partner_candidates;
     std::vector<PiInteractionDescriptor> pi_interactions;
+    std::vector<OrbitalGroupBondingResult> bonding_groups;
     std::optional<NboOrbitalSelection> selection;
     std::optional<ActiveOrbitalView> active_view;
     std::vector<NboAomoFragmentGroup> fragment_groups;
@@ -109,6 +114,7 @@ struct NboAomoViewSnapshot {
     std::size_t hidden_h_count=0;
     NboAomoPreset preset=NboAomoPreset::Teaching;
     bool overview=false;
+    bool all_connections=false;
     bool illustrative_side_layout=false;
     bool paper_export=false;
     bool auto_rydberg_expanded=false;
@@ -134,6 +140,8 @@ struct NboAomoViewSnapshot {
     float footer_y=0;
     std::array<float,3> lane_x{},lane_width{};
     bool show_core=false,show_rydberg=false,hide_h_orbitals=false;
+    bool show_fragment_background=false;
+    bool show_atom_numbers=true,show_fragment_numbers=true,number_ignore_h=false;
     float zoom=1,pan_x=0,pan_y=0;
 };
 
@@ -147,11 +155,17 @@ struct NboAomoUIState {
     std::set<std::size_t> collapsed_atoms; // zero-based canonical
     std::set<std::size_t> expanded_atoms;
     bool show_core=false,show_rydberg=false,hide_h_orbitals=false;
+    bool show_fragment_background=false;
+    bool show_atom_numbers=true,show_fragment_numbers=true,number_ignore_h=false;
     NboAomoPreset preset=NboAomoPreset::Teaching;
     bool overview=true;
+    bool all_connections=false;
+    std::size_t last_drawn_dash_segments=0,last_unclipped_dash_segments=0;
+    double last_connection_draw_ms=0;
     bool illustrative_side_layout=false;
     bool paper_export=false;
     std::set<std::string> expanded_subspaces,collapsed_subspaces;
+    std::set<std::string> expanded_weak_groups;
     std::set<std::string> expanded_fragments;
     std::set<std::size_t> expanded_user_fragments;
     std::string selected_side_node_id;
@@ -189,6 +203,7 @@ struct NboAomoUIState {
 
 // Returns true only when the whole AO/NAO--MO view is scientifically available.
 // Otherwise the caller should draw its existing Gaussian-only MO diagram.
+void apply_nbo_aomo_preset(NboAomoUIState& state,NboAomoPreset preset);
 bool prepare_nbo_aomo_state(NboAomoUIState& state,const NboIntegration& integration,
                            const Wavefunction& canonical);
 bool draw_nbo_aomo_diagram(NboAomoUIState& state,const NboIntegration& integration,

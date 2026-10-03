@@ -465,7 +465,7 @@ void draw_participation(const Wavefunction& wf,
 
 void draw_routed_subspaces(const RoutedAnalysis& routed,const std::size_t selected_index,Language language) {
     if(selected_index<routed.mo_relations.size()){
-        const auto& relations=routed.mo_relations[selected_index];
+                const auto relations=routed_mo_relations(routed,selected_index);
         ImGui::SeparatorText(orbital_tr(OrbitalText::RelatedLocalOrbitals,language));
         if(relations.available()){
             ImGui::TextDisabled(orbital_tr(OrbitalText::ProjectionRelations,language),
@@ -539,7 +539,7 @@ void draw_routed_subspaces(const RoutedAnalysis& routed,const std::size_t select
         ImGui::TextDisabled("%s",orbital_tr(OrbitalText::PiNoRelation,language));
 }
 
-void draw_selected_chemistry(const Wavefunction& wf,
+[[maybe_unused]] void draw_selected_chemistry(const Wavefunction& wf,
                              const std::size_t selected_index,
                              const RoutedAnalysis* routed,
                              const Language language) {
@@ -718,8 +718,8 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
                          OrbitalUIActions& actions) {
     draw_energy_diagram_legacy(
         wavefunction,selected_index,state,language,ui_scale,actions);
-    if(!uses_inspection_details(state))draw_selected_chemistry(wavefunction,selected_index,
-        state.nbo_ui?state.nbo_ui->routed:nullptr,language);
+    // Chemical details are available through the selected orbital window.
+    // Do not duplicate them as a long, legacy section below the diagram.
 }
 
 } // namespace cov::ui

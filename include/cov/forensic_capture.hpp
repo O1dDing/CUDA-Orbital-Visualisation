@@ -13,7 +13,10 @@ struct RenderedFrameCaptureLimits {
     std::size_t max_glyphs = 12000;
     std::size_t max_runs = 4000;
     std::size_t max_windows = 128;
-    std::size_t max_index_elements = 3000000;
+    // Dense full-basis diagrams submit many non-text line triangles before
+    // the floating details window. Keep the scan bounded without starving
+    // that final window; glyph/text/JSON budgets remain independent.
+    std::size_t max_index_elements = 100000000;
     std::size_t max_text_bytes = 131072;
     std::size_t max_json_bytes = 8388608;
 };

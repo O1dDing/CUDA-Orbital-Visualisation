@@ -616,7 +616,9 @@ InteractionGraph build_interaction_graph(const Wavefunction& wf,
     std::map<AtomPair, const BondOrderRecord*> records;
     for (const auto& record : wf.bond_orders) {
         if (record.atom_a >= wf.atoms.size() || record.atom_b >= wf.atoms.size() ||
-            record.atom_a == record.atom_b) {
+            record.atom_a == record.atom_b ||
+            record.provenance==DataProvenance::Unavailable ||
+            !std::isfinite(record.mayer_order)) {
             continue;
         }
         const AtomPair pair = ordered_pair(record.atom_a, record.atom_b);

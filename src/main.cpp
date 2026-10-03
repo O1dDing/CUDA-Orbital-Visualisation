@@ -21,6 +21,7 @@
 #include "cov/volume_renderer.hpp"
 #include "cov/validation.hpp"
 #include "cov/viewer_layout.hpp"
+#include "cov/ui_window_layers.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -43,6 +44,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#ifdef _WIN32
+#include <shellapi.h>
+#endif
 
 namespace {
 
@@ -238,6 +242,26 @@ const char* orbital_surface_name(const cov::OrbitalSurfaceMode mode,
 } // namespace
 
 int main(int argc, char** argv) {
+#ifdef _WIN32
+    // CRT narrow argv uses the system ANSI code page. File pickers and GLFW
+    // drops already use Unicode; normalize startup arguments to the same UTF-8
+    // contract so renamed Chinese package folders also open directly.
+    std::vector<std::string> utf8_arguments;
+    std::vector<char*> argument_pointers;
+    int wide_argc=0;
+    if(auto** wide_argv=CommandLineToArgvW(GetCommandLineW(),&wide_argc)) {
+        utf8_arguments.reserve(wide_argc);
+        for(int i=0;i<wide_argc;++i) {
+            const int length=WideCharToMultiByte(CP_UTF8,0,wide_argv[i],-1,nullptr,0,nullptr,nullptr);
+            std::string value(static_cast<std::size_t>(std::max(1,length)),'\0');
+            WideCharToMultiByte(CP_UTF8,0,wide_argv[i],-1,value.data(),length,nullptr,nullptr);
+            value.resize(value.size()-1);utf8_arguments.push_back(std::move(value));
+        }
+        LocalFree(wide_argv);
+        for(auto& value:utf8_arguments)argument_pointers.push_back(value.data());
+        argument_pointers.push_back(nullptr);argc=wide_argc;argv=argument_pointers.data();
+    }
+#endif
     try { cov::validation::configure(argc, argv); }
     catch (const std::exception& e) { std::fprintf(stderr,"Validation: %s\n",e.what()); return 2; }
     if (!glfwInit()) {
@@ -419,9 +443,9 @@ int main(int argc, char** argv) {
                                         }
                             }
                             if(name.verified && !name.irrep.empty()) {
-                                if(selected.semantic_kind=="salc" || selected.semantic_kind=="spin_averaged_spatial_orbital")
-                                    view.label=name.label;
-                                else if(selected.semantic_kind=="salc_component")
+                                // The actual drawn object is the title. Atomic side orbitals
+                                // keep their atom/shell name; symmetry is a separate field.
+                                if(selected.semantic_kind=="salc_component")
                                     view.label=name.label+scene_text(language," · component"," · 分量"," · 成分"," · composante");
                                 view.display_name_evidence=name.detail;
                             }
@@ -485,20 +509,21 @@ int main(int argc, char** argv) {
                 out<<payload;
                 if(!out)throw std::runtime_error("Routed analysis companion write failed");
             };
-            const auto analysis=cov::serialize_routed_analysis_json(*routed);
+            std::vector<std::size_t> export_members;
+            if(nbo_ui.aomo.drawn_snapshot)export_members=nbo_ui.aomo.drawn_snapshot->central_mo_indices;
+            else if(orbital_ui.diagram_cache.snapshot) {
+                for(const auto& level:orbital_ui.diagram_cache.snapshot->data.levels) {
+                    export_members.insert(export_members.end(),level.member_indices.begin(),level.member_indices.end());
+                    export_members.insert(export_members.end(),level.member_spin_counterparts.begin(),level.member_spin_counterparts.end());
+                }
+            } else if(const auto selected=active_view().canonical_index)export_members.push_back(*selected);
+            const auto analysis=cov::serialize_routed_analysis_json(*routed,false,false,export_members);
             const auto active=cov::serialize_active_orbital_view_json(active_view());
             write(".analysis.json",analysis);
             write(".active-view.json",active);
-            if(integration)
-                write(".integration.json",cov::serialize_nbo_integration_json(*integration));
-            else
-                write(".integration.json",
-                    "{\"status\":\"not_analysed\",\"reason\":\"No NBO integration attached\"}");
-            if(nbo_ui.aomo.salc_model)
-                write(".salc.json",cov::serialize_nbo_salc_json(*nbo_ui.aomo.salc_model));
-            else write(".salc.json","{\"status\":\"not_analysed\",\"reason\":\"No verified NBO SALC model attached\"}");
-            const auto current_names=nbo_ui.aomo.names?nbo_ui.aomo.names:cov::ui::canonical_mo_names(*wavefunction);
-            write(".display-names.json",cov::ui::serialize_orbital_names_json(*current_names));
+            // The current diagram JSON already owns its names, source
+            // mappings and display values. Do not attach whole input matrices
+            // and full-model duplicate files to a current-view export.
             cov::validation::record("chemistry.export",
                 "{\"analysis\":"+analysis+",\"active_view\":"+active+"}");
         };
@@ -647,6 +672,8 @@ int main(int argc, char** argv) {
                 const auto new_box = make_grid_box(wf);
                 std::optional<cov::OrbitalTrackingResult> new_tracking;
                 if (wavefunction) {
+                    // TODO(perf) ✳: Profile tracking separately from parsing and
+                    // first display when investigating slow subsequent file opens.
                     // Cross-frame identity is descriptive state only. Both
                     // canonical wavefunctions remain immutable, and loading a
                     // new frame still resets selection to that frame's own HOMO.
@@ -951,6 +978,7 @@ int main(int argc, char** argv) {
         ImVec2 scene_press{};
         bool scene_was_dragged=false;
         bool choose_nbo_input=false;
+        unsigned profile_draw_frames=0;
 
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
@@ -1069,7 +1097,10 @@ int main(int argc, char** argv) {
             if(integration && wavefunction)overlay=cov::make_nbo_molecule_overlay(*integration,semantic_graph,
                 wavefunction->atoms.size(),{nbo_ui.selected_atoms.begin(),nbo_ui.selected_atoms.end()},
                 nbo_ui.selected_structure,static_cast<cov::AtomScalarMode>(nbo_ui.atom_colour_mode),
-                nbo_ui.show_bond_indices,nbo_ui.show_e2,routed?&*routed:nullptr);
+                nbo_ui.show_bond_indices,nbo_ui.show_e2,routed?&*routed:nullptr,
+                wavefunction.get(),nbo_ui.show_lewis_skeleton?cov::NboBondDisplayMode::LewisStructure:
+                    cov::NboBondDisplayMode::DefaultSkeleton,
+                nbo_ui.aomo.salc_model?&nbo_ui.aomo.salc_model->symmetry_scope:nullptr);
             if(overlay && cov::validation::active())cov::validation::field("overlay.scalars",
                 cov::serialize_molecule_overlay_scalars_json(*overlay,routed?&*routed:nullptr));
             if (const auto* active = active_wavefunction();
@@ -1204,6 +1235,13 @@ int main(int argc, char** argv) {
                     const std::string kind=t.kind==cov::GeometryTargetKind::Atom?"atom":
                         t.kind==cov::GeometryTargetKind::Bond?"bond":t.kind==cov::GeometryTargetKind::Relation?"relation":"multicentre";
                     cov::validation::hit("scene."+kind+"."+std::to_string(t.index),ImVec2(px-3,py-3),ImVec2(px+3,py+3));
+                    if(molecule_render.show_numbers && molecule_render.number_atoms &&
+                       t.kind==cov::GeometryTargetKind::Atom && t.index<wavefunction->atoms.size() &&
+                       !(molecule_render.number_ignore_h && wavefunction->atoms[t.index].atomic_number==1)) {
+                        const auto atom_label=wavefunction->atoms[t.index].symbol+std::to_string(t.index+1);
+                        ImGui::GetWindowDrawList()->AddText(ImVec2(px+8,py-18),IM_COL32(224,231,239,255),atom_label.c_str());
+                        cov::validation::field("scene.number.atom."+std::to_string(t.index),atom_label);
+                    }
                     if(overlay && nbo_ui.show_bond_indices && t.kind==cov::GeometryTargetKind::Bond &&
                        integration && t.index<integration->structure.size()){
                         const auto& e=integration->structure[t.index];
@@ -1211,6 +1249,21 @@ int main(int argc, char** argv) {
                             ImGui::GetWindowDrawList()->AddText(ImVec2(px+8,py+8),IM_COL32(255,225,145,255),value);}
                     }
                 }
+                if(molecule_render.show_numbers && molecule_render.number_fragments)
+                    for(const auto& group:nbo_ui.aomo.fragment_groups) {
+                        float x=0,y=0;std::size_t count=0;
+                        for(const auto& target:renderer.geometry_targets())
+                            if(target.kind==cov::GeometryTargetKind::Atom && group.atoms.contains(target.index) &&
+                               target.index<wavefunction->atoms.size() &&
+                               !(molecule_render.number_ignore_h && wavefunction->atoms[target.index].atomic_number==1)) {
+                                x+=target.x;y+=target.y;++count;
+                            }
+                        if(!count)continue;
+                        const auto text="L"+std::to_string(group.id);
+                        ImGui::GetWindowDrawList()->AddText(ImVec2(layout.scene.x+x/count*layout.scene.width,
+                            layout.scene.y+y/count*layout.scene.height+16),IM_COL32(255,222,147,255),text.c_str());
+                        cov::validation::field("scene.number.fragment."+std::to_string(group.id),text);
+                    }
                 if(integration && nbo_ui.selected_structure && *nbo_ui.selected_structure<integration->structure.size()){
                     const auto& evidence=integration->structure[*nbo_ui.selected_structure];
                     ImGui::TextWrapped("%s",cov::ui::nbo_structure_display_label(
@@ -1247,13 +1300,15 @@ int main(int argc, char** argv) {
                 const float toolbar_height=ImGui::CalcTextSize(opacity_help,nullptr,false,text_width).y+
                     ImGui::CalcTextSize(threshold_help,nullptr,false,text_width).y+
                     (stacked?4:2)*ImGui::GetFrameHeight()+(stacked?6:4)*toolbar_style.ItemSpacing.y+
+                    (molecule_render.show_numbers?4:1)*ImGui::GetFrameHeightWithSpacing()+
                     2*toolbar_style.WindowPadding.y;
                 ImGui::SetNextWindowPos(ImVec2(layout.scene.x+12.0f,
                     std::max(layout.scene.y+12.0f,layout.scene.y+layout.scene.height-toolbar_height-12.0f)));
                 ImGui::SetNextWindowSize(ImVec2(toolbar_width,toolbar_height));
                 ImGui::SetNextWindowBgAlpha(.82f);
                 ImGui::Begin("##scene_display_controls",nullptr,ImGuiWindowFlags_NoDecoration|
-                    ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+                    ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|
+                    cov::ui::background_panel_flags);
                 ImGui::TextWrapped("%s",opacity_help);
                 ImGui::SetNextItemWidth(stacked?text_width:std::max(70.0f,text_width-reveal_width-toolbar_style.ItemSpacing.x));
                 ImGui::SliderFloat("##scene_orbital_opacity",&molecule_render.orbital_opacity,.02f,1.0f,"%.2f");
@@ -1276,6 +1331,16 @@ int main(int argc, char** argv) {
                 ImGui::PushStyleColor(ImGuiCol_Text,ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
                 ImGui::TextWrapped("%s",threshold_help);
                 ImGui::PopStyleColor();
+                ImGui::Checkbox(cov::ui::aomo_text(language,"Show numbers"),&molecule_render.show_numbers);
+                cov::validation::item("scene.numbers");
+                if(molecule_render.show_numbers) {
+                    ImGui::Checkbox(cov::ui::aomo_text(language,"Atom numbers"),&molecule_render.number_atoms);
+                    cov::validation::item("scene.numbers.atoms");
+                    ImGui::Checkbox(cov::ui::aomo_text(language,"Ligand numbers"),&molecule_render.number_fragments);
+                    cov::validation::item("scene.numbers.fragments");
+                    ImGui::Checkbox(cov::ui::aomo_text(language,"Skip H labels"),&molecule_render.number_ignore_h);
+                    cov::validation::item("scene.numbers.ignore_h");
+                }
                 ImGui::End();
             }
 
@@ -1287,7 +1352,8 @@ int main(int argc, char** argv) {
                 ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoResize |
                 ImGuiWindowFlags_NoCollapse |
-                ImGuiWindowFlags_NoSavedSettings;
+                ImGuiWindowFlags_NoSavedSettings |
+                cov::ui::background_panel_flags;
 
             ImGui::Begin("##cov_control_panel", nullptr, panel_flags);
             const auto panel_position = ImGui::GetWindowPos();
@@ -1581,6 +1647,15 @@ int main(int argc, char** argv) {
                 cov::ui::section_title(cov::ui::tr(cov::ui::Text::EnergyDiagram, language));
                 cov::ui::OrbitalUIActions diagram_actions;
                 if (wavefunction && evaluator && !wavefunction->orbitals.empty()) {
+                    if(integration)cov::ui::prepare_nbo_aomo_state(nbo_ui.aomo,*integration,*wavefunction);
+                    const bool atom_numbers=molecule_render.show_numbers && molecule_render.number_atoms;
+                    const bool fragment_numbers=molecule_render.show_numbers && molecule_render.number_fragments;
+                    if(nbo_ui.aomo.show_atom_numbers!=atom_numbers ||
+                       nbo_ui.aomo.show_fragment_numbers!=fragment_numbers ||
+                       nbo_ui.aomo.number_ignore_h!=molecule_render.number_ignore_h)++nbo_ui.aomo.revision;
+                    nbo_ui.aomo.show_atom_numbers=atom_numbers;
+                    nbo_ui.aomo.show_fragment_numbers=fragment_numbers;
+                    nbo_ui.aomo.number_ignore_h=molecule_render.number_ignore_h;
                     cov::ui::draw_energy_diagram(*wavefunction, canonical_mo_index, orbital_ui,
                                                  language, ui_scale, diagram_actions);
                 } else {
@@ -1848,8 +1923,24 @@ int main(int argc, char** argv) {
             ImGui::Render();
             ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
             cov::validation::end_frame(fb_w,fb_h,mo_index,orbital_ui,active_wavefunction());
-
+            if(profile_open && profile_draw_frames<3) {
+                unsigned char pixel[4]{};
+                glReadPixels(20,std::max(0,fb_h-20),1,1,GL_RGBA,GL_UNSIGNED_BYTE,pixel);
+                std::fprintf(stderr,"COV initial draw: framebuffer=%dx%d vertices=%d rgba=%u,%u,%u,%u gl_error=%u renderer=%s\n",
+                    fb_w,fb_h,ImGui::GetDrawData()->TotalVtxCount,pixel[0],pixel[1],pixel[2],pixel[3],
+                    glGetError(),reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+            }
             glfwSwapBuffers(window);
+            if(profile_open && profile_draw_frames<3) {
+                GLint saved_read=0;glGetIntegerv(GL_READ_BUFFER,&saved_read);glReadBuffer(GL_FRONT);
+                unsigned char pixel[4]{};glReadPixels(50,std::max(0,fb_h-50),1,1,GL_RGBA,GL_UNSIGNED_BYTE,pixel);
+                glReadBuffer(saved_read);
+                std::fprintf(stderr,"COV initial swap: frame=%u front=%u,%u,%u,%u\n",profile_draw_frames,pixel[0],pixel[1],pixel[2],pixel[3]);
+#ifdef _WIN32
+                std::fprintf(stderr,"COV present window: hwnd=%p dc=%p\n",WindowFromDC(wglGetCurrentDC()),wglGetCurrentDC());
+#endif
+                ++profile_draw_frames;
+            }
             if(profile_frame_pending){profile_stage("first-frame");profile_frame_pending=false;}
             if (attach_requested) {
                 try {

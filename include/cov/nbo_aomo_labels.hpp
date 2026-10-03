@@ -28,6 +28,10 @@ struct NboAomoName {
     std::string point_group;
     // Zero means that a complete, unambiguous ordinal could not be established.
     std::size_t ordinal=0;
+    std::size_t view_row_ordinal=0, visible_partner_count=0;
+    bool approximate_dominant_label=false;
+    std::string dominant_irrep;
+    double dominant_weight=0;
     // Irrep evidence only: true with ordinal==0 means the symmetry is known
     // while occurrence order / repeated-copy membership remains unresolved.
     bool verified=false;
@@ -79,7 +83,8 @@ NboAomoNames build_nbo_aomo_names(const Wavefunction&,const NboIntegration&,
 // immutable loaded wavefunctions; it never changes producer data or coefficients.
 std::shared_ptr<const NboAomoNames> canonical_mo_names(const Wavefunction&);
 void invalidate_canonical_mo_names_cache();
-// Display ordinals count only complete, verified occurrences in this filter.
+// Display ordinals count every visible certified occurrence, including partial
+// views; the energy ordering key always uses its full certified partner block.
 // Source IDs, complete-set ordinals, evidence and unresolved copies are retained.
 NboAomoNames nbo_aomo_names_for_view(const Wavefunction&,const NboAomoNames&,
     const std::vector<std::size_t>& canonical_indices,

@@ -60,6 +60,12 @@ struct RoutedRelationProjection {
     std::string relation_id;
     std::vector<std::optional<double>> canonical_projection_weights;
 };
+// One source orbital's measured projections, shared by all local records that
+// name it. Missing transforms remain null; a measured zero remains zero.
+struct RoutedSourceOrbitalProjection {
+    NboOrbitalRef orbital;
+    std::vector<std::optional<double>> canonical_weights;
+};
 
 struct RoutedAnalysis {
     std::string canonical_fingerprint, integration_id;
@@ -67,6 +73,11 @@ struct RoutedAnalysis {
     RoutedResult<std::vector<double>> atomic_spin;
     std::vector<RoutedResult<RoutedMoComposition>> mo_composition;
     std::vector<RoutedLocalRelation> local_relation_registry;
+    std::vector<RoutedSourceOrbitalProjection> local_source_projections;
+    std::vector<std::size_t> mo_relation_counts;
+    bool local_relations_normalized=false;
+    // Per-MO status metadata. In normalized routes the available value is an
+    // empty placeholder; materialize the selected MO with routed_mo_relations.
     std::vector<RoutedResult<std::vector<RoutedRelationProjection>>> mo_relations;
     std::vector<RoutedResult<NboPiCoupling>> pi_couplings;
     RoutedResult<InteractionGraph> interaction_graph;
@@ -91,7 +102,13 @@ inline std::optional<RoutedMoShellBalance> routed_mo_shell_balance(
     }
     return balance;
 }
-std::string serialize_routed_analysis_json(const RoutedAnalysis&);
+RoutedResult<std::vector<RoutedRelationProjection>> routed_mo_relations(
+    const RoutedAnalysis&,std::size_t canonical_index);
+// v2 is normalized by default. The explicit expanded mode reproduces the v1
+// relationship payload for consumers migrating from that schema.
+std::string serialize_routed_analysis_json(const RoutedAnalysis&,bool include_projector_matrices=false,
+    bool expand_relation_projections=false,
+    const std::optional<std::vector<std::size_t>>& canonical_scope=std::nullopt);
 
 // The scene is a typed identity, including zero-based canonical MO index zero.
 // NBO inspection carries its exact signed selection rather than an NBO-set bool.

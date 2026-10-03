@@ -6,6 +6,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <stdexcept>
 #include <tuple>
 
 namespace cov { namespace {
@@ -259,47 +260,41 @@ RoutedAnalysis route_chemistry(const Wavefunction& canonical,
             out.local_relation_registry.push_back(std::move(relation));
         }
     }
-    // Invert the actual source-orbital transforms once. Dense reports can
-    // contain many E(2) rows; scanning every row for every canonical MO made
-    // the route and its exported snapshot scale with all MO×relation pairs.
+    // A measured MO/source-orbital projection is independent of the number
+    // of E(2), NLMO or multicentre records that name that source orbital.
+    // Store it once; materialize relationship tuples only for a requested MO.
     using RefKey=std::tuple<int,int,std::size_t>;
-    std::map<RefKey,std::vector<std::pair<std::size_t,std::size_t>>> relation_refs;
-    for(std::size_t relation_index=0;relation_index<out.local_relation_registry.size();++relation_index)
-        for(std::size_t component=0;
-            component<out.local_relation_registry[relation_index].orbitals.size();++component){
-            const auto& ref=out.local_relation_registry[relation_index].orbitals[component];
-            relation_refs[{static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index}]
-                .push_back({relation_index,component});
-        }
-    std::vector<std::map<std::size_t,RoutedRelationProjection>> relation_hits(canonical.orbitals.size());
-    for(const auto& [key,weight]:link_weights){
-        const auto& [mo,kind,spin,index]=key;
-        if(mo>=relation_hits.size() || weight<1e-4)continue;
-        const auto found=relation_refs.find({kind,spin,index});
-        if(found==relation_refs.end())continue;
-        for(const auto& [relation_index,component]:found->second){
-            auto& projection=relation_hits[mo][relation_index];
-            if(projection.canonical_projection_weights.empty()){
-                const auto& relation=out.local_relation_registry[relation_index];
-                projection.relation_id=relation.id;
-                projection.canonical_projection_weights.resize(relation.orbitals.size());
-            }
-            projection.canonical_projection_weights[component]=weight;
-        }
+    std::map<RefKey,NboOrbitalRef> needed_refs;
+    for(const auto& relation:out.local_relation_registry)
+        for(const auto& ref:relation.orbitals)
+            needed_refs.emplace(RefKey{static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index},ref);
+    std::map<RefKey,std::size_t> source_indices;
+    for(const auto& [key,ref]:needed_refs){
+        source_indices.emplace(key,out.local_source_projections.size());
+        RoutedSourceOrbitalProjection column;column.orbital=ref;
+        column.canonical_weights.resize(canonical.orbitals.size());
+        out.local_source_projections.push_back(std::move(column));
     }
-    // Once a relation is genuinely supported, retain its weaker measured
-    // endpoint projections too; the display cutoff controls inclusion only.
     for(const auto& [key,weight]:link_weights){
-        if(weight>=1e-4)continue;
         const auto& [mo,kind,spin,index]=key;
-        if(mo>=relation_hits.size())continue;
-        const auto found=relation_refs.find({kind,spin,index});
-        if(found==relation_refs.end())continue;
-        for(const auto& [relation_index,component]:found->second){
-            const auto hit=relation_hits[mo].find(relation_index);
-            if(hit!=relation_hits[mo].end())
-                hit->second.canonical_projection_weights[component]=weight;
+        const auto found=source_indices.find({kind,spin,index});
+        if(mo<canonical.orbitals.size()&&found!=source_indices.end())
+            out.local_source_projections[found->second].canonical_weights[mo]=weight;
+    }
+    out.local_relations_normalized=true;
+    out.mo_relation_counts.resize(canonical.orbitals.size());
+    // Count the exact old any-endpoint support rule without storing every
+    // MO x relation tuple. Weaker and zero endpoint weights remain measured.
+    for(const auto& relation:out.local_relation_registry){
+        std::vector<bool> supported(canonical.orbitals.size(),false);
+        for(const auto& ref:relation.orbitals){
+            const auto found=source_indices.find({static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index});
+            if(found==source_indices.end())continue;
+            const auto& weights=out.local_source_projections[found->second].canonical_weights;
+            for(std::size_t mo=0;mo<weights.size();++mo)
+                if(weights[mo]&&*weights[mo]>=1e-4)supported[mo]=true;
         }
+        for(std::size_t mo=0;mo<supported.size();++mo)if(supported[mo])++out.mo_relation_counts[mo];
     }
     for(std::size_t i=0;i<canonical.orbitals.size();++i) {
         auto& result=out.mo_composition[i];
@@ -345,15 +340,11 @@ RoutedAnalysis route_chemistry(const Wavefunction& canonical,
         if(integration && !associated){relations.status=RoutedStatus::Rejected;
             relations.reason="NBO association does not match this canonical wavefunction";}
         if(associated){
-            std::vector<RoutedRelationProjection> mapped;
-            mapped.reserve(relation_hits[i].size());
-            for(auto& [_,projection]:relation_hits[i])
-                mapped.push_back(std::move(projection));
-            if(!mapped.empty()){
+            if(out.mo_relation_counts[i]){
                 relations.status=RoutedStatus::Available;
                 relations.provider=RoutedProvider::Nbo;
                 relations.reason="Actual source-orbital transforms relate this canonical MO to localized records";
-                relations.value=std::move(mapped);
+                relations.value=std::vector<RoutedRelationProjection>{};
             }else if(!out.local_relation_registry.empty()){
                 relations.status=RoutedStatus::NotReportedAboveThreshold;
                 relations.reason="No associated local relation passes the exported 1e-4 display-support cutoff for this canonical MO";
@@ -438,10 +429,79 @@ RoutedAnalysis route_chemistry(const Wavefunction& canonical,
     return out;
 }
 
-std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
-    std::ostringstream out;out<<std::setprecision(17)<<"{\"schema\":\"cov.chemistry.route.v1\""
+RoutedResult<std::vector<RoutedRelationProjection>> routed_mo_relations(
+        const RoutedAnalysis& data,std::size_t index) {
+    RoutedResult<std::vector<RoutedRelationProjection>> result;
+    if(index>=data.mo_relations.size()){
+        result.status=RoutedStatus::Rejected;result.reason="Canonical relation index is out of range";return result;
+    }
+    result=data.mo_relations[index];
+    if(!data.local_relations_normalized||!result.available())return result;
+    using Key=std::tuple<int,int,std::size_t>;
+    std::map<Key,std::optional<double>> weights;
+    const auto reject=[&](){result.status=RoutedStatus::Rejected;result.value.reset();
+        result.reason="Normalized source projections and local relation registry are inconsistent";};
+    for(const auto& column:data.local_source_projections){
+        const auto& ref=column.orbital;
+        if(column.canonical_weights.size()!=data.mo_relations.size()||
+           !weights.emplace(Key{static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index},
+                            column.canonical_weights[index]).second){reject();return result;}
+    }
+    result.value->clear();
+    for(const auto& relation:data.local_relation_registry){
+        RoutedRelationProjection projection;projection.relation_id=relation.id;bool supported=false;
+        for(const auto& ref:relation.orbitals){
+            const auto found=weights.find({static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index});
+            if(found==weights.end()){reject();return result;}
+            projection.canonical_projection_weights.push_back(found->second);
+            supported=supported||(found->second&&*found->second>=1e-4);
+        }
+        if(supported)result.value->push_back(std::move(projection));
+    }
+    if(index>=data.mo_relation_counts.size()||result.value->size()!=data.mo_relation_counts[index])reject();
+    return result;
+}
+
+std::string serialize_routed_analysis_json(const RoutedAnalysis& data,bool include_projector_matrices,
+    bool expand_relation_projections,const std::optional<std::vector<std::size_t>>& canonical_scope) {
+    const bool normalized=data.local_relations_normalized&&!expand_relation_projections;
+    const std::set<std::size_t> selected=canonical_scope?
+        std::set<std::size_t>(canonical_scope->begin(),canonical_scope->end()):std::set<std::size_t>{};
+    const auto included=[&](std::size_t i){return !canonical_scope||selected.count(i);};
+    const std::size_t canonical_count=std::max(data.mo_relations.size(),data.mo_composition.size());
+    if(!selected.empty()&&*selected.rbegin()>=canonical_count)
+        throw std::invalid_argument("Route export canonical scope is outside immutable source indices");
+    using RefKey=std::tuple<int,int,std::size_t>;
+    std::map<RefKey,const RoutedSourceOrbitalProjection*> columns;
+    for(const auto& column:data.local_source_projections){const auto& ref=column.orbital;
+        columns.emplace(RefKey{static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index},&column);}
+    std::vector<bool> keep_relation(data.local_relation_registry.size(),!canonical_scope||!data.local_relations_normalized);
+    std::set<RefKey> retained_refs;
+    for(std::size_t j=0;j<data.local_relation_registry.size();++j){
+        const auto& relation=data.local_relation_registry[j];
+        if(canonical_scope&&data.local_relations_normalized)for(const auto& ref:relation.orbitals){
+            const auto column=columns.find({static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index});
+            if(column==columns.end())continue;
+            for(const auto mo:selected)if(mo<column->second->canonical_weights.size()){
+                const auto weight=column->second->canonical_weights[mo];
+                if(weight&&*weight>=1e-4){keep_relation[j]=true;break;}
+            }
+            if(keep_relation[j])break;
+        }
+        if(keep_relation[j])for(const auto& ref:relation.orbitals)
+            retained_refs.emplace(static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index);
+    }
+    std::ostringstream out;out<<std::setprecision(17)<<"{\"schema\":"
+       <<quoted(normalized?"cov.chemistry.route.v2":"cov.chemistry.route.v1")
        <<",\"canonical_fingerprint\":"<<quoted(data.canonical_fingerprint)
-       <<",\"integration_id\":"<<quoted(data.integration_id)<<',';
+       <<",\"integration_id\":"<<quoted(data.integration_id);
+    if(canonical_scope){
+        out<<",\"serialization_scope\":{\"kind\":\"canonical-members\",\"canonical_indices\":[";
+        bool comma=false;for(const auto i:selected){if(comma)out<<',';comma=true;out<<i;}
+        out<<"],\"index_semantics\":\"Immutable global source indices; outside-scope canonical records are omitted, not missing measurements\""
+           <<",\"applies_to\":[\"mo_composition\",\"local_relation_registry\",\"local_relation_projection_store\",\"mo_relations\"]}";
+    }
+    out<<',';
     const auto atomic=[&](const char* key,const RoutedResult<std::vector<double>>& result) {
         result_header(out,key,result.status,result.provider,result.method,result.reason,
                       result.fallback_reason);
@@ -455,8 +515,10 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
     };
     atomic("total_atomic_charge",data.total_atomic_charge);out<<',';
     atomic("atomic_spin",data.atomic_spin);out<<",\"mo_composition\":[";
+    bool composition_comma=false;
     for(std::size_t i=0;i<data.mo_composition.size();++i) {
-        if(i)out<<',';const auto& result=data.mo_composition[i];
+        if(!included(i))continue;
+        if(composition_comma)out<<',';composition_comma=true;const auto& result=data.mo_composition[i];
         out<<"{\"canonical_index\":"<<i<<",\"status\":"<<quoted(routed_status_name(result.status))
            <<",\"provider\":"<<quoted(routed_provider_name(result.provider))
            <<",\"method\":"<<quoted(result.method)
@@ -514,8 +576,10 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
         out<<'}';
     }
     out<<"],\"local_relation_registry\":[";
+    bool registry_comma=false;
     for(std::size_t j=0;j<data.local_relation_registry.size();++j){
-        if(j)out<<',';const auto& relation=data.local_relation_registry[j];
+        if(!keep_relation[j])continue;
+        if(registry_comma)out<<',';registry_comma=true;const auto& relation=data.local_relation_registry[j];
         out<<"{\"id\":"<<quoted(relation.id)<<",\"kind\":"<<quoted(relation.kind)
            <<",\"label\":"<<quoted(relation.label)<<",\"semantics\":"
            <<quoted(relation.semantics)<<",\"spin\":"<<quoted(nbo_spin_name(relation.spin))
@@ -533,16 +597,50 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
         out<<",\"units\":"<<quoted(relation.units)<<",\"source\":";
         source_json(out,relation.source);out<<'}';
     }
-    out<<"],\"mo_relations\":[";
+    out<<']';
+    if(normalized){
+        out<<",\"local_relation_projection_store\":{\"schema\":\"cov.local-relation-projections.v1\""
+           <<",\"canonical_count\":"<<data.mo_relations.size()
+           <<",\"support_cutoff\":0.0001,\"inclusion_rule\":\"any measured endpoint weight >= support_cutoff\""
+           <<",\"weight_semantics\":\"Source-orbital canonical projection weight from validated transforms; not an allocated E(2)\""
+           <<",\"missing_weight\":null,\"sparse_entry_encoding\":\"[zero-based canonical index, measured weight]; measured zero is retained\""
+           <<",\"reconstruction\":\"For each canonical MO, visit local_relation_registry in order; include a record when any named orbital meets support_cutoff, then read every endpoint weight in its original orbital order, including weaker values and nulls\""
+           <<",\"source_orbitals\":[";
+        bool column_comma=false;
+        for(std::size_t j=0;j<data.local_source_projections.size();++j){
+            const auto& column=data.local_source_projections[j];const auto& ref=column.orbital;
+            if(canonical_scope&&!retained_refs.count({static_cast<int>(ref.kind),static_cast<int>(ref.spin),ref.index}))continue;
+            if(column_comma)out<<',';column_comma=true;
+            out<<"{\"kind\":"<<quoted(nbo_orbital_kind_name(ref.kind))
+               <<",\"spin\":"<<quoted(nbo_spin_name(ref.spin))<<",\"index\":"<<ref.index
+               <<",\"canonical_weights\":[";
+            bool comma=false;
+            for(std::size_t mo=0;mo<column.canonical_weights.size();++mo)if(included(mo)&&column.canonical_weights[mo]){
+                if(comma)out<<',';comma=true;out<<'['<<mo<<','<<*column.canonical_weights[mo]<<']';
+            }
+            out<<"]}";
+        }
+        out<<"]}";
+    }
+    out<<",\"mo_relations\":[";
+    bool relation_comma=false;
     for(std::size_t i=0;i<data.mo_relations.size();++i){
-        if(i)out<<',';
-        const auto& result=data.mo_relations[i];
+        if(!included(i))continue;
+        if(relation_comma)out<<',';relation_comma=true;
+        const auto materialized=normalized?RoutedResult<std::vector<RoutedRelationProjection>>{}:
+            routed_mo_relations(data,i);
+        const auto& result=normalized?data.mo_relations[i]:materialized;
         out<<"{\"canonical_index\":"<<i<<",\"status\":"
            <<quoted(routed_status_name(result.status))<<",\"provider\":"
            <<quoted(routed_provider_name(result.provider))<<",\"method\":"
            <<quoted(result.method)<<",\"reason\":"<<quoted(result.reason)
            <<",\"support_cutoff\":0.0001";
-        sources_json(out,result);out<<",\"relations\":";
+        sources_json(out,result);
+        if(normalized&&result.available()){
+            out<<",\"relations_encoding\":\"shared-source-projections-v1\",\"relation_count\":"
+               <<data.mo_relation_counts.at(i)<<'}';continue;
+        }
+        out<<",\"relations\":";
         if(!result.available()){out<<"null}";continue;}
         out<<'[';
         for(std::size_t j=0;j<result.value->size();++j){
@@ -580,10 +678,57 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
         indices(value.centre_nao_ids);out<<",\"ligand_nao_ids\":[";
         indices(value.ligand_nao_ids);
         out<<",\"ligand_family\":"<<quoted(value.ligand_family)
+           <<",\"centre_family\":"<<quoted(value.centre_family)
            <<",\"localized_family_verified\":"<<(value.localized_family_verified?"true":"false")
            <<",\"ligand_family_nbo_ids\":[";
         indices(value.ligand_family_nbo_ids);out<<",\"singular_values_hartree\":[";
         indices(value.singular_values_hartree);
+        const auto matrix=[&](const NboMatrix& m) {
+            out<<"{\"rows\":"<<m.rows<<",\"columns\":"<<m.columns;
+            if(include_projector_matrices) {out<<",\"values\":[";indices(m.values);}
+            out<<'}';
+        };
+        out<<",\"centre_projector_basis\":";matrix(value.centre_projector_basis);
+        out<<",\"ligand_projector_basis\":";matrix(value.ligand_projector_basis);
+        const auto& frozen=value.frozen_operator;
+        out<<",\"frozen_operator\":{\"available\":"<<(frozen.available?"true":"false")
+           <<",\"tracking_verified\":"<<(frozen.tracking_verified?"true":"false")
+           <<",\"occupation_boundary_preserved\":"<<(frozen.occupation_boundary_preserved?"true":"false")
+           <<",\"reason\":"<<quoted(frozen.reason);
+        for(const auto& [name,number]:std::initializer_list<std::pair<const char*,double>>{
+            {"max_energy_shift_hartree",frozen.max_energy_shift_hartree},
+            {"full_spectrum_max_energy_shift_hartree",frozen.full_spectrum_max_energy_shift_hartree},
+            {"max_group_width_change_hartree",frozen.max_group_width_change_hartree},
+            {"frontier_gap_change_hartree",frozen.frontier_gap_change_hartree},
+            {"max_subspace_sin2",frozen.max_subspace_sin2},
+            {"minimum_external_gap_hartree",frozen.minimum_external_gap_hartree},
+            {"removal_norm_hartree",frozen.removal_norm_hartree},
+            {"numerical_error_bound_hartree",frozen.numerical_error_bound_hartree}}) {
+            out<<','<<quoted(name)<<':';if(std::isfinite(number))out<<number;else out<<"null";
+        }
+        out<<'}';
+        if(include_projector_matrices) {
+            out<<",\"frozen_groups\":[";
+            for(std::size_t k=0;k<value.frozen_groups.size();++k) {
+                if(k)out<<',';const auto& row=value.frozen_groups[k];const auto& f=row.assessment;
+                out<<"{\"members\":[";indices(row.members);
+                out<<",\"available\":"<<(f.available?"true":"false")
+                   <<",\"tracking_verified\":"<<(f.tracking_verified?"true":"false")
+                   <<",\"occupation_boundary_preserved\":"<<(f.occupation_boundary_preserved?"true":"false")
+                   <<",\"reason\":"<<quoted(f.reason);
+                for(const auto& [name,number]:std::initializer_list<std::pair<const char*,double>>{
+                    {"max_energy_shift_hartree",f.max_energy_shift_hartree},
+                    {"full_spectrum_max_energy_shift_hartree",f.full_spectrum_max_energy_shift_hartree},
+                    {"max_group_width_change_hartree",f.max_group_width_change_hartree},
+                    {"frontier_gap_change_hartree",f.frontier_gap_change_hartree},
+                    {"max_subspace_sin2",f.max_subspace_sin2},
+                    {"numerical_error_bound_hartree",f.numerical_error_bound_hartree}}) {
+                    out<<','<<quoted(name)<<':';if(std::isfinite(number))out<<number;else out<<"null";
+                }
+                out<<'}';
+            }
+            out<<']';
+        }
         out<<",\"coupled_rank\":"<<value.coupled_rank
            <<",\"centre_onsite_hartree\":"<<value.centre_onsite_hartree
            <<",\"ligand_onsite_hartree\":"<<value.ligand_onsite_hartree
@@ -629,6 +774,10 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
             out<<",\"spin\":"<<quoted(nbo_spin_name(group.spin))
                <<",\"centre_weight\":"<<group.centre_weight
                <<",\"ligand_weight\":"<<group.ligand_weight
+               <<",\"ligand_to_centre_donor_weight\":"<<group.ligand_to_centre_donor_weight
+               <<",\"ligand_to_centre_acceptor_weight\":"<<group.ligand_to_centre_acceptor_weight
+               <<",\"centre_to_ligand_donor_weight\":"<<group.centre_to_ligand_donor_weight
+               <<",\"centre_to_ligand_acceptor_weight\":"<<group.centre_to_ligand_acceptor_weight
                <<",\"occupation_per_mo\":";
             if(group.occupation_per_mo)out<<*group.occupation_per_mo;else out<<"null";
             out<<",\"cross_fock_min_hartree\":"<<group.cross_fock_min_hartree
@@ -637,6 +786,9 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
                <<",\"character\":"<<quoted(group.character)<<'}';
         }
         out<<"],\"direction\":"<<quoted(value.direction)
+           <<",\"direction_verified\":"<<(value.direction_verified?"true":"false")
+           <<",\"direction_reference\":"<<quoted(value.direction_reference)
+           <<",\"direction_mapping_error_bound\":"<<value.direction_mapping_error_bound
            <<",\"direction_evidence\":"<<quoted(value.direction_evidence)
            <<",\"direction_donor_weight\":";
         if(value.direction_donor_weight)out<<*value.direction_donor_weight;else out<<"null";
@@ -652,6 +804,16 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data) {
                <<",\"donor_centre_weight\":"<<row.donor_centre_weight
                <<",\"acceptor_ligand_weight\":"<<row.acceptor_ligand_weight
                <<",\"acceptor_centre_weight\":"<<row.acceptor_centre_weight
+               <<",\"method\":"<<quoted(row.method)<<",\"status\":"<<quoted(row.status)
+               <<",\"reason\":"<<quoted(row.reason)
+               <<",\"donor_occupation\":"<<row.donor_occupation
+               <<",\"acceptor_occupation\":"<<row.acceptor_occupation
+               <<",\"energy_gap_hartree\":"<<row.energy_gap_hartree
+               <<",\"fock_hartree\":"<<row.fock_hartree<<",\"e2_hartree\":"<<row.e2_hartree
+               <<",\"e2_reference\":"<<quoted(row.e2_reference)
+               <<",\"perturbation_occupation\":"<<row.perturbation_occupation
+               <<",\"actual_occupation_second_order_hartree\":"<<row.actual_occupation_second_order_hartree
+               <<",\"recovered_from_unprinted_fock\":"<<(row.recovered_from_unprinted_fock?"true":"false")
                <<",\"source\":";source_json(out,row.source);out<<'}';
         }
         out<<']'

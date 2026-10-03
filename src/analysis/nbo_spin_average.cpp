@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iomanip>
 #include <map>
+#include <limits>
 #include <numeric>
 #include <set>
 #include <sstream>
@@ -177,11 +178,19 @@ NboSalcModel build_nbo_spin_averaged_model(const Wavefunction& w,const NboIntegr
     // Remaining complete invariant spaces, including rotated repeated irreps,
     // can share a common basis. Local single-atom families use the same proof.
     std::vector<std::vector<std::size_t>> ag,bg;
-    for(const auto& sub:raw.subspaces){std::vector<std::size_t> remaining;
-        for(auto i:sub.orbital_indices)if(!used.contains(i))remaining.push_back(i);
-        if(remaining.size()<2)continue;
-        if(!sub.symmetry_verified&&raw.orbitals[remaining.front()].atoms.size()!=1)continue;
-        if(sub.spin==NboSpin::Alpha)ag.push_back(remaining);else if(sub.spin==NboSpin::Beta)bg.push_back(remaining);}
+    // Physical alpha and beta Focks may choose different gauges inside a
+    // repeated irrep. Compare the complete fixed producer family, never copy
+    // energy order or arbitrarily corresponding rows.
+    std::map<std::string,std::vector<std::size_t>> alpha_families,beta_families;
+    for(const auto& sub:raw.subspaces){
+        if(sub.orbital_indices.empty())continue;
+        if(!sub.symmetry_verified&&raw.orbitals[sub.orbital_indices.front()].atoms.size()!=1)continue;
+        for(auto i:sub.orbital_indices)if(!used.contains(i)){
+            const auto& o=raw.orbitals[i];const auto key=o.fragment_id+":"+o.type;
+            if(sub.spin==NboSpin::Alpha)alpha_families[key].push_back(i);
+            else if(sub.spin==NboSpin::Beta)beta_families[key].push_back(i);}}
+    for(auto& [key,members]:alpha_families)if(members.size()>1)ag.push_back(std::move(members));
+    for(auto& [key,members]:beta_families)if(members.size()>1)bg.push_back(std::move(members));
     candidates.clear();reverse.clear();matches.clear();
     for(std::size_t ai=0;ai<ag.size();++ai)for(std::size_t bi=0;bi<bg.size();++bi)
         if(ag[ai].size()==bg[bi].size()&&compatible(ag[ai].front(),bg[bi].front())){
@@ -197,6 +206,7 @@ NboSalcModel build_nbo_spin_averaged_model(const Wavefunction& w,const NboIntegr
     // Project each verified operator once, then slice source-member blocks.
     // Re-factoring the full NAO metric for every singleton is unnecessary.
     const auto alpha_ops=project_operators(w,d,raw,NboSpin::Alpha,columns(w,d,raw,aa),s);
+    const auto beta_in_alpha=project_operators(w,d,raw,NboSpin::Beta,columns(w,d,raw,aa),s);
     const auto beta_ops=project_operators(w,d,raw,NboSpin::Beta,columns(w,d,raw,bb),s);
     std::map<std::size_t,std::size_t> alpha_position,beta_position;
     for(std::size_t i=0;i<aa.size();++i)alpha_position[aa[i]]=i;
@@ -281,7 +291,37 @@ NboSalcModel build_nbo_spin_averaged_model(const Wavefunction& w,const NboIntegr
         if(converted.orbital_indices.empty())continue;
         if(spatial){converted.id+="|spatial";converted.spin=NboSpin::Total;}
         if(converted.orbital_indices.size()!=sub.orbital_indices.size()){converted.symmetry_verified=false;converted.characters.clear();converted.multiplicity=0;converted.irrep_dimension=0;}
-        converted.dimension=converted.orbital_indices.size();out.subspaces.push_back(std::move(converted));}}
+        converted.dimension=converted.orbital_indices.size();
+        if(spatial){
+            converted.fock.clear();converted.density.clear();converted.energy_degeneracy_verified=false;
+            converted.energy_degeneracy_status="missing_common_basis_spin_operator";
+            std::vector<std::size_t> original;for(auto i:sub.orbital_indices)if(new_index.contains(i)&&merged.contains(i))original.push_back(i);
+            const auto alpha=slice(alpha_ops,alpha_position,original),beta=slice(beta_in_alpha,alpha_position,original);
+            if(alpha.density.size()&&beta.density.size())converted.density=flat(alpha.density+beta.density);
+            if(alpha.fock.size()&&beta.fock.size()){
+                const M mean=(alpha.fock+beta.fock)*.5;converted.fock=flat(mean);
+                converted.energy_scalar_residual_hartree=converted.energy_spectral_width_hartree=converted.energy_commutator_hartree=converted.energy_copy_coupling_hartree=0;
+                const M basis=columns(w,d,raw,original);
+                for(const M& fock:std::vector<M>{alpha.fock,beta.fock,mean}){
+                    converted.energy_scalar_residual_hartree=std::max(converted.energy_scalar_residual_hartree,error(fock-M::Identity(fock.rows(),fock.cols())*(fock.trace()/double(fock.rows()))));
+                    Eigen::SelfAdjointEigenSolver<M> spectrum((fock+fock.transpose())*.5);
+                    if(spectrum.info()!=Eigen::Success)converted.energy_spectral_width_hartree=std::numeric_limits<double>::infinity();
+                    else converted.energy_spectral_width_hartree=std::max(converted.energy_spectral_width_hartree,spectrum.eigenvalues().maxCoeff()-spectrum.eigenvalues().minCoeff());
+                    for(const auto& op:out.operations){const auto raw_action=apply_orbital_symmetry_operation(w,op,flat(basis),basis.cols());
+                        if(raw_action.size()!=std::size_t(basis.size())){converted.energy_commutator_hartree=std::numeric_limits<double>::infinity();break;}
+                        const M action=basis.transpose()*s*Eigen::Map<const RM>(raw_action.data(),basis.rows(),basis.cols());
+                        converted.energy_commutator_hartree=std::max(converted.energy_commutator_hartree,error(action.transpose()*fock*action-fock));}
+                }
+                for(auto i:aa)if(!std::count(original.begin(),original.end(),i)&&compatible(original.front(),i))for(auto j:original){
+                    converted.energy_copy_coupling_hartree=std::max({converted.energy_copy_coupling_hartree,
+                        std::abs(alpha_ops.fock(alpha_position.at(i),alpha_position.at(j))),std::abs(beta_in_alpha.fock(alpha_position.at(i),alpha_position.at(j)))});}
+                converted.energy_degeneracy_verified=converted.symmetry_verified&&converted.multiplicity==1&&
+                    converted.energy_scalar_residual_hartree<=2e-5&&converted.energy_spectral_width_hartree<=2e-5&&converted.energy_commutator_hartree<=2e-5&&converted.energy_copy_coupling_hartree<=2e-5;
+                converted.energy_degeneracy_status=converted.energy_degeneracy_verified?"both_physical_spin_operators_verified_in_common_basis":"common_basis_spin_operator_split_or_coupled";
+            }
+        }
+        if(converted.dimension!=sub.dimension){converted.source_basis.clear();converted.source_to_derived.clear();converted.fock.clear();converted.density.clear();converted.energy_degeneracy_verified=false;converted.energy_degeneracy_status="partial_source_subspace";}
+        out.subspaces.push_back(std::move(converted));}}
     std::map<std::pair<std::size_t,std::size_t>,NboSalcLink> links;
     for(const auto& link:raw.links){
         if(link.side_index>=raw.orbitals.size()||link.canonical_index>=w.orbitals.size())continue;

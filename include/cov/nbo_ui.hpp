@@ -66,6 +66,7 @@ struct NboUIState {
     int atom_colour_mode = 0; // 0 element, 1 NPA charge, 2 spin density
     bool show_bond_indices = false;
     bool show_e2 = false;
+    bool show_lewis_skeleton = false;
     std::string error;
     std::string export_status;
     std::size_t selected_orbital = std::numeric_limits<std::size_t>::max();

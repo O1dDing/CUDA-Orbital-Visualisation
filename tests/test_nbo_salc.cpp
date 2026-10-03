@@ -31,6 +31,14 @@ void angular_tests(){
 }
 }
 int main(){try{
+    auto scoped=fixture();scoped.w.total_density_packed={2,0,1,0,1,1};
+    auto scope=cov::analyse_nbo_electronic_symmetry_scope(scoped.w);
+    require(scope.naming_scope_verified&&!scope.reduced&&scope.geometry_group=="C2v"&&scope.naming_group=="C2v","Symmetric density lost the complete nuclear group");
+    scoped.w.total_density_packed={2,0,1.1,0,0,0.9};
+    scope=cov::analyse_nbo_electronic_symmetry_scope(scoped.w);
+    require(scope.naming_scope_verified&&scope.reduced&&scope.geometry_group=="C2v"&&scope.naming_group=="Cs"&&scope.operations.size()==2&&scope.geometry_operations.size()==4,"Electronic density subgroup must preserve nuclear identity and carry actual closed operations");
+    scoped.w.alpha_electrons=2;scoped.w.beta_electrons=1;scoped.w.spin_density_packed.clear();
+    require(!cov::analyse_nbo_electronic_symmetry_scope(scoped.w).naming_scope_verified,"Missing open-shell spin density must not certify a shared electronic scope");
     auto independent_density=fixture();
     independent_density.i.dataset.archive->density_is_bond_order=true;
     independent_density.w.orbitals[0].occupation=0;
@@ -106,15 +114,25 @@ int main(){try{
     const auto pm=cov::build_nbo_salc_model(physical.w,physical.i);
     require(pm.energies.size()==2,"physical spin blocks lost");
     for(const auto& ev:pm.energies)require(ev.available&&ev.printed_operator_verified&&
-        !ev.canonical_same_operator&&!ev.electronic_symmetry_verified&&
+        !ev.canonical_same_operator&&ev.electronic_symmetry_verified&&ev.fock_symmetry_error<=2e-5&&ev.density_symmetry_checked&&ev.density_symmetry_error<=2e-4&&
         ev.printed_nao_checked==3&&ev.printed_nbo_checked==3,
-        "physical spin expectations inherited a false canonical same-operator proof");
+        "physical Fock symmetry must be checked independently without asserting canonical same-operator identity");
     for(std::size_t j=0;j<pm.orbitals.size();++j)if(pm.orbitals[j].spin==cov::NboSpin::Beta){
         require(pm.orbitals[j].energy_hartree.has_value(),"independently verified RO beta energy lost");
         for(const auto& link:pm.links)require(link.side_index!=j,"physical beta energy invented canonical beta links");
     }
     require(cov::nbo_canonical_fingerprint(physical.w)==physical.i.canonical_fingerprint,
         "physical operator route altered canonical data");
+    auto physical_split=physical;
+    for(auto& matrix:physical_split.i.dataset.archive->matrices)if(matrix.kind=="FOCK"){matrix.values[4]+=.05;matrix.values[8]-=.05;}
+    for(auto& row:physical_split.i.dataset.naos){if(row.id==2)*row.energy_hartree+=.05;if(row.id==3)*row.energy_hartree-=.05;}
+    const auto split_physical=cov::build_nbo_salc_model(physical_split.w,physical_split.i);
+    for(const auto& ev:split_physical.energies)require(ev.available&&ev.printed_operator_verified&&!ev.canonical_same_operator&&ev.fock_symmetry_error>.09&&!ev.electronic_symmetry_verified,"Actual independently verified spin Fock breaking geometry must remain noninvariant");
+    auto physical_density=physical;
+    for(auto& matrix:physical_density.i.dataset.archive->matrices)if(matrix.kind=="DENSITY"){matrix.values[4]+=.1;matrix.values[8]-=.1;}
+    for(auto& row:physical_density.i.dataset.naos){if(row.id==2)row.occupation+=.1;if(row.id==3)row.occupation-=.1;}
+    const auto density_physical=cov::build_nbo_salc_model(physical_density.w,physical_density.i);
+    for(const auto& ev:density_physical.energies)require(ev.available&&ev.printed_operator_verified&&ev.fock_symmetry_error<2e-5&&ev.density_symmetry_error>.19&&!ev.electronic_symmetry_verified,"Invariant physical Fock cannot conceal broken actual density symmetry");
     auto absent_print=physical;absent_print.i.dataset.naos.front().energy_hartree.reset();
     require(!cov::build_nbo_salc_model(absent_print.w,absent_print.i).energies[0].available,
         "partial printed evidence incorrectly enabled physical spin energy");

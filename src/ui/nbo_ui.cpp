@@ -411,6 +411,7 @@ std::string nbo_structure_display_label(const NboStructureEvidence& record,
 
 std::string nbo_glyph_seed(Language language) {
     std::string out;
+    out+=nbo_local(language,"NBO Lewis structure","NBO Lewis 结构","NBO Lewis 構造","Structure de Lewis NBO");
     out+=nbo_local(language,
         "No orbital selected. Matching wavefunction not loaded. Required data missing. Data could not be matched. Multiple candidates. Details. CHK conversion failed. Could not save the export. Name in calculation output. Related local orbitals. Main NBO component. Tail contribution. Selected-component sum and overlay. NBO occupation electrons. Source. Atom total. Angular total.",
         "尚未选择原子壳层轨道。尚未载入对应的波函数。缺少所需数据。数据核对未通过。有多个候选。当前计算不支持。详情。CHK 转换失败。无法保存导出文件。暂时无法完成此操作。计算输出中的名称。相关局部轨道。主要 NBO 成分。尾部成分之和。所选成分之和与叠加。NBO 占据数电子。来源。原子角向总计。",
@@ -1020,6 +1021,11 @@ NboUIActions draw_nbo_panel(NboUIState& s, Language language,
                 "E(2) 相互作用","E(2) 相互作用","Interactions E(2)").c_str());
         ImGui::EndDisabled();
         ImGui::SetNextItemWidth(-1.0f);
+        if(s.show_advanced_inputs) {
+            ImGui::Checkbox(nbo_local(language,"NBO Lewis structure","NBO Lewis 结构",
+                "NBO Lewis 構造","Structure de Lewis NBO"),&s.show_lewis_skeleton);
+            validation::item("nbo.overlay.lewis");
+        }
         const bool structure_open=ImGui::BeginCombo("##nbo.structure.pick",
             nbo_local(language,"Choose bond or interaction","选择化学键或相互作用",
                 "結合または相互作用を選択","Choisir une liaison ou interaction"));

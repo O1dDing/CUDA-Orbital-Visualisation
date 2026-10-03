@@ -362,6 +362,13 @@ const char* localised_bonding_class(
             return orbital_tr(OrbitalText::Nonbonding, language);
         case BondingClass::Antibonding:
             return orbital_tr(OrbitalText::Antibonding, language);
+        case BondingClass::Mixed:
+            switch(language) {
+                case Language::ChineseSimplified:return "混合";
+                case Language::Japanese:return "混合";
+                case Language::French:return "Mixte";
+                default:return "Mixed";
+            }
         default:
             return "N/A";
     }

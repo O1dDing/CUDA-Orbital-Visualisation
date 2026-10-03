@@ -169,6 +169,7 @@ int main() {
         0x2013, // –: AO/NAO–MO title
         0x00B2, // ²: numerical component weight
         0x221E, // ∞: continuous point-group display
+        0x2248, // ≈: evidence-qualified dominant representation
     };
     if (!expect_glyphs(primary, scientific_glyphs,
                        sizeof(scientific_glyphs) / sizeof(scientific_glyphs[0]),

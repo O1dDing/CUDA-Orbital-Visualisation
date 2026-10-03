@@ -78,6 +78,7 @@ std::string bonding_plain(const BondingClass value) {
         case BondingClass::Bonding: return "BONDING";
         case BondingClass::Nonbonding: return "NONBONDING";
         case BondingClass::Antibonding: return "ANTIBONDING";
+        case BondingClass::Mixed: return "MIXED";
         default: return "N/A";
     }
 }

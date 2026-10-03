@@ -85,7 +85,7 @@ int main(int argc,char** argv) {try {
     std::ofstream out(output,std::ios::binary);
     if(!out)throw std::runtime_error("Cannot write routed observation");
     out<<"{\"schema\":\"cov.chemistry.route-probe.v1\",\"route\":"
-       <<cov::serialize_routed_analysis_json(route)
+       <<cov::serialize_routed_analysis_json(route,true)
        <<",\"active_view\":"<<cov::serialize_active_orbital_view_json(active)
        <<",\"integration\":";
     if(integration)out<<cov::serialize_nbo_integration_json(*integration);

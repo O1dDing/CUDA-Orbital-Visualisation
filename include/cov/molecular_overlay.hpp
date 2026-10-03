@@ -9,9 +9,13 @@ namespace cov {
 // Classification and numerical evidence are supplied by the analysis layer.
 enum class OverlayBondStyle { Covalent, Coordination, Delocalised, Multicentre, Unresolved };
 enum class AtomScalarMode { Element, NaturalCharge, SpinPopulation };
+enum class NboBondDisplayMode { DefaultSkeleton, LewisStructure };
 struct MoleculeOverlayBond {
     std::size_t atom_a=0, atom_b=0, evidence_index=0;
-    int multiplicity=1; // verified Lewis multiplicity, never rounded bond index
+    int multiplicity=1; // display decision; never rounded from a continuous index
+    std::optional<unsigned> lewis_bond_count; // source evidence, independent of display
+    std::vector<std::size_t> evidence_indices; // all associated spin/source records
+    bool density_equivalence_checked=false, lewis_equivalence_conflict=false;
     OverlayBondStyle style=OverlayBondStyle::Covalent;
     std::optional<double> continuous_index;
     bool selected=false;
@@ -37,6 +41,7 @@ struct MoleculeOverlay {
     AtomScalarMode colour_mode=AtomScalarMode::Element;
     double scalar_range=1;
     bool show_bond_indices=false;
+    NboBondDisplayMode bond_mode=NboBondDisplayMode::DefaultSkeleton;
 };
 enum class GeometryTargetKind { Atom, Bond, Relation, Multicentre };
 struct GeometryTarget {

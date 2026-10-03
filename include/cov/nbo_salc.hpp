@@ -48,6 +48,15 @@ struct NboSalcSubspace {
     std::size_t dimension=0, irrep_dimension=0, multiplicity=0;
     bool symmetry_verified=false;
     double closure_error=0, orthogonality_error=0, character_norm=0;
+    // Derived copy coordinates in the immutable producer NAO family. Matrices
+    // are row-major; source_to_derived is source_basis.size() by dimension.
+    std::string copy_gauge, basis_kind="fixed_nao_family";
+    std::vector<NboOrbitalRef> source_basis;
+    std::vector<double> source_to_derived, fock, density;
+    bool energy_degeneracy_verified=false;
+    std::string energy_degeneracy_status="operator_unavailable";
+    double energy_scalar_residual_hartree=0, energy_spectral_width_hartree=0;
+    double energy_commutator_hartree=0, energy_copy_coupling_hartree=0;
 };
 struct NboSalcOrbital {
     std::string id, label, fragment_id, subspace_id, type, angular, detail;
@@ -87,6 +96,21 @@ struct NboRestrictedOpenShellEvidence {
     std::size_t alpha_electrons=0,beta_electrons=0,shared_columns=0;
     double coefficient_residual=0,occupation_error=0,density_error=0,tolerance=2e-5;
 };
+struct NboElectronicSymmetryScope {
+    std::string geometry_group,naming_group,status="density_unavailable";
+    bool density_checked=false,reduced=false,naming_scope_verified=false;
+    double relative_tolerance=2e-4;
+    // Relative Frobenius errors in a verified S-orthonormal retained basis.
+    // Ordered against the complete geometry group, not the selected subgroup.
+    std::vector<double> total_density_residuals,spin_density_residuals;
+    std::vector<std::size_t> retained_operation_indices;
+    std::vector<SymmetryOperation> geometry_operations;
+    // Accepted naming-scope operations, with actual atom maps; never index the
+    // model's possibly reduced operation list with retained_operation_indices.
+    std::vector<SymmetryOperation> operations;
+};
+NboElectronicSymmetryScope analyse_nbo_electronic_symmetry_scope(
+    const Wavefunction&,const NboSalcOptions& options={});
 struct NboSalcModel {
     std::string dataset_id, canonical_fingerprint, cache_key;
     std::string point_group, used_group, status="unavailable", detail;
@@ -102,6 +126,7 @@ struct NboSalcModel {
     std::vector<std::string> diagnostics;
     std::vector<NboSalcSpinOperator> spin_operators;
     NboRestrictedOpenShellEvidence restricted_open_shell;
+    NboElectronicSymmetryScope symmetry_scope;
     bool spin_averaged=false;
     std::size_t merged_spatial_count=0,separate_spin_count=0;
 };

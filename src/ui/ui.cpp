@@ -101,7 +101,7 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Degeneracy tolerance", "简并阈值", "縮退判定しきい値", "Tolérance de dégénérescence"},
     {"Grouped labels", "分组标签", "グループ表示", "Étiquettes groupées"},
     {"Raw numbering", "原始编号", "元の番号", "Numérotation brute"},
-    {"Degenerate set", "简并组", "縮退組", "Groupe dégénéré"},
+    {"Energy-group size", "能级组成员数", "エネルギー群の成分数", "Taille du groupe de niveaux"},
     {"Energy unit", "能量单位", "エネルギー単位", "Unité d’énergie"},
     {"HOMO", "HOMO", "HOMO", "HOMO"},
     {"LUMO", "LUMO", "LUMO", "LUMO"},
@@ -151,7 +151,7 @@ constexpr std::array<LocalisedString, kTextCount> kStrings{{
     {"Multicentre bond", "多中心键", "多中心結合", "Liaison multicentrique"},
     {"Delocalised π system", "离域 π 体系", "非局在化 π 系", "Système π délocalisé"},
     {"Classification source", "分类来源", "分類の出典", "Source de classification"},
-    {"Degenerate members", "简并成员", "縮退メンバー", "Membres dégénérés"},
+    {"Energy-group members", "能级组成员", "エネルギー群の成分", "Membres du groupe de niveaux"},
 }};
 
 // These strings deliberately mirror text that is rendered directly by
@@ -228,8 +228,8 @@ constexpr const char* kOrbitalDiagramLatinGlyphs =
 // sets, which protects both the large-pi family label and future N-centre
 // families from atlas-range regressions.
 constexpr const char* kScientificGlyphs =
-    "● · – — − ± × → ← ↔ ↑ ↓ "
-    "α β σ π δ φ Σ Π Δ Φ Γ Π⁵₆ ∞ "
+    "● · – — − ± × ≈ → ← ↔ ↑ ↓ "
+    "α β σ π δ φ η Σ Π Δ Φ Γ Π⁵₆ ∞ "
     "⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ "
     "₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ′ ″";
 

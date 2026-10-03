@@ -1014,6 +1014,8 @@ OrbitalTrackingResult track_orbital_subspaces(
         build_descriptors(from, left, budget);
         build_descriptors(to, right, budget);
         budget.stage(OrbitalTrackingStage::Candidates);
+        // TODO(perf) ✳: Profile candidate generation and final assignment as well as
+        // composite search. Per-component DP limits do not bound total tracking time.
         // All search stages share this transaction's budget. Per-component DP
         // limits remain separate; exhausting the shared budget discards partial
         // matching decisions and reports every original membership as unresolved.

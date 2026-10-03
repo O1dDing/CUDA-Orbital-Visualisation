@@ -486,10 +486,11 @@ bool validate_pi_topology_and_two_sided_composition() {
         return data.pi_interactions.empty() &&
             std::any_of(data.pi_partner_candidates.begin(),data.pi_partner_candidates.end(),
                 [](const auto& candidate) {
-                    return candidate.input_valid && !candidate.accepted &&
+                    return candidate.input_valid && !candidate.accepted && !candidate.weak &&
                         candidate.direction==cov::PiPairDirection::Unresolved &&
                         candidate.channel.channel_id.empty() &&
-                        candidate.detail=="composition-only-candidate-needs-verified-local-channel";
+                        !candidate.channel.frozen_operator.available &&
+                        candidate.detail=="composition-only-candidate-needs-verified-local-channel-and-calibrated-sensitivity";
                 });
     };
     const auto one_sided=cov::build_mo_diagram_data(
@@ -1366,19 +1367,14 @@ bool inspect_real_fchk(const std::filesystem::path& path) {
             return false;
         }
     } else if (filename.find("ZnCl4")!=std::string::npos) {
-        const auto pair=expected_pair(
-            cov::PiInteractionKind::WeakNearNonbonding,"E/T2");
+        // FCHK composition and a close E/T2 gap do not provide the frozen
+        // local operator needed to certify a negligible pi relation.
         if (!expected_shell("Td",4u,30,17) ||
-            data.pi_interactions.size()!=1u || pair==data.pi_interactions.end() ||
-            pair->lower_visible==pair->upper_visible ||
-            pair->splitting_hartree>options.weak_pi_split_hartree ||
-            pair->retained_level>=data.levels.size() ||
-            !data.levels[pair->retained_level].approximate_nonbonding ||
-            data.levels[pair->retained_level].metadata.symmetry!="E" ||
-            !all_members_have(pair->lower_orbitals,"T2") ||
-            !all_members_have(pair->upper_orbitals,"E")) {
+            !data.pi_interactions.empty() ||
+            std::any_of(data.pi_partner_candidates.begin(),data.pi_partner_candidates.end(),
+                [](const auto& candidate){return candidate.accepted||candidate.weak;})) {
             std::cerr<<filename
-                     <<": expected reduced approximately-nonbonding E/T2 split\n";
+                     <<": FCHK-only close E/T2 gap invented a calibrated weak pi relation\n";
             return false;
         }
     } else if (filename.find("CrCO6")!=std::string::npos) {
@@ -1809,10 +1805,16 @@ int main(int argc,char** argv) {
         std::cerr << "electron population failed\n";
         return 4;
     }
-    if (data.levels[0].annotation.family != "sigma" ||
-        data.levels[0].annotation.bonding_class != cov::BondingClass::Bonding ||
+    // Preserve producer text as parsed metadata, but this fixture supplies no
+    // coefficients/operator that could certify the displayed group's role.
+    const auto parsed_occupied=cov::annotate_orbital(occupied);
+    if (parsed_occupied.bonding_class!=cov::BondingClass::Bonding ||
+        parsed_occupied.bonding_source!=cov::AnnotationSource::ParsedLabel ||
+        data.levels[0].annotation.family != "sigma" ||
+        data.levels[0].annotation.bonding_class != cov::BondingClass::Unclassified ||
+        data.levels[0].annotation.bonding_source != cov::AnnotationSource::Unavailable ||
         data.levels[1].annotation.family != "pi") {
-        std::cerr << "explicit family/bonding annotation failed\n";
+        std::cerr << "parsed family metadata or missing-operator group-role separation failed\n";
         return 5;
     }
     if (!data.levels[3].annotation.multicentre.available ||

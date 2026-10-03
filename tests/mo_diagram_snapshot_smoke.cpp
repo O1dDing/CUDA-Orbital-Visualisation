@@ -279,23 +279,24 @@ int main() {
         const auto data_only=cov::ui::export_nbo_aomo_bundle(compact_view,dense,root/"dense-data",cov::DiagramExportContent::AnalysisData);
         require(data_only.csv&&data_only.json&&!data_only.png&&!data_only.svg&&
             !std::filesystem::exists(data_only.svg_path)&&!std::filesystem::exists(data_only.png_path)&&
-            read(data_only.json_path)==read(exported.json_path),
+            read(data_only.json_path).find("\"object_table_file\":\"dense-data.aomo.csv\"")!=std::string::npos &&
+            read(data_only.json_path).find("\"object_table_scope\":\"current_display_objects\"")!=std::string::npos &&
+            read(data_only.json_path).find("\"full_numerical_scope\"")==std::string::npos,
             "NBO analysis must be independently exportable with complete source data");
         const auto csv=read(exported.csv_path),json=read(exported.json_path);
         require(csv.size()<150000&&csv.find("source_coefficients")==std::string::npos,
             "CSV must not repeat projected coefficient arrays on each link");
-        require(count(json,"\"source_coefficients\"")==3 &&
-            json.find("cov_aomo_unified_view_v4")!=std::string::npos &&
+        require(json.find("cov_aomo_unified_view_v5")!=std::string::npos &&
             json.find("\"name_evidence_ref\"")!=std::string::npos,
-            "complete name coefficients must remain once in the shared JSON table");
-        require(count(csv,"-0.375,")==50&&count(csv,"producer,quoted\"\"source")==50&&
-            count(csv,",17,\"retained block\"")==50,
-            "normalizing names must preserve every signed link coefficient and producer reference");
-        require(csv.find("source_name_evidence_ref_json,target_name_evidence_ref_json")!=std::string::npos&&
-            csv.find("/display_names/canonical/0")!=std::string::npos&&
-            csv.find("/display_names/canonical/2")!=std::string::npos&&
-            csv.find("共用证据.aomo.json")!=std::string::npos,
-            "both spin source indices and the UTF-8 bundle name must resolve independently of visibility");
+            "current names must remain once in the shared scoped JSON table");
+        require(count(csv,"\n")==compact_view.nodes.size()+1 &&
+            csv.find("producer,quoted")==std::string::npos,
+            "current CSV must have exactly one row per displayed object, not all raw source links");
+        require(csv.find("name_evidence_ref_json,object_evidence_ref_json")!=std::string::npos &&
+            csv.find("共用证据.aomo.json")!=std::string::npos &&
+            json.find("current display; keys are original global indices")!=std::string::npos,
+            "current objects must retain source-index references and the UTF-8 companion filename");
+
     }
     aomo_state.collapsed_atoms.insert(0);
     const auto folded_atom=draw_aomo(cov::NboOrbitalKind::NAO,snapshot);
@@ -658,10 +659,12 @@ int main() {
         {"partners-right","right",{0,1},1}};
     auto partner_names=std::make_shared<cov::ui::NboAomoNames>();
     for(std::size_t block=0;block<3;++block) {
-        const std::string space=block<2?"repeated-span":"other-fragment";
-        if(block!=1) {
+        const std::string space="verified-copy-"+std::to_string(block);
+        {
             cov::NboSalcSubspace subspace;subspace.id=space;
             subspace.symmetry_verified=true;subspace.spin=cov::NboSpin::Alpha;
+            subspace.dimension=subspace.irrep_dimension=3;subspace.multiplicity=1;
+            subspace.energy_degeneracy_verified=true;
             partner_model->subspaces.push_back(subspace);
         }
         for(std::size_t member=0;member<3;++member) {
@@ -671,6 +674,7 @@ int main() {
             orbital.subspace_id=space;orbital.atoms={0,1};orbital.type="Val(2p)";
             orbital.energy_hartree=-0.42+0.04*block+1e-6*member;
             orbital.spin=cov::NboSpin::Alpha;orbital.symmetry_adapted=true;
+            orbital.partner_index=member;orbital.partner_dimension=3;
             partner_model->orbitals.push_back(orbital);
             cov::ui::NboAomoName name;name.verified=true;name.irrep="T1u";
             name.label="t₁u [SALC "+std::to_string(partner_names->salc.size()+1)+"] [alpha]";name.ordinal=0;
@@ -744,8 +748,9 @@ int main() {
     for(const auto& node:explicit_extra->nodes)if(node.salc_index==4)found_extra=true;
     require(found_extra && explicit_extra->central_mo_indices==shell_view->central_mo_indices,
         "an explicit extra-shell toggle may reveal Rydberg without changing canonical attention");
-    // An evidenced nd/(n+1)s frame retains only its matching (n+1)p Ryd
-    // shell in the default graph. The producer's Ryd class stays unchanged.
+    // A producer valence frame alone does not reveal arbitrary Ryd shells.
+    // Only a shell actually needed by retained MO composition is shown;
+    // the producer's Ryd class stays unchanged.
     auto metal_model=std::make_shared<cov::NboSalcModel>(*shell_model);
     for(const auto& [id,type]:std::vector<std::pair<std::size_t,std::string>>{
         {5,"Ryd(4p)"},{6,"Ryd(5p)"}}) {
@@ -762,6 +767,17 @@ int main() {
     }
     aomo_state.salc_model=metal_model;aomo_state.names.reset();
     aomo_state.show_rydberg=false;++aomo_state.revision;
+    const auto unsupported_frame=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
+    for(const auto& node:unsupported_frame->nodes)
+        require(node.salc_index!=5 && node.salc_index!=6,
+            "a valence frame without current MO composition must not reveal Ryd p shells");
+    cov::NboMoDecomposition p_need;
+    p_need.canonical_index=2;p_need.available=true;p_need.spin=cov::NboSpin::Alpha;
+    cov::NboNaoContribution p_row;
+    p_row.atom=1;p_row.nao_id=5;p_row.type="Ryd(4p)";p_row.weight=0.5;
+    p_need.rows.push_back(p_row);
+    integration.dataset.mo_decompositions.push_back(p_need);
+    ++aomo_state.revision;
     const auto frame_view=draw_aomo(cov::NboOrbitalKind::NAO,sentinel_snapshot);
     bool shown_4p=false,shown_5p=false;
     for(const auto& node:frame_view->nodes)if(node.salc_index) {

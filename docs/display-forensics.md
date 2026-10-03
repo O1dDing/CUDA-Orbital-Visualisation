@@ -21,6 +21,9 @@ The runner creates a hidden native GLFW window, never moves the desktop cursor,
 and does not focus another application. Each case is a separate process. A sweep
 uses one process for all its objects. Nodes outside the scroll viewport are
 reached through real wheel input. Overlapping bars use the application's chooser.
+Navigation reveals the union of the selected bar and its label before clicking
+the real bar. Wheel requests use whole input ticks so a half-pixel layout edge
+cannot stall indefinitely after the UI rounds its scroll position.
 The details window is scrolled from top to bottom, with overlapping captured
 pages. No button result, selected orbital, scroll offset or display string is
 forced by the collector.
@@ -89,3 +92,21 @@ The automated checks cover real ImGui font rendering, CJK and scientific glyphs,
 clipping, fallback glyphs, navigation, plan generation, wrong-file rejection,
 selection/scene mismatch and covered details. Existing library files and ordinary
 application exports are not modified by collection.
+
+## Current-view data export
+
+Picture export produces PNG and SVG only. Optional data export uses
+`cov_aomo_objects_v5` CSV and `cov_aomo_unified_view_v5` JSON for the current
+display objects. The CSV records display identity, original references, energy,
+occupation and membership; the JSON supplies source mappings and shared tables.
+The `object_table_file` value names the actual sibling CSV, and
+`quantitative_links_ref` resolves within the JSON. A source/derived spatial
+identity is distinct from its translated or view-numbered label.
+
+Source projections are stored once and referenced by source identity instead of
+being repeated for every MO/relation combination. This is a lossless schema
+change, not an extra output threshold. A selected MO scope retains its original
+global index. Expanded relation consumers use `routed_mo_relations`; absent
+weights and occupied-space-mixing states remain explicit. RO display rows retain
+both spin originals, the validated mean energy and summed occupation. Missing
+energy is never serialized as zero.

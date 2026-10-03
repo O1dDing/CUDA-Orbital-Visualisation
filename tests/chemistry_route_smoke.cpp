@@ -72,13 +72,18 @@ void connectivity_overlay_regression(){
     add("3C*",cov::NboSpin::Total,{0,1,2});
     const auto check=[&](){
         const auto overlay=cov::make_nbo_molecule_overlay(data,graph,4,{},std::nullopt,
-            cov::AtomScalarMode::Element,false,false);
+            cov::AtomScalarMode::Element,false,false,nullptr,nullptr,
+            cov::NboBondDisplayMode::LewisStructure);
         require(overlay.bonds.size()==3,"spin BD or original skeleton lost; remote WBI/antibond added");
         for(const auto& b:overlay.bonds)require(b.style==cov::OverlayBondStyle::Covalent,
             "multicentre support or absent total Lewis count downgraded a covalent bond");
         require(overlay.multicentre.size()==1 && overlay.multicentre[0].evidence_indices.size()==2,
             "3Cn/3C* created bonds or spin records duplicated a spatial hyperedge");
     };
+    const auto skeleton=cov::make_nbo_molecule_overlay(data,graph,4,{},std::nullopt,
+        cov::AtomScalarMode::Element,false,false);
+    require(skeleton.bonds.size()==1 && skeleton.bonds.front().multiplicity==1,
+        "default skeleton accepted isolated Lewis/multicentre pairs as ordinary bonds");
     check();std::reverse(graph.edges.begin(),graph.edges.end());
     std::reverse(data.structure.begin(),data.structure.end());check();
 }

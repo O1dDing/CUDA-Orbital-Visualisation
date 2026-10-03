@@ -342,7 +342,7 @@ void input_frame() {
             }
             if(++attempts>60)finish("failed","semantic target not drawn");return;
         }
-        if(!seek(it->second,c.op=="hover")) {if(++attempts>60)finish("failed","target clipped or unreachable by wheel input");return;}
+        if(!seek(it->second,c.op=="hover" || c.op=="seek")) {if(++attempts>60)finish("failed","target clipped or unreachable by wheel input");return;}
         if(c.op=="seek"){complete_command=true;return;}
     }
     // Once the real pointer sequence starts, finish its release and settling

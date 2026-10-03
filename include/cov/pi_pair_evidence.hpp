@@ -6,6 +6,46 @@
 namespace cov {
 enum class LigandPiPrior { Unresolved, SigmaOnly, Donor, Acceptor, Ambiguous };
 enum class PiPairDirection { Unresolved, Donor, Acceptor, Coupled, WeakNearNonbonding };
+struct PiFrozenOperatorAssessment {
+    bool available=false, tracking_verified=false, occupation_boundary_preserved=false;
+    std::string reason;
+    double max_energy_shift_hartree=std::numeric_limits<double>::quiet_NaN();
+    double full_spectrum_max_energy_shift_hartree=std::numeric_limits<double>::quiet_NaN();
+    double max_group_width_change_hartree=std::numeric_limits<double>::quiet_NaN();
+    double frontier_gap_change_hartree=std::numeric_limits<double>::quiet_NaN();
+    double max_subspace_sin2=std::numeric_limits<double>::quiet_NaN();
+    double minimum_external_gap_hartree=std::numeric_limits<double>::quiet_NaN();
+    double removal_norm_hartree=std::numeric_limits<double>::quiet_NaN();
+    double numerical_error_bound_hartree=std::numeric_limits<double>::quiet_NaN();
+};
+struct PiFrozenSpectralGroup {
+    std::vector<std::size_t> members;
+    PiFrozenOperatorAssessment assessment;
+};
+struct PiDisplayCalibration {
+    // Set only for a scope/method family that passed the recorded held-out scan.
+    bool validated=false;
+    std::string version, family;
+    double energy_budget_ev=0.025, subspace_sin2_budget=0.02;
+};
+[[nodiscard]] bool pi_display_negligible(const PiFrozenOperatorAssessment&,
+    const PiDisplayCalibration&);
+struct PiEndpointNboWeights {
+    double ligand_to_centre_donor=0, ligand_to_centre_acceptor=0;
+    double centre_to_ligand_donor=0, centre_to_ligand_acceptor=0;
+    double occupation=std::numeric_limits<double>::quiet_NaN();
+};
+struct PiEndpointDirectionAssessment {
+    std::string direction="unresolved", reason;
+    bool verified=false, ligand_to_centre_supported=false, centre_to_ligand_supported=false;
+    double ligand_to_centre_coverage=0, centre_to_ligand_coverage=0;
+};
+// Mapping support is tested against its propagated numerical error, not a
+// fitted composition percentage. The caller supplies complete canonical groups.
+[[nodiscard]] PiEndpointDirectionAssessment assess_pi_endpoint_direction(
+    const PiEndpointNboWeights& lower,const PiEndpointNboWeights& upper,
+    const std::string& scope_direction,bool scope_direction_verified,
+    bool occupations_verified,double full_occupation,double mapping_error_bound);
 struct PiPartnerComponents {
     double energy_hartree=0;
     double metal_d=0;
@@ -26,6 +66,10 @@ struct PiPartnerChannelEvidence {
     double lower_cross_fock_max_hartree=0, upper_cross_fock_min_hartree=0;
     double operator_error_hartree=0;
     double operator_tolerance_hartree=0;
+    bool direction_verified=false;
+    std::string direction_reference;
+    PiFrozenOperatorAssessment frozen_operator;
+    PiDisplayCalibration display_calibration;
 };
 struct PiPartnerAssessment {
     bool input_valid=false;
@@ -33,7 +77,7 @@ struct PiPartnerAssessment {
     PiPairDirection direction=PiPairDirection::Unresolved;
     LigandPiPrior prior=LigandPiPrior::Unresolved;
     // Verified channels rank by minimum endpoint cross-Fock magnitude (hartree).
-    // Weak fallback ranking/support are dimensionless heuristics, never probabilities.
+    // Verified ranking is endpoint cross-Fock support; support is not a probability.
     double ranking_score=std::numeric_limits<double>::quiet_NaN();
     double support_score=std::numeric_limits<double>::quiet_NaN();
     double splitting_hartree=std::numeric_limits<double>::quiet_NaN();

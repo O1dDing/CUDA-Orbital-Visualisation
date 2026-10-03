@@ -181,6 +181,12 @@ int main(){try{
     auto swapped=f;rotate(swapped,Mat{0,-1,0,1,0,0,0,0,1});std::swap(swapped.salc.operations[1],swapped.salc.operations[2]);for(auto& sub:swapped.salc.subspaces)std::swap(sub.characters[1],sub.characters[2]);compare(a,cov::ui::build_nbo_aomo_names(swapped.w,swapped.data,&swapped.salc));
     auto mixed=f;const auto x=mixed.w.orbitals[0].coefficients,y=mixed.w.orbitals[4].coefficients;const double q=.02,p=std::sqrt(1-q*q);for(std::size_t j=0;j<7;++j){mixed.w.orbitals[0].coefficients[j]=p*x[j]+q*y[j];mixed.w.orbitals[4].coefficients[j]=-q*x[j]+p*y[j];}
     const auto m=cov::ui::build_nbo_aomo_names(mixed.w,mixed.data,&mixed.salc);require(!m.canonical[0].verified&&!m.canonical[4].verified,"99.96 percent dominant weight must not certify a mixed eigenfunction");require(m.canonical[1].verified&&m.canonical[1].ordinal==0,"unknown earlier state must not silently corrupt symmetry ordinal");
+    require(m.canonical[0].approximate_dominant_label&&m.canonical[0].label.starts_with("\xE2\x89\x88")&&m.canonical[0].partner_block_id.empty(),"Approximate main name must retain its visible approximation marker without creating strict partners");
+    for(double weight:{.5,.9499,.9501}){auto boundary=f;const double major=std::sqrt(weight),minor=std::sqrt(1-weight);
+        for(std::size_t j=0;j<7;++j){boundary.w.orbitals[0].coefficients[j]=major*x[j]+minor*y[j];boundary.w.orbitals[4].coefficients[j]=-minor*x[j]+major*y[j];}
+        const auto labels=cov::ui::build_nbo_aomo_names(boundary.w,boundary.data,&boundary.salc);
+        require(labels.canonical[0].decomposition_verified&&!labels.canonical[0].verified&&labels.canonical[0].partner_block_id.empty(),"Display calibration altered strict decomposition or partner criteria");
+        require(labels.canonical[0].approximate_dominant_label==(weight>.95),"Dominant display threshold does not separate boundary controls");}
     std::vector<std::vector<double>> mixed_columns;for(const auto& mo:mixed.w.orbitals)mixed_columns.push_back(mo.coefficients);
     check_components(m.canonical[0],mixed_columns,mixed_columns[0],mixed.w.ao_overlap);
     require(m.canonical[0].component_source_kind=="canonical"&&!m.canonical[0].verified,"composition must not promote mixed canonical orbitals to one irrep");
@@ -318,7 +324,7 @@ int main(){try{
     const auto filtered=cov::ui::nbo_aomo_names_for_view(lin.w,linear_names,{3,4,5},{},nullptr,"test valence filter");
     require(filtered.canonical[5].ordinal==1&&filtered.canonical[5].complete_set_ordinal==3&&filtered.canonical[3].ordinal==filtered.canonical[4].ordinal&&filtered.canonical[3].ordinal==1,"display counters must start within each visible irrep, preserving complete-set identities and true partners");
     const auto partial=cov::ui::nbo_aomo_names_for_view(lin.w,linear_names,{3,5},{},nullptr,"incomplete filter");
-    require(partial.canonical[3].verified&&partial.canonical[3].ordinal==0,"filtering one partner cannot invent a complete visible occurrence");
+    require(partial.canonical[3].verified&&partial.canonical[3].ordinal==1&&partial.canonical[3].visible_partner_count==1,"partial view retains a certified complete copy ordinal and records its visible count");
     auto subgroup=broken;subgroup.w.orbitals[3].symmetry="B1u";subgroup.w.orbitals[3].symmetry_provenance=cov::DataProvenance::Producer;cov::OrbitalSymmetrySourceRecord record;record.source_path="fixture.log";record.detected_group_context="Dinfh";record.abelian_group_context="D2h";record.orbital_indices={3};record.labels={"B1u"};subgroup.w.orbital_symmetry_source_records.push_back(record);const auto subgroup_names=cov::ui::build_nbo_aomo_names(subgroup.w,subgroup.data,&subgroup.salc);require(subgroup_names.canonical[3].verified&&subgroup_names.canonical[3].irrep=="Pi_u"&&subgroup.w.orbitals[3].symmetry=="B1u","derived full-group identity must preserve the producer subgroup literal independently");
     auto unresolved=lin.salc;unresolved.orbitals.clear();unresolved.subspaces.clear();for(int i=0;i<7;++i){cov::NboSalcOrbital o;o.fragment_id="copies";o.energy_hartree=i<4?-.4:i<6?.4:.6;unresolved.orbitals.push_back(o);}
     for(int block=0;block<3;++block){cov::NboSalcSubspace sub;sub.fragment_id="copies";sub.symmetry_verified=true;sub.orbital_indices=block==0?std::vector<std::size_t>{0,1,2,3}:block==1?std::vector<std::size_t>{4,5}:std::vector<std::size_t>{6};sub.dimension=sub.orbital_indices.size();for(const auto& op:unresolved.operations)sub.characters.push_back(block==2?1:(block==0?2:1)*(op.matrix[0]+op.matrix[4]));unresolved.subspaces.push_back(sub);}
@@ -359,8 +365,11 @@ int main(){try{
         tied_view.canonical[0].complete_set_ordinal==0&&tied_view.canonical[0].complete_set_ordinal_upper==2,
         "display order must not overwrite complete-set tie evidence");
     const auto partial_view=cov::ui::nbo_aomo_names_for_view(equal_copies.w,equal_names,{0},{},nullptr,"partial pair");
-    require(partial_view.canonical[0].ordinal==0&&partial_view.canonical[0].ordinal_status=="visible_partner_group_incomplete",
-        "filtered-out partners must not be called missing source data");
+    require(partial_view.canonical[0].ordinal==1&&partial_view.canonical[0].ordinal_status=="display_order_convention"&&partial_view.canonical[0].visible_partner_count==1,
+        "filtered-out partners do not erase certified occurrence identity");
+    auto no_energy=equal_copies.w;no_energy.orbitals[1].energy_hartree=std::numeric_limits<double>::quiet_NaN();
+    const auto nonquantitative=cov::ui::nbo_aomo_names_for_view(no_energy,equal_names,{0},{},nullptr,"nonquantitative partial");
+    require(nonquantitative.canonical[0].ordinal==0&&nonquantitative.canonical[0].view_row_ordinal==1&&nonquantitative.canonical[0].visible_partner_count==1&&nonquantitative.canonical[0].ordinal_status=="nonquantitative_copy_entry","missing hidden partner energy must prevent a quantitative copy rank but retain the entry and partner identity");
     const auto tie_json=cov::ui::serialize_orbital_name_json(tied_view.canonical[0]);
     require(tie_json.find("\"complete_set_ordinal_bounds\":{\"lower\":1,\"upper\":2")!=std::string::npos&&
         tie_json.find("\"complete_set_ordinal_status\":\"same_irrep_energy_order_unresolved\"")!=std::string::npos,
@@ -404,7 +413,7 @@ int main(){try{
     require(!rejected_metric.canonical[0].verified&&rejected_metric.canonical[0].status=="symmetry_action_not_isometric"&&
         rejected_metric.canonical[0].detail.find("transformed norm error=")!=std::string::npos,
         "nonisometric action must be rejected with its measured reason, not called subspace leakage");
-    require(!rejected_metric.canonical[0].decomposition_verified&&rejected_metric.canonical[0].components.empty(),"nonisometric action must not expose apparently complete symmetry components");
+    require(!rejected_metric.canonical[0].decomposition_verified&&!rejected_metric.canonical[0].approximate_dominant_label&&rejected_metric.canonical[0].components.empty(),"nonisometric action must not expose apparently complete symmetry components");
     Fixture orthorhombic;
     orthorhombic.w.atoms={{"C",6,0,0,0},{"H",1,3,0,0},{"H",1,-3,0,0},{"H",1,0,1,0},{"H",1,0,-1,0},{"H",1,0,0,2},{"H",1,0,0,-2}};
     shell(orthorhombic.w,0,1,1);orthorhombic.w.ao_overlap={1,0,0,0,1,0,0,0,1};

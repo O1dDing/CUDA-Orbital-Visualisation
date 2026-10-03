@@ -5,6 +5,59 @@
 #include <sstream>
 
 namespace cov {
+bool pi_display_negligible(const PiFrozenOperatorAssessment& a,const PiDisplayCalibration& c) {
+    const auto nonnegative=[](double x){return std::isfinite(x)&&x>=0;};
+    if(!c.validated||c.version.empty()||c.family.empty()||!a.available||!a.tracking_verified||
+       !a.occupation_boundary_preserved||!nonnegative(c.energy_budget_ev)||c.energy_budget_ev==0||
+       !nonnegative(c.subspace_sin2_budget)||c.subspace_sin2_budget>=0.5||
+       !nonnegative(a.numerical_error_bound_hartree)||!nonnegative(a.max_energy_shift_hartree)||
+       !nonnegative(a.max_group_width_change_hartree)||!nonnegative(a.frontier_gap_change_hartree)||
+       !nonnegative(a.max_subspace_sin2))return false;
+    if(std::isnan(a.minimum_external_gap_hartree)||a.minimum_external_gap_hartree<=0)return false;
+    // Bound uncertainty in the tracked spectral projector as well as energy.
+    const double angle_error=2*a.numerical_error_bound_hartree/a.minimum_external_gap_hartree;
+    const double sin2_upper=std::pow(std::min(1.0,std::sqrt(a.max_subspace_sin2)+angle_error),2);
+    const double budget=c.energy_budget_ev/27.211386245988;
+    return a.max_energy_shift_hartree+a.numerical_error_bound_hartree<=budget&&
+        a.max_group_width_change_hartree+2*a.numerical_error_bound_hartree<=budget&&
+        a.frontier_gap_change_hartree+2*a.numerical_error_bound_hartree<=budget&&
+        sin2_upper<=c.subspace_sin2_budget;
+}
+
+PiEndpointDirectionAssessment assess_pi_endpoint_direction(
+    const PiEndpointNboWeights& a,const PiEndpointNboWeights& b,
+    const std::string& scope,bool scope_verified,bool occupations_verified,
+    double full_occupation,double error) {
+    PiEndpointDirectionAssessment out;
+    const auto valid=[](double x){return std::isfinite(x)&&x>=0&&x<=1+1e-5;};
+    if(!std::isfinite(error)||error<0||error>=1||!std::isfinite(full_occupation)||full_occupation<=0||
+       !valid(a.ligand_to_centre_donor)||!valid(a.ligand_to_centre_acceptor)||
+       !valid(a.centre_to_ligand_donor)||!valid(a.centre_to_ligand_acceptor)||
+       !valid(b.ligand_to_centre_donor)||!valid(b.ligand_to_centre_acceptor)||
+       !valid(b.centre_to_ligand_donor)||!valid(b.centre_to_ligand_acceptor)) {
+        out.reason="ordered-NBO-group-mapping-unavailable";return out;
+    }
+    if(occupations_verified&&std::isfinite(a.occupation)&&std::isfinite(b.occupation)&&
+       std::abs(a.occupation-full_occupation)<=1e-6&&std::abs(b.occupation-full_occupation)<=1e-6){
+        out.direction="occupied_space_mixing";out.verified=true;
+        out.reason="both-complete-canonical-endpoints-occupied-no-electron-transfer-arrow";return out;
+    }
+    if(!scope_verified){out.reason="ordered-NBO-scope-direction-unavailable";return out;}
+    out.ligand_to_centre_coverage=std::max(std::min(a.ligand_to_centre_donor,b.ligand_to_centre_acceptor),
+        std::min(b.ligand_to_centre_donor,a.ligand_to_centre_acceptor));
+    out.centre_to_ligand_coverage=std::max(std::min(a.centre_to_ligand_donor,b.centre_to_ligand_acceptor),
+        std::min(b.centre_to_ligand_donor,a.centre_to_ligand_acceptor));
+    const double numerical_gate=std::max(1e-8,error);
+    out.ligand_to_centre_supported=(scope=="ligand_to_centre"||scope=="bidirectional")&&out.ligand_to_centre_coverage>numerical_gate;
+    out.centre_to_ligand_supported=(scope=="centre_to_ligand"||scope=="bidirectional")&&out.centre_to_ligand_coverage>numerical_gate;
+    out.verified=out.ligand_to_centre_supported||out.centre_to_ligand_supported;
+    if(out.ligand_to_centre_supported&&out.centre_to_ligand_supported)out.direction="bidirectional";
+    else if(out.ligand_to_centre_supported)out.direction="ligand_to_centre";
+    else if(out.centre_to_ligand_supported)out.direction="centre_to_ligand";
+    out.reason=out.verified?"ordered-donor-and-acceptor-spans-map-to-distinct-complete-endpoints-above-numerical-error":
+        "this-endpoint-pair-does-not-capture-both-ordered-NBO-roles-above-mapping-error";
+    return out;
+}
 const char* ligand_pi_prior_name(LigandPiPrior p) noexcept {
     switch(p) {
         case LigandPiPrior::SigmaOnly:return "sigma-only";
@@ -36,51 +89,25 @@ PiPartnerAssessment assess_pi_partner(const PiPartnerComponents& a,const PiPartn
     if(!result.input_valid){result.detail="invalid-input";return result;}
     result.splitting_hartree=b.energy_hartree-a.energy_hartree;
     const double low=a.ligand_p-a.metal_d,high=b.ligand_p-b.metal_d;
-    const double donor=low-high,contrast=std::abs(donor);
+    const double donor=low-high;
     result.composition_contrast=donor;
     result.complementary_composition=low*high<0&&std::abs(low)>=.05&&std::abs(high)>=.05;
     result.opposite_overlap_signs=a.metal_ligand_overlap*b.metal_ligand_overlap<0&&
         std::abs(a.metal_ligand_overlap)>=weak_overlap&&std::abs(b.metal_ligand_overlap)>=weak_overlap;
-    result.weak=result.splitting_hartree<=weak_split&&std::abs(a.metal_ligand_overlap)<=weak_overlap&&
-        std::abs(b.metal_ligand_overlap)<=weak_overlap;
-    if(!result.weak) {
-        result.detail="composition-only-candidate-needs-verified-local-channel";
-        return result;
-    }
-    if(a.pi_fraction<.60||b.pi_fraction<.60||a.metal_d+a.ligand_p<.18||b.metal_d+b.ligand_p<.18||
-       result.splitting_hartree>1.50||(!result.weak&&!result.complementary_composition)||
-       (!result.weak&&!result.opposite_overlap_signs&&contrast<.18)||
-       (result.weak&&std::max(a.metal_d,b.metal_d)<.08)) {
-        result.detail="orbital-evidence-insufficient";return result;
-    }
-    const double opposite=std::max(0.0,-a.metal_ligand_overlap*b.metal_ligand_overlap);
-    const double quality=std::min(a.pi_fraction,b.pi_fraction);
-    result.ranking_score=2*quality+2*contrast+2*std::sqrt(opposite)-.08*result.splitting_hartree;
-    if(result.ranking_score<.75){result.detail="pair-ranking-support-insufficient";return result;}
-    result.accepted=true;
-    if(result.weak)result.direction=PiPairDirection::WeakNearNonbonding;
-    else if(2*donor>=.15)result.direction=PiPairDirection::Donor;
-    else if(-2*donor>=.15)result.direction=PiPairDirection::Acceptor;
-    else result.direction=PiPairDirection::Coupled;
-    result.support_score=std::clamp(.45*quality+.35*std::min(1.0,contrast)+
-        .20*std::min(1.0,std::sqrt(opposite)/.05),0.0,1.0);
-    // The catalogue is context. It cannot veto the actual canonical-pair evidence
-    // or select a direction contradicted by the observed composition.
-    if(prior==LigandPiPrior::Unresolved||prior==LigandPiPrior::Ambiguous||result.weak)
-        result.prior_relation="undetermined";
-    else if((prior==LigandPiPrior::Donor&&result.direction==PiPairDirection::Donor)||
-            (prior==LigandPiPrior::Acceptor&&result.direction==PiPairDirection::Acceptor))
-        result.prior_relation="consistent";
-    else result.prior_relation="contradicted";
-    result.detail="canonical-pair-interpretation-from-orbital-evidence";
+    // Composition, gap and overlap remain observations. Without the actual
+    // same-source operator and a calibrated frozen-removal diagnostic they
+    // cannot establish either a directional channel or a negligible one.
+    result.weak=false;
+    result.detail="composition-only-candidate-needs-verified-local-channel-and-calibrated-sensitivity";
     return result;
 }
+
 PiPartnerAssessment assess_pi_channel_partner(const PiPartnerComponents& a,
     const PiPartnerComponents& b,LigandPiPrior prior,const PiPartnerChannelEvidence& channel) {
     // Reuse finite-input validation and descriptive quantities, not its
     // composition-only acceptance decision or heuristic direction.
     auto result=assess_pi_partner(a,b,prior);
-    result.channel=channel;result.accepted=false;result.direction=PiPairDirection::Unresolved;
+    result.channel=channel;result.weak=false;result.accepted=false;result.direction=PiPairDirection::Unresolved;
     result.prior_relation="undetermined";
     if(!result.input_valid)return result;
     if(channel.channel_id.empty()||channel.canonical_fingerprint.empty()||
@@ -107,9 +134,10 @@ PiPartnerAssessment assess_pi_channel_partner(const PiPartnerComponents& a,
        !(channel.lower_cross_fock_max_hartree<0)||!(channel.upper_cross_fock_min_hartree>0)) {
         result.detail="same-channel-counterpart-cross-fock-signs-unresolved";return result;
     }
-    result.accepted=true;result.weak=false;result.direction=PiPairDirection::Coupled;
-    if(channel.occupations_verified&&channel.direction=="centre_to_ligand")result.direction=PiPairDirection::Acceptor;
-    if(channel.occupations_verified&&channel.direction=="ligand_to_centre")result.direction=PiPairDirection::Donor;
+    result.accepted=true;result.weak=pi_display_negligible(channel.frozen_operator,channel.display_calibration);
+    result.direction=PiPairDirection::Coupled;
+    if(channel.direction_verified&&channel.direction=="centre_to_ligand")result.direction=PiPairDirection::Acceptor;
+    if(channel.direction_verified&&channel.direction=="ligand_to_centre")result.direction=PiPairDirection::Donor;
     result.ranking_score=std::min(-channel.lower_cross_fock_max_hartree,channel.upper_cross_fock_min_hartree);
     result.support_score=std::numeric_limits<double>::quiet_NaN();
     if(result.direction==PiPairDirection::Acceptor||result.direction==PiPairDirection::Donor) {
@@ -158,6 +186,27 @@ std::string pi_partner_assessment_json(const PiPartnerAssessment& v){
     out<<",\"channel_spin\":";json_string(out,v.channel.spin);
     out<<",\"operator_kind\":";json_string(out,v.channel.operator_kind);
     out<<",\"channel_direction\":";json_string(out,v.channel.direction);
+    out<<",\"direction_verified\":"<<(v.channel.direction_verified?"true":"false");
+    out<<",\"direction_reference\":";json_string(out,v.channel.direction_reference);
+    out<<",\"display_calibration\":{\"validated\":"<<(v.channel.display_calibration.validated?"true":"false");
+    out<<",\"version\":";json_string(out,v.channel.display_calibration.version);
+    out<<",\"family\":";json_string(out,v.channel.display_calibration.family);
+    out<<",\"energy_budget_ev\":";number(out,v.channel.display_calibration.energy_budget_ev);
+    out<<",\"subspace_sin2_budget\":";number(out,v.channel.display_calibration.subspace_sin2_budget);out<<'}';
+    const auto& frozen=v.channel.frozen_operator;
+    out<<",\"frozen_operator\":{\"available\":"<<(frozen.available?"true":"false")
+       <<",\"tracking_verified\":"<<(frozen.tracking_verified?"true":"false")
+       <<",\"occupation_boundary_preserved\":"<<(frozen.occupation_boundary_preserved?"true":"false");
+    out<<",\"reason\":";json_string(out,frozen.reason);
+    out<<",\"max_energy_shift_hartree\":";number(out,frozen.max_energy_shift_hartree);
+    out<<",\"full_spectrum_max_energy_shift_hartree\":";number(out,frozen.full_spectrum_max_energy_shift_hartree);
+    out<<",\"max_group_width_change_hartree\":";number(out,frozen.max_group_width_change_hartree);
+    out<<",\"frontier_gap_change_hartree\":";number(out,frozen.frontier_gap_change_hartree);
+    out<<",\"max_subspace_sin2\":";number(out,frozen.max_subspace_sin2);
+    out<<",\"minimum_external_gap_hartree\":";number(out,frozen.minimum_external_gap_hartree);
+    out<<",\"removal_norm_hartree\":";number(out,frozen.removal_norm_hartree);
+    out<<",\"numerical_error_bound_hartree\":";number(out,frozen.numerical_error_bound_hartree);out<<'}';
+
     out<<",\"lower_character\":";json_string(out,v.channel.lower_character);
     out<<",\"upper_character\":";json_string(out,v.channel.upper_character);
     out<<",\"lower_cross_fock_max_hartree\":";number(out,v.channel.lower_cross_fock_max_hartree);

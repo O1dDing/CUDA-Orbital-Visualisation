@@ -3,6 +3,7 @@
 #include "cov/nbo_aomo_labels.hpp"
 #include "cov/nbo_aomo_text.hpp"
 #include "cov/orbital_chemistry_summary.hpp"
+#include "cov/orbital_ui_text.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -144,6 +145,15 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
     Language language) {
     std::vector<std::string> lines;
     const auto title=concise_spin(node.individual_label.empty()?node.label:node.individual_label);
+    if(node.weak_display_container) {
+        lines={title,aomo_text(language,"Click to expand real members")};
+        for(auto member:node.member_canonical_indices)if(member<wf.orbitals.size()) {
+            std::ostringstream value;value<<std::setprecision(9)<<canonical_mo_source_label(wf,member)
+                <<": E="<<wf.orbitals[member].energy_hartree<<" Ha; n="<<wf.orbitals[member].occupation;
+            lines.push_back(value.str());
+        }
+        return lines;
+    }
     if(node.group_header) return {title,text(Word::Subspace,language)};
     if(node.spatial_spin){
         const auto value=[&](const std::optional<double>& v){if(!v)return std::string(aomo_text(language,"Unavailable"));
@@ -166,7 +176,8 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
         NboAomoName display_name;display_name.label=node.individual_label.empty()?node.label:node.individual_label;
         display_name.irrep=node.symmetry_irrep;display_name.ordinal=node.symmetry_ordinal;
         display_name.verified=node.symmetry_name_verified;
-        std::string identity=concise_spin(canonical_mo_display_label(wf,index,&display_name));
+        std::string identity=node.individual_label.empty()?
+            concise_spin(canonical_mo_display_label(wf,index,&display_name)):title;
         const bool spin_resolved=wf.orbital_occupation_model==OrbitalOccupationModel::ExplicitSpin ||
             std::any_of(wf.orbitals.begin(),wf.orbitals.end(),[](const auto& o){return o.spin==Spin::Beta;});
         if(spin_resolved && !has_spin(identity))
@@ -190,7 +201,11 @@ std::vector<std::string> nbo_aomo_hover_lines(const NboAomoNode& node,
                     orbital_channel_fraction_summary(chemistry.channel)+context);
             // Existing bonding evidence is based on per-orbital atom-pair
             // overlap, not on a whole-bond order or an occupation count.
-            if(chemistry.bonding.status==ChemistryStatus::Determined) {
+            if(!node.bonding_scope_status.empty()) {
+                if(node.bonding_class!=BondingClass::Unclassified)
+                    lines.push_back(std::string(aomo_text(language,"Skeleton group bonding character"))+": "+
+                        localised_bonding_class(node.bonding_class,language));
+            } else if(chemistry.bonding.status==ChemistryStatus::Determined) {
                 const auto role=role_text(chemistry.bonding.dominant,language);
                 if(!role.empty())lines.push_back(text(Word::Mainly,language)+role+text(Word::PairOverlap,language)+pair_identity);
             } else if(chemistry.bonding.status==ChemistryStatus::Percentages)

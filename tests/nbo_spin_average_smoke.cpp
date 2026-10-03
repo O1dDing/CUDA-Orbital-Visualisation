@@ -57,6 +57,10 @@ int main(){try{
     require(averaged.restricted_open_shell.verified&&averaged.spin_averaged&&averaged.orbitals.size()==4,"RO spatial merge missing members");
     require(averaged.merged_spatial_count==4&&averaged.separate_spin_count==0,"partial rotated space not completed");
     const M expected_f=f.common.transpose()*((f.fa+f.fb)/2)*f.common,expected_p=f.common.transpose()*(f.pa+f.pb)*f.common;
+    require(averaged.subspaces.size()==1&&averaged.subspaces[0].fock.size()==16&&averaged.subspaces[0].density.size()==16,"Common subspace matrices missing");
+    require((Eigen::Map<const RM>(averaged.subspaces[0].fock.data(),4,4)-expected_f).norm()<1e-10,"Subspace inherited alpha Fock instead of full common-basis mean");
+    require((Eigen::Map<const RM>(averaged.subspaces[0].density.data(),4,4)-expected_p).norm()<1e-10,"Subspace inherited alpha density instead of common-basis total");
+    require(!averaged.subspaces[0].energy_degeneracy_verified,"Split common spin operators falsely certified degenerate");
     bool fractional=false,rotated=false;
     for(std::size_t i=0;i<4;++i){const auto& o=averaged.orbitals[i];require(o.spatial_spin.has_value(),"Missing provenance");
         near(*o.energy_hartree,expected_f(i,i),"Averaged source diagonals instead of common Fock operator");
@@ -74,6 +78,7 @@ int main(){try{
     for(auto& o:energy_missing.raw.orbitals)if(o.spin==cov::NboSpin::Beta)o.energy_hartree.reset();
     auto unavailable=cov::build_nbo_spin_averaged_model(energy_missing.w,energy_missing.data,energy_missing.raw);
     require(unavailable.merged_spatial_count==4,"Missing energy incorrectly prevents proven spatial merge");
+    for(const auto& sub:unavailable.subspaces)require(sub.fock.empty()&&!sub.energy_degeneracy_verified&&!sub.density.empty(),"Missing beta operator must clear quantitative common-Fock matrix without erasing density");
     for(const auto& o:unavailable.orbitals)require(!o.energy_hartree&&o.occupation&&o.spatial_spin->energy_status.find("missing beta Fock")!=std::string::npos,"Fabricated missing spin mean");
     for(const auto* method:{"UPBE1PBE","UHF","UKS","RHF","PBE0"}){auto wrong=f;wrong.w.source_route=std::string("SP ")+method+" synthetic";wrong.data.canonical_fingerprint=cov::nbo_canonical_fingerprint(wrong.w);
         require(!cov::build_nbo_spin_averaged_model(wrong.w,wrong.data,wrong.raw).spin_averaged,"Unverified/U/closed-shell method merged");}
