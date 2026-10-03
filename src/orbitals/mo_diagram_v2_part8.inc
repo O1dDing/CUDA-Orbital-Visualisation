@@ -302,6 +302,13 @@ bool write_mo_diagram_json(const MODiagramData& data,
     }
     out << "  ],\n";
     out << "  \"pi_partner_candidates\": " << pi_partner_candidates_json(data.pi_partner_candidates) << ",\n";
+    out << "  \"sigma_framework\": " << mo_sigma_framework_json(data.sigma_framework) << ",\n";
+    out << "  \"pi_mode_networks\": [";
+    for(std::size_t i=0;i<data.pi_mode_networks.size();++i) {
+        if(i)out << ',';
+        out << pi_mode_network_assessment_json(data.pi_mode_networks[i]);
+    }
+    out << "],\n";
     out << "  \"pi_interactions\": " << orbital_energy_gap_array_json(data.pi_interactions,options.energy_unit) << ",\n";
     out << "  \"crystal_field_gaps\": " << orbital_energy_gap_array_json(data.crystal_field_gaps,options.energy_unit) << ",\n";
     out << "  \"delocalised_pi_families\": [\n";
@@ -362,6 +369,8 @@ bool write_mo_diagram_json(const MODiagramData& data,
         }
         const auto members=mo_diagram_member_views(data,level);
         out << ",\"symmetry_explanation\":" << orbital_symmetry_json(level.metadata.symmetry_view);
+        out << ",\"composition\":" << mo_group_composition_json(level.composition)
+            << ",\"display_decision\":" << mo_group_display_decision_json(level.display_decision);
         out << ",\"representative_metadata_index\":" << level.metadata.orbital_index
             << ",\"layout_energy_meaning\":\"row-layout-value-not-an-individual-MO-energy\""
             << ",\"energy_spread_hartree\":" << level.energy_spread_hartree

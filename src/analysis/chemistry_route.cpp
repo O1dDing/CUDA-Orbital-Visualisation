@@ -679,6 +679,7 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data,bool inclu
         indices(value.ligand_nao_ids);
         out<<",\"ligand_family\":"<<quoted(value.ligand_family)
            <<",\"centre_family\":"<<quoted(value.centre_family)
+           <<",\"ligand_space_kind\":"<<quoted(value.ligand_space_kind)
            <<",\"localized_family_verified\":"<<(value.localized_family_verified?"true":"false")
            <<",\"ligand_family_nbo_ids\":[";
         indices(value.ligand_family_nbo_ids);out<<",\"singular_values_hartree\":[";
@@ -690,6 +691,60 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data,bool inclu
         };
         out<<",\"centre_projector_basis\":";matrix(value.centre_projector_basis);
         out<<",\"ligand_projector_basis\":";matrix(value.ligand_projector_basis);
+        out<<",\"modes\":[";
+        for(std::size_t m=0;m<value.modes.size();++m) {
+            if(m)out<<',';const auto& mode=value.modes[m];
+            out<<"{\"id\":"<<quoted(mode.id)<<",\"rank\":"<<mode.rank
+               <<",\"centre_space_kind\":"<<quoted(mode.centre_space_kind)
+               <<",\"ligand_space_kind\":"<<quoted(mode.ligand_space_kind)
+               <<",\"singular_min_hartree\":"<<mode.singular_min_hartree
+               <<",\"singular_max_hartree\":"<<mode.singular_max_hartree
+               <<",\"numerical_coverage_bound\":"<<mode.numerical_coverage_bound
+               <<",\"singular_values_hartree\":[";
+            indices(mode.singular_values_hartree);
+            out<<",\"centre_shells\":[";
+            for(std::size_t j=0;j<mode.centre_shells.size();++j) {
+                if(j)out<<',';const auto& shell=mode.centre_shells[j];
+                out<<"{\"shell\":"<<quoted(shell.shell)<<",\"angular\":"<<quoted(shell.angular)
+                   <<",\"fraction\":"<<shell.fraction<<'}';
+            }
+            out<<"],\"groups\":[";
+            for(std::size_t j=0;j<mode.groups.size();++j) {
+                if(j)out<<',';const auto& group=mode.groups[j];
+                out<<"{\"group_index\":"<<group.group_index<<",\"centre_weight\":"<<group.centre_weight
+                   <<",\"ligand_weight\":"<<group.ligand_weight
+                   <<",\"cross_fock_min_hartree\":"<<group.cross_fock_min_hartree
+                   <<",\"cross_fock_max_hartree\":"<<group.cross_fock_max_hartree
+                   <<",\"cross_fock_mean_hartree\":"<<group.cross_fock_mean_hartree;
+                if(include_projector_matrices) {
+                    out<<",\"centre_coordinates\":";matrix(group.centre_coordinates);
+                    out<<",\"ligand_coordinates\":";matrix(group.ligand_coordinates);
+                }
+                out<<'}';
+            }
+            out<<"],\"ordered_edges\":[";
+            for(std::size_t j=0;j<mode.ordered_edges.size();++j) {
+                if(j)out<<',';const auto& edge=mode.ordered_edges[j];
+                out<<"{\"id\":"<<quoted(edge.id)<<",\"direction\":"<<quoted(edge.direction)
+                   <<",\"donor_nbo_id\":"<<edge.donor_nbo_id<<",\"acceptor_nbo_id\":"<<edge.acceptor_nbo_id
+                   <<",\"projected_fock_hartree\":"<<edge.projected_fock_hartree<<",\"groups\":[";
+                for(std::size_t k=0;k<edge.groups.size();++k) {
+                    if(k)out<<',';const auto& group=edge.groups[k];
+                    out<<"{\"group_index\":"<<group.group_index<<",\"donor_weight\":"<<group.donor_weight
+                       <<",\"acceptor_weight\":"<<group.acceptor_weight
+                       <<",\"donor_mode_weight\":"<<group.donor_mode_weight
+                       <<",\"acceptor_mode_weight\":"<<group.acceptor_mode_weight<<'}';
+                }
+                out<<"]}";
+            }
+            out<<']';
+            if(include_projector_matrices) {
+                out<<",\"centre_projector_basis\":";matrix(mode.centre_projector_basis);
+                out<<",\"ligand_projector_basis\":";matrix(mode.ligand_projector_basis);
+            }
+            out<<'}';
+        }
+        out<<']';
         const auto& frozen=value.frozen_operator;
         out<<",\"frozen_operator\":{\"available\":"<<(frozen.available?"true":"false")
            <<",\"tracking_verified\":"<<(frozen.tracking_verified?"true":"false")
@@ -798,6 +853,7 @@ std::string serialize_routed_analysis_json(const RoutedAnalysis& data,bool inclu
         for(std::size_t j=0;j<value.direction_projection_evidence.size();++j){
             if(j)out<<',';const auto& row=value.direction_projection_evidence[j];
             out<<"{\"e2_id\":"<<quoted(row.e2_id)
+               <<",\"direction\":"<<quoted(row.direction)
                <<",\"donor_nbo_id\":"<<row.donor_nbo_id
                <<",\"acceptor_nbo_id\":"<<row.acceptor_nbo_id
                <<",\"donor_ligand_weight\":"<<row.donor_ligand_weight

@@ -61,7 +61,7 @@ class PlanTests(unittest.TestCase):
         chosen = f.choose_nodes(nodes)
         self.assertEqual([n["canonical_index"] for n in chosen], [1, 3])
         plan = f.sweep_plan(Path("E:/packages/X"), chosen, language="current", inventory_nodes=nodes)
-        self.assertIn('seek "aomo.node.canonical_mo:1"', plan.commands)
+        self.assertIn('seek "aomo.node.canonical_mo:1.reveal"', plan.commands)
         for attempt in plan.attempts:
             commands = plan.commands[attempt["command_start"]:attempt["command_end"]]
             self.assertLess(next(i for i, c in enumerate(commands) if c.startswith("inspect ")),
@@ -260,6 +260,64 @@ class CompactBundleTests(unittest.TestCase):
                 json.dump(value, stream)
             with self.assertRaisesRegex(ValueError, "hash mismatch"):
                 f.load_bundle(corrupt)
+
+
+class ScientificDisplayContractTests(unittest.TestCase):
+    def test_research_uses_actual_combo_in_inventory_and_sweep(self):
+        for plan in (f.inventory_plan(Path("E:/packages/X"), preset="research"),
+                     f.sweep_plan(Path("E:/packages/X"), [node(1)], preset="research")):
+            self.assertLess(plan.commands.index('click "aomo.preset"'),
+                            plan.commands.index('click "aomo.preset.research"'))
+            self.assertLess(plan.commands.index('click "aomo.preset.research"'),
+                            plan.commands.index('inspect "inventory"'))
+    def test_expansion_precedes_actual_capture(self):
+        plan = f.sweep_plan(Path("E:/packages/X"), [node(1)], expand_pi=True)
+        expand = plan.commands.index('expand "details.pi.toggle"')
+        capture = next(i for i, c in enumerate(plan.commands) if c.startswith('inspect-details '))
+        self.assertLess(expand, capture)
+        self.assertTrue(plan.attempts[0]['pi_expansion_requested'])
+
+    def test_conditional_percentages_cannot_pass_complete_norm_check(self):
+        ledger = dict.fromkeys(f.COMPOSITION_BUCKETS, 0.0)
+        ledger.update(available=True, complete=True, weight_sum=1.0,
+                      centre_current_p=.002, ligand_valence=.035)
+        view = {"draw_trace": [{"kind": "details.composition", "data": ledger}]}
+        self.assertEqual(f.display_semantics(view)["status"], "failed")
+        ledger['ligand_other'] = .963
+        self.assertEqual(f.display_semantics(view)["status"], "passed")
+
+    def test_direction_needs_common_mode_and_same_source_edge(self):
+        mode = {"verified": True, "direction_verified": True,
+                "two_endpoint_relation": True,
+                "direction": "centre_to_ligand", "shared_mode_ids": ["mode-a"],
+                "shared_fragment_contraction_norm_hartree": .04, "matched_edge_ids": []}
+        view = {"draw_trace": [{"kind": "details.energy-gap", "data": {"mode": mode}}]}
+        self.assertEqual(f.display_semantics(view)["status"], "failed")
+        mode['matched_edge_ids'] = ['edge-1-to-2']
+        self.assertEqual(f.display_semantics(view)["status"], "passed")
+        view['targets'] = [{'id': 'details.pi.toggle.closed'}]
+        self.assertEqual(f.display_semantics(view, True)["status"], "failed")
+
+    def test_network_cannot_be_repeated_or_turned_into_pair(self):
+        network = dict(verified=True, mode_id="mode-a", channel_id="source-a",
+                       nodes=[{"members": [2]}, {"members": [5]}, {"members": [8]}])
+        record = {"kind": "details.pi-network", "data": {"network": network}}
+        self.assertEqual(f.display_semantics({"draw_trace": [record]})["status"], "passed")
+        self.assertEqual(f.display_semantics({"draw_trace": [record, record]})["status"], "failed")
+        mode = dict(verified=True, shared_mode_ids=["mode-a"],
+                    shared_fragment_contraction_norm_hartree=.02, two_endpoint_relation=False)
+        self.assertEqual(f.display_semantics({"draw_trace": [
+            {"kind": "details.energy-gap", "data": {"mode": mode}}]})["status"], "failed")
+
+    def test_explicit_source_roundoff_is_not_double_counted_by_checker(self):
+        ledger = dict.fromkeys(f.COMPOSITION_BUCKETS, 0.0)
+        ledger.update(available=True, complete=True, weight_sum=1-2.34e-8,
+                      normalization_error=2.34e-8, ligand_valence=1-2.34e-8,
+                      unresolved=2.34e-8)
+        view = {"draw_trace": [{"kind": "details.composition", "data": ledger}]}
+        self.assertEqual(f.display_semantics(view)["status"], "passed")
+        ledger['unresolved'] = .01
+        self.assertEqual(f.display_semantics(view)["status"], "failed")
 
 
 if __name__ == "__main__":

@@ -228,7 +228,7 @@ bool configure(int argc, char** argv) {
                 c.args={x,y};
             }
         }
-        if(c.op!="drop"&&c.op!="scene"&&c.op!="window"&&c.op!="drag"&&c.op!="wheel"&&c.op!="click"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name"&&c.op!="inspect"&&c.op!="inspect-details") throw std::runtime_error("unknown plan command");
+        if(c.op!="drop"&&c.op!="scene"&&c.op!="window"&&c.op!="drag"&&c.op!="wheel"&&c.op!="click"&&c.op!="expand"&&c.op!="hover"&&c.op!="seek"&&c.op!="text"&&c.op!="capture"&&!volume_command(c)&&c.op!="key"&&c.op!="wait"&&c.op!="export-name"&&c.op!="inspect"&&c.op!="inspect-details") throw std::runtime_error("unknown plan command");
         if((c.op=="inspect" || c.op=="inspect-details") && !forensic)
             throw std::runtime_error("inspect requires --validation-forensic");
         if((c.op=="inspect" || c.op=="inspect-details" || c.op=="capture") &&
@@ -333,6 +333,16 @@ void input_frame() {
         if(++stage>=4)complete_command=true;return;
     }
     if(cooldown>0){--cooldown;return;}
+    if(c.op=="expand" && stage==0) {
+        // Observe the registered production header state; never force it.
+        // When closed, continue through the ordinary seek/down/up path.
+        if(previous.contains(c.id+".open")){finish("executed","header already open");return;}
+        if(!previous.contains(c.id)) {
+            if(++attempts>=4)finish("executed","header not applicable to this selection");
+            return;
+        }
+        if(!previous.contains(c.id+".closed")){finish("failed","header expansion state not registered");return;}
+    }
     if(stage==0) {
         const auto it=previous.find(c.id);
         if(it==previous.end()) {
@@ -562,6 +572,9 @@ void end_frame(int width,int height,std::size_t applied,const ui::OrbitalUIState
     }
     if(!done() && complete_command) {
         const auto c=commands[next];
+        if(c.op=="expand" && targets.contains(c.id+".closed")) {
+            finish("failed","header remained closed after real pointer input");return;
+        }
         if(c.op=="inspect" || (forensic && c.op=="capture"))write_inspection(c.id);
         if(c.op=="capture" || c.op=="volume_full") {
             framebuffer(output/(c.id+".bmp"),width,height);

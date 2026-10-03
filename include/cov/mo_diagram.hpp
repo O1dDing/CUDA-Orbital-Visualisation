@@ -4,6 +4,7 @@
 #include "cov/model.hpp"
 #include "cov/orbital_view.hpp"
 #include "cov/pi_pair_evidence.hpp"
+#include "cov/mo_sigma_framework.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -175,6 +176,8 @@ struct DiagramSelectionPlan {
     std::size_t hidden_count = 0;
     std::size_t valence_occupied_count = 0;
     std::size_t frontier_virtual_count = 0;
+    std::size_t final_group_count=0, final_member_count=0;
+    bool counts_are_final=false;
     // Complete protected manifolds may legitimately exceed the visual row
     // target. This records only that unavoidable excess; it is never a
     // licence to keep arbitrary unprotected rows.
@@ -195,6 +198,7 @@ struct MODiagramOptions {
                        std::uint8_t,std::uint8_t,std::uint8_t,int)> raster_text;
     std::function<int(const std::string&,int)> raster_text_width;
     const RoutedAnalysis* routed = nullptr; // immutable, same canonical fingerprint
+    const NboIntegration* nbo_source=nullptr; // immutable same-source sigma projector
     std::string routed_identity; // cache generation; changes on every reattachment
     MODiagramMode mode = MODiagramMode::ValenceCentral;
     EnergyUnit energy_unit = EnergyUnit::Hartree;
@@ -281,6 +285,43 @@ using PiInteractionDescriptor = OrbitalEnergyGapDescriptor;
 [[nodiscard]] const char* pi_interaction_kind_name(
     PiInteractionKind kind) noexcept;
 
+// Exclusive buckets in the original complete NAO norm, averaged over the
+// actual canonical members. Missing data is never interpreted as a zero.
+struct MOGroupCompositionLedger {
+    bool available=false, complete=false;
+    std::string status="unavailable", detail, source="unavailable";
+    std::size_t member_count=0;
+    double weight_sum=0, normalization_error=0;
+    double centre_current_s=0, centre_current_p=0, centre_current_d=0,
+           centre_current_f=0, centre_other=0;
+    double ligand_valence=0, ligand_other=0, core=0, unresolved=0;
+    // Subtotals of ligand_valence, not additional exclusive buckets.
+    double ligand_valence_s=0, ligand_valence_p=0;
+};
+struct MOCurrentRadialShell {
+    std::size_t atom=0; // canonical zero-based identity
+    int n=0, l=0;
+    std::string evidence;
+};
+struct MOGroupDisplayDecision {
+    bool included=false, energy_window=false, major_relation=false, frontier=false;
+    double coverage=0; // complete-norm current-centre coverage, not conditional
+    double sigma_coverage=0; // overlapping verified donor projector, full norm
+    std::vector<std::string> reason_codes;
+};
+struct MODiagramGroupAudit {
+    std::vector<std::size_t> member_indices, member_spin_counterparts;
+    double energy_hartree=0, total_occupation=0;
+    MOGroupCompositionLedger composition;
+    MOGroupDisplayDecision display_decision;
+};
+// Current shells are frozen from source shell identities before MO selection.
+[[nodiscard]] std::vector<MOCurrentRadialShell> mo_current_radial_shells(
+    const Wavefunction&, const RoutedAnalysis&, const std::vector<std::size_t>& centres);
+[[nodiscard]] MOGroupCompositionLedger mo_group_composition_ledger(
+    const Wavefunction&, const RoutedAnalysis*, const std::vector<std::size_t>& members,
+    const std::vector<std::size_t>& centres, const std::vector<MOCurrentRadialShell>& shells);
+
 struct MODiagramLevel {
     OrbitalMetadata metadata;
     OrbitalAnnotation annotation;
@@ -315,6 +356,8 @@ struct MODiagramLevel {
     bool raw_data_fallback = false;
     bool approximate_nonbonding = false;
     std::vector<OrbitalGroupBondingResult> bonding_scopes;
+    MOGroupCompositionLedger composition;
+    MOGroupDisplayDecision display_decision;
 };
 
 // One visible row may represent an exactly-degenerate canonical-MO set and,
@@ -400,6 +443,13 @@ struct MODiagramData {
     std::vector<PiInteractionDescriptor> pi_interactions;
     // Includes rejected counterparts with their original member identities.
     std::vector<PiPartnerAssessment> pi_partner_candidates;
+    // One scientific object per actual mode; canonical groups are nodes, not
+    // an arbitrary Cartesian product of purported two-level counterparts.
+    std::vector<PiModeNetworkAssessment> pi_mode_networks;
+    MOSigmaFramework sigma_framework;
+    std::vector<MOCurrentRadialShell> current_radial_shells;
+    // Complete source groups, including folded and opposite-spin groups.
+    std::vector<MODiagramGroupAudit> group_audit;
     ElectronicStateDiagramMetadata electronic_state;
     // Every unambiguous Mayer-supported CN2--CN10 centre, including main-group
     // and non-metal centres.  This is structural metadata and never creates a

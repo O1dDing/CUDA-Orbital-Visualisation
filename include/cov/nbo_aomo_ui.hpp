@@ -85,6 +85,10 @@ struct NboAomoCaption {
     float x=0,y=0,width=0,height=0;
 };
 struct NboAomoViewSnapshot {
+    MOSigmaFramework sigma_framework;
+    std::vector<MOCurrentRadialShell> current_radial_shells;
+    std::vector<MODiagramGroupAudit> group_audit;
+    DiagramSelectionPlan final_selection;
     Language language=Language::English;
     std::string id,integration_id,mo_snapshot_id,capability_status,capability_detail;
     std::string mo_energy_axis_mode,mo_energy_axis_detail;
@@ -103,6 +107,7 @@ struct NboAomoViewSnapshot {
     std::string energy_tick_semantics="linear-neutral";
     std::vector<NboAomoCaption> captions;
     std::vector<PiPartnerAssessment> pi_partner_candidates;
+    std::vector<PiModeNetworkAssessment> pi_mode_networks;
     std::vector<PiInteractionDescriptor> pi_interactions;
     std::vector<OrbitalGroupBondingResult> bonding_groups;
     std::optional<NboOrbitalSelection> selection;

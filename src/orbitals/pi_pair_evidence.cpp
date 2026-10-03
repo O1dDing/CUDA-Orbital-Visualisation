@@ -128,24 +128,33 @@ PiPartnerAssessment assess_pi_channel_partner(const PiPartnerComponents& a,
     }
     for(const auto i:channel.lower_members)
         if(std::find(channel.upper_members.begin(),channel.upper_members.end(),i)!=channel.upper_members.end()) {
-            result.detail="overlapping-counterpart-members";return result;
-        }
-    if(channel.lower_character!="bonding_mixing"||channel.upper_character!="antibonding_mixing"||
-       !(channel.lower_cross_fock_max_hartree<0)||!(channel.upper_cross_fock_min_hartree>0)) {
-        result.detail="same-channel-counterpart-cross-fock-signs-unresolved";return result;
+        result.detail="overlapping-counterpart-members";return result;
+    }
+    if(!channel.mode_assessment.verified||channel.mode_assessment.shared_mode_ids.empty()) {
+        result.detail=channel.mode_assessment.reason.empty()?"verified-common-fragment-mode-unavailable":channel.mode_assessment.reason;return result;
+    }
+    if(!std::isfinite(channel.mode_assessment.lower_cross_fock_mean_hartree)||
+       !std::isfinite(channel.mode_assessment.upper_cross_fock_mean_hartree)||
+       !(channel.mode_assessment.lower_cross_fock_mean_hartree<0)||
+       !(channel.mode_assessment.upper_cross_fock_mean_hartree>0)) {
+        result.detail="common-mode-cross-fock-traces-unresolved";return result;
     }
     result.accepted=true;result.weak=pi_display_negligible(channel.frozen_operator,channel.display_calibration);
     result.direction=PiPairDirection::Coupled;
-    if(channel.direction_verified&&channel.direction=="centre_to_ligand")result.direction=PiPairDirection::Acceptor;
-    if(channel.direction_verified&&channel.direction=="ligand_to_centre")result.direction=PiPairDirection::Donor;
-    result.ranking_score=std::min(-channel.lower_cross_fock_max_hartree,channel.upper_cross_fock_min_hartree);
+    result.channel.direction=channel.mode_assessment.direction;
+    result.channel.direction_verified=channel.mode_assessment.direction_verified;
+    if(channel.mode_assessment.direction_verified&&channel.mode_assessment.direction=="centre_to_ligand")result.direction=PiPairDirection::Acceptor;
+    if(channel.mode_assessment.direction_verified&&channel.mode_assessment.direction=="ligand_to_centre")result.direction=PiPairDirection::Donor;
+    result.ranking_score=std::min(-channel.mode_assessment.lower_cross_fock_mean_hartree,
+                                channel.mode_assessment.upper_cross_fock_mean_hartree);
     result.support_score=std::numeric_limits<double>::quiet_NaN();
     if(result.direction==PiPairDirection::Acceptor||result.direction==PiPairDirection::Donor) {
         if(prior==LigandPiPrior::Acceptor||prior==LigandPiPrior::Donor)
             result.prior_relation=(prior==LigandPiPrior::Acceptor)==(result.direction==PiPairDirection::Acceptor)
                 ?"consistent":"contradicted";
     }
-    result.detail="shared-verified-local-channel-canonical-energy-separation-not-isolated-two-level-splitting";
+    result.detail=channel.mode_assessment.multi_group_relation?
+        "shared-mode-multigroup-membership-not-unique-two-level-pair":"shared-verified-fragment-mode-canonical-energy-separation";
     return result;
 }
 namespace {
@@ -173,7 +182,7 @@ std::string pi_partner_assessment_json(const PiPartnerAssessment& v){
        <<"\",\"prior_relation\":";json_string(out,v.prior_relation);out<<",\"detail\":";json_string(out,v.detail);
     out<<",\"ranking_score\":";number(out,v.ranking_score);out<<",\"support_score\":";number(out,v.support_score);
     const bool local_channel=!v.channel.channel_id.empty();
-    out<<",\"ranking_measure\":\""<<(local_channel?"minimum-endpoint-cross-Fock-magnitude":"weak-composition-heuristic")
+    out<<",\"ranking_measure\":\""<<(local_channel?"minimum-endpoint-common-mode-cross-Fock-trace-per-member":"weak-composition-heuristic")
        <<"\",\"ranking_unit\":\""<<(local_channel?"hartree":"dimensionless")
        <<"\",\"score_meaning\":\""<<(local_channel?"cross-Fock-strength-not-probability":"heuristic-support-not-probability")
        <<"\",\"splitting_hartree\":";number(out,v.splitting_hartree);
@@ -188,6 +197,26 @@ std::string pi_partner_assessment_json(const PiPartnerAssessment& v){
     out<<",\"channel_direction\":";json_string(out,v.channel.direction);
     out<<",\"direction_verified\":"<<(v.channel.direction_verified?"true":"false");
     out<<",\"direction_reference\":";json_string(out,v.channel.direction_reference);
+    const auto& mode=v.channel.mode_assessment;
+    out<<",\"mode_assessment\":{\"verified\":"<<(mode.verified?"true":"false")
+       <<",\"direction_verified\":"<<(mode.direction_verified?"true":"false")
+       <<",\"ordinary_display_eligible\":"<<(mode.ordinary_display_eligible?"true":"false")
+       <<",\"multi_group_relation\":"<<(mode.multi_group_relation?"true":"false");
+    out<<",\"two_endpoint_relation\":"<<(mode.two_endpoint_relation?"true":"false");
+    out<<",\"direction\":";json_string(out,mode.direction);
+    out<<",\"channel_family\":";json_string(out,mode.channel_family);
+    out<<",\"reason\":";json_string(out,mode.reason);
+    out<<",\"lower_coverage\":";number(out,mode.lower_coverage);
+    out<<",\"upper_coverage\":";number(out,mode.upper_coverage);
+    out<<",\"lower_role_coverage\":";number(out,mode.lower_role_coverage);
+    out<<",\"upper_role_coverage\":";number(out,mode.upper_role_coverage);
+    out<<",\"lower_cross_fock_mean_hartree\":";number(out,mode.lower_cross_fock_mean_hartree);
+    out<<",\"upper_cross_fock_mean_hartree\":";number(out,mode.upper_cross_fock_mean_hartree);
+    out<<",\"shared_fragment_contraction_norm_hartree\":";number(out,mode.shared_fragment_contraction_norm_hartree);
+    out<<",\"numerical_coverage_bound\":";number(out,mode.numerical_coverage_bound);
+    out<<",\"primary_coverage_floor\":";number(out,mode.primary_coverage_floor);
+    out<<",\"shared_mode_ids\":[";for(std::size_t i=0;i<mode.shared_mode_ids.size();++i){if(i)out<<',';json_string(out,mode.shared_mode_ids[i]);}
+    out<<"],\"matched_edge_ids\":[";for(std::size_t i=0;i<mode.matched_edge_ids.size();++i){if(i)out<<',';json_string(out,mode.matched_edge_ids[i]);}out<<"]}";
     out<<",\"display_calibration\":{\"validated\":"<<(v.channel.display_calibration.validated?"true":"false");
     out<<",\"version\":";json_string(out,v.channel.display_calibration.version);
     out<<",\"family\":";json_string(out,v.channel.display_calibration.family);
@@ -252,5 +281,34 @@ std::string weak_crystal_field_assessment_json(const WeakCrystalFieldAssessment&
     number(out,v.split_threshold_hartree);out<<",\"overlap_threshold\":";number(out,v.overlap_threshold);
     out<<",\"detail\":";json_string(out,v.detail);out<<",\"first\":";components(out,v.first);
     out<<",\"second\":";components(out,v.second);out<<'}';return out.str();
+}
+std::string pi_mode_network_assessment_json(const PiModeNetworkAssessment& v) {
+    std::ostringstream out;out<<std::setprecision(std::numeric_limits<double>::max_digits10);
+    out<<"{\"channel_id\":";json_string(out,v.channel_id);
+    out<<",\"mode_id\":";json_string(out,v.mode_id);
+    out<<",\"spin\":";json_string(out,v.spin);
+    out<<",\"channel_family\":";json_string(out,v.channel_family);
+    out<<",\"ligand_space_kind\":";json_string(out,v.ligand_space_kind);
+    out<<",\"direction\":";json_string(out,v.direction);
+    out<<",\"verified\":"<<(v.verified?"true":"false")
+       <<",\"direction_verified\":"<<(v.direction_verified?"true":"false")
+       <<",\"ordinary_display_eligible\":"<<(v.ordinary_display_eligible?"true":"false")
+       <<",\"two_endpoint_relation\":"<<(v.two_endpoint_relation?"true":"false");
+    out<<",\"reason\":";json_string(out,v.reason);
+    out<<",\"numerical_coverage_bound\":";number(out,v.numerical_coverage_bound);
+    out<<",\"primary_coverage_floor\":";number(out,v.primary_coverage_floor);
+    out<<",\"weight_definition\":\"trace-of-complete-source-group-projector-divided-by-original-group-rank; no-renormalization\"";
+    out<<",\"nodes\":[";for(std::size_t i=0;i<v.nodes.size();++i){const auto& node=v.nodes[i];if(i)out<<',';
+        out<<"{\"group_index\":"<<node.group_index<<",\"members\":[";
+        for(std::size_t j=0;j<node.members.size();++j){if(j)out<<',';out<<node.members[j];}
+        out<<"],\"centre_weight\":";number(out,node.centre_weight);
+        out<<",\"ligand_weight\":";number(out,node.ligand_weight);
+        out<<",\"donor_role_coverage\":";number(out,node.donor_role_coverage);
+        out<<",\"acceptor_role_coverage\":";number(out,node.acceptor_role_coverage);
+        out<<",\"character\":";json_string(out,node.character);
+        out<<",\"primary\":"<<(node.primary?"true":"false")<<'}';
+    }
+    out<<"],\"matched_edge_ids\":[";for(std::size_t i=0;i<v.matched_edge_ids.size();++i){if(i)out<<',';json_string(out,v.matched_edge_ids[i]);}
+    out<<"]}";return out.str();
 }
 }

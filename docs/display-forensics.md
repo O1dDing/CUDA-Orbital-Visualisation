@@ -72,6 +72,20 @@ An `executed` pointer command alone is never counted as a successful inspection.
 
 ## Completeness and limits
 
+Use `--expand-pi` to open an applicable interaction-details header through the
+actual native input path before capturing its pages. `--preset research` or
+`--preset full` selects the actual AO/MO view combo; the default preserves the
+initial view. These options do not replace selection with an analysis export.
+An absent header is recorded as inapplicable, while a header that remains closed
+after an attempted expansion fails the requested inspection. Mode-network
+headers retain their own open/closed targets for explicit expansion replays.
+
+The collector also checks the frozen complete-NAO composition denominator,
+agreement between selected details and graph objects, final displayed counts,
+common-mode/source-edge identity and the separation of a multi-group network
+from a two-endpoint relation. These checks supplement chemical controls; they
+do not make a successful native session a scientific validation by itself.
+
 The report distinguishes included, attempted, captured, failed and unvisited
 objects. Its scope is the source nodes included in that initial view, not every
 orbital in the source file or every view mode. Folded group headers are listed

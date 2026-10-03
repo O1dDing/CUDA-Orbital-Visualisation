@@ -92,6 +92,7 @@ add_library(cov_orbitals
     src/orbitals/mo_diagram_snapshot.cpp
     src/orbitals/mo_diagram_layout.cpp
     src/orbitals/mo_diagram_chemistry.cpp
+    src/orbitals/mo_sigma_framework.cpp
     src/orbitals/annotation_source_dispatch.cpp
 )
 set_source_files_properties(src/orbitals/orbital_view.cpp PROPERTIES
@@ -450,6 +451,14 @@ if(COV_BUILD_TESTS)
     add_executable(cov_pi_channel_smoke tests/pi_channel_smoke.cpp)
     target_link_libraries(cov_pi_channel_smoke PRIVATE cov_orbitals)
     add_test(NAME pi_channel_smoke COMMAND cov_pi_channel_smoke)
+    add_executable(cov_pi_mode_scope_smoke tests/pi_mode_scope_smoke.cpp)
+    target_link_libraries(cov_pi_mode_scope_smoke PRIVATE cov_parser cov_orbitals)
+    add_test(NAME pi_mode_scope_smoke COMMAND cov_pi_mode_scope_smoke)
+    add_executable(cov_mo_composition_ledger_smoke tests/mo_composition_ledger_smoke.cpp)
+    target_link_libraries(cov_mo_composition_ledger_smoke PRIVATE cov_parser cov_orbitals)
+    add_test(NAME mo_composition_ledger_smoke COMMAND cov_mo_composition_ledger_smoke)
+    add_executable(cov_mo_brief_scope_probe tests/mo_brief_scope_probe.cpp)
+    target_link_libraries(cov_mo_brief_scope_probe PRIVATE cov_parser cov_orbitals)
 
     # These collectors emit raw records for independently frozen control
     # reviewers. A successful process alone is not a scientific verdict.

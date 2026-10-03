@@ -39,6 +39,44 @@ struct NboPiDirectionProjection {
     double actual_occupation_second_order_hartree=0, perturbation_occupation=0;
     std::string e2_reference="unavailable";
     bool recovered_from_unprinted_fock=false;
+    std::string direction="unresolved";
+};
+struct NboPiModeGroup {
+    std::size_t group_index=0;
+    double centre_weight=0, ligand_weight=0;
+    double cross_fock_min_hartree=0, cross_fock_max_hartree=0,
+           cross_fock_mean_hartree=0;
+    // Mode-side projections of the whole canonical group. Their gauge is
+    // shared within this mode; only contracted norms/traces are meaningful.
+    NboMatrix centre_coordinates, ligand_coordinates;
+};
+struct NboPiModeEdgeGroup {
+    std::size_t group_index=0;
+    // Original orthonormal NBO-role weights, used without renormalisation.
+    double donor_weight=0, acceptor_weight=0;
+    // Weights after projecting that very same source edge into this mode.
+    double donor_mode_weight=0, acceptor_mode_weight=0;
+};
+struct NboPiModeEdge {
+    std::string id, direction;
+    std::size_t donor_nbo_id=0, acceptor_nbo_id=0;
+    double projected_fock_hartree=0;
+    std::vector<NboPiModeEdgeGroup> groups;
+};
+struct NboPiModeShell {
+    std::string shell, angular;
+    double fraction=0;
+};
+struct NboPiCouplingMode {
+    std::string id, centre_space_kind, ligand_space_kind;
+    std::size_t rank=0;
+    double singular_min_hartree=0, singular_max_hartree=0;
+    std::vector<double> singular_values_hartree;
+    double numerical_coverage_bound=1;
+    NboMatrix centre_projector_basis, ligand_projector_basis;
+    std::vector<NboPiModeShell> centre_shells;
+    std::vector<NboPiModeGroup> groups;
+    std::vector<NboPiModeEdge> ordered_edges;
 };
 struct NboPiCoupling {
     std::string id, channel="pi", direction="unresolved", direction_evidence;
@@ -62,6 +100,7 @@ struct NboPiCoupling {
     // ligand support and independently assigned internal pi/antipi character.
     std::string ligand_family;
     std::string centre_family;
+    std::string ligand_space_kind="transverse-p-basis";
     std::vector<std::size_t> ligand_family_nbo_ids;
     bool localized_family_verified=false;
     std::string operator_kind="canonical-same-operator";
@@ -77,7 +116,26 @@ struct NboPiCoupling {
     PiFrozenOperatorAssessment frozen_operator;
     std::vector<PiFrozenSpectralGroup> frozen_groups;
     NboSource source;
+    std::vector<NboPiCouplingMode> modes;
 };
+// Evaluate common modes and linked source edges, never the independent union
+// of all donors and all acceptors. Source members are immutable complete groups.
+PiModePairAssessment assess_pi_mode_pair(const NboPiCoupling&,
+    const std::vector<std::size_t>& lower_members,
+    const std::vector<std::size_t>& upper_members,
+    const PiEndpointSymmetryEvidence& lower_symmetry={},
+    const PiEndpointSymmetryEvidence& upper_symmetry={});
+// One mode is one network of complete source groups, never an N-squared list
+// of pair energy gaps. A two-endpoint descriptor is a separately verified
+// dominant reduction; the full network remains available in the source mode.
+PiModeNetworkAssessment assess_pi_mode_network(const NboPiCoupling&,
+    const NboPiCouplingMode&);
+// All matrices use the same orthonormal NAO reference. Optional source-column
+// mapping connects immutable global canonical indices to this spin's columns.
+// Recomputes modes without changing the parent channel, source or canonical MOs.
+void populate_pi_coupling_modes(NboPiCoupling&,const NboMatrix& fock,
+    const NboMatrix& canonical_columns,const NboMatrix* localized_columns=nullptr,
+    const std::vector<std::size_t>& canonical_source_columns={});
 struct NboPiCouplingAnalysis {
     std::string status="insufficient_evidence", reason;
     std::vector<NboPiCoupling> couplings;

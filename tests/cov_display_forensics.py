@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 import hashlib
 import gzip
 import json
+import math
 import ntpath
 import os
 from pathlib import Path
@@ -198,7 +199,7 @@ class Plan:
 
 
 def inventory_plan(package: Path, capture: bool = False, language: str = "zh",
-                   resolution: int = 48) -> Plan:
+                   resolution: int = 48, preset: str = "current") -> Plan:
     plan = Plan(["window 2100 1250", f"scene 0.60 0.65 0.35 2.2 0.03 {resolution}"])
     plan.add("drop", package)
     plan.add("wait", "load")
@@ -209,6 +210,11 @@ def inventory_plan(package: Path, capture: bool = False, language: str = "zh",
             plan.add("key", "Down")
         plan.add("key", "Enter")
         plan.add("wait", "language-settle")
+    if preset != "current":
+        plan.add("seek", "aomo.preset")
+        plan.add("click", "aomo.preset")
+        plan.add("click", "aomo.preset." + preset)
+        plan.add("wait", "preset-settle")
     plan.add("inspect", "inventory")
     if capture:
         plan.add("capture", "inventory-frame")
@@ -294,8 +300,8 @@ def needs_choice(node: dict, inventory_nodes: list[dict]) -> bool:
 
 def sweep_plan(package: Path, nodes: list[dict], capture: bool = False,
                language: str = "zh", inventory_nodes: list[dict] | None = None,
-               resolution: int = 48) -> Plan:
-    plan = inventory_plan(package, language=language, resolution=resolution)
+               resolution: int = 48, expand_pi: bool = False, preset: str = "current") -> Plan:
+    plan = inventory_plan(package, language=language, resolution=resolution, preset=preset)
     for node in nodes:
         hit = node["hit_id"]
         name = artifact_id(hit)
@@ -311,6 +317,8 @@ def sweep_plan(package: Path, nodes: list[dict], capture: bool = False,
         plan.add("wait", "selection-settle")
         plan.add("inspect", name + "-selected")
         plan.add("click", "diagram.details")
+        if expand_pi:
+            plan.add("expand", "details.pi.toggle")
         plan.add("inspect-details", name + "-details")
         if capture:
             plan.add("capture", name + "-details-frame")
@@ -318,6 +326,7 @@ def sweep_plan(package: Path, nodes: list[dict], capture: bool = False,
         plan.add("click", "diagram.details.close.bottom")
         plan.attempts.append({"hit_id": hit, "node_id": node.get("id"), "artifact_id": name,
                               "overlap_choice": choice,
+                              "pi_expansion_requested": expand_pi,
                               "command_start": start, "command_end": len(plan.commands),
                               "node": node})
     return plan
@@ -417,12 +426,106 @@ def duplicate_gap_pairs(view: dict) -> list[dict]:
     by_pair: dict[tuple, list[dict]] = {}
     for gap in draw_records(view, "details.energy-gap"):
         key = (gap.get("gap_kind"), tuple(sorted(gap.get("lower_orbitals", []))),
-               tuple(sorted(gap.get("upper_orbitals", []))))
+               tuple(sorted(gap.get("upper_orbitals", []))),gap.get("channel_identity"))
         by_pair.setdefault(key, []).append(gap)
     return [{"observation": "duplicate_displayed_gap_endpoint_pair", "gap_kind": key[0],
              "lower_orbitals": list(key[1]), "upper_orbitals": list(key[2]),
+             "channel_identity": key[3],
              "record_count": len(gaps), "labels": [g.get("label") for g in gaps]}
             for key, gaps in by_pair.items() if len(gaps) > 1]
+
+
+COMPOSITION_BUCKETS = ("centre_current_s", "centre_current_p", "centre_current_d",
+                       "centre_current_f", "centre_other", "ligand_valence",
+                       "ligand_other", "core", "unresolved")
+
+
+def display_semantics(view: dict, require_pi_expanded: bool = False) -> dict:
+    """Check the exact frozen graph and details records that produced this draw.
+
+    These are mechanical invariants, not a substitute for chemical positive and
+    negative controls. Missing complete source data is not reported as zero.
+    """
+    failures, checked = [], set()
+    snapshots = draw_records(view, "forensic.aomo")
+    snapshot = snapshots[-1] if snapshots else {}
+    ledgers = [g.get("composition") for g in snapshot.get("group_audit", [])]
+    ledgers += draw_records(view, "details.composition")
+    for ledger in ledgers:
+        if not ledger or not ledger.get("available") or not ledger.get("complete"):
+            continue
+        checked.add("complete-nao-normalization")
+        values = [ledger.get(k) for k in COMPOSITION_BUCKETS]
+        if any(not isinstance(v, (int, float)) or not math.isfinite(v) or v < -1e-10 for v in values):
+            failures.append("A complete NAO composition has an invalid exclusive bucket")
+        else:
+            # weight_sum is the measured source norm. Positive missing norm is
+            # explicitly retained in unresolved, so exclusive buckets need not
+            # equal weight_sum to tighter accuracy than that measured residual.
+            error = ledger.get("normalization_error", 0)
+            weight_sum = ledger.get("weight_sum", 0)
+            if (not isinstance(error, (int, float)) or not math.isfinite(error) or
+                    error < 0 or error > 1e-5 or
+                    abs(weight_sum - 1) > error + 1e-10 or
+                    abs(sum(values) - weight_sum) > error + 1e-10 or
+                    abs(sum(values) - 1) > 1e-5 + 1e-10):
+                failures.append("Complete NAO exclusive buckets do not close to the original norm")
+    counts = snapshot.get("final_counts", {})
+    groups = snapshot.get("group_audit", [])
+    if groups and counts.get("counts_are_final"):
+        checked.add("final-visible-counts")
+        included = [g for g in groups if g.get("display_decision", {}).get("included")]
+        members = {m for g in included for key in ("member_indices", "member_spin_counterparts")
+                   for m in g.get(key, []) if isinstance(m, int)}
+        if len(included) != counts.get("groups") or len(members) != counts.get("members"):
+            failures.append("Final group/member counts differ from the frozen displayed membership")
+        if counts.get("occupied_members", 0) + counts.get("empty_members", 0) != counts.get("members"):
+            failures.append("Occupied/empty counts do not partition final members")
+        if any(not g.get("display_decision", {}).get("reason_codes") for g in groups):
+            failures.append("A retained or folded group has no recorded decision reason")
+    detail_compositions = draw_records(view, "details.composition")
+    if detail_compositions and not snapshot.get("selected_side_node_id"):
+        focus = snapshot.get("focused_canonical_index")
+        matching = [n for n in snapshot.get("nodes", []) if n.get("lane") == 1 and n.get("canonical_index") == focus]
+        if matching and matching[0].get("composition"):
+            checked.add("graph-details-same-composition")
+            if matching[0]["composition"] != detail_compositions[-1]:
+                failures.append("Graph and actual selected details use different composition ledgers")
+    brief = snapshot.get("view", {}).get("preset") == 0
+    for gap in draw_records(view, "details.energy-gap"):
+        mode = gap.get("mode")
+        if mode is None:
+            continue  # Crystal-field and older records do not claim this check.
+        checked.add("shared-mode-and-direction")
+        if not mode.get("verified") or not mode.get("shared_mode_ids") or not mode.get("shared_fragment_contraction_norm_hartree", 0) > 0:
+            failures.append("A displayed pi relation has no verified common fragment mode")
+        if not mode.get("two_endpoint_relation"):
+            failures.append("A multi-group mode was displayed as a two-endpoint relation")
+        if mode.get("direction") in ("centre_to_ligand", "ligand_to_centre") and (
+                not mode.get("direction_verified") or not mode.get("matched_edge_ids")):
+            failures.append("Displayed direction lacks a linked ordered source relation")
+        if brief and not gap.get("ordinary_display_eligible"):
+            failures.append("A secondary or out-of-scope pi relation leaked into brief details")
+    network_ids = set()
+    for record in draw_records(view, "details.pi-network"):
+        network = record.get("network", {})
+        checked.add("one-network-per-common-mode")
+        identity = (network.get("channel_id"), network.get("mode_id"))
+        if identity in network_ids:
+            failures.append("The same common-mode network was displayed more than once")
+        network_ids.add(identity)
+        if not network.get("verified") or not network.get("nodes") or not network.get("mode_id"):
+            failures.append("A displayed network lacks a verified mode or actual member groups")
+        if brief and not network.get("ordinary_display_eligible"):
+            failures.append("An auxiliary network leaked into brief details")
+        if network.get("direction") in ("centre_to_ligand", "ligand_to_centre", "bidirectional") and (
+                not network.get("direction_verified") or not network.get("matched_edge_ids")):
+            failures.append("A displayed network direction lacks linked ordered source evidence")
+    target_ids = {t.get("id") for t in view.get("targets", [])}
+    if require_pi_expanded and "details.pi.toggle.closed" in target_ids:
+        failures.append("Applicable pi details remain closed; their text was not inspected")
+    return {"checked": sorted(checked), "failures": sorted(set(failures)),
+            "status": "failed" if failures else "passed" if checked else "not_applicable"}
 
 
 BONDING_CAPTIONS = ("All-pair bonding character", "各原子对的综合成键作用", "全原子対の結合性",
@@ -500,7 +603,7 @@ def evaluate_attempt(attempt: dict, native: Path, actions: list[dict],
         textual_complete = False
     run_count = 0
     observations, bonding = [], []
-    page_completeness = []
+    page_completeness, semantic_checks = [], []
     for page in pages:
         try:
             value = json.loads(page.read_text(encoding="utf-8"))
@@ -520,6 +623,9 @@ def evaluate_attempt(attempt: dict, native: Path, actions: list[dict],
                 if active != detail[-1].get("active_view"):
                     failures.append(page.name + ": details active identity differs from selected capture")
             complete = rendered_completeness(value, details_only=True)
+            semantics = display_semantics(value, attempt.get("pi_expansion_requested", False))
+            semantic_checks.append(dict(semantics, page=page.name))
+            failures.extend(page.name + ": " + item for item in semantics["failures"])
             page_completeness.append(dict(complete, page=page.name))
             textual_complete &= complete["complete"]
             failures.extend(page.name + ": " + item for item in complete["failures"])
@@ -533,6 +639,7 @@ def evaluate_attempt(attempt: dict, native: Path, actions: list[dict],
         failures.append("Details pages contain no decoded runs from the real details window")
     result.update(details_text_run_count=run_count, observed_duplicate_gap_pairs=observations,
                   textual_capture_complete=textual_complete, details_text_completeness=page_completeness,
+                  display_semantics=semantic_checks,
                   observed_bonding_labels=bonding, failures=failures,
                   status="captured" if not failures else "failed")
     return result
@@ -608,6 +715,16 @@ def find_cases(library: Path, requested: list[str] | None) -> list[tuple[str, Pa
     else:
         packages = library / "packages" if (library / "packages").is_dir() else library
         available = {p.name: p.resolve() for p in packages.iterdir() if p.is_dir() and (p / "canonical.fchk").is_file()}
+    # Package folders can acquire readable suffixes without changing source IDs.
+    # Resolve a requested stable ID only when its actual folder is unambiguous.
+    packages = base / "packages" if (base / "packages").is_dir() else base
+    for cid in requested or list(available):
+        if cid in available and (available[cid] / "canonical.fchk").is_file():
+            continue
+        matches = [p.resolve() for p in packages.iterdir() if p.is_dir() and
+                   p.name.startswith(cid + "-") and (p / "canonical.fchk").is_file()]
+        if len(matches) == 1:
+            available[cid] = matches[0]
     ids = list(dict.fromkeys(requested)) if requested else sorted(available)
     absent = [cid for cid in ids if cid not in available]
     if absent:
@@ -633,6 +750,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, help="Maximum cases to collect")
     parser.add_argument("--node-limit", type=int, help="Maximum source nodes per case; coverage records omissions")
     parser.add_argument("--capture", action="store_true", help="Also preserve native BMP frame captures")
+    parser.add_argument("--expand-pi", action="store_true", help="Use real input to open applicable pi details before each capture")
+    parser.add_argument("--preset", choices=("current", "teaching", "research", "full"), default="current",
+                        help="Select an available AO/MO view through its actual combo")
     parser.add_argument("--language", choices=("en", "zh", "ja", "fr", "current"), default="zh",
                         help="Select via the actual language combo (default zh)")
     parser.add_argument("--resolution", type=int, default=48, help="Actual scene mesh setting (default 48; no scientific surface acceptance)")
@@ -664,7 +784,7 @@ def main(argv: list[str] | None = None) -> int:
     sweep = bool(args.sweep or args.all_nodes or args.selected)
     summary = {"schema": "cov.display-forensics.collection.v1", "exe": str(exe),
                "library": str(args.library.resolve()), "mode": "sweep" if sweep else "inventory",
-               "language": args.language, "scene_resolution": args.resolution,
+               "language": args.language, "scene_resolution": args.resolution, "requested_preset": args.preset,
                "cases": [], "scientific_verdict": "not assessed; actual UI evidence only"}
     any_failed = False
     for cid, package in cases:
@@ -674,7 +794,7 @@ def main(argv: list[str] | None = None) -> int:
         case = {"case_id": cid, "package": str(package), "directory": folder.name, "attempts": []}
         nodes = []
         try:
-            inv = run_native(exe, package, inventory_plan(package, args.capture, args.language, args.resolution), folder / "inventory", args.timeout)
+            inv = run_native(exe, package, inventory_plan(package, args.capture, args.language, args.resolution,args.preset), folder / "inventory", args.timeout)
             case["inventory_run"] = inv
             view = json.loads((folder / "inventory/native/inventory.view.json").read_text(encoding="utf-8"))
             identity = input_identity(view, package / "canonical.fchk")
@@ -682,6 +802,9 @@ def main(argv: list[str] | None = None) -> int:
             if not identity["matched"]:
                 raise RuntimeError(identity["failure"])
             nodes, context = node_inventory(view)
+            case["display_semantics"] = display_semantics(view)
+            if case["display_semantics"]["failures"]:
+                raise RuntimeError("; ".join(case["display_semantics"]["failures"]))
             case["inventory"] = context
             write_json(folder / "nodes.json", {"context": context, "nodes": nodes})
             write_rendered_report(folder / "inventory/native", folder / "inventory-rendered.txt")
@@ -689,7 +812,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise RuntimeError("Inventory native session did not complete successfully")
             if sweep:
                 chosen = choose_nodes(nodes, args.selected, args.node_limit)
-                plan = sweep_plan(package, chosen, args.capture, args.language, nodes, args.resolution)
+                plan = sweep_plan(package, chosen, args.capture, args.language, nodes, args.resolution,args.expand_pi,args.preset)
                 print(f"{cid}: batch-inspecting {len(chosen)} source nodes (including clipped nodes)", flush=True)
                 run = run_native(exe, package, plan, folder / "sweep", args.timeout)
                 case["sweep_run"] = run

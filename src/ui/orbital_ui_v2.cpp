@@ -6,6 +6,7 @@
 #include "cov/ui_forensic_helpers.hpp"
 
 #include "cov/mo_diagram.hpp"
+#include "cov/mo_group_display_json.hpp"
 #include "cov/mo_diagram_layout.hpp"
 #include "cov/orbital_ui_text.hpp"
 #include "cov/local_orbital_symmetry.hpp"
@@ -491,6 +492,104 @@ std::string delocalised_atom_list(const DelocalisedPiDescriptor& descriptor) {
 
 ImU32 pi_interaction_colour(PiInteractionKind kind);
 
+bool pi_relation_visible(const PiInteractionDescriptor& relation,bool brief) {
+    if(relation.orbital_evidence && !relation.orbital_evidence->channel.mode_assessment.two_endpoint_relation)
+        return false;
+    if(!brief)return true;
+    return relation.orbital_evidence && !relation.orbital_evidence->weak &&
+        relation.orbital_evidence->channel.mode_assessment.ordinary_display_eligible;
+}
+
+std::string pi_relation_scope(const PiInteractionDescriptor& relation,Language language) {
+    if(!relation.orbital_evidence)return {};
+    const auto& mode=relation.orbital_evidence->channel.mode_assessment;
+    return aomo_text(language,mode.channel_family=="valence-d-pi"?"Valence d-pi channel":
+        mode.channel_family=="auxiliary-p-pi"?"Additional p-pi channel":"Additional radial channel");
+}
+
+std::string pi_relation_identity(const PiInteractionDescriptor& relation) {
+    if(!relation.orbital_evidence)return {};
+    const auto& c=relation.orbital_evidence->channel;
+    std::string identity=c.channel_id;
+    for(const auto& mode:c.mode_assessment.shared_mode_ids)identity+="|"+mode;
+    return identity;
+}
+
+std::string pi_relation_mode_json(const PiInteractionDescriptor& relation) {
+    if(!relation.orbital_evidence)return "null";
+    const auto& m=relation.orbital_evidence->channel.mode_assessment;
+    const auto strings=[](const std::vector<std::string>& items) {
+        std::string result="[";
+        for(std::size_t i=0;i<items.size();++i){if(i)result+=',';result+=validation::quote(items[i]);}
+        return result+"]";
+    };
+    return "{\"verified\":"+std::string(forensic::boolean(m.verified))+
+        ",\"direction_verified\":"+forensic::boolean(m.direction_verified)+
+        ",\"direction\":"+validation::quote(m.direction)+
+        ",\"family\":"+validation::quote(m.channel_family)+
+        ",\"reason\":"+validation::quote(m.reason)+
+        ",\"multi_group_relation\":"+forensic::boolean(m.multi_group_relation)+
+        ",\"two_endpoint_relation\":"+forensic::boolean(m.two_endpoint_relation)+
+        ",\"shared_mode_ids\":"+strings(m.shared_mode_ids)+
+        ",\"matched_edge_ids\":"+strings(m.matched_edge_ids)+
+        ",\"lower_coverage\":"+forensic::number(m.lower_coverage)+
+        ",\"upper_coverage\":"+forensic::number(m.upper_coverage)+
+        ",\"shared_fragment_contraction_norm_hartree\":"+forensic::number(m.shared_fragment_contraction_norm_hartree)+"}";
+}
+
+const char* pi_network_direction_key(const PiModeNetworkAssessment& network) {
+    if(network.direction=="ligand_to_centre")return "Pi donation";
+    if(network.direction=="centre_to_ligand")return "Pi back-donation";
+    if(network.direction=="bidirectional")return "Pi back-donation and donation";
+    if(network.direction=="occupied_space_mixing")return "Occupied-space mixing";
+    return "Pi mixing";
+}
+
+std::string pi_network_scope(const PiModeNetworkAssessment& network,Language language) {
+    const char* key=network.ligand_space_kind=="transverse-p-basis"?"Transverse p reference space":
+        network.channel_family=="valence-d-pi"?"Valence d-pi channel":
+        network.channel_family=="auxiliary-p-pi"?"Additional p-pi channel":"Additional radial channel";
+    return aomo_text(language,key);
+}
+
+bool pi_network_visible(const PiModeNetworkAssessment& network,bool brief,
+                        const std::optional<std::size_t> selected={}) {
+    if(!network.verified)return false;
+    if(brief && !network.ordinary_display_eligible)return false;
+    if(!selected)return true;
+    return std::any_of(network.nodes.begin(),network.nodes.end(),[&](const auto& node) {
+        return (!brief||node.primary) &&
+            std::find(node.members.begin(),node.members.end(),*selected)!=node.members.end();
+    });
+}
+
+bool pi_network_has_visible_pair(const MODiagramData& data,const PiModeNetworkAssessment& network,
+                                bool brief,const std::optional<std::size_t> selected={}) {
+    return std::any_of(data.pi_interactions.begin(),data.pi_interactions.end(),[&](const auto& relation) {
+        if(!pi_relation_visible(relation,brief)||!relation.orbital_evidence)return false;
+        const auto& channel=relation.orbital_evidence->channel;
+        if(channel.channel_id!=network.channel_id ||
+           std::find(channel.mode_assessment.shared_mode_ids.begin(),channel.mode_assessment.shared_mode_ids.end(),
+               network.mode_id)==channel.mode_assessment.shared_mode_ids.end())return false;
+        return !selected || std::find(relation.lower_orbitals.begin(),relation.lower_orbitals.end(),*selected)!=relation.lower_orbitals.end() ||
+            std::find(relation.upper_orbitals.begin(),relation.upper_orbitals.end(),*selected)!=relation.upper_orbitals.end();
+    });
+}
+
+std::string coordination_skeleton_name(const MODiagramData& data,
+                                      const Wavefunction& wavefunction) {
+    if(data.ligand_field_metal_atom>=wavefunction.atoms.size())return {};
+    std::string name=wavefunction.atoms[data.ligand_field_metal_atom].symbol;
+    std::map<std::string,std::size_t> neighbours;
+    for(const auto atom:data.ligand_field_ligand_atoms)
+        if(atom<wavefunction.atoms.size())++neighbours[wavefunction.atoms[atom].symbol];
+    for(const auto& [symbol,count]:neighbours) {
+        name+=symbol;
+        if(count>1)name+=std::to_string(count);
+    }
+    return name;
+}
+
 void draw_level_details(const MODiagramData& data,
                         const MODiagramLevel& level,
                         const Wavefunction& wavefunction,
@@ -532,10 +631,27 @@ void draw_level_details(const MODiagramData& data,
     ImGui::TextWrapped(orbital_tr(OrbitalText::GroupRepresentativeData,language),
         displayed_canonical_name(wavefunction,level.metadata.orbital_index,state).c_str());
     if (!data.ligand_field_point_group.empty()) {
-        labelled_value(orbital_tr(OrbitalText::LocalLigandField, language),
-                       point_group_display(data.ligand_field_point_group)+" · "+
-                           orbital_tr(OrbitalText::FirstShell, language),
+        labelled_value(aomo_text(language,"Local coordination skeleton"),
+                       coordination_skeleton_name(data,wavefunction)+" · "+
+                           point_group_display(data.ligand_field_point_group),
                        kSymmetryColour);
+        cov::validation::item("details.coordination-skeleton");
+        if(ImGui::IsItemHovered() && data.ligand_field_metal_atom<wavefunction.atoms.size()) {
+            std::string atoms;
+            for(const auto atom:data.ligand_field_ligand_atoms) {
+                if(atom>=wavefunction.atoms.size())continue;
+                if(!atoms.empty())atoms+=", ";
+                atoms+=wavefunction.atoms[atom].symbol+std::to_string(atom+1);
+            }
+            ImGui::SetTooltip("%s: %s%zu; %s",aomo_text(language,"Centre and coordinating atoms"),
+                wavefunction.atoms[data.ligand_field_metal_atom].symbol.c_str(),
+                data.ligand_field_metal_atom+1,atoms.c_str());
+        }
+        if(validation::forensic_mode())
+            validation::record("details.coordination-skeleton","{\"centre_atom\":"+
+                std::to_string(data.ligand_field_metal_atom)+",\"coordinating_atoms\":"+
+                forensic::indices(data.ligand_field_ligand_atoms)+",\"point_group\":"+
+                validation::quote(data.ligand_field_point_group)+",\"scope\":\"first-coordination-shell\"}");
         if (!data.ligand_field_geometry_name.empty()) {
             labelled_value(orbital_tr(OrbitalText::CoordinationGeometry, language),
                            localised_geometry_name(
@@ -613,10 +729,31 @@ void draw_level_details(const MODiagramData& data,
     labelled_number(orbital_tr(OrbitalText::GroupOccupation, language),
                     fixed_number(level.total_occupation,3));
     const auto ml=metal_ligand_detail_availability(wavefunction,data,level);
-    if (ml.scope!=ChemistryStatus::NotApplicable && ml.scope!=ChemistryStatus::Unavailable) {
+    if ((level.composition.available && level.composition.complete) ||
+        (ml.scope!=ChemistryStatus::NotApplicable && ml.scope!=ChemistryStatus::Unavailable)) {
         ImGui::TextDisabled("%s",orbital_tr(OrbitalText::MetalLigandGroupAnalysis,language));
         cov::validation::item("details.metal-ligand.scope");
-        if(ml.populations){
+        if(level.composition.available && level.composition.complete) {
+            const auto& c=level.composition;
+            ImGui::TextDisabled("%s",aomo_text(language,"Full orbital composition (NAO)"));
+            labelled_number(aomo_text(language,"Current metal s / p / d"),
+                fixed_number(100*c.centre_current_s,2)+"% / "+
+                fixed_number(100*c.centre_current_p,2)+"% / "+fixed_number(100*c.centre_current_d,2)+"%");
+            cov::validation::item("details.composition.current-metal");
+            for(const auto& [label,weight]:std::initializer_list<std::pair<const char*,double>>{
+                {"Current metal f",c.centre_current_f},{"Other metal shells",c.centre_other},
+                {"Ligand valence",c.ligand_valence},{"Other ligand space",c.ligand_other},
+                {"Core composition",c.core},{"Uncovered composition",c.unresolved}}) {
+                if(weight>=0.00005)labelled_number(aomo_text(language,label),fixed_number(100*weight,2)+"%");
+            }
+            const double metal=c.centre_current_s+c.centre_current_p+c.centre_current_d+c.centre_current_f;
+            const char* dominance=metal>0.5?"Metal valence dominated":
+                c.ligand_valence>0.5?"Ligand valence dominated":
+                c.centre_other+c.ligand_other>0.5?"Additional space dominated":"Mixed composition";
+            labelled_value(aomo_text(language,"Main composition"),aomo_text(language,dominance),kNumericColour);
+            cov::validation::item("details.composition.dominance");
+        } else if(ml.populations){
+        ImGui::TextDisabled("%s",aomo_text(language,"Local reference projection"));
         labelled_number(orbital_tr(OrbitalText::MetalSPD, language),fixed_number(100.0*level.metal_s_weight,1)+"% / "+
              fixed_number(100.0*level.metal_p_weight,1)+"% / "+
              fixed_number(100.0*level.metal_d_weight,1)+"%");
@@ -628,6 +765,10 @@ void draw_level_details(const MODiagramData& data,
         }
         if(ml.overlap){labelled_number(orbital_tr(OrbitalText::MetalLigandOverlap, language),fixed_number(level.metal_ligand_overlap,6));
         cov::validation::item("details.metal-ligand.overlap");}
+    }
+    if(validation::active()) {
+        validation::record("details.composition",mo_group_composition_json(level.composition));
+        validation::record("details.display-decision",mo_group_display_decision_json(level.display_decision));
     }
     cov::validation::item("details.metal-ligand.end");
     if (level.raw_data_fallback) {
@@ -650,31 +791,53 @@ void draw_level_details(const MODiagramData& data,
         return localised_pi_interaction_kind(relation.kind,language);
     };
     bool has_pi=false;
-    const PiInteractionDescriptor* primary_pi=nullptr;
+    std::map<std::string,const PiInteractionDescriptor*> primary_channels;
     for(const auto& interaction:data.pi_interactions) {
-        if(brief && interaction.orbital_evidence && interaction.orbital_evidence->weak)continue;
+        if(!pi_relation_visible(interaction,brief))continue;
         if(interaction.lower_level!=level_index && interaction.upper_level!=level_index &&
            interaction.retained_level!=level_index)continue;
         has_pi=true;
-        if((interaction.kind==PiInteractionKind::Donor||interaction.kind==PiInteractionKind::Acceptor) &&
-           (!primary_pi || interaction.display_strength_hartree>primary_pi->display_strength_hartree))primary_pi=&interaction;
+        if(interaction.kind==PiInteractionKind::Donor||interaction.kind==PiInteractionKind::Acceptor)
+            primary_channels.emplace(pi_relation_identity(interaction),&interaction);
     }
-    if(brief && primary_pi)
-        labelled_value(orbital_tr(OrbitalText::PiInteraction,language),
-            pi_label(*primary_pi),pi_interaction_colour(primary_pi->kind));
-    const bool show_pi_details=!brief || (has_pi && ImGui::CollapsingHeader(aomo_text(language,"Pi interaction details")));
-    std::set<std::tuple<std::size_t,std::size_t,PiInteractionKind,OrbitalEnergyGapKind>> shown_relations;
+    std::vector<const PiModeNetworkAssessment*> selected_networks;
+    for(const auto& network:data.pi_mode_networks)
+        if(pi_network_visible(network,brief,orbital_index) && !pi_network_has_visible_pair(data,network,brief,orbital_index)) {
+            selected_networks.push_back(&network);has_pi=true;
+        }
+    if(brief) {
+        // Distinct qualified physical channels may have different directions.
+        // Report the directions present, never vote by duplicate record count.
+        std::set<std::string> shown_directions;
+        for(const auto& [identity,relation]:primary_channels)
+            if(shown_directions.insert(pi_label(*relation)).second)
+                labelled_value(aomo_text(language,"Valence d-pi channel"),
+                    pi_label(*relation),pi_interaction_colour(relation->kind));
+        for(const auto* network:selected_networks) {
+            const std::string label=aomo_text(language,pi_network_direction_key(*network));
+            if(shown_directions.insert(label).second)
+                labelled_value(aomo_text(language,"Valence d-pi channel"),label,kPiColour);
+        }
+    }
+    bool show_pi_details=!brief;
+    if(brief && has_pi) {
+        show_pi_details=ImGui::CollapsingHeader(aomo_text(language,"Pi interaction details"));
+        validation::item("details.pi.toggle");
+        validation::item(show_pi_details?"details.pi.toggle.open":"details.pi.toggle.closed");
+    }
+    std::set<std::tuple<std::size_t,std::size_t,PiInteractionKind,OrbitalEnergyGapKind,std::string>> shown_relations;
     std::size_t gap_index=0;
     for (const auto* gap:orbital_energy_gaps(data)) {
         const auto& interaction=*gap;
         const bool cf=interaction.gap_kind==OrbitalEnergyGapKind::CrystalField;
-        if(brief && interaction.orbital_evidence && interaction.orbital_evidence->weak)continue;
+        if(!cf && !pi_relation_visible(interaction,brief))continue;
         if(!cf && !show_pi_details)continue;
         const auto prefix="details.energy-gap."+std::to_string(gap_index++);
         if (interaction.lower_level!=level_index &&
             interaction.upper_level!=level_index &&
             interaction.retained_level!=level_index) continue;
-        if(!shown_relations.insert({interaction.lower_level,interaction.upper_level,interaction.kind,interaction.gap_kind}).second)continue;
+        if(!shown_relations.insert({interaction.lower_level,interaction.upper_level,interaction.kind,interaction.gap_kind,
+            pi_relation_identity(interaction)}).second)continue;
         ImGui::PushID(static_cast<int>(gap_index));
         if(!cf && state.nbo_ui)for(const auto* members:{&interaction.lower_orbitals,&interaction.upper_orbitals}) {
             if(members->empty())continue;
@@ -682,6 +845,13 @@ void draw_level_details(const MODiagramData& data,
             const auto label=displayed_canonical_name(wavefunction,target,state)+"##counterpart"+std::to_string(target);
             if(ImGui::SmallButton(label.c_str()))state.nbo_ui->focus.pending_canonical_selection=target;
             cov::validation::item(prefix+".endpoint."+std::to_string(target));
+        }
+        if(!cf) {
+            const auto scope=pi_relation_scope(interaction,language);
+            const bool multiple=interaction.orbital_evidence &&
+                interaction.orbital_evidence->channel.mode_assessment.multi_group_relation;
+            ImGui::TextDisabled("%s%s%s",scope.c_str(),multiple?" · ":"",
+                multiple?aomo_text(language,"Shared orbital space"):"");
         }
         labelled_value(orbital_tr(cf?OrbitalText::CrystalFieldGap:OrbitalText::PiInteraction, language),
                        cf?interaction.symmetry:((interaction.orbital_evidence&&interaction.orbital_evidence->weak)?
@@ -699,9 +869,52 @@ void draw_level_details(const MODiagramData& data,
                 ",\"label\":"+validation::quote(cf?interaction.symmetry:pi_label(interaction))+
                 ",\"lower_orbitals\":"+forensic::indices(interaction.lower_orbitals)+
                 ",\"upper_orbitals\":"+forensic::indices(interaction.upper_orbitals)+
+                ",\"channel_identity\":"+validation::quote(pi_relation_identity(interaction))+
+                ",\"channel_scope\":"+validation::quote(pi_relation_scope(interaction,language))+
+                ",\"ordinary_display_eligible\":"+forensic::boolean(pi_relation_visible(interaction,true))+
+                ",\"mode\":"+pi_relation_mode_json(interaction)+
                 ",\"splitting_hartree\":"+forensic::number(interaction.splitting_hartree)+"}");
         else if(validation::active())
             cov::validation::record("details.energy-gap",orbital_energy_gap_json(interaction,state.energy_unit));
+        ImGui::PopID();
+    }
+
+    if(show_pi_details)for(const auto* network:selected_networks) {
+        ImGui::PushID(network->mode_id.c_str());
+        const std::string heading=pi_network_scope(*network,language)+" · "+
+            aomo_text(language,"Multi-group mixing")+"##mode-network";
+        const bool open=ImGui::TreeNode(heading.c_str());
+        validation::item("details.pi-network."+network->mode_id);
+        validation::item("details.pi-network."+network->mode_id+(open?".open":".closed"));
+        if(validation::forensic_mode())validation::record("details.pi-network",
+            "{\"expanded\":"+std::string(forensic::boolean(open))+",\"network\":"+
+            pi_mode_network_assessment_json(*network)+"}");
+        if(open) {
+            // A mode with several participating groups is one network. It has
+            // no unique pairwise MO gap and must not be expanded into all pairs.
+            const bool physical=network->ligand_space_kind!="transverse-p-basis";
+            if(physical)labelled_value(orbital_tr(OrbitalText::PiInteraction,language),
+                aomo_text(language,pi_network_direction_key(*network)),kPiColour);
+            for(const auto& node:network->nodes) {
+                if(node.members.empty() || (brief&&!node.primary))continue;
+                const auto target=node.members.front();
+                if(target>=wavefunction.orbitals.size())continue;
+                ImGui::PushID(static_cast<int>(node.group_index));
+                const auto label=displayed_canonical_name(wavefunction,target,state);
+                if(ImGui::SmallButton(label.c_str()) && state.nbo_ui)
+                    state.nbo_ui->focus.pending_canonical_selection=target;
+                validation::item("details.pi-network.endpoint."+network->mode_id+"."+std::to_string(target));
+                ImGui::SameLine();
+                ImGui::TextDisabled("%s: %.2f%% / %.2f%%",aomo_text(language,"Mode contribution: metal / ligand"),
+                    100*node.centre_weight,100*node.ligand_weight);
+                if(validation::forensic_mode())validation::record("details.pi-network.node",
+                    "{\"mode_id\":"+validation::quote(network->mode_id)+",\"members\":"+
+                    forensic::indices(node.members)+",\"metal\":"+forensic::number(node.centre_weight)+
+                    ",\"ligand\":"+forensic::number(node.ligand_weight)+"}");
+                ImGui::PopID();
+            }
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 
@@ -910,12 +1123,13 @@ void draw_ligand_field_pi_interactions(
     const ImVec2 canvas_max,
     const EnergyUnit unit,
     const Language language,
-    const float ui_scale) {
+    const float ui_scale,const bool brief) {
     float bracket_x=canvas_max.x-13.0f*ui_scale;
     std::size_t gap_index=0;
     for (const auto* gap:orbital_energy_gaps(data)) {
         const auto& interaction=*gap;
         const bool cf=interaction.gap_kind==OrbitalEnergyGapKind::CrystalField;
+        if(!cf && !pi_relation_visible(interaction,brief))continue;
         if (interaction.retained_level>=points.size()) continue;
         const ImU32 colour=pi_interaction_colour(interaction.kind);
         const char* symbol=cf?"ΔCF":"Δπ";
@@ -1046,7 +1260,7 @@ bool same_filter_settings(const OrbitalFilterSettings& left,
 
 bool same_diagram_options(const MODiagramOptions& left,
                           const MODiagramOptions& right) noexcept {
-    return left.routed_identity==right.routed_identity &&
+    return left.routed_identity==right.routed_identity && left.nbo_source==right.nbo_source &&
         left.mode==right.mode &&
         left.aomo_scope==right.aomo_scope &&
         left.show_core_background==right.show_core_background &&
@@ -1405,7 +1619,9 @@ void draw_orbital_browser(const Wavefunction& wavefunction,
 void draw_pi_counterpart_navigation(const MODiagramData& data,
     const Wavefunction& wavefunction, const OrbitalUIState& state,
     Language language, OrbitalUIActions& actions) {
-    if(data.pi_interactions.empty())return;
+    const bool brief=state.nbo_ui && state.nbo_ui->aomo.preset==NboAomoPreset::Teaching;
+    if(std::none_of(data.pi_interactions.begin(),data.pi_interactions.end(),[&](const auto& p){return pi_relation_visible(p,brief);}) &&
+       std::none_of(data.pi_mode_networks.begin(),data.pi_mode_networks.end(),[&](const auto& n){return pi_network_visible(n,brief);}))return;
     const bool open=ImGui::TreeNode(aomo_text(language,"Pi counterparts"));
     validation::item("pi.navigation");
     if(!open)return;
@@ -1413,6 +1629,7 @@ void draw_pi_counterpart_navigation(const MODiagramData& data,
     // the frozen canonical members; display labels never resolve identities.
     std::map<std::string,std::vector<const PiInteractionDescriptor*>> channels;
     for(const auto& pair:data.pi_interactions) {
+        if(!pi_relation_visible(pair,state.nbo_ui && state.nbo_ui->aomo.preset==NboAomoPreset::Teaching))continue;
         if(!pair.orbital_evidence || pair.orbital_evidence->channel.channel_id.empty())continue;
         channels[pair.orbital_evidence->channel.channel_id].push_back(&pair);
     }
@@ -1423,6 +1640,7 @@ void draw_pi_counterpart_navigation(const MODiagramData& data,
         const bool internal=id.find("internal-pi-bonding")!=std::string::npos;
         ImGui::Text("%s%s%s",aomo_text(language,star?"Ligand pi*":internal?"Ligand pi":"Metal-ligand pi"),
             channel.spin=="total"?"":" · ",channel.spin=="total"?"":channel.spin.c_str());
+        ImGui::TextDisabled("%s",pi_relation_scope(*pairs.front(),language).c_str());
         for(const auto* pair:pairs) {
             ImGui::PushID(id.c_str());ImGui::PushID(static_cast<int>(ordinal));
             for(const bool upper:{false,true}) {
@@ -1440,6 +1658,26 @@ void draw_pi_counterpart_navigation(const MODiagramData& data,
             ImGui::SameLine();ImGui::TextDisabled("%s",localised_pi_interaction_kind(pair->kind,language));
             ImGui::PopID();ImGui::PopID();++ordinal;
         }
+    }
+    for(const auto& network:data.pi_mode_networks) {
+        if(!pi_network_visible(network,brief) || pi_network_has_visible_pair(data,network,brief))continue;
+        ImGui::PushID(network.mode_id.c_str());
+        const auto heading=pi_network_scope(network,language)+" · "+aomo_text(language,"Multi-group mixing");
+        if(ImGui::TreeNode(heading.c_str())) {
+            for(const auto& node:network.nodes) {
+                if(node.members.empty() || (brief&&!node.primary) || node.members.front()>=wavefunction.orbitals.size())continue;
+                const auto target=node.members.front();
+                ImGui::PushID(static_cast<int>(node.group_index));
+                if(ImGui::SmallButton(displayed_canonical_name(wavefunction,target,state).c_str())) {
+                    actions.select_orbital=target;
+                    validation::record("pi.navigation.network-selection",pi_mode_network_assessment_json(network));
+                }
+                validation::item("pi.navigation.network."+network.mode_id+"."+std::to_string(target));
+                ImGui::PopID();
+            }
+            ImGui::TreePop();
+        }
+        ImGui::PopID();
     }
     ImGui::TreePop();
 }
@@ -1538,6 +1776,7 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
     }
     options.mode=state.diagram_mode;
     options.routed=state.nbo_ui?state.nbo_ui->routed:nullptr;
+    options.nbo_source=state.nbo_ui?state.nbo_ui->integration:nullptr;
     if(options.routed)options.routed_identity=options.routed->canonical_fingerprint+
         ":"+options.routed->integration_id;
     options.energy_unit = state.energy_unit;
@@ -1809,7 +2048,8 @@ void draw_energy_diagram(const Wavefunction& wavefunction,
 
     draw_pi_groups(draw, points, p1, ui_scale);
     draw_ligand_field_pi_interactions(
-        draw,data,points,p1,drawn_options.energy_unit,language,ui_scale);
+        draw,data,points,p1,drawn_options.energy_unit,language,ui_scale,
+        state.nbo_ui && state.nbo_ui->aomo.preset==NboAomoPreset::Teaching);
     if(capture_forensic)validation::record("forensic.diagram",
         "{\"schema\":1,\"snapshot_id\":"+validation::quote(data.view?data.view->id:"")+
         ",\"canvas\":\"canonical\",\"mode\":"+std::to_string(static_cast<int>(drawn_options.mode))+

@@ -36,6 +36,7 @@ int main(int argc,char** argv) {try {
     out<<"{\"route\":"<<cov::serialize_routed_analysis_json(route)<<",\"views\":[";
     for(int compact=0;compact<2;++compact) {
         cov::MODiagramOptions options;options.routed=&route;
+        options.nbo_source=integration?&*integration:nullptr;
         options.routed_identity=route.canonical_fingerprint;
         options.hide_ligand_centred_intermediates=compact!=0;
         options.aomo_scope=compact?1:2;
@@ -45,9 +46,13 @@ int main(int argc,char** argv) {try {
         const auto diagram=cov::build_mo_diagram_data(w,options);
         if(compact)out<<',';
         out<<"{\"compact\":"<<(compact?"true":"false")
+           <<",\"level_group_count\":"<<diagram.levels.size()
            <<",\"pi_interactions\":"<<((argc==5&&std::string(argv[4])=="scope-only")?"[]":cov::orbital_energy_gap_array_json(diagram.pi_interactions))
            <<",\"candidates\":"<<((argc==5&&std::string(argv[4])=="scope-only")?"[]":cov::pi_partner_candidates_json(diagram.pi_partner_candidates))
-           <<",\"visible_members\":[";
+           <<",\"pi_mode_networks\":[";
+        for(std::size_t i=0;i<diagram.pi_mode_networks.size();++i){if(i)out<<',';
+            out<<cov::pi_mode_network_assessment_json(diagram.pi_mode_networks[i]);}
+        out<<"],\"visible_members\":[";
         bool comma=false;
         for(const auto& row:diagram.levels)for(const auto member:row.member_indices) {
             if(comma)out<<',';comma=true;out<<member;

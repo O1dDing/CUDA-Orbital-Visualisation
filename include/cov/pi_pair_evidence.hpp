@@ -40,6 +40,47 @@ struct PiEndpointDirectionAssessment {
     bool verified=false, ligand_to_centre_supported=false, centre_to_ligand_supported=false;
     double ligand_to_centre_coverage=0, centre_to_ligand_coverage=0;
 };
+// Only set verified for a common, certified operation/atom/spin domain.
+// Equal point-group names alone are not a common representation domain.
+struct PiEndpointSymmetryEvidence {
+    bool verified=false;
+    std::string scope_id, irrep;
+};
+struct PiModePairAssessment {
+    bool verified=false, direction_verified=false;
+    bool ordinary_display_eligible=false, multi_group_relation=false;
+    bool two_endpoint_relation=false;
+    std::string direction="unresolved", channel_family, reason;
+    std::vector<std::string> shared_mode_ids, matched_edge_ids;
+    double lower_coverage=0, upper_coverage=0;
+    double lower_role_coverage=0, upper_role_coverage=0;
+    double lower_cross_fock_mean_hartree=0, upper_cross_fock_mean_hartree=0;
+    double shared_fragment_contraction_norm_hartree=0;
+    double numerical_coverage_bound=1;
+    // A majority of each complete endpoint's original norm must belong to
+    // the declared common mode space for a primary explanation. This is a
+    // semantic majority rule, not a chemical-energy significance threshold.
+    double primary_coverage_floor=0.5;
+};
+struct PiModeNetworkNode {
+    std::size_t group_index=0;
+    std::vector<std::size_t> members;
+    double centre_weight=0, ligand_weight=0;
+    double donor_role_coverage=0, acceptor_role_coverage=0;
+    std::string character;
+    bool primary=false;
+};
+struct PiModeNetworkAssessment {
+    std::string channel_id, mode_id, spin, channel_family, ligand_space_kind;
+    std::string direction="unresolved", reason;
+    bool verified=false, direction_verified=false, ordinary_display_eligible=false;
+    bool two_endpoint_relation=false;
+    double numerical_coverage_bound=1;
+    double primary_coverage_floor=0.5;
+    std::vector<PiModeNetworkNode> nodes;
+    std::vector<std::string> matched_edge_ids;
+};
+[[nodiscard]] std::string pi_mode_network_assessment_json(const PiModeNetworkAssessment&);
 // Mapping support is tested against its propagated numerical error, not a
 // fitted composition percentage. The caller supplies complete canonical groups.
 [[nodiscard]] PiEndpointDirectionAssessment assess_pi_endpoint_direction(
@@ -70,6 +111,7 @@ struct PiPartnerChannelEvidence {
     std::string direction_reference;
     PiFrozenOperatorAssessment frozen_operator;
     PiDisplayCalibration display_calibration;
+    PiModePairAssessment mode_assessment;
 };
 struct PiPartnerAssessment {
     bool input_valid=false;

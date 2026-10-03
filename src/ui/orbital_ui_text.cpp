@@ -434,7 +434,8 @@ std::string localised_diagram_selection_summary(
     out << orbital_tr(OrbitalText::DiagramSummary, language)
         << " · " << mode_text(data.mode, language)
         << ": " << orbital_tr(OrbitalText::VisibleLevels, language)
-        << '=' << data.levels.size() << '/' << data.metadata.size()
+        << '=' << (data.selection.counts_are_final?data.selection.final_member_count:data.levels.size())
+        << '/' << data.metadata.size()
         << "; " << orbital_tr(OrbitalText::Occupied, language)
         << '=' << data.selection.valence_occupied_count
         << "; " << orbital_tr(OrbitalText::Virtual, language)
